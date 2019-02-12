@@ -1,7 +1,6 @@
 
-<img src="static/personal/portrait.jpg"/>
-
-## Experience
+# Professional: 
+----
 
 [Resume](static/personal/resume.pdf)
 
