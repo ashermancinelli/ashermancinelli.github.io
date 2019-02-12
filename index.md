@@ -1,3 +1,4 @@
-## Welcome to my CDN
+## Asher Mancinelli
 
-This contains static files for my personal use.
+[Resume](static/personal/resume.pdf)
+
