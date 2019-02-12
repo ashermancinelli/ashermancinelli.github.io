@@ -24,12 +24,12 @@ software development and data science teams
 # `ls /usr/bin`
 ---
 
-|Tech                  |  Skill Level                     |
-|----------------------|:--------------------------------:|
-|Python/CPython        | :star::star::star::star::star:   |
-|Bash/\*nix            | :star::star::star::star:         |
-|TensorFlow            | :star::star::star::star:         |
-|PyTorch               | :star::star::star::star:         |
+|Tech                  |  Skill Level                         |
+|----------------------|:------------------------------------:|
+|Python/CPython        | :star: :star: :star: :star: :star:   |
+|Bash/\*nix            | :star: :star: :star: :star:          |
+|TensorFlow            | :star: :star: :star: :star:          |
+|PyTorch               | :star: :star: :star: :star:          |
 
 
 # `ls /etc`
