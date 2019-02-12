@@ -9,6 +9,10 @@ Security Directorate.
 Right now I am pursuing a BS in Math and Computer Science at [Whitworth University](https://www.whitworth.edu/cms/), 
 and I expect to graduate in the Spring of '20.
 
+I am passionate about open source software and have had the privilage to contribute to some 
+major OSS such as [PyTorch](https://github.com/pytorch/pytorch) and the 
+[ElasticSearch Python bindings](https://github.com/ashermancinelli/elasticsearch-py).
+
 
 # Professional: 
 ---
@@ -25,7 +29,7 @@ and worked on my first software development team.
 # `ls /usr/bin`
 ---
 
-|Tech                                       |  Skill Level                              |
+|  Tech                                     |  Skill Level                              |
 |-------------------------------------------|:-----------------------------------------:|
 |Python/CPython                             | :snake: :snake: :snake: :snake: :snake:   |
 |Bash/\*nix                                 | :star: :star: :star: :star: :star:        |
@@ -33,7 +37,6 @@ and worked on my first software development team.
 |PyTorch                                    | :star: :star: :star: :star:               |
 |Data Visualization                         | :star: :star: :star: :star:               |
 |C++                                        | :star: :star: :star: :star:               |
-|GIT                                        | :star: :star: :star: :star:               |
 |Parallel/Concurrent programming patterns   | :star: :star: :star:                      |
 |SQL                                        | :star: :star: :star:                      |
 |CUDA C/C++                                 | :star: :star: :star:                      |
@@ -47,5 +50,6 @@ and worked on my first software development team.
 - I Played varsity baseball at Whitworth University for my freshman/sophomore years
 - Been on three mission trips to Haiti
 
+
 ---
-(Also see [my LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/))
+Connect with me on [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)
