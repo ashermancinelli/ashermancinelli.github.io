@@ -1,6 +1,5 @@
-# Asher Mancinelli
 
-[portrait](static/personal/portrait.jpg)
+<img src="static/personal/portrait.jpg"/>
 
 ## Experience
 
