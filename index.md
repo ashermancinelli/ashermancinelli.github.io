@@ -34,7 +34,7 @@ Since May of '18 I have been working at [PNNL](https://www.pnnl.gov/). Here's a 
 # `ls /usr/bin`
 ---
 
-|  Tech                                     |  Skill Level                              |
+|  ***Tech***                               |  ***Skill Level***                        |
 |-------------------------------------------|:-----------------------------------------:|
 |Python/CPython                             | :snake: :snake: :snake: :snake: :snake:   |
 |Bash/\*nix                                 | :star: :star: :star: :star: :star:        |
