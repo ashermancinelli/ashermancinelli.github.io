@@ -25,7 +25,10 @@ soon after discovering my aptitude for software my manager moved me into new pro
 software development and data science teams. There I designed and implemented new clustering algorithms
 and worked on my first software development team.
 
-Since May of '18 I have been working at [PNNL](https://www.pnnl.gov/). 
+Since May of '18 I have been working at [PNNL](https://www.pnnl.gov/). Here's a few highlights:
+- Created a fully convolutional OCR network
+- Created time-series model using Gaussian Processes for engineering team to predict energy consumption
+- Developed various web apps for visualizing and analyzing large datasets
 
 
 # `ls /usr/bin`
@@ -53,6 +56,7 @@ Since May of '18 I have been working at [PNNL](https://www.pnnl.gov/).
 - I Played varsity baseball at Whitworth University for my freshman/sophomore years.
 - I am a leader of several outreach groups on campus and in my community.
 - I have been on three mission trips to Haiti.
+- I love to experiment with different technologies I am unfamiliar with, like DevOps techs and new programming languages (especially functional ones).
 
 
 ---
