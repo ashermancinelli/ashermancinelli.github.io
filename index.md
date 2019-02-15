@@ -6,7 +6,7 @@ I am currently an intern with [Pacific Northwest National Laboratory](https://ww
 primarily in the Data/Research Computing team, but I am also on a project with the National
 Security Directorate.
 
-Right now I am pursuing a BS in Math and Computer Science at [Whitworth University](https://www.whitworth.edu/cms/), 
+Right now I am pursuing a BS in Math and Computer Science at [Eastern Washington University](https://www.ewu.edu/), 
 and I expect to graduate in the Spring of '20.
 
 I am passionate about open source software and have had the privilage to contribute to some 
@@ -24,6 +24,8 @@ after my freshman year of college. I started out as an analyst for the finance d
 soon after discovering my aptitude for software my manager moved me into new projects with the 
 software development and data science teams. There I designed and implemented new clustering algorithms
 and worked on my first software development team.
+
+Since May of '18 I have been working at [PNNL](https://www.pnnl.gov/). 
 
 
 # `ls /usr/bin`
@@ -46,9 +48,11 @@ and worked on my first software development team.
 # `ls /etc`
 ---
 
-- Perhaps my greatest passion is working with the homeless and food-insecure. I started a group at Whitworth which visits and feeds homeless and food-insecure people in downtown Spokane, and that is one of my greatest joys. 
-- I Played varsity baseball at Whitworth University for my freshman/sophomore years
-- Been on three mission trips to Haiti
+- I was asked to give a presentation on TensorFlow and neural networks, which is available online [here](fullstacktc.org/user/amancinelli).
+- My greatest passion is probably working with the homeless and food-insecure. I started a group at Whitworth which visits and feeds homeless and food-insecure people in downtown Spokane, and that is one of my greatest joys. 
+- I Played varsity baseball at Whitworth University for my freshman/sophomore years.
+- I am a leader of several outreach groups on campus and in my community.
+- I have been on three mission trips to Haiti.
 
 
 ---
