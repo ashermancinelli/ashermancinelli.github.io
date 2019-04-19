@@ -26,7 +26,7 @@ software development and data science teams. There I designed and implemented ne
 and worked on my first software development team.
 
 Since May of '18 I have been working at [PNNL](https://www.pnnl.gov/). Here's a few highlights:
-- Created a fully convolutional OCR network
+- Replicated the fully convolutional OCR network from [this Facebook paper](https://code.fb.com/ai-research/rosetta-understanding-text-in-images-and-videos-with-machine-learning/) on synthetic data
 - Created time-series model using Gaussian Processes for engineering team to predict energy consumption
 - Developed various web apps for visualizing and analyzing large datasets
 
