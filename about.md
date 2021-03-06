@@ -22,5 +22,7 @@ Interests:
 ### Contact me
 
 [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)
+
 [ashermancinelli@gmail.com](mailto:ashermancinelli@gmail.com)
+
 [asher.mancinelli@pnnl.gov](mailto:asher.mancinelli@pnnl.gov)

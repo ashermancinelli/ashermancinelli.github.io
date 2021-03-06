@@ -3,6 +3,7 @@ layout: post
 title: Spack for Package Development (1 of N)
 ---
 
+[Spack](https://spack.readthedocs.io/en/latest/) is typically used 
 To facilitate rapid development of our packages, we maintain a private repository of our package descriptions.
 
 Modify spack repo config:
