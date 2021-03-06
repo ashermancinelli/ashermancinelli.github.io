@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spack for Package Development (3 of N)
+title: Spack for Package Development (3 of N): Extending Environments
 ---
 
 In the [previous post about package development with Spack](/Spack-Development-2), we discussed environment management with Spack, particularly integration with a private repository.

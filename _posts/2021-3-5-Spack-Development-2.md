@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spack for Package Development (2 of N)
+title: Spack for Package Development (2 of N): Getting Stared with Environments
 ---
 
 In the [previous post about package development with Spack](/Spack-Development-1), we discussed the following points:
@@ -51,7 +51,7 @@ class FloodSimulation(CMakePackage):
 
 ```
 
-Let us also assume you *need* to install with your fork of PETSc and HiOp, and that you'd like to use the MAGMA and CUDA installations provided by your system administrator or package manager.
+Let us also assume you *need* to install with your fork of the PETSc and HiOp spack packages, and that you'd like to use the MAGMA and CUDA installations provided by your system administrator or package manager.
 In this case, you might have an environment file like this:
 
 ```yaml
@@ -164,6 +164,74 @@ $ spack install
 
 ```
 
+#### An Aside on Spack Views
+
+If you didn't notice earlier, our environment file contains the line:
+
+```yaml
+  view: true
+```
+
+This means that when you activate your spack environment (`spack env activate <environment name>`), spack will use a "view" by defaul.
+A view is a single installation prefix into which all packages installed via the environment are symbolically linked.
+
+By default, spack views are installed to:
+```
+$SPACK_ROOT/var/spack/environments/<environment name>/.spack-env/
+```
+and the environment file is installed to 
+```
+$SPACK_ROOT/var/spack/environments/<environment name>/spack.yaml
+```
+
+If our new developer activates her spack environment like so:
+
+```console
+
+$ spack env activate local-development
+$ ls $SPACK_ROOT/var/spack/environments/local-development/.spack-env/lib
+libmagma.so libhiop.so ...
+
+```
+
+she will have access to all of her newly installed libraries in a single installation prefix, automatically added to her `LD_LIBRARY_PATH` and `DYLD_LIBRARY_PATH`.
+
+[The Spack command reference on views](https://spack.readthedocs.io/en/latest/command_index.html?highlight=view#spack-view) contains further information on this topic.
+
+#### Back to Using Environments
+
+Now that we have a feel for creating, using, and distributing spack environments, how do we develop with them?
+
+As we saw in the aside on views above, activating a spack environment with the view option enabled (which is the default) adds the view to the user's path, library path, etc.
+Assuming `FloodSimulation` is a CMake project (as we specified in the example spack package above) and we have written clean enough CMake to find external libraries, the workflow for building `FloodSimulation` should be relatively straightforward:
+
+```console
+
+$ git clone https://github.com/your-username/flood-simulation.git
+$ mkdir build install
+$ cd build
+
+$ # At this step, cmake should be able to find all of your libraries in the
+$ # spack view:
+$ cmake ../flood-simulation -DCMAKE_INSTALL_PREFIX=$PWD/../insatll
+
+$ # If some libraries are not found, simply run `spack location -i package`
+$ # to find the prefix for the package, and add it manually with ccmake:
+
+$ # Assuming magma is the package cmake failed to find, run this command and
+$ # copy the path:
+$ spack location -i magma
+
+$ # Manually add the path to the magma installtion to cmake:
+$ ccmake
+
+$ make install
+
+```
+
+From here, developers may continue the edit-build-test cycle for `FloodSimulation`, knowing they are using the correct set of dependencies.
+
+Read on for discussion on additional uses for environments you should consider incorporating into your workflow.
 
 [Previous in this Series](/Spack-Development-1)
 

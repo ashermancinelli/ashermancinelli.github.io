@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spack for Package Development (1 of N)
+title: Spack for Package Development (1 of N): Motivation and Introduction
 ---
 
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
