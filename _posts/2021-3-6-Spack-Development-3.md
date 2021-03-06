@@ -6,7 +6,7 @@ permalink: /spack3
 
 Third in an N part series, this post focuses on *leveraging environments for additional use cases*.
 
-In the [previous post about package development with Spack](/Spack-Development-2), we discussed environment management with Spack, particularly integration with a private repository.
+In the [previous post about package development with Spack](/spack2), we discussed environment management with Spack, particularly integration with a private repository.
 What are some of the benefits of this, other than onboarding new developers?
 
 As we've developed our private spack repository, we've also added some spack environments along the way:
@@ -95,6 +95,6 @@ With this strategy, we are able to maintain a reproducible and consistent softwa
 
 todo
 
-[Previous in this Series](/Spack-Development-2)
+[Previous in this Series](/spack2)
 
-[Next in this Series](/Spack-Development-4)
+[Next in this Series](/spack4)

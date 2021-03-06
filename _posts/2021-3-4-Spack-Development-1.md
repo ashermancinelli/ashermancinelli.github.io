@@ -104,4 +104,4 @@ Each release of your package may serve as a time to submit all of your modificat
 This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
 The next post will go further into managing environments and multi-platform configurations.
 
-[Next in this Series](/Spack-Development-2)
+[Next in this Series](/spack2)

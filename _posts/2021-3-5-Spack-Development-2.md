@@ -6,7 +6,7 @@ permalink: /spack2
 
 Second in an N part series, this post focuses on *getting stared with environments*.
 
-In the [previous post about package development with Spack](/Spack-Development-1), we discussed the following points:
+In the [previous post about package development with Spack](/spack1), we discussed the following points:
 
 * Creating a private spack repository
 * Maintaining private packages
@@ -236,6 +236,6 @@ From here, developers may continue the edit-build-test cycle for `FloodSimulatio
 
 Read on for discussion on additional uses for environments you should consider incorporating into your workflow.
 
-[Previous in this Series](/Spack-Development-1)
+[Previous in this Series](/spack1)
 
-[Next in this Series](/Spack-Development-3)
+[Next in this Series](/spack3)
