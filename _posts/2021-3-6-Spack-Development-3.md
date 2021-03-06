@@ -35,7 +35,7 @@ In this post, we're going to look at using this configuration to reproduce error
 ### Reproducing Finicky Errors
 
 Bugs relating to interfaces between libraries are sometimes the most difficult to track down.
-To use an example from my experience with the [ExaSGD project](https://www.exascaleproject.org/research-project/exasgd/), one of my teams was developing a library that builds on the optimization solver [HiOp](https://github.com/LLNL/hiop), which leverages CUDA, MAGMA, and many BLAS/LAPACK routines.
+To use an example from my experience, one of my teams was developing a library that builds on the optimization solver [HiOp](https://github.com/LLNL/hiop), which leverages CUDA, MAGMA, and many BLAS/LAPACK routines.
 After developing some functionality tests to ensure our library was performing as expected, we noticed that on some platforms with certain CUDA devices and CUDA versions, our library was failing to converge within our expected tolerance.
 For weeks we stepped through debuggers and discussed possibile issues with our codebase and the various libraries we depend on to no avail.
 
