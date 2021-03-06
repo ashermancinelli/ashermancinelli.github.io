@@ -81,8 +81,8 @@ You could go through the pull request process upstream, however if you have many
 ```
 floodsimulationrepo
 ├── packges
-│   |── ipopt
-│   |   └── package.py
+│   ├── ipopt
+│   │   └── package.py
 │   └── floodsimulation
 │       └── package.py
 └── repo.yaml
@@ -102,4 +102,6 @@ Each release of your package may serve as a time to submit all of your modificat
 This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
 The next post will go further into managing environments and multi-platform configurations.
 
+<center>
 [Next in this Series](/_posts/2021-3-5-Spack-Development-2.md)
+</center>
