@@ -5,7 +5,7 @@ permalink: /spack1
 ---
 
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
-First in an N part series, this post focuses on *motivation and introduction*.
+First in this series, this post focuses on *motivation and introduction*.
 
 ## Intro
 
