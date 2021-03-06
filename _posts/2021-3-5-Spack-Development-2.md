@@ -3,6 +3,8 @@ layout: post
 title: Spack for Package Development (2 of N)
 ---
 
+Second in an N part series, this post focuses on *getting stared with environments*.
+
 In the [previous post about package development with Spack](/Spack-Development-1), we discussed the following points:
 
 * Creating a private spack repository
