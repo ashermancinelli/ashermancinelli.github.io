@@ -3,7 +3,7 @@ layout: post
 title: Spack for Package Development (2 of N)
 ---
 
-In the [previous post about package development with Spack](/_posts/2021-3-4-Spack-Development-1.md), we discussed the following points:
+In the [previous post about package development with Spack](/Spack-Development-1), we discussed the following points:
 
 * Creating a private spack repository
 * Maintaining private packages
@@ -22,3 +22,4 @@ One of the most useful features of Spack is it's support for [environments](http
 An environment is a file describing a package or set of packages you wish to install, along with all of the spack configuration options you wish to use.
 In the previous post, we used an example package `FloodSimulation` - we'll continue with this example here.
 
+[Next in this Series](/Spack-Development-3)

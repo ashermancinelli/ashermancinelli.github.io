@@ -3,9 +3,9 @@ layout: post
 title: Spack for Package Development (1 of N)
 ---
 
-## Intro
-
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
+
+## Intro
 
 Most upstream Spack packages are quite stable.
 In my experience, the majority of Spack packages are based on packages that have already existed for a long time, and a member of the community created a Spack package to install it (eg OpenMPI).
@@ -102,4 +102,4 @@ Each release of your package may serve as a time to submit all of your modificat
 This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
 The next post will go further into managing environments and multi-platform configurations.
 
-[Next in this Series](/_posts/2021-3-5-Spack-Development-2.md)
+[Next in this Series](/_posts/Spack-Development-2)
