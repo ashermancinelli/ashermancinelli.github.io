@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spack for Package Development (2 of N)
+title: Spack for Package Development Part 2
 permalink: /spack2
 ---
 
