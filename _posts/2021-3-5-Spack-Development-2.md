@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Spack for Package Development (2 of N)
+permalink: /spack2
 ---
 
 Second in an N part series, this post focuses on *getting stared with environments*.

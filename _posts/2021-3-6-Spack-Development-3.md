@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Spack for Package Development (3 of N)
+permalink: /spack3
 ---
 
 Third in an N part series, this post focuses on *leveraging environments for additional use cases*.

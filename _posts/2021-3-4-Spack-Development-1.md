@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Spack for Package Development (1 of N)
+permalink: /spack1
 ---
 
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
