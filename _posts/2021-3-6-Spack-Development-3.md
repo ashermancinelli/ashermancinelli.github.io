@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Spack for Package Development (3 of N)
+title: Spack for Package Development Part 3
 permalink: /spack3
 ---
 
-Third in an N part series, this post focuses on *leveraging environments for debugging and reproducing errors*.
+Third in this series, this post focuses on *leveraging environments for debugging and reproducing errors*.
 
 In the [previous post about package development with Spack](/spack2), we discussed environment management with Spack, particularly integration with a private repository.
 What are some of the benefits of this, other than onboarding new developers?
