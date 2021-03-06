@@ -19,7 +19,9 @@ In the following post(s), we'll discuss the following in greater detail:
 ## Managing Environments
 
 One of the most useful features of Spack is it's support for [environments](https://spack.readthedocs.io/en/latest/environments.html).
-An environment is a file describing a package or set of packages you wish to install, along with all of the spack configuration options you wish to use.
-In the previous post, we used an example package `FloodSimulation` - we'll continue with this example here.
+An environment is a file describing a package or set of packages you wish to install, along with all of the spack configuration options you wish to use (see documentation linked above for more information).
+In the previous post, we used an example package `FloodSimulation` and a corresponding repository - we'll continue with this example here.
+
+When managing a complex and mutable set of dependencies, reproducibility is *extremely* important.
 
 [Next in this Series](/Spack-Development-3)
