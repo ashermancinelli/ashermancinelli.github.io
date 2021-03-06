@@ -3,7 +3,7 @@ layout: post
 title: Spack for Package Development (1 of N)
 ---
 
-### Intro
+## Intro
 
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
 
@@ -21,7 +21,7 @@ To use a package manager *and* iterate rapidly on a package, I think there are r
 
 In my opinion, using the typical Spack workflow of submitting a pull request to the upstream Spack repository for every meaningful change meets none of these critera.
 
-### Configuring Spack Repositories
+## Configuring Spack Repositories
 
 An alternative strategy is to use Spack's support for external repositories.
 A repository is simply a directory which contains a `repo.yaml` file and a `packages/` directory
@@ -69,7 +69,7 @@ $ spack install examplerepo.examplepackage
 
 ```
 
-### 3rd Party Packages in Your Spack Repo
+## 3rd Party Packages in Your Spack Repo
 
 The most common case that I have found of a package conflicting with a builtin is when one of your packages relies on a fork of an upstream package, so you maintain a modified version of the upstream package (in `examplerepo/packages/forked-package/package.py`, for example).
 This allows developers to iterate quickly and modify dependencies without attempting to maintain a fork of the entire spack repository.
@@ -96,12 +96,10 @@ $ spack install floodsimulation ^floodsimulationrepo.ipopt
 
 ```
 
-If you track `examplerepo` with source control, it is quite easy to maintain your small package repository while your key packages are under heavy development.
+If you track your private spack repository with source control, it is quite easy to maintain your small package repository while your key packages are under heavy development.
 Each release of your package may serve as a time to submit all of your modifications to forked packages as well as the spack package descriptions to upstream spack such that end users are able to fully take advantage of your configuration.
 
 This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
 The next post will go further into managing environments and multi-platform configurations.
 
-<center>
 [Next in this Series](/_posts/2021-3-5-Spack-Development-2.md)
-</center>
