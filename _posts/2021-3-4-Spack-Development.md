@@ -3,52 +3,74 @@ layout: post
 title: Spack for Package Development (1 of N)
 ---
 
-[Spack](https://spack.readthedocs.io/en/latest/) is typically used 
-To facilitate rapid development of our packages, we maintain a private repository of our package descriptions.
+[Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
 
-Modify spack repo config:
+Most upstream Spack packages are quite stable.
+The most common example in my experience is that a package is already very well-developed with a large userbase, and a member of the community created a Spack package to install it (eg OpenMPI).
+In this case, the options and versions for the package are probably set-in-stone.
+There are probably very few PRs submitted for these packages and users can rely on the dependencies and installation process staying mostly the same.
+
+For a package under extremely heavy development however, this is not the case.
+To use a package manager *and* iterate rapidly on a package, I think there are roughly __ criteria:
+
+1. Adding a new dependency should be easy and fast
+1. Adding new versions should be easy and fast
+1. Adding new options should be easy and fast
+
+In my opinion, using the typical Spack workflow of submitting a pull request to the upstream Spack repository meets none of these critera.
+
+An alternative strategy is to use Spack's support for additional repositories.
+A repository is simply a directory which contains a `repo.yaml` file and a `packages` directory
+under which Spack packages reside.
+
+For example, creating the file
 
 ```yaml
+# repo.yaml
+repo:
+  namespace: examplerepo
+```
+
+in a directory with a `packages` subdirectory like so:
+
+```
+examplerepo
+├── packges
+│   └── examplepackage
+│       └── package.py
+└── repo.yaml
+```
+
+is a valid repository.
+
+Running `spack repo add .` in this directory will add the path to that repository to your Spack configuration:
+
+```yaml
+# ~/.spack/repos.yaml
 repos:
   - $spack/var/spack/repos/builtin
-  - /qfs/projects/exasgd/src/ExaSGD_Spack/
+  - /path/to/examplerepo
 ```
 
-Packages under /qfs/projects/exasgd/src/ExaSGD_Spack/packages are now usable with the prefix `exasgd`. The order matters here - if a package exists in both repos (eg hiop), the first one found will be used if the namespace is omitted.
-
-Example usage:
+After configuring your example repository, you are able to install packages from it directly!
+If your package conflicts with a builtin package, you may install it using the namespace set in `examplerepo/repo.yaml`:
 
 ```console
-$ # uses upstream hiop package, very out of date
-$ spack install hiop
-$ # uses our hiop package, totally up to date
-$ spack install exasgd.hiop
-$ # installs exago using our hiop instead of upstream hiop package
-$ spack install exago@master ^exasgd.hiop@develop
+
+$ # If examplepackage is unique:
+$ spack install examplepackage
+
+$ # If examplepackage conflicts with a builtin package:
+$ spack install examplerepo.examplepackage
+
 ```
 
-Based on spack documentation, this seems to be the canonical way to maintain private forks of packages. Additionally, maintaining this repository will allow us to track build environments in version control (see following section on environments). We currently maintain a set of scripts inside each repository for buildsystem variables, but this does not get us far when reproducing an environment.
+The most common case that I have found of a package conflicting with a builtin is when your packages rely on a fork of an upstream package, so you maintain a modified version of the upstream package in `examplerepo/packages/forked-package/package.py`.
+This is useful because you are then able to iterate as quickly as you like on your packages, editing dependencies, without attempting to maintain a fork of the entire spack repository.
+If you track `examplerepo` with source control, it is quite easy to maintain your small package repository while your key packages are under heavy development.
+Each release of your package may serve as a time to submit all of your modifications to forked packages as well as the spack package descriptions to upstream spack such that end users are able to fully take advantage of your configuration.
 
-Pros of maintaining our own repo:
-Iterate very quickly; don’t have to wait for upstream spack team to accept every pull request or maintain a fork of the entire spack repository to have access to versions of packages we need
-This will become key as we migrate to target platforms
+This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
+The next post will go further into managing environments and multi-platform configurations.
 
-Pros of creating PRs against upstream spack repo:
-Available to users globally
-Very stable
-Options don’t frequently change; users can get used to one set of options
-
-Possible plan forward:
-Use pnnl repo in the short term to iterate quickly on internally developed packages and forks of external packages for target platforms
-Quarterly create pull requests for packages upstream so our options are available to more users
-
-This should maintain the flexibility we currently have while not being blocked on other teams.
-
-The spack documentation also mentions keeping site-local repos to enable very intuitive use of locally installed packages, like so:
-
-```console
-$ spack install hiop+mpi ^pnnl.marianas.openmpi@3.1.3
-```
-
-However, this requires
-
+[Next Post](/_posts/2021-3-5-Spack-Development.md)
