@@ -30,7 +30,7 @@ floodsimulationrepo
 
 ```
 
-In this post, we're going to look at using this configuration to reproduce errors and integrate with continuous integration.
+In this post, we're going to look at using this configuration to reproduce errors and coordinate development and debugging within a large team.
 
 ### Reproducing Finicky Errors
 
@@ -89,6 +89,8 @@ floodsimulationrepo
 so that in future threads we are able to refer back to the exact configurations which caused bugs in the past.
 
 With this strategy, we are able to maintain a reproducible and consistent software stack with robust coordination between teams.
+Another potential use-case of this strategy is to coordinate profiling efforts - each month or so a spack environment which instantiates a development snapshot of the development stack may be distributed to profiling teams.
+This way, the profiling team may work on a known working configuration of the software stack to identify performance bottlenecks while the core development team continues developing.
 
 [Previous in this Series](/spack2)
 
