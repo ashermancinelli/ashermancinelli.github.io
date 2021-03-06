@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spack for Package Development (2 of N): Getting Stared with Environments
+title: Spack for Package Development (2 of N)
 ---
 
 In the [previous post about package development with Spack](/Spack-Development-1), we discussed the following points:
