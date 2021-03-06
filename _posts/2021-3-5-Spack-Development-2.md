@@ -3,7 +3,7 @@ layout: post
 title: Spack for Package Development (2 of N)
 ---
 
-In the previous post about package development with Spack, we discussed the following points:
+In the [previous post about package development with Spack](/_posts/2021-3-4-Spack-Development-1.md), we discussed the following points:
 
 * Creating a private spack repository
 * Maintaining private packages

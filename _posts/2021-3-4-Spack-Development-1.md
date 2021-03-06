@@ -3,24 +3,28 @@ layout: post
 title: Spack for Package Development (1 of N)
 ---
 
+### Intro
+
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
 
 Most upstream Spack packages are quite stable.
-The most common example in my experience is that a package is already very well-developed with a large userbase, and a member of the community created a Spack package to install it (eg OpenMPI).
+In my experience, the majority of Spack packages are based on packages that have already existed for a long time, and a member of the community created a Spack package to install it (eg OpenMPI).
 In this case, the options and versions for the package are probably set-in-stone.
-There are probably very few PRs submitted for these packages and users can rely on the dependencies and installation process staying mostly the same.
+There are likely very few PRs submitted for these packages, and users can rely on the dependencies and installation process staying mostly the same.
 
 For a package under extremely heavy development however, this is not the case.
-To use a package manager *and* iterate rapidly on a package, I think there are roughly __ criteria:
+To use a package manager *and* iterate rapidly on a package, I think there are roughly 3 criteria for that package manager:
 
-1. Adding a new dependency should be easy and fast
-1. Adding new versions should be easy and fast
-1. Adding new options should be easy and fast
+1. Adding a new *dependency* should be easy and fast
+1. Adding new *versions* should be easy and fast
+1. Adding new *options* should be easy and fast
 
-In my opinion, using the typical Spack workflow of submitting a pull request to the upstream Spack repository meets none of these critera.
+In my opinion, using the typical Spack workflow of submitting a pull request to the upstream Spack repository for every meaningful change meets none of these critera.
 
-An alternative strategy is to use Spack's support for additional repositories.
-A repository is simply a directory which contains a `repo.yaml` file and a `packages` directory
+### Configuring Spack Repositories
+
+An alternative strategy is to use Spack's support for external repositories.
+A repository is simply a directory which contains a `repo.yaml` file and a `packages/` directory
 under which Spack packages reside.
 
 For example, creating the file
@@ -65,12 +69,37 @@ $ spack install examplerepo.examplepackage
 
 ```
 
-The most common case that I have found of a package conflicting with a builtin is when your packages rely on a fork of an upstream package, so you maintain a modified version of the upstream package in `examplerepo/packages/forked-package/package.py`.
-This is useful because you are then able to iterate as quickly as you like on your packages, editing dependencies, without attempting to maintain a fork of the entire spack repository.
+### 3rd Party Packages in Your Spack Repo
+
+The most common case that I have found of a package conflicting with a builtin is when one of your packages relies on a fork of an upstream package, so you maintain a modified version of the upstream package (in `examplerepo/packages/forked-package/package.py`, for example).
+This allows developers to iterate quickly and modify dependencies without attempting to maintain a fork of the entire spack repository.
+
+For example, let's say you're developing a package FloodSimulation which relies on OpenMPI and Ipopt.
+As you develop your software, you realize the Ipopt Spack package doesn't expose all of Ipopt's configuration options, and you need to make rather significant edits to the Ipopt Spack package.
+You could go through the pull request process upstream, however if you have many similar edits to many other packages, you may want to maintain an Ipopt fork in your spack repository:
+
+```
+floodsimulationrepo
+├── packges
+│   |── ipopt
+│   |   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+```
+
+You may then install FloodSimulation with your fork of Ipopt like so:
+
+```console
+
+$ spack install floodsimulation ^floodsimulationrepo.ipopt
+
+```
+
 If you track `examplerepo` with source control, it is quite easy to maintain your small package repository while your key packages are under heavy development.
 Each release of your package may serve as a time to submit all of your modifications to forked packages as well as the spack package descriptions to upstream spack such that end users are able to fully take advantage of your configuration.
 
 This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
 The next post will go further into managing environments and multi-platform configurations.
 
-[Next Post](/_posts/2021-3-5-Spack-Development.md)
+[Next in this Series](/_posts/2021-3-5-Spack-Development-2.md)
