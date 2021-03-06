@@ -4,7 +4,7 @@ title: Spack for Package Development Part 2
 permalink: /spack2
 ---
 
-Second in an N part series, this post focuses on *getting stared with environments*.
+Second in this series, this post focuses on *getting stared with environments*.
 
 In the [previous post about package development with Spack](/spack1), we discussed the following points:
 
