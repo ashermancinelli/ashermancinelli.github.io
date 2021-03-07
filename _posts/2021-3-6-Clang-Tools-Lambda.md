@@ -467,7 +467,7 @@ To do this, add the following to the top-level `CMakeLists.txt`:
 ```cmake
 # top-level CMakeLists.txt
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-add_executable(test/capture-test.cpp)
+add_executable(dummy-target test/capture-test.cpp)
 ```
 
 This way, we are able to run our plugin driver directly on our test case.
