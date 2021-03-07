@@ -1,6 +1,6 @@
 ---
 layout: post
-title: GTests Type and Value Parameterized Tests
+title: GTest Type and Value Parameterized Tests
 permalink: /gtest-type-val-param
 ---
 
