@@ -44,6 +44,7 @@ TEST(AddOneTests, doAddTo5) {
 ```
 
 ## Value Parameterized Tests
+
 We can parameterize our test by value with a fixture:
 
 ```cpp
@@ -180,6 +181,18 @@ static std::tuple<ParamT<int>, ParamT<long long>, ParamT<std::size_t>> allParams
     std::make_tuple(9, 10),
   },
 };
+```
+
+This structure assumes you may want to add test inputs later on that may be
+different depending on the type.
+If this is not the case and you know your `make_tuple` calls are `static_cast`-able
+into your parameter type, you may do the following to reduce code duplication:
+
+```cpp
+#define ADDONE_TESTPARAMS                                                      \
+  { std::make_tuple(1, 2), std::make_tuple(5, 6), std::make_tuple(9, 10), }
+static std::tuple<ParamT<int>, ParamT<long long>, ParamT<std::size_t>> allParams{
+        ADDONE_TESTPARAMS, ADDONE_TESTPARAMS, ADDONE_TESTPARAMS, };
 ```
 
 Now, let's refactor our fixture to take the types and values we just defined:
