@@ -497,7 +497,7 @@ just outside the lambda capture.
 
 As you can see, our tool seems to be correctly identifying our domain-specific error!
 After developing this tool and running it over all of our codebases which make heavy use of portability
-libraries such as RAJA and Kokkos, we have confidence that we have purged this error from our
+libraries such as RAJA and Kokkos, we are confident that we have purged this error from our
 codebase.
 
 Hopefully this demonstration helps your team weed out nasty errors like these from your codebase as well.
