@@ -9,6 +9,10 @@ type - but what if you want both?
 
 ## Getting Started
 
+The need for this arose when converting some of Flang's unit tests to use GTest
+to conform with the rest of LLVM's testing framework (Flang is LLVM's fortran 2018 compiler).
+[Linked here is the revision where we needed to parameterize both by value and type.](https://reviews.llvm.org/D97403)
+
 Let's start with an interface to test:
 
 ```cpp
