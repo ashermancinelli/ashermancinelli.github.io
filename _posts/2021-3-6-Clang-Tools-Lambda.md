@@ -92,6 +92,7 @@ In the top-level CMakeLists.txt and after the usual CMake project preamble, we i
 
 ```cmake
 # top-level CMakeLists.txt
+
 find_package(Clang REQUIRED)
 
 set(CMAKE_MODULE_PATH
@@ -221,6 +222,8 @@ Now that we have a higher-level AST traversal class to find lambdas that capture
 AST traversal class which checks for problematic uses of member variables.
 The member visitor will accept *all forms of expressions*, so we only run that visitor on the statements
 in the body of the lambda.
+You may also notice that we set the `Parent` field of our `MemberVisitor` - this is to improve the quality
+of the diagnostics we are able to emit. We'll expand on this later.
 
 #### Member Visitor
 
@@ -284,6 +287,71 @@ If we enter this conditional, we've found a potential problem! Now what to do?
 Clang diagnostics are again a very rich library which won't be fully flushed out here - please
 consult [the documentation for the Clang Diagnostics Engine](https://clang.llvm.org/doxygen/classclang_1_1DiagnosticsEngine.html).
 
+First order of business in emmitting diagnositcs is to get a handle for a diagnositcs engine capable
+of printing helpful messages to the user of our tool.
+
+```cpp
+      clang::DiagnosticsEngine &DE = Context->getDiagnostics();
+```
+
+Let's think for a moment about the sort of diagnostic we would like to emit.
+I think we should report three things to the user if a lambda expression meets our 
+critera for an error:
+
+1. Location in the lambda where the member variable is used via `this` pointer
+2. Location of that member's declaration
+3. Suggestion for fixing the issue
+
+Let's address these one-by-one: first, report the location where the member variable is
+potentially erroneously used.
+
+```cpp
+      auto ID = DE.getCustomDiagID(
+          clang::DiagnosticsEngine::Error,
+          "Found lambda capturing pointer-like member variable here.");
+      DE.Report(Expr->getBeginLoc(), ID);
+```
+
+Then, where the member variable was declared:
+
+```cpp
+      /* Remark indicating which member variable triggered the error */
+      ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Note,
+          "Member variable declared here:");
+      DE.Report(Expr->getMemberDecl()->getBeginLoc(), ID);
+```
+
+Finally, a suggestion for fixing the error:
+
+```cpp
+      /* Remark with suggested change to mitigate the issue */
+      ID = DE.getCustomDiagID(clang::DiagnosticsEngine::Remark,
+          "Consider creating a local copy of the member variable in local scope"
+          " just outside the lambda capture.");
+      DE.Report(Parent->getBeginLoc(), ID);
+```
+
+At this point, we're essentially done - all we need is a bit of boilerplate code to
+connect our AST consumer classes up to a compiler instance:
+
+```cpp
+class LambdaCaptureCheckerConsumer : public clang::ASTConsumer {
+public:
+  explicit LambdaCaptureCheckerConsumer(ASTContext *Context)
+    : Visitor(Context) {}
+  explicit LambdaCaptureCheckerConsumer(CompilerInstance& CI)
+    : Visitor(&CI.getASTContext()) {}
+
+  virtual void HandleTranslationUnit(clang::ASTContext &Context) {
+    Visitor.TraverseDecl(Context.getTranslationUnitDecl());
+  }
+private:
+  FindLambdaCaptureThis Visitor;
+};
+```
+
+Now we're done with the file `src/actions.hpp`.
+
 ### Driver
 
 In `src/driver.cpp` we create an AST frontend action to create and use the compiler action we defined in `src/actions.hpp`:
@@ -317,6 +385,117 @@ int main(int argc, const char **argv) {
   return Tool.run(newFrontendActionFactory<LambdaCaptureCheckerAction>().get());
 }
 ```
+
+### Running
+
+At this point, you may also generate a clang plugin library to use our AST actions
+which can be loaded via compiler invocation, however I opted to stick with a standalone executable.
+
+In order to fully test our AST action, I also created a subdirectory for examples,
+giving us the following directory structure:
+
+```
+
+lambda-checker
+├── CMakeLists.txt
+├── src
+│   ├── CMakeLists.txt
+│   ├── driver.cpp
+│   └── actions.hpp
+└── test
+    └── capture-test.cpp
+
+```
+
+Where `capture-test.cpp` contains:
+
+```cpp
+// capture-test.cpp
+struct CaptureTest {
+
+  /* Should not capture */
+  int *i;
+
+  /* Should not capture */
+  int j[1];
+
+  /* OK to capture */
+  int k=0;
+
+  /* Method which implicitly captures `this` pointer and modifies member
+   * variable `i`. This is problematic when using portability libraries, as
+   * member variables may not reside on the host. */
+  void methodUsingBadCapturePointer() {
+    auto throwaway = [=] () {
+      *i = 1;
+    };
+  }
+
+  /* Raw arrays should not be used either. */
+  void methodUsingBadCaptureArray() {
+    auto throwaway = [=] () {
+      j[0] = 1;
+    };
+  }
+
+  /* The preferred method to mitigate the issue outlined above is to create a
+   * local copy of the pointer and modify the underlying data through the copy.
+   */
+  void methodUsingGoodCapture() {
+    int* localCopy = i;
+    auto throwaway = [=] () {
+      *localCopy += 1;
+    };
+  }
+
+  /* Methods which capture `this` variables which are not pointers should not
+   * cause an issue. */
+  void methodNotCapturingPointer() {
+    auto throwaway = [=] () {
+      k++;
+    };
+  }
+};
+
+int main() { return 0; }
+```
+
+I added this as a CMake target such that the compile commands database would be generated for
+our test case ([additional documentation for compile-commands database](https://clang.llvm.org/docs/HowToSetupToolingForLLVM.html)).
+To do this, add the following to the top-level `CMakeLists.txt`:
+
+```cmake
+# top-level CMakeLists.txt
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_executable(test/capture-test.cpp)
+```
+
+This way, we are able to run our plugin driver directly on our test case.
+
+```console
+
+$ cd lambda-capture
+$ mkdir build
+$ cd build
+$ cmake .. && make
+
+$ # At this point, the file `compile_commands.json` should exist in your CWD
+$ # and you should be able to run the driver on our test case:
+$ ./src/LambdaChecker ../test/capture-test.cpp
+/path/to/lambda-capture/test/capture.cpp:17:8: error: Found lambda capturing pointer-like member variable here.
+
+      *i = 1;
+       ^
+/path/to/lambda-capture/test/capture.cpp:4:3: note: Member variable declared here:
+  int *i;
+  ^
+/path/to/lambda-capture/test/capture.cpp:16:22: remark: Consider creating a local copy of the member variable in local scope
+just outside the lambda capture.
+    auto throwaway = [=] () {
+
+```
+
+As you can see, our tool seems to be correctly identifying our domain-specific error!
 
 The full code listings can be found in the [repository linked here](https://github.com/ashermancinelli/lambda-capture-checker).
 The code snippets used here for example purposes will not map perfectly to the current repository, but should
