@@ -13,7 +13,7 @@ are not often considered.
 In this post, I'll look at how we designed the test suite for
 [HiOp](https://github.com/LLNL/hiop), a high performance optimization solver.
 Credit for the design goes to [Slaven Peles](https://www.linkedin.com/in/slavenpeles/)
-and the [Sundials](https://github.com/LLNL/sundials) team.
+inspired by the [Sundials](https://github.com/LLNL/sundials) test suite.
 
 HiOp's unit test suite was crucial for the following reasons:
 
