@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-03-07T19:36:54-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-03-08T10:29:28-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?&lt;/p&gt;
 
 &lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
@@ -319,7 +319,7 @@ are not often considered.
 In this post, I’ll look at how we designed the test suite for
 &lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
 Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
-and the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; team.&lt;/p&gt;
+inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
 
 &lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
 
