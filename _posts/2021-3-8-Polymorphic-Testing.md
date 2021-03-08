@@ -34,7 +34,11 @@ HiOp's linear algebra library uses a clean inheritance structure.
 Looking at the `hiopVector` abstract interface for example, there are two
 implementations, `hiopVectorRajaPar` and `hiopVectorPar`, as seen below:
 
-![hiopVector UML](/images/hiopVector.png)
+```mermaid!
+classDiagram
+  hiopVector <|-- hiopVectorPar
+  hiopVector <|-- hiopVectorRajaPar
+```
 
 Before we had written the `hiopVectorRajaPar` implementation, we had to establish
 success criterea for our implementation in the form of unit tests and integration
@@ -54,10 +58,47 @@ Let's use the `hiopMatrix` class as an example.
 The top-level interface for HiOp matrices is the `hiopMatrix` pure virtual class.
 The `hiopMatrixDense` and `hiopMatrixSparse` pure virtual classes are children
 of `hiopMatrix`.
+
+```mermaid!
+classDiagram
+  hiopMatrix <|-- hiopMatrixDense
+  hiopMatrix <|-- hiopMatrixSparse
+
+  class hiopMatrix {
+    <<interface>>
+  }
+  class hiopMatrixDense {
+    <<interface>>
+  }
+  class hiopMatrixSparse {
+    <<interface>>
+  }
+```
+
 From there, each of the two abstract children have regular CPU-bound
 implementations and RAJA-based GPU/OpenMP implementations:
 
-![hiopMatrix UML](/images/hiopMatrix.png)
+```mermaid!
+classDiagram
+  hiopMatrix <|-- hiopMatrixDense
+  hiopMatrix <|-- hiopMatrixSparse
+
+  hiopMatrixSparse <|-- hiopMatrixSparseTriplet
+  hiopMatrixSparse <|-- hiopMatrixRajaSparseTriplet
+
+  hiopMatrixDense <|-- hiopMatrixRajaDense
+  hiopMatrixDense <|-- hiopMatrixDenseRowMajor
+
+  class hiopMatrix {
+    <<interface>>
+  }
+  class hiopMatrixDense {
+    <<interface>>
+  }
+  class hiopMatrixSparse {
+    <<interface>>
+  }
+```
 
 At each level in this inheritance structure, new methods are added to the interfaces.
 For example, due to memory layout constraints, some methods are feasable only with a
