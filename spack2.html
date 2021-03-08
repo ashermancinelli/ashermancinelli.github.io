@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spack for Package Development Part 2 – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="Second in this series, this post focuses on getting stared with environments.
+
+">
+    <meta property="og:description" content="Second in this series, this post focuses on getting stared with environments.
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Spack for Package Development Part 2">
+    <meta property="twitter:title" content="Spack for Package Development Part 2">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  <script>MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"svg":{"fontCache":"global"}}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Spack for Package Development Part 2</h1>
+
+  <div class="entry">
+    <p>Second in this series, this post focuses on <em>getting stared with environments</em>.</p>
+
+<p>In the <a href="/spack1">previous post about package development with Spack</a>, we discussed the following points:</p>
+
+<ul>
+  <li>Creating a private spack repository</li>
+  <li>Maintaining private packages</li>
+  <li>Maintaining forks of upstream packages</li>
+</ul>
+
+<p>In the following post(s), we’ll discuss the following in greater detail:</p>
+
+<ul>
+  <li>Managing environments for reproducibility</li>
+  <li>Using environments for development</li>
+  <li>Using environments for continuous integration</li>
+  <li>Managing configurations for distributed and multi-platform development</li>
+</ul>
+
+<h2 id="managing-environments">Managing Environments</h2>
+
+<p>One of the most useful features of Spack is it’s support for <a href="https://spack.readthedocs.io/en/latest/environments.html">environments</a>.
+An environment is a file describing a package or set of packages you wish to install, along with all of the spack configuration options you wish to use (see documentation linked above for more information).
+In the previous post, we used an example package <code class="language-plaintext highlighter-rouge">FloodSimulation</code> and a corresponding repository - we’ll continue with this example here.</p>
+
+<p>When managing a complex and mutable set of dependencies, reproducibility is <em>extremely</em> important.
+Spack environments allow the development team to document <strong><em>every single option</em></strong> they used to install a particular package or set of packages.
+For example, let’s say <code class="language-plaintext highlighter-rouge">FloodSimulation</code> has a few more dependencies: <a href="https://github.com/LLNL/hiop">HiOp</a>, <a href="https://icl.cs.utk.edu/projectsfiles/magma/doxygen/index.html">MAGMA</a>, CUDA &gt; 10.1, and <a href="https://gitlab.com/petsc/petsc">PETSc</a>.
+Each of these packages has many configuration and installation options, and you may even want to use versions of these packages installed by your system administrator.</p>
+
+<p>Our <code class="language-plaintext highlighter-rouge">FloodSimulation</code> package may have a <code class="language-plaintext highlighter-rouge">package.py</code> file that looks like this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">from</span> <span class="nn">spack</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">class</span> <span class="nc">FloodSimulation</span><span class="p">(</span><span class="n">CMakePackage</span><span class="p">):</span>
+    <span class="n">homepage</span> <span class="o">=</span> <span class="s">"https://github.com/your-username/flood-simulation"</span>
+    <span class="n">git</span> <span class="o">=</span> <span class="s">"https://github.com/your-username/flood-simulation.git"</span>
+    <span class="n">version</span><span class="p">(</span><span class="s">'1.0.0'</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">'v1.0.0'</span><span class="p">)</span>
+    <span class="n">depends_on</span><span class="p">(</span><span class="s">'petsc'</span><span class="p">)</span>
+    <span class="n">depends_on</span><span class="p">(</span><span class="s">'hiop'</span><span class="p">)</span>
+    <span class="n">depends_on</span><span class="p">(</span><span class="s">'cuda@10.1:'</span><span class="p">,</span> <span class="n">when</span><span class="o">=</span><span class="s">'+cuda'</span><span class="p">)</span>
+    <span class="n">depends_on</span><span class="p">(</span><span class="s">'magma'</span><span class="p">,</span> <span class="n">when</span><span class="o">=</span><span class="s">'+cuda'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">cmake_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s">'+cuda'</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">spec</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'-DFLOODSIMULATION_ENABLE_CUDA=ON'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">args</span>
+
+</code></pre></div></div>
+
+<p>Let us also assume you <em>need</em> to install with your fork of the PETSc and HiOp spack packages, and that you’d like to use the MAGMA and CUDA installations provided by your system administrator or package manager.
+In this case, you might have an environment file like this:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1"># example-env.yaml</span>
+<span class="na">spack</span><span class="pi">:</span>
+  <span class="na">specs</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop</span>
+  <span class="na">view</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">packages</span><span class="pi">:</span>
+    <span class="na">magma</span><span class="pi">:</span>
+      <span class="na">externals</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">spec</span><span class="pi">:</span> <span class="s">magma@2.5.4</span>
+        <span class="na">prefix</span><span class="pi">:</span> <span class="s">/path/to/magma</span>
+      <span class="na">buildable</span><span class="pi">:</span> <span class="no">false</span>
+    <span class="na">cuda</span><span class="pi">:</span>
+      <span class="na">externals</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">spec</span><span class="pi">:</span> <span class="s">cuda@10.2.89</span>
+        <span class="na">prefix</span><span class="pi">:</span> <span class="s">/path/to/cuda</span>
+      <span class="na">buildable</span><span class="pi">:</span> <span class="no">false</span>
+
+</code></pre></div></div>
+
+<p>Constructing your spack environment from this file is easy as:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+$ spack env create my-environment ./example-env.yaml
+$ spack install
+
+$ # To locate your new installation:
+$ spack location -i floodsimulation
+
+</code></pre></div></div>
+
+<p>This way, if another developer needs to reproduce your development environment, you may distribute the environment file to perfectly recreate your installation.
+I reccommend tracking your environments in version control along with the rest of your private spack repository with the following example directory layout:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+floodsimulationrepo
+├── environments
+│   └── example-env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+
+</code></pre></div></div>
+
+<h2 id="using-spack-environments">Using Spack Environments</h2>
+
+<p>In my opinion, the three most significant use cases for spack environments are:</p>
+
+<ol>
+  <li>Reproducible environments for development</li>
+  <li>Reproducing finicky errors</li>
+  <li>Continuous integration/testing</li>
+</ol>
+
+<h3 id="reproducible-environments-for-development">Reproducible Environments for Development</h3>
+
+<p>With a complex codebase, onboarding often requires significant resources for new developers.
+Gettings started with a new codebase can be challanging, especially when building the software stack in the first place can take up to several days.
+I have found distributing a spack environment which is known to instantiate your software stack on a particular development machine to be a mostly frictionless method of getting new developers started on a codebase.
+With the example environment file above, we specify instructions to instatiate the <code class="language-plaintext highlighter-rouge">FloodSimulation</code> software stack on a particular machine with a couple pre-installed packages.
+If you are developing on many platforms and you need developers up and running on all platforms with a short turnaround time, distributing spack environments will likely be a suitable solution.</p>
+
+<p>Extending the example above, the following directory structure is a suitable way to maintain spack environments to instatiate the <code class="language-plaintext highlighter-rouge">FloodSimulation</code> stack on multiple platforms.
+Let’s assume you want developers up and running on two clusters, Jupiter and Saturn, as well as OSX for local development:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+floodsimulationrepo
+├── environments
+│   ├── jupiter
+│   │   └── env.yaml
+│   ├── saturn
+│   │   └── env.yaml
+│   └── osx
+│       └── env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+
+</code></pre></div></div>
+
+<p>In this way, you may simply instruct a new developer to run the following to get started with local development on a Mac:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># in the directory `floodsimulationrepo`:</span>
+<span class="gp">$</span><span class="w"> </span>spack <span class="nb">env </span>create local-development ./environments/osx/env.yaml
+<span class="gp">$</span><span class="w"> </span>spack <span class="nb">install</span>
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># Any time the developer logs in to develop locally:</span>
+<span class="gp">$</span><span class="w"> </span>spack <span class="nb">env </span>activate local-development
+<span class="go">
+</span></code></pre></div></div>
+
+<p>And when they need to get started developing on the institutional cluster Jupiter:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
+</span><span class="gp">$</span><span class="w"> </span>spack <span class="nb">env </span>create remote-development ./environments/jupiter/env.yaml
+<span class="gp">$</span><span class="w"> </span>spack <span class="nb">install</span>
+<span class="go">
+</span></code></pre></div></div>
+
+<h4 id="an-aside-on-spack-views">An Aside on Spack Views</h4>
+
+<p>If you didn’t notice earlier, our environment file contains the line:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">view</span><span class="pi">:</span> <span class="no">true</span>
+</code></pre></div></div>
+
+<p>This means that when you activate your spack environment (<code class="language-plaintext highlighter-rouge">spack env activate &lt;environment name&gt;</code>), spack will use a “view” by defaul.
+A view is a single installation prefix into which all packages installed via the environment are symbolically linked.</p>
+
+<p>By default, spack views are installed to:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$SPACK_ROOT/var/spack/environments/&lt;environment name&gt;/.spack-env/
+</code></pre></div></div>
+<p>and the environment file is installed to</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$SPACK_ROOT/var/spack/environments/&lt;environment name&gt;/spack.yaml
+</code></pre></div></div>
+
+<p>If our new developer activates her spack environment like so:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
+</span><span class="gp">$</span><span class="w"> </span>spack <span class="nb">env </span>activate local-development
+<span class="gp">$</span><span class="w"> </span><span class="nb">ls</span> <span class="nv">$SPACK_ROOT</span>/var/spack/environments/local-development/.spack-env/lib
+<span class="go">libmagma.so libhiop.so ...
+
+</span></code></pre></div></div>
+
+<p>she will have access to all of her newly installed libraries in a single installation prefix, automatically added to her <code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH</code> and <code class="language-plaintext highlighter-rouge">DYLD_LIBRARY_PATH</code>.</p>
+
+<p><a href="https://spack.readthedocs.io/en/latest/command_index.html?highlight=view#spack-view">The Spack command reference on views</a> contains further information on this topic.</p>
+
+<h4 id="back-to-using-environments">Back to Using Environments</h4>
+
+<p>Now that we have a feel for creating, using, and distributing spack environments, how do we develop with them?</p>
+
+<p>As we saw in the aside on views above, activating a spack environment with the view option enabled (which is the default) adds the view to the user’s path, library path, etc.
+Assuming <code class="language-plaintext highlighter-rouge">FloodSimulation</code> is a CMake project (as we specified in the example spack package above) and we have written clean enough CMake to find external libraries, the workflow for building <code class="language-plaintext highlighter-rouge">FloodSimulation</code> should be relatively straightforward:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
+</span><span class="gp">$</span><span class="w"> </span>git clone https://github.com/your-username/flood-simulation.git
+<span class="gp">$</span><span class="w"> </span><span class="nb">mkdir </span>build <span class="nb">install</span>
+<span class="gp">$</span><span class="w"> </span><span class="nb">cd </span>build
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># At this step, cmake should be able to find all of your libraries in the</span>
+<span class="gp">$</span><span class="w"> </span><span class="c"># spack view:</span>
+<span class="gp">$</span><span class="w"> </span>cmake ../flood-simulation <span class="nt">-DCMAKE_INSTALL_PREFIX</span><span class="o">=</span><span class="nv">$PWD</span>/../insatll
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># If some libraries are not found, simply run `spack location -i package`</span>
+<span class="gp">$</span><span class="w"> </span><span class="c"># to find the prefix for the package, and add it manually with ccmake:</span>
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># Assuming magma is the package cmake failed to find, run this command and</span>
+<span class="gp">$</span><span class="w"> </span><span class="c"># copy the path:</span>
+<span class="gp">$</span><span class="w"> </span>spack location <span class="nt">-i</span> magma
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># Manually add the path to the magma installtion to cmake:</span>
+<span class="gp">$</span><span class="w"> </span>ccmake
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span>make <span class="nb">install</span>
+<span class="go">
+</span></code></pre></div></div>
+
+<p>From here, developers may continue the edit-build-test cycle for <code class="language-plaintext highlighter-rouge">FloodSimulation</code>, knowing they are using the correct set of dependencies.</p>
+
+<p>Read on for discussion on additional uses for environments you should consider incorporating into your workflow.</p>
+
+<p><a href="/spack1">Previous in this Series</a></p>
+
+<p><a href="/spack3">Next in this Series</a></p>
+
+  </div>
+
+  <div class="date">
+    Written on March  5, 2021
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>

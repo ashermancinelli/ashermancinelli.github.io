@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spack for Package Development Part 1 – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="Spack is typically used for package deployment, however this post will be about package development with Spack.
+First in this series, this post focuses on motivation and introduction.
+
+">
+    <meta property="og:description" content="Spack is typically used for package deployment, however this post will be about package development with Spack.
+First in this series, this post focuses on motivation and introduction.
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Spack for Package Development Part 1">
+    <meta property="twitter:title" content="Spack for Package Development Part 1">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Spack for Package Development Part 1</h1>
+
+  <div class="entry">
+    <p><a href="https://spack.readthedocs.io/en/latest/">Spack</a> is typically used for package deployment, however this post will be about package <em>development</em> with Spack.
+First in this series, this post focuses on <em>motivation and introduction</em>.</p>
+
+<h2 id="intro">Intro</h2>
+
+<p>Most upstream Spack packages are quite stable.
+In my experience, the majority of Spack packages are based on packages that have already existed for a long time, and a member of the community created a Spack package to install it (eg OpenMPI).
+In this case, the options and versions for the package are probably set-in-stone.
+There are likely very few PRs submitted for these packages, and users can rely on the dependencies and installation process staying mostly the same.</p>
+
+<p>For a package under extremely heavy development however, this is not the case.
+To use a package manager <em>and</em> iterate rapidly on a package, I think there are roughly 3 criteria for that package manager:</p>
+
+<ol>
+  <li>Adding a new <em>dependency</em> should be easy and fast</li>
+  <li>Adding new <em>versions</em> should be easy and fast</li>
+  <li>Adding new <em>options</em> should be easy and fast</li>
+</ol>
+
+<p>In my opinion, using the typical Spack workflow of submitting a pull request to the upstream Spack repository for every meaningful change meets none of these critera.</p>
+
+<h2 id="configuring-spack-repositories">Configuring Spack Repositories</h2>
+
+<p>An alternative strategy is to use Spack’s support for external repositories.
+A repository is simply a directory which contains a <code class="language-plaintext highlighter-rouge">repo.yaml</code> file and a <code class="language-plaintext highlighter-rouge">packages/</code> directory
+under which Spack packages reside.</p>
+
+<p>For example, creating the file</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># repo.yaml</span>
+<span class="na">repo</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">examplerepo</span>
+</code></pre></div></div>
+
+<p>in a directory with a <code class="language-plaintext highlighter-rouge">packages</code> subdirectory like so:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>examplerepo
+├── packges
+│   └── examplepackage
+│       └── package.py
+└── repo.yaml
+</code></pre></div></div>
+
+<p>is a valid repository.</p>
+
+<p>Running <code class="language-plaintext highlighter-rouge">spack repo add .</code> in this directory will add the path to that repository to your Spack configuration:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># ~/.spack/repos.yaml</span>
+<span class="na">repos</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="s">$spack/var/spack/repos/builtin</span>
+  <span class="pi">-</span> <span class="s">/path/to/examplerepo</span>
+</code></pre></div></div>
+
+<p>After configuring your example repository, you are able to install packages from it directly!
+If your package conflicts with a builtin package, you may install it using the namespace set in <code class="language-plaintext highlighter-rouge">examplerepo/repo.yaml</code>:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># If examplepackage is unique:</span>
+<span class="gp">$</span><span class="w"> </span>spack <span class="nb">install </span>examplepackage
+<span class="go">
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># If examplepackage conflicts with a builtin package:</span>
+<span class="gp">$</span><span class="w"> </span>spack <span class="nb">install </span>examplerepo.examplepackage
+<span class="go">
+</span></code></pre></div></div>
+
+<h2 id="3rd-party-packages-in-your-spack-repo">3rd Party Packages in Your Spack Repo</h2>
+
+<p>The most common case that I have found of a package conflicting with a builtin is when one of your packages relies on a fork of an upstream package, so you maintain a modified version of the upstream package (in <code class="language-plaintext highlighter-rouge">examplerepo/packages/forked-package/package.py</code>, for example).
+This allows developers to iterate quickly and modify dependencies without attempting to maintain a fork of the entire spack repository.</p>
+
+<p>For example, let’s say you’re developing a package FloodSimulation which relies on OpenMPI and Ipopt.
+As you develop your software, you realize the Ipopt Spack package doesn’t expose all of Ipopt’s configuration options, and you need to make rather significant edits to the Ipopt Spack package.
+You could go through the pull request process upstream, however if you have many similar edits to many other packages, you may want to maintain an Ipopt fork in your spack repository:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>floodsimulationrepo
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+</code></pre></div></div>
+
+<p>You may then install FloodSimulation with your fork of Ipopt like so:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
+</span><span class="gp">$</span><span class="w"> </span>spack <span class="nb">install </span>floodsimulation ^floodsimulationrepo.ipopt
+<span class="go">
+</span></code></pre></div></div>
+
+<p>If you track your private spack repository with source control, it is quite easy to maintain your small package repository while your key packages are under heavy development.
+Each release of your package may serve as a time to submit all of your modifications to forked packages as well as the spack package descriptions to upstream spack such that end users are able to fully take advantage of your configuration.</p>
+
+<p>This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
+The next post will go further into managing environments and multi-platform configurations.</p>
+
+<p><a href="/spack2">Next in this Series</a></p>
+
+  </div>
+
+  <div class="date">
+    Written on March  4, 2021
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
