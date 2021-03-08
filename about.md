@@ -4,14 +4,24 @@ title: About
 permalink: /about/
 ---
 
-Hello! I am passionate about leveraging high performance computing systems to gain meaningful insight.
+Hello! I am passionate about leveraging high performance computing systems to
+gain meaningful insight.
 
-As the Software Stack Thrust Lead for [ExaSGD](https://www.exascaleproject.org/research-project/exasgd/) (member of the US Dept. of Energy Exascale Computing Project), I have the opportunity to lead a diverse and distributed team of domain scientists and engineers towards our goal of modeling the United States power grid on the most powerful computers in history for emergency scenarios.
-We develop extremely large and high-quality codebases to leverage new developments in scientific domains targeting computing environments that have not been built yet.
+As the Software Stack Thrust Lead for [ExaSGD](https://www.exascaleproject.org/research-project/exasgd/) (member of the US Dept. of Energy Exascale Computing Project),
+I have the opportunity to lead a diverse and distributed team of domain
+scientists and engineers towards our goal of modeling the United States
+power grid on the most powerful computers in history for emergency scenarios.
+We develop extremely large and high-quality codebases to leverage new
+developments in scientific domains targeting computing environments that have
+not been built yet.
 
-I am also a member of Pacific Northwest National Laboratory's Research Computing division, where I develop our institutional computing infrastructure to support the computational goals of the institution, particularly those related to large, scalable deep learning.
+I am also a member of Pacific Northwest National Laboratory's Research Computing
+division, where I develop our institutional computing infrastructure to support
+the computational goals of the institution, particularly those related to large,
+scalable deep learning.
 
-I'm honored to have the opportunity to contribute so directly to my society, as well the historied field of high performance computing.
+I'm honored to have the opportunity to contribute so directly to my society, as
+well the historied field of high performance computing.
 
 ### Interests
 

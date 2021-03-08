@@ -102,11 +102,122 @@ classDiagram
 
 At each level in this inheritance structure, new methods are added to the interfaces.
 For example, due to memory layout constraints, some methods are feasable only with a
-`hiopMatrixDense` and do not make much sense in a sparse matrix.
+`hiopMatrixDense` and do not make much sense with a sparse matrix.
 Thus not all tests for `hiopMatrixDense` apply to `hiopMatrixSparse`.
 
 To maximize code reuse, we developed the following inheritance structure for our tests:
-`TestBase` was the
+`TestBase` contained code common to all test classes, such as MPI reduction of
+error codes, pretty-printing test results, floating point comparisons, etc.
+
+Each of the highest-level linear algebra classes then has a corresponding test
+class which inherits from `TestBase`, eg `TestHiopMatrix` and `TestHiopVector`.
+These test classes, just like their corresponding classes in the linear algebra
+library, are abstract - they define tests only for the corresponding interface.
+
+Child classes of each of these classes implement tests specific to the implementation.
+These classes are concrete, and are used to finally test their respective implementation.
+I've ommitted the full structure for the `TestHiopMatrixSparse` side of the
+inheritance chain to make the diagram more readable below.
+
+```mermaid!
+classDiagram
+  TestBase <|-- TestHiopMatrix
+
+  class TestBase {
+    <<abstract>>
+  }
+
+  TestHiopMatrix <|-- TestHiopMatrixDense
+  TestHiopMatrix <|-- TestHiopMatrixSparse
+
+  class TestHiopMatrix {
+    <<abstract>>
+  }
+  class TestHiopMatrixDense {
+    <<abstract>>
+  }
+  class TestHiopMatrixSparse {
+    <<abstract>>
+  }
+
+  TestHiopMatrixDense <|-- TestHiopMatrixRajaDense
+  TestHiopMatrixDense <|-- TestHiopMatrixDenseRowMajor
+
+  class TestHiopMatrixRajaDense {
+    <<concrete>>
+  }
+  class TestHiopMatrixDenseRowMajor {
+    <<concrete>>
+  }
+```
+
+See the bottom of this graph - the test driver instantiates an instance of
+each concrete test class and runs all contained tests.
+
+```mermaid!
+classDiagram
+  TestBase <|-- TestHiopMatrix
+
+  class TestBase {
+    <<abstract>>
+  }
+
+  TestHiopMatrix <|-- TestHiopMatrixDense
+  TestHiopMatrix <|-- TestHiopMatrixSparse
+
+  class TestHiopMatrix {
+    <<abstract>>
+  }
+  class TestHiopMatrixDense {
+    <<abstract>>
+  }
+  class TestHiopMatrixSparse {
+    <<abstract>>
+  }
+
+  TestHiopMatrixDense <|-- TestHiopMatrixRajaDense
+  TestHiopMatrixDense <|-- TestHiopMatrixDenseRowMajor
+
+  class TestHiopMatrixRajaDense {
+    <<concrete>>
+  }
+  class TestHiopMatrixDenseRowMajor {
+    <<concrete>>
+  }
+
+  Driver ..> TestHiopMatrixRajaDense
+  Driver ..> TestHiopMatrixDenseRowMajor
+```
+
+When the driver is ran, every test all the way up the inheritance chain is run
+on each implementation.
+Tests that apply to all `hiopMatrix` classes are run on an instance of every
+concrete child class:
+
+* `TestHiopMatrixRajaDense`
+* `TestHiopMatrixDenseRowMajor`
+* `TestHiopMatrixSparseTriplet`
+* `TestHiopMatrixRajaSparseTriplet`
+
+The concrete child classes enumerated above implemented methods specific to the
+implementation that were needed for the test (eg copying memory back and forth
+between host and device when running with CUDA or HIP).
+This strategy saved us an *enormous* amount of developer time and lines of code,
+and also ensured that every implementation conforms to every interface it implements.
+
+## Conclusion
+
+As we developed our test suite, we concurrently developed the RAJA
+implementations of each linear algebra class.
+For each method of each linear algebra class, we first wrote a test and then
+ported the core of the method to run in a RAJA kernel.
+
+Thanks to this strategy, we were able to port the entire optimization engine
+library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
+a high degree of certainty that our kernels perform correctly.
+HiOp currently only runs in unified virtual memory, and we are actively
+developing the last parts of the optimization routines such that the solver can
+run entirely in device memory.
 
 ## References
 
