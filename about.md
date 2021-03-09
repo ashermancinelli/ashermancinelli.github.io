@@ -26,7 +26,7 @@ well the historied field of high performance computing.
 ### Interests
 
 - Modern C++(11/14/17), C11, CMake
-- Portable codebases targeting CUDA, HIP, and other hardware acceleration platforms
+- Portable codebases targeting CUDA, HIP, SYCL, OpenMP and other hardware acceleration platforms
 - Linux systems programming
 - Distributed computing
 - Compilers
