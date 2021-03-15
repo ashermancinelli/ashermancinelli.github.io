@@ -333,4 +333,5 @@ all:
 - [Blog Post: Parameterized testing with GTest](https://www.sandordargo.com/blog/2019/04/24/parameterized-testing-with-gtest)
 - [SO Question: Is there a way to combine a test which is both type parameterized and value parameterized?](https://stackoverflow.com/questions/8507385/google-test-is-there-a-way-to-combine-a-test-which-is-both-type-parameterized-a)
 - [GTest advanced docs](https://github.com/google/googletest/blob/master/docs/advanced.md)
+- [LLVM Weekly mention](http://llvmweekly.org/issue/376)
 - [Flang unittests](https://github.com/llvm/llvm-project/tree/main/flang/unittests)
