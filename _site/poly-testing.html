@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Some Polymorphism for your Test Suite – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="Design principles apply to your tests more often then you might think!
+
+">
+    <meta property="og:description" content="Design principles apply to your tests more often then you might think!
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Some Polymorphism for your Test Suite">
+    <meta property="twitter:title" content="Some Polymorphism for your Test Suite">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Some Polymorphism for your Test Suite</h1>
+
+  <div class="entry">
+    <p>Design principles apply to your tests more often then you might think!</p>
+
+<h2 id="intro">Intro</h2>
+
+<p>When designing tests, qualities like code reuse, readability, and execution time
+are not often considered.
+In this post, I’ll look at how we designed the test suite for
+<a href="https://github.com/LLNL/hiop">HiOp</a>, a high performance optimization solver.
+Credit for the design goes to <a href="https://www.linkedin.com/in/slavenpeles/">Slaven Peles</a>
+inspired by the <a href="https://github.com/LLNL/sundials">Sundials</a> test suite.</p>
+
+<p>HiOp’s unit test suite was crucial for the following reasons:</p>
+
+<ol>
+  <li>We needed to be sure our linear algebra library would perform as expected
+  after porting the entire thing to use <a href="https://github.com/LLNL/RAJA">RAJA</a>
+  portability library, and</li>
+  <li>Our timelines were quite aggressive, considering the size of our team and
+  the scope of our porting efforts.</li>
+</ol>
+
+<p>For these reasons, we needed to develop a thorough suite of unit tests to
+<em>verify execution</em> of our linear algebra kernels after porting to leverage GPU
+devices with an extremely quick turnaround time.
+<em>Code reuse and readability were crucial to our development effort</em>.</p>
+
+<h2 id="problem-domain-and-design-decisions">Problem Domain and Design Decisions</h2>
+
+<p>HiOp’s linear algebra library uses a clean inheritance structure.
+Looking at the <code class="language-plaintext highlighter-rouge">hiopVector</code> abstract interface for example, there are two
+implementations, <code class="language-plaintext highlighter-rouge">hiopVectorRajaPar</code> and <code class="language-plaintext highlighter-rouge">hiopVectorPar</code>, as seen below:</p>
+
+<p><img class="mermaid" src="https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0"></p>
+
+<p>Before we had written the <code class="language-plaintext highlighter-rouge">hiopVectorRajaPar</code> implementation, we had to establish
+success criterea for our implementation in the form of unit tests and integration
+tests.
+When we began, we had exactly zero unit tests, so again, code reuse and
+developer productivity would be very important.</p>
+
+<p>We settled on a unit testing structure that would mimick the inheritance
+design already in place with the linear algebra library.
+Test classes would mirror the system under test such that tests for concrete
+classes would inherit from test classes for the abstract interfaces.</p>
+
+<p>Let’s use the <code class="language-plaintext highlighter-rouge">hiopMatrix</code> class as an example.</p>
+
+<h2 id="hiopmatrix-example">
+<code class="language-plaintext highlighter-rouge">hiopMatrix</code> Example</h2>
+
+<p>The top-level interface for HiOp matrices is the <code class="language-plaintext highlighter-rouge">hiopMatrix</code> pure virtual class.
+The <code class="language-plaintext highlighter-rouge">hiopMatrixDense</code> and <code class="language-plaintext highlighter-rouge">hiopMatrixSparse</code> pure virtual classes are children
+of <code class="language-plaintext highlighter-rouge">hiopMatrix</code>.</p>
+
+<p><img class="mermaid" src="https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ"></p>
+
+<p>From there, each of the two abstract children have regular CPU-bound
+implementations and RAJA-based GPU/OpenMP implementations:</p>
+
+<p><img class="mermaid" src="https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0"></p>
+
+<p>At each level in this inheritance structure, new methods are added to the interfaces.
+For example, due to memory layout constraints, some methods are feasable only with a
+<code class="language-plaintext highlighter-rouge">hiopMatrixDense</code> and do not make much sense with a sparse matrix.
+Thus not all tests for <code class="language-plaintext highlighter-rouge">hiopMatrixDense</code> apply to <code class="language-plaintext highlighter-rouge">hiopMatrixSparse</code>.</p>
+
+<p>To maximize code reuse, we developed the following inheritance structure for our tests:
+<code class="language-plaintext highlighter-rouge">TestBase</code> contained code common to all test classes, such as MPI reduction of
+error codes, pretty-printing test results, floating point comparisons, etc.</p>
+
+<p>Each of the highest-level linear algebra classes then has a corresponding test
+class which inherits from <code class="language-plaintext highlighter-rouge">TestBase</code>, eg <code class="language-plaintext highlighter-rouge">TestHiopMatrix</code> and <code class="language-plaintext highlighter-rouge">TestHiopVector</code>.
+These test classes, just like their corresponding classes in the linear algebra
+library, are abstract - they define tests only for the corresponding interface.</p>
+
+<p>Child classes of each of these classes implement tests specific to the implementation.
+These classes are concrete, and are used to finally test their respective implementation.
+I’ve ommitted the full structure for the <code class="language-plaintext highlighter-rouge">TestHiopMatrixSparse</code> side of the
+inheritance chain to make the diagram more readable below.</p>
+
+<p><img class="mermaid" src="https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ"></p>
+
+<p>See the bottom of this graph - the test driver instantiates an instance of
+each concrete test class and runs all contained tests.</p>
+
+<p><img class="mermaid" src="https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ"></p>
+
+<p>When the driver is ran, every test all the way up the inheritance chain is run
+on each implementation.
+Tests that apply to all <code class="language-plaintext highlighter-rouge">hiopMatrix</code> classes are run on an instance of every
+concrete child class:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">TestHiopMatrixRajaDense</code></li>
+  <li><code class="language-plaintext highlighter-rouge">TestHiopMatrixDenseRowMajor</code></li>
+  <li><code class="language-plaintext highlighter-rouge">TestHiopMatrixSparseTriplet</code></li>
+  <li><code class="language-plaintext highlighter-rouge">TestHiopMatrixRajaSparseTriplet</code></li>
+</ul>
+
+<p>The concrete child classes enumerated above implemented methods specific to the
+implementation that were needed for the test (eg copying memory back and forth
+between host and device when running with CUDA or HIP).
+This strategy saved us an <em>enormous</em> amount of developer time and lines of code,
+and also ensured that every implementation conforms to every interface it implements.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>As we developed our test suite, we concurrently developed the RAJA
+implementations of each linear algebra class.
+For each method of each linear algebra class, we first wrote a test and then
+ported the core of the method to run in a RAJA kernel.</p>
+
+<p>Thanks to this strategy, we were able to port the entire optimization engine
+library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
+a high degree of certainty that our kernels perform correctly.
+HiOp currently only runs in unified virtual memory, and we are actively
+developing the last parts of the optimization routines such that the solver can
+run entirely in device memory.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="https://github.com/pelesh">Slaven Peles’s GitHub profile</a></li>
+  <li><a href="https://github.com/LLNL/hiop/pull/41">Original PR for HiOp’s polymorphic test suite</a></li>
+  <li><a href="https://github.com/LLNL/hiop">HiOp</a></li>
+  <li><a href="https://github.com/LLNL/hiop/tree/master/tests/LinAlg">HiOp’s current linear algebra test suite</a></li>
+  <li><a href="https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode">Sundials test suite</a></li>
+</ol>
+
+  </div>
+
+  <div class="date">
+    Written on March  7, 2021
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>

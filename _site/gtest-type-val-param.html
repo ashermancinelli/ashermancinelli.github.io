@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GTest Type and Value Parameterized Tests – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="GTest exposes clean interfaces for parameterizing your tests by value and by
+type - but what if you want both?
+
+">
+    <meta property="og:description" content="GTest exposes clean interfaces for parameterizing your tests by value and by
+type - but what if you want both?
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="GTest Type and Value Parameterized Tests">
+    <meta property="twitter:title" content="GTest Type and Value Parameterized Tests">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  <script>MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"svg":{"fontCache":"global"}}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>GTest Type and Value Parameterized Tests</h1>
+
+  <div class="entry">
+    <p>GTest exposes clean interfaces for parameterizing your tests by value and by
+type - but what if you want both?</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>The need for this arose when converting some of Flang’s unit tests to use GTest
+to conform with the rest of LLVM’s testing framework (Flang is LLVM’s fortran 2018 compiler).
+<a href="https://reviews.llvm.org/D97403">Linked here is the revision where we needed to parameterize both by value and type.</a></p>
+
+<p>Let’s start with an interface to test:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// addone.hpp</span>
+<span class="cp">#pragma once
+</span>
+<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">auto</span> <span class="nf">addOne</span><span class="p">(</span><span class="n">T</span> <span class="n">t</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Our first test might look like this:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;gtest/gtest.h&gt;
+#include "addone.hpp"
+</span>
+<span class="n">TEST</span><span class="p">(</span><span class="n">AddOneTests</span><span class="p">,</span> <span class="n">doAddTo5</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">"addOne(5) != 6!"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>What if we want to test multiple values without repeating code?
+Instead of something like this:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TEST</span><span class="p">(</span><span class="n">AddOneTests</span><span class="p">,</span> <span class="n">doAddTo5</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">"addOne(5) != 6!"</span><span class="p">;</span>
+  <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="mi">7</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">"addOne(6) != 7!"</span><span class="p">;</span>
+  <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="value-parameterized-tests">Value Parameterized Tests</h2>
+
+<p>We can parameterize our test by value with a fixture:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">AddOneTestsFixture</span>
+    <span class="o">:</span> <span class="k">public</span> <span class="n">testing</span><span class="o">::</span><span class="n">TestWithParam</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="p">{};</span>
+
+<span class="n">TEST_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAdd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">input</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">GetParam</span><span class="p">());</span>
+  <span class="kt">int</span> <span class="n">expect</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">GetParam</span><span class="p">());</span>
+  <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expect</span><span class="p">)</span>
+      <span class="o">&lt;&lt;</span> <span class="s">"addOne("</span> <span class="o">&lt;&lt;</span> <span class="n">input</span> <span class="o">&lt;&lt;</span> <span class="s">") != "</span> <span class="o">&lt;&lt;</span> <span class="n">expect</span> <span class="o">&lt;&lt;</span> <span class="s">"!"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">INSTANTIATE_TEST_SUITE_P</span><span class="p">(</span>
+    <span class="n">AddOneTests</span><span class="p">,</span>
+    <span class="n">AddOneTestsFixture</span><span class="p">,</span>
+    <span class="n">testing</span><span class="o">::</span><span class="n">Values</span><span class="p">(</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">)));</span>
+</code></pre></div></div>
+
+<p>This way, our tests run over all values we pass in at the end:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>./tests
+<span class="go">Running main() from /tmp/googletest-20201214-81667-fx54ix/googletest-release-1.10.0/googletest/src/gtest_main.cc
+[==========] Running 3 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 3 tests from AddOneTests/AddOneTestsFixture
+[ RUN      ] AddOneTests/AddOneTestsFixture.doAdd/0
+[       OK ] AddOneTests/AddOneTestsFixture.doAdd/0 (0 ms)
+[ RUN      ] AddOneTests/AddOneTestsFixture.doAdd/1
+[       OK ] AddOneTests/AddOneTestsFixture.doAdd/1 (0 ms)
+[ RUN      ] AddOneTests/AddOneTestsFixture.doAdd/2
+[       OK ] AddOneTests/AddOneTestsFixture.doAdd/2 (0 ms)
+[----------] 3 tests from AddOneTests/AddOneTestsFixture (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 3 tests.
+</span></code></pre></div></div>
+
+<h2 id="type-parameterized-tests">Type Parameterized Tests</h2>
+
+<p>Our interface <code class="language-plaintext highlighter-rouge">addOne</code> takes a template parameter - what if we want to test this
+on multiple types?</p>
+
+<p>First, we’ll want our fixture to take template parameters and we’ll have to
+declare the fixture as templated in GTest:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">struct</span> <span class="nc">AddOneTestsFixture</span> <span class="o">:</span> <span class="k">public</span> <span class="o">::</span><span class="n">testing</span><span class="o">::</span><span class="n">Test</span> <span class="p">{};</span>
+<span class="n">TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>And keep the first iteration of our test, but this time using the <code class="language-plaintext highlighter-rouge">TypeParam</code>
+type exposed by the GTest <code class="language-plaintext highlighter-rouge">TYPED_TEST_SUITE</code> api:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TYPED_TEST_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="o">&lt;</span><span class="n">TypeParam</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">"addOne(5) != 6!"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We’ll also have to register each test with our typed test suite:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">REGISTER_TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>If we had more tests, you would register them in the same statement as above:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">REGISTER_TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">,</span> <span class="n">doAddTwo</span><span class="p">,</span> <span class="p">...);</span>
+</code></pre></div></div>
+
+<p>We are then able to instantiate our templated test suite with all the types we
+intend to use with our test suite:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Types</span> <span class="o">=</span> <span class="n">testing</span><span class="o">::</span><span class="n">Types</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="n">INSTANTIATE_TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">TestPrefix</span><span class="p">,</span> <span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">Types</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>And our type-parameterized tests are working!</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>./tests
+<span class="go">Running main() from /tmp/googletest-20201214-81667-fx54ix/googletest-release-1.10.0/googletest/src/gtest_main.cc
+[==========] Running 4 tests from 4 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from TestPrefix/AddOneTestsFixture/0, where TypeParam = int
+[ RUN      ] TestPrefix/AddOneTestsFixture/0.doAddOne
+[       OK ] TestPrefix/AddOneTestsFixture/0.doAddOne (0 ms)
+[----------] 1 test from TestPrefix/AddOneTestsFixture/0 (0 ms total)
+
+[----------] 1 test from TestPrefix/AddOneTestsFixture/2, where TypeParam = long long
+[ RUN      ] TestPrefix/AddOneTestsFixture/2.doAddOne
+[       OK ] TestPrefix/AddOneTestsFixture/2.doAddOne (0 ms)
+[----------] 1 test from TestPrefix/AddOneTestsFixture/2 (0 ms total)
+
+[----------] 1 test from TestPrefix/AddOneTestsFixture/3, where TypeParam = unsigned long
+[ RUN      ] TestPrefix/AddOneTestsFixture/3.doAddOne
+[       OK ] TestPrefix/AddOneTestsFixture/3.doAddOne (0 ms)
+[----------] 1 test from TestPrefix/AddOneTestsFixture/3 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 4 test suites ran. (0 ms total)
+[  PASSED  ] 4 tests.
+</span></code></pre></div></div>
+
+<h2 id="type-and-value-parameterized-tests">Type <strong><em>and</em></strong> Value Parameterized Tests</h2>
+
+<p>Now is the tricky part - GTest doesn’t expose an API for parameterizing tests
+over values and types so we have to do some work ourselves.</p>
+
+<p>First, let’s define the types and input data we’ll be parameterizing our tests over:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">using</span> <span class="n">ParamT</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">ParamT</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ParamT</span><span class="o">&lt;</span><span class="kt">long</span> <span class="kt">long</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ParamT</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&gt;</span> <span class="n">allParams</span><span class="p">{</span>
+  <span class="p">{</span> <span class="c1">// Test cases for int</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="c1">// Test cases for long long</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="c1">// Test cases for size_t</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>This structure assumes you may want to add test inputs later on that may be
+different depending on the type.
+If this is not the case and you know your <code class="language-plaintext highlighter-rouge">make_tuple</code> calls are <code class="language-plaintext highlighter-rouge">static_cast</code>-able
+into your parameter type, you may do the following to reduce code duplication:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define ADDONE_TESTPARAMS                                                      \
+  { std::make_tuple(1, 2), std::make_tuple(5, 6), std::make_tuple(9, 10), }
+</span><span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">ParamT</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ParamT</span><span class="o">&lt;</span><span class="kt">long</span> <span class="kt">long</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ParamT</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&gt;</span> <span class="n">allParams</span><span class="p">{</span>
+        <span class="n">ADDONE_TESTPARAMS</span><span class="p">,</span> <span class="n">ADDONE_TESTPARAMS</span><span class="p">,</span> <span class="n">ADDONE_TESTPARAMS</span><span class="p">,</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p>Now, let’s refactor our fixture to take the types and values we just defined:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">struct</span> <span class="nc">AddOneTestsFixture</span> <span class="o">:</span> <span class="k">public</span> <span class="n">testing</span><span class="o">::</span><span class="n">Test</span> <span class="p">{</span>
+  <span class="n">AddOneTestsFixture</span><span class="p">()</span> <span class="o">:</span> <span class="n">params</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">ParamT</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">allParams</span><span class="p">)}</span> <span class="p">{}</span>
+  <span class="n">ParamT</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">params</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>You may notice we set <code class="language-plaintext highlighter-rouge">params</code> to <code class="language-plaintext highlighter-rouge">std::get&lt; ParamT&lt;T&gt; &gt;(allParams)</code> - this is how
+we accomplish type <em>and</em> value parameterized tests.
+We use the infrastructure of a type parameterized test, and leverage <code class="language-plaintext highlighter-rouge">std::tuple</code>
+to do the value parameterization.</p>
+
+<p>For the actual test code, we again reuse most of the test from our first type-
+parameterized test, this time using the <code class="language-plaintext highlighter-rouge">params</code> field of our test fixture:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TYPED_TEST_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="c1">// Iterate over the parameters configred by our fixture</span>
+  <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="k">const</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">input</span><span class="p">,</span> <span class="n">expect</span><span class="p">]</span> <span class="o">:</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">params</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// The assertions stay the same as in our original type-parameterized test</span>
+    <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expect</span><span class="p">)</span>
+      <span class="o">&lt;&lt;</span> <span class="s">"addOne("</span> <span class="o">&lt;&lt;</span> <span class="n">input</span> <span class="o">&lt;&lt;</span> <span class="s">") != "</span> <span class="o">&lt;&lt;</span> <span class="n">expect</span> <span class="o">&lt;&lt;</span> <span class="s">"!"</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>And voilà! our tests are parameterized over values and types:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>./tests
+<span class="go">Running main() from /tmp/googletest-20201214-81667-fx54ix/googletest-release-1.10.0/googletest/src/gtest_main.cc
+[==========] Running 3 tests from 3 test suites.
+[----------] Global test environment set-up.
+[----------] 1 test from TestPrefix/AddOneTestsFixture/0, where TypeParam = int
+[ RUN      ] TestPrefix/AddOneTestsFixture/0.doAddOne
+[       OK ] TestPrefix/AddOneTestsFixture/0.doAddOne (0 ms)
+[----------] 1 test from TestPrefix/AddOneTestsFixture/0 (0 ms total)
+
+[----------] 1 test from TestPrefix/AddOneTestsFixture/1, where TypeParam = long long
+[ RUN      ] TestPrefix/AddOneTestsFixture/1.doAddOne
+[       OK ] TestPrefix/AddOneTestsFixture/1.doAddOne (0 ms)
+[----------] 1 test from TestPrefix/AddOneTestsFixture/1 (0 ms total)
+
+[----------] 1 test from TestPrefix/AddOneTestsFixture/2, where TypeParam = unsigned long
+[ RUN      ] TestPrefix/AddOneTestsFixture/2.doAddOne
+[       OK ] TestPrefix/AddOneTestsFixture/2.doAddOne (0 ms)
+[----------] 1 test from TestPrefix/AddOneTestsFixture/2 (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 3 tests from 3 test suites ran. (0 ms total)
+[  PASSED  ] 3 tests.
+</span></code></pre></div></div>
+
+<h2 id="full-code-listing">Full Code Listing</h2>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// addone.hpp</span>
+<span class="cp">#pragma once
+</span><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">auto</span> <span class="nf">addOne</span><span class="p">(</span><span class="n">T</span> <span class="n">t</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// addone_test.cpp</span>
+<span class="cp">#include "addone.hpp"
+#include &lt;gtest/gtest.h&gt;
+#include &lt;tuple&gt;
+#include &lt;vector&gt;
+</span>
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">using</span> <span class="n">ParamT</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">ParamT</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ParamT</span><span class="o">&lt;</span><span class="kt">long</span> <span class="kt">long</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">ParamT</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&gt;</span> <span class="n">allParams</span><span class="p">{</span>
+  <span class="p">{</span>
+    <span class="c1">// Test cases for int</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="c1">// Test cases for long long</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="c1">// Test cases for size_t</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
+<span class="k">struct</span> <span class="nc">AddOneTestsFixture</span> <span class="o">:</span> <span class="k">public</span> <span class="n">testing</span><span class="o">::</span><span class="n">Test</span> <span class="p">{</span>
+  <span class="n">AddOneTestsFixture</span><span class="p">()</span> <span class="o">:</span> <span class="n">params</span><span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">ParamT</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">allParams</span><span class="p">)}</span> <span class="p">{}</span>
+  <span class="n">ParamT</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">params</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">);</span>
+
+<span class="n">TYPED_TEST_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="k">const</span><span class="o">&amp;</span> <span class="p">[</span><span class="n">input</span><span class="p">,</span> <span class="n">expect</span><span class="p">]</span> <span class="o">:</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">params</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expect</span><span class="p">)</span>
+      <span class="o">&lt;&lt;</span> <span class="s">"addOne("</span> <span class="o">&lt;&lt;</span> <span class="n">input</span> <span class="o">&lt;&lt;</span> <span class="s">") != "</span> <span class="o">&lt;&lt;</span> <span class="n">expect</span> <span class="o">&lt;&lt;</span> <span class="s">"!"</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">REGISTER_TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">);</span>
+
+<span class="k">using</span> <span class="n">Types</span> <span class="o">=</span> <span class="n">testing</span><span class="o">::</span><span class="n">Types</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="n">INSTANTIATE_TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">TestPrefix</span><span class="p">,</span> <span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">Types</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Makefile used for this post:</p>
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CFLAGS</span> <span class="o">:=</span> <span class="nt">-I</span>/usr/local/Cellar/googletest/1.10.0/include
+<span class="nv">CFLAGS</span> <span class="o">+=</span> <span class="nt">-L</span>/usr/local/Cellar/googletest/1.10.0/lib <span class="nt">-lgtest</span> <span class="nt">-lgtest_main</span>
+<span class="nv">CFLAGS</span> <span class="o">+=</span> <span class="nt">-lpthread</span> <span class="nt">-std</span><span class="o">=</span>c++17
+<span class="nv">CXX</span>    <span class="o">=</span>  clang++
+
+<span class="nl">all</span><span class="o">:</span>
+	<span class="nv">$(CXX)</span> addone_test.cpp <span class="nv">$(CFLAGS)</span> <span class="nt">-o</span> tests
+</code></pre></div></div>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://www.sandordargo.com/blog/2019/04/24/parameterized-testing-with-gtest">Blog Post: Parameterized testing with GTest</a></li>
+  <li><a href="https://stackoverflow.com/questions/8507385/google-test-is-there-a-way-to-combine-a-test-which-is-both-type-parameterized-a">SO Question: Is there a way to combine a test which is both type parameterized and value parameterized?</a></li>
+  <li><a href="https://github.com/google/googletest/blob/master/docs/advanced.md">GTest advanced docs</a></li>
+  <li><a href="http://llvmweekly.org/issue/376">LLVM Weekly mention</a></li>
+  <li><a href="https://github.com/llvm/llvm-project/tree/main/flang/unittests">Flang unittests</a></li>
+</ul>
+
+  </div>
+
+  <div class="date">
+    Written on March  7, 2021
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
