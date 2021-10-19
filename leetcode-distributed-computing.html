@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>One Problem, Four Languages, Two Paradigms – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="Solving a leetcode problem in four programming languages using two acceleration paradigms!
+
+">
+    <meta property="og:description" content="Solving a leetcode problem in four programming languages using two acceleration paradigms!
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="One Problem, Four Languages, Two Paradigms">
+    <meta property="twitter:title" content="One Problem, Four Languages, Two Paradigms">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>One Problem, Four Languages, Two Paradigms</h1>
+
+  <div class="entry">
+    <p>Solving a leetcode problem in four programming languages using two acceleration paradigms!</p>
+
+<p>In addition to that, we’ll be using various combinations of two programming paradigms common in distributed computing: using a GPU to perform some calculations and MPI to distribute our calculation among multiple processes, potentially on multiple machines.</p>
+
+<p>We’ll be looking at <a href="https://leetcode.com/problems/valid-sudoku/">this leetcode problem,</a> which is to determine if a 9 x 9 Sudoku board is valid, but not necessarily solvable.
+Each row, column, and subbox of the grid must have the digits 1-9.</p>
+
+<p>Let’s jump right in to our BQN solution.</p>
+
+<h2 id="content">Content</h2>
+
+<ol>
+  <li><a href="#bqn">BQN</a></li>
+  <li><a href="#approach">Approach</a></li>
+  <li><a href="#python">Python</a></li>
+  <li><a href="#python-&amp;-mpi">Python &amp; MPI</a></li>
+  <li><a href="#c++">C++</a></li>
+  <li><a href="#c++-&amp;-mpi">C++ &amp; MPI</a></li>
+  <li><a href="#c++-&amp;-cuda">C++ &amp; CUDA</a></li>
+  <li><a href="#c++-&amp;-cuda-&amp;-mpi">C++ &amp; CUDA &amp; MPI</a></li>
+  <li><a href="#fortran">Fortran</a></li>
+  <li><a href="#fortran-&amp;-mpi">Fortran &amp; MPI</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#youtube-description">YouTube Video Description</a></li>
+</ol>
+
+<h2 id="bqn"><a href="#content">BQN</a></h2>
+
+<p>This is what our sudoku boards will look like:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># two 8s in the first block
+bad ← ⟨8, 3, 0, 0, 7, 0, 0, 0, 0
+       6, 0, 0, 1, 9, 5, 0, 0, 0
+       0, 9, 8, 0, 0, 0, 0, 6, 0
+       8, 0, 0, 0, 6, 0, 0, 0, 3
+       4, 0, 0, 8, 0, 3, 0, 0, 1
+       7, 0, 0, 0, 2, 0, 0, 0, 6
+       0, 6, 0, 0, 0, 0, 2, 8, 0
+       0, 0, 0, 4, 1, 9, 0, 0, 5
+       0, 0, 0, 0, 8, 0, 0, 7, 9⟩
+
+# valid sudoku
+good ← ⟨5, 3, 0, 0, 7, 0, 0, 0, 0
+        6, 0, 0, 1, 9, 5, 0, 0, 0
+        0, 9, 8, 0, 0, 0, 0, 6, 0
+        8, 0, 0, 0, 6, 0, 0, 0, 3
+        4, 0, 0, 8, 0, 3, 0, 0, 1
+        7, 0, 0, 0, 2, 0, 0, 0, 6
+        0, 6, 0, 0, 0, 0, 2, 8, 0
+        0, 0, 0, 4, 1, 9, 0, 0, 5
+        0, 0, 0, 0, 8, 0, 0, 7, 9⟩
+
+</code></pre></div></div>
+
+<p>And here is our full solution.
+This solution will be the basis for all of our later solutions.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F ← {𝕊𝕩:
+  Fl ← 0⊸≠⊸/                       # Filter 0s out
+  Dup ← (∨´∾´)¬∘∊¨                 # Are there any duplicates?
+
+  rs ← Dup Fl¨(9/↕9)⊔𝕩             # Check rows
+  cs ← Dup Fl¨(81⥊↕9)⊔𝕩            # Check columns
+
+  bi ← 27⥊3/↕3
+  bs ← Dup Fl¨(bi∾(3+bi)∾(6+bi))⊔𝕩 # Check blocks
+
+  (bs ∨ rs ∨ cs)⊑"true"‿"false"
+}
+</code></pre></div></div>
+
+<p>This first line is a function to filter out any 0s:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Fl ← 0⊸≠⊸/
+   Fl ⟨5, 3, 0, 0, 7, 0, 0, 0, 0⟩
+⟨ 5 3 7 ⟩
+</code></pre></div></div>
+
+<p>Here we have another utility function to return an integer indicating whether any duplicates were found in any sublists:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Dup ← (∨´∾´)¬∘∊¨
+   Dup ⟨⟨5, 3, 7⟩, ⟨1, 2, 3⟩⟩
+0
+   Dup ⟨⟨5, 3, 7⟩, ⟨1, 2, 2⟩⟩
+1
+</code></pre></div></div>
+
+<p>Next we check for duplicates in all the filtered rows and columns:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   rs ← Dup Fl¨(9/↕9)⊔𝕩
+   cs ← Dup Fl¨(81⥊↕9)⊔𝕩
+</code></pre></div></div>
+
+<p>These ranges are used to create indices for grouping the values in X.
+I’ll show a trimmed down version of their output here to give you an idea:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿3⥊(3/↕3) # For the rows
+┌─       
+╵ 0 0 0  
+  1 1 1  
+  2 2 2  
+        ┘
+   3‿3⥊(9⥊↕3) # For the columns
+┌─       
+╵ 0 1 2  
+  0 1 2  
+  0 1 2  
+        ┘
+</code></pre></div></div>
+
+<p>Next I do something similar to get the indices for the boxes.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   bi ← 27⥊3/↕3
+   3‿9⥊bi
+┌─                   
+╵ 0 0 0 1 1 1 2 2 2  
+  0 0 0 1 1 1 2 2 2  
+  0 0 0 1 1 1 2 2 2  
+                    ┘
+</code></pre></div></div>
+
+<p>This creats indices for the first three boxes, and you can probably imagine how to extend this to get the indices for all the boxes. I just add three to the previous indices, and then add six, and then append them all together. Here’s the second layer:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿9⥊bi+3
+┌─                   
+╵ 3 3 3 4 4 4 5 5 5  
+  3 3 3 4 4 4 5 5 5  
+  3 3 3 4 4 4 5 5 5  
+                    ┘
+</code></pre></div></div>
+
+<p>And the final layer:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿9⥊bi+6
+┌─                   
+╵ 6 6 6 7 7 7 8 8 8  
+  6 6 6 7 7 7 8 8 8  
+  6 6 6 7 7 7 8 8 8  
+                    ┘
+</code></pre></div></div>
+
+<p>And all three layers of indices stacked on top of each other:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   9‿9⥊(bi∾(3+bi)∾(6+bi))
+┌─                   
+╵ 0 0 0 1 1 1 2 2 2  
+  0 0 0 1 1 1 2 2 2  
+  0 0 0 1 1 1 2 2 2  
+  3 3 3 4 4 4 5 5 5  
+  3 3 3 4 4 4 5 5 5  
+  3 3 3 4 4 4 5 5 5  
+  6 6 6 7 7 7 8 8 8  
+  6 6 6 7 7 7 8 8 8  
+  6 6 6 7 7 7 8 8 8  
+                    ┘
+</code></pre></div></div>
+
+<p>Using these indices, I group all the elements of the input, and then check all of them for duplicates:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   bs ← Dup Fl¨(bi∾(3+bi)∾(6+bi))⊔𝕩 # Check blocks
+</code></pre></div></div>
+
+<p>And in the end I check if there were duplicates in the blocks, in the rows, or in the columns, and use that to index into our strings that indicate whether our sudoku board is valid or not.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   (bs ∨ rs ∨ cs)⊑"true"‿"false"
+</code></pre></div></div>
+
+<h2 id="approach"><a href="#content">Approach</a></h2>
+
+<p>Before we move on to the Python solution, I’d like to talk about our approach to this solution in the rest of the languages, because they will all be pretty similar.</p>
+
+<p>Just like in the BQN solution, we have three collections which represent the validity of the rows, another for the columns, and a third for the blocks.</p>
+
+<p>Here I have a subset of a sudoku board on the bottom.</p>
+
+<p><img src="/images/approach1.png" alt="Initial Row, Column, and Block Matrices"></p>
+
+<p>In our procedural languages, we’ll create an array thrice the size of the grid to hold these values.</p>
+
+<p>Note that this is not as space (or time) efficient as many of the solutions that you can find on the discussion page for the leetcode problem, but it is much easier to parallelize and that’s really the point of this video.</p>
+
+<p>Let’s now walk through a few steps of our algorithm starting at the second row and first column of our sudoku board, which relates to the second row of our “row matrix.”</p>
+
+<p>Because we’re looking at our row matrix, we’ll take the row index in our sudoku board as the row for our row matrix, and we’ll take the value in the cell, in this case 6, as the column in our row matrix.
+We’ll increment the value at this location in our row matrix, or in the first layer of our 3-d sum matrix that we’ll use to get our final answer.</p>
+
+<p><img src="/images/approach2.png" alt="Checking Rows"></p>
+
+<p>Let’s move on to check the first row and second column of our sudoku board for our column matrix.
+Because we’re looking at our column matrix, or the second layer of our final sum array, we’ll use the column index as the row index in our column matrix, and the value in that cell for the column index in our column matrix.</p>
+
+<p>We’ll increment the value at this location in our column matrix, or in the second layer of our 3-d sum matrix that we’ll use to get our final answer.</p>
+
+<p><img src="/images/approach3.png" alt="Checking Columns"></p>
+
+<p>Finally, let’s look at the first block in our sudoku board, which corresponds to the first row in our block matrix, and let’s look at the first cell in that block.
+The value in the first cell in the first block is 8, so we’ll increment the first row and eighth column in our block matrix.</p>
+
+<p><img src="/images/approach4.png" alt="Checking Blocks"></p>
+
+<p>If we then perform these three operations for every cell in the sudoku board, we’ll have a final matrix that indicates all the row-column-block-value combinations that we have, and if any cell in that final matrix has a value greater than one, then our board is invalid.</p>
+
+<p>If we were then to check the final cell in the first block of our board, we would find that the eighth element of the first row of our block matrix would be incremented again, which would mean we have an invalid board!</p>
+
+<p><img src="/images/approach5.png" alt="Checking Last Element of Block"></p>
+
+<p>If any value in our final array is greater than one, then we know we have at least one duplicate in at least one row, column, or block.</p>
+
+<p>What’s neat about this solution is that no single operation depends on any other operation as long as we perform our operations atomically.
+This way, our work can be performed on multiple machines or different devices, and as long as we synchronize at the end, our solution will be the same.</p>
+
+<p>Now that we’ve talked strategy, let’s see what this looks like in our Python solution.</p>
+
+<h2 id="python"><a href="#content">Python</a></h2>
+
+<p>Here’s our simple Python solution:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">shape</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">blksz</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">board</span><span class="p">):</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="p">[[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">ar</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">ar</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">//</span> <span class="n">blksz</span><span class="p">)</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span> <span class="o">//</span> <span class="n">blksz</span><span class="p">)</span>
+            <span class="n">ar</span><span class="p">[</span><span class="n">bi</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">ar</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">j</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span>
+</code></pre></div></div>
+
+<p>You can see here that we increment the value in the first layer of our full 3D matrix according to the row and the value in the cell currently being examined:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="n">ar</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<p>We do the same for our column matrix:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="n">ar</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<p>And finally for our block matrix, it just takes a little bit of math to figure out what our block index is.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>            <span class="n">bx</span> <span class="o">=</span> <span class="n">r</span> <span class="o">//</span> <span class="n">blksz</span>
+            <span class="n">by</span> <span class="o">=</span> <span class="n">c</span> <span class="o">//</span> <span class="n">blksz</span>
+            <span class="n">bi</span> <span class="o">=</span> <span class="n">bx</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="n">by</span>
+            <span class="n">ar</span><span class="p">[</span><span class="n">bi</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<p>I use this main function to run the python solution:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sudoku_9x9</span><span class="p">.</span><span class="n">boards</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>We run our example with two valid boards and two invalid boards and get the answers we expect:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>python ./src/python/lc-valid-sudoku.py
+<span class="go">True
+True
+False
+False
+</span></code></pre></div></div>
+
+<h2 id="python--mpi"><a href="#content">Python &amp; MPI</a></h2>
+
+<p>Now we’ll look at another python example, but this time one that uses MPI to distribute the calculations.</p>
+
+<p>MPI provides a lot of infrastructure for distributed computing: using the <code class="language-plaintext highlighter-rouge">mpirun</code> command spawns N processes, each of which knows how many processes were spawned, what its unique process ID is, and some other relevant information.
+These processes may be spawned on multiple machines even, and MPI gives us the tools to communicate between these processes.
+We’ll take advantage of this infrastructure to perform our calculations on multiple processes.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
+<span class="n">shape</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">blksz</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="p">.</span><span class="n">COMM_WORLD</span>
+<span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">comm</span><span class="p">):</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">chunk</span> <span class="o">=</span> <span class="p">(</span><span class="mi">81</span> <span class="o">+</span> <span class="n">comm</span><span class="p">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">comm</span><span class="p">.</span><span class="n">size</span>
+    <span class="n">subscripts</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">itertools</span><span class="p">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">)),)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">comm</span><span class="p">.</span><span class="n">rank</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">,</span> <span class="p">(</span><span class="n">comm</span><span class="p">.</span><span class="n">rank</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span> <span class="o">+</span> <span class="n">chunk</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">81</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">subscripts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">ar</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">ar</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">//</span> <span class="n">blksz</span><span class="p">)</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span> <span class="o">//</span> <span class="n">blksz</span><span class="p">)</span>
+        <span class="n">ar</span><span class="p">[</span><span class="n">bi</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">gar</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">comm</span><span class="p">.</span><span class="n">Reduce</span><span class="p">([</span><span class="n">ar</span><span class="p">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">MPI</span><span class="p">.</span><span class="n">INT</span><span class="p">],</span> <span class="p">[</span><span class="n">gar</span><span class="p">,</span> <span class="n">MPI</span><span class="p">.</span><span class="n">INT</span><span class="p">],</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="p">.</span><span class="n">SUM</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">comm</span><span class="p">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">gar</span><span class="p">.</span><span class="n">flatten</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">comm</span><span class="p">.</span><span class="n">rank</span> <span class="k">else</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<p>This is what the setup looks like to get an MPI program running.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">comm</span><span class="p">.</span><span class="n">rank</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Running with size {0}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">comm</span><span class="p">.</span><span class="n">size</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">sudoku_9x9</span><span class="p">.</span><span class="n">boards</span><span class="p">():</span>
+        <span class="n">comm</span><span class="p">.</span><span class="n">Barrier</span><span class="p">()</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">comm</span><span class="p">.</span><span class="n">rank</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">comm</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">solve</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">comm</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Here we chunk our work up based on how many processes we have:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">chunk</span> <span class="o">=</span> <span class="p">((</span><span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span> <span class="o">+</span> <span class="n">comm</span><span class="p">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">comm</span><span class="p">.</span><span class="n">size</span>
+</code></pre></div></div>
+
+<p>Say we’re given 5 processes and we have 81 cells to check (because that’s the size of our sudoku board).
+The calculation would look something like this:</p>
+
+<p><code class="language-plaintext highlighter-rouge">chunk</code> is then the smallest amount of work for each process such that all the work that needs to be done is performed.
+This is a common calculation that needs to be done in parallel computing.
+Note that our final process may exit early if the work is not evenly divisible by the chunk size.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="o">&gt;&gt;</span> work <span class="o">=</span> 81
+<span class="gp">&gt;</span><span class="o">&gt;&gt;</span> size <span class="o">=</span> 5
+<span class="gp">&gt;</span><span class="o">&gt;&gt;</span> chunk <span class="o">=</span> <span class="o">(</span>work + size - 1<span class="o">)</span> // size
+<span class="gp">&gt;</span><span class="o">&gt;&gt;</span> chunk
+<span class="go">17
+</span><span class="gp">&gt;</span><span class="o">&gt;&gt;</span> chunk <span class="k">*</span> size
+<span class="go">85
+</span></code></pre></div></div>
+
+<p>We then generate all the possible combinations of rows and columns, and iterate over only the elements that fall within the chunk of work that belongs to our current MPI process.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">subscripts</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">itertools</span><span class="p">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">)),)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">comm</span><span class="p">.</span><span class="n">rank</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">,</span> <span class="p">(</span><span class="n">comm</span><span class="p">.</span><span class="n">rank</span> <span class="o">*</span> <span class="n">chunk</span><span class="p">)</span> <span class="o">+</span> <span class="n">chunk</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">work</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">subscripts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>The rest of this code is exactly the same as our serial implementation:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="n">v</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">ar</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">ar</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">//</span> <span class="n">blksz</span><span class="p">)</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span> <span class="o">//</span> <span class="n">blksz</span><span class="p">)</span>
+        <span class="n">ar</span><span class="p">[</span><span class="n">bi</span><span class="p">][</span><span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</code></pre></div></div>
+
+<p>This next bit is more interesting.
+We create a global array with the size we need to hold our final sum matrix, and we use the MPI function <code class="language-plaintext highlighter-rouge">Reduce</code>.
+This function will perform the operation <code class="language-plaintext highlighter-rouge">op</code>, in this case <code class="language-plaintext highlighter-rouge">MPI.SUM</code>, to join the arrays <code class="language-plaintext highlighter-rouge">ar</code> and <code class="language-plaintext highlighter-rouge">gar</code> together on rank 0 specified by the <code class="language-plaintext highlighter-rouge">root</code> argument.
+This means that our final summed matrix for all components of the solution is on the MPI process with rank 0.
+We can then check if we have any cells with values greater than one, and return that value if we’re on rank 0.
+Otherwise, we can just return false since no other rank has the final array.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">gar</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">comm</span><span class="p">.</span><span class="n">Reduce</span><span class="p">([</span><span class="n">ar</span><span class="p">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">MPI</span><span class="p">.</span><span class="n">INT</span><span class="p">],</span> <span class="p">[</span><span class="n">gar</span><span class="p">,</span> <span class="n">MPI</span><span class="p">.</span><span class="n">INT</span><span class="p">],</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="p">.</span><span class="n">SUM</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">comm</span><span class="p">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">gar</span><span class="p">.</span><span class="n">flatten</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">comm</span><span class="p">.</span><span class="n">rank</span> <span class="k">else</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<p>Here I run the example on 5 processes, and we see we get the same solution as with our serial example.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>mpirun <span class="nt">-n</span> 5 python ./src/python/lc-valid-sudoku-mpi.py
+<span class="go">Running with size 5
+True
+True
+False
+False
+</span></code></pre></div></div>
+
+<p>Now let’s move on to all our C++ solutions.</p>
+
+<h2 id="c"><a href="#content">C++</a></h2>
+
+<p>All of our C++ solutions will use a board like this:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="k">auto</span> <span class="n">board</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">81</span><span class="o">&gt;</span><span class="p">{</span>
+  <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+  
+  <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span>
+  
+  <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span>
+  <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">9</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Here’s our serial C++ solution.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">isgood</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">81</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">r</span><span class="o">++</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">c</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)];</span>
+      <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">continue</span><span class="p">;</span>
+      <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="k">const</span> <span class="k">auto</span> <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">)</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">);</span>
+      <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">ar</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">ar</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">max</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>You can see pretty much everything about our solution is the same so far.
+You may notice the <code class="language-plaintext highlighter-rouge">idx2</code> and <code class="language-plaintext highlighter-rouge">idx3</code> functions - these just calculate the linear index from subscripts so we can almost use 2d and 3d subscripts while keeping our arrays totally linear.</p>
+
+<p>Here’s our <code class="language-plaintext highlighter-rouge">idx2</code> function for example. I’ll be using these functions for the rest of my solutoins since they make the code much more readable.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">idx2</span><span class="p">(</span><span class="kt">int</span> <span class="n">r</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span> <span class="o">+</span> <span class="n">c</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Here at the end I find the max value again and check to make sure it’s less than two:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> 
+    <span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">ar</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">ar</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">max</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Running our executable gives us the same answers as our previous implementations:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>./src/cpp/lc-valid-sudoku
+<span class="go">true
+true
+false
+false
+</span></code></pre></div></div>
+
+<h2 id="c--mpi"><a href="#content">C++ &amp; MPI</a></h2>
+
+<p>Here we have our MPI distributed C++ solution, let’s walk through it in a few steps.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="n">isgood</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">81</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">board</span><span class="p">,</span> <span class="kt">int</span> <span class="n">rank</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">chunk</span> <span class="o">=</span> <span class="p">(</span><span class="mi">81</span> <span class="o">+</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">size</span><span class="p">;</span>
+  <span class="k">auto</span> <span class="n">ar</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="k">auto</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="n">size</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">));</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">r</span><span class="o">++</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">c</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">indices</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">chunk</span> <span class="o">*</span> <span class="n">rank</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">chunk</span> <span class="o">+</span> <span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">rank</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="n">or</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">)</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">);</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">gar</span><span class="p">(</span><span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">ar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">MPI_INT</span><span class="p">,</span> <span class="n">MPI_SUM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">MPI_COMM_WORLD</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">rank</span> <span class="o">?</span> <span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">gar</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">max</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span>
+                   <span class="o">:</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>All the setup is the same between the last several solutions.</p>
+
+<p>Astute viewers may recognize this as a cartesian product, but I couldn’t find a nice way to do this with the STL algorithms.
+If any viewers know of a nicer way to generate the cartesian product of two containers, please let me know.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">r</span><span class="o">++</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">c</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">indices</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The core loop is much the same as our other solutions, aside from unpacking the row and column as a tuple.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">for</span> <span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="n">chunk</span> <span class="o">*</span> <span class="n">rank</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">chunk</span> <span class="o">+</span> <span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">rank</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="n">or</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span>
+      <span class="k">continue</span><span class="p">;</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">const</span> <span class="k">auto</span> <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="mi">3</span><span class="p">);</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+
+<p>This section is exactly equivilant to the Python version below.
+This should give you an idea of what it’s like to use the raw C and Fortran interfaces to MPI.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">gar</span><span class="p">(</span><span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">ar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">MPI_INT</span><span class="p">,</span> <span class="n">MPI_SUM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">MPI_COMM_WORLD</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">rank</span> <span class="o">?</span> <span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">gar</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">sb</span><span class="o">::</span><span class="n">max</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span>
+                   <span class="o">:</span> <span class="nb">false</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Python version:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">gar</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">comm</span><span class="p">.</span><span class="n">Reduce</span><span class="p">([</span><span class="n">ar</span><span class="p">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">MPI</span><span class="p">.</span><span class="n">INT</span><span class="p">],</span> <span class="p">[</span><span class="n">gar</span><span class="p">,</span> <span class="n">MPI</span><span class="p">.</span><span class="n">INT</span><span class="p">],</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="p">.</span><span class="n">SUM</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">comm</span><span class="p">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">gar</span><span class="p">.</span><span class="n">flatten</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">if</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">comm</span><span class="p">.</span><span class="n">rank</span> <span class="k">else</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<p>In my main function I iterate over the same boards and use some extra logic so we only see the results that rank 0 gave back:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">size</span><span class="p">,</span> <span class="n">rank</span><span class="p">;</span>
+  <span class="n">MPI_Init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">argv</span><span class="p">);</span>
+  <span class="n">MPI_Comm</span> <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI_COMM_WORLD</span><span class="p">;</span>
+  <span class="n">MPI_Comm_size</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">size</span><span class="p">);</span>
+  <span class="n">MPI_Comm_rank</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rank</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="n">board</span> <span class="o">:</span> <span class="n">all_boards</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">rank</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ret</span> <span class="o">=</span> <span class="n">isgood</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">bool2str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="n">isgood</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">rank</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+    <span class="n">MPI_Barrier</span><span class="p">(</span><span class="n">comm</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="n">MPI_Finalize</span><span class="p">();</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Running this works just as all our previous solutions did:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>mpirun <span class="nt">-n</span> 5 ./src/cpp/lc-valid-sudoku-mpi
+<span class="go">true
+true
+false
+false
+</span></code></pre></div></div>
+
+<p>We’ll now take a look at our CUDA-enabled solution.</p>
+
+<h2 id="c--cuda"><a href="#content">C++ &amp; CUDA</a></h2>
+
+<p>Here’s our single-process CUDA implementation.
+I for the most part am using raw CUDA, but I use a few helper methods from Thrust as well, such as the type-safe device malloc and free and some pointer-casting methods.
+For those that are unfamiliar, the funny-looking function calls with the triple braces are how you launch a raw cuda kernel.
+These allow you to pass arguments to the CUDA runtime to let it know how you’d like your CUDA kernel to be launched.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">isgood</span><span class="p">(</span><span class="k">const</span> <span class="n">Board</span> <span class="o">&amp;</span><span class="n">board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">d_ar</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">setar</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim3</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span>
+      <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">d_ar</span><span class="p">),</span> 
+      <span class="n">raw_pointer_cast</span><span class="p">((</span><span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">board</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">board</span><span class="p">.</span><span class="n">end</span><span class="p">())).</span><span class="n">data</span><span class="p">()));</span>
+  <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span><span class="o">+</span><span class="p">(</span><span class="mi">81</span><span class="o">*</span><span class="mi">3</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">thrust</span><span class="o">::</span><span class="n">maximum</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
+  <span class="n">device_free</span><span class="p">(</span><span class="n">d_ar</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+<span class="err">}</span>
+</code></pre></div></div>
+
+<p>I have the following <code class="language-plaintext highlighter-rouge">using</code> statements to make the code a little more readable hopefully.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">device_malloc</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">device_free</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">host_vector</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">raw_pointer_cast</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Along with the previous code that should look pretty familiar at this point, I define two other CUDA kernels.
+The first is this short <code class="language-plaintext highlighter-rouge">setrc</code> kernel, which sets rows and columns based on the kernel launch parameters I pass.
+This is a shortcut for a cartesian product of the rows and columns that runs on the GPU.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__global__</span> <span class="kt">void</span> <span class="nf">setrc</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">cols</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="n">rows</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span>
+  <span class="n">cols</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)]</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The other kernel is this <code class="language-plaintext highlighter-rouge">setar</code> function, which is the same core kernel that’s been at the heart of all of our solutions so far.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__global__</span> <span class="kt">void</span> <span class="nf">setar</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">ar</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">board</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">row</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="mi">0</span> <span class="o">==</span> <span class="n">value</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+  <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">)</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="p">(</span><span class="n">col</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">);</span>
+  <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Outside of those two kernels, the solution should look pretty familiar at this point.
+We allocate our final array and pass it to our cuda kernel, along with the sudoku board after copying it to the GPU.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">auto</span> <span class="n">d_ar</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">setar</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim3</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span>
+    <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">d_ar</span><span class="p">),</span>
+    <span class="n">raw_pointer_cast</span><span class="p">(</span>
+      <span class="p">(</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">board</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">board</span><span class="p">.</span><span class="n">end</span><span class="p">())).</span><span class="n">data</span><span class="p">()</span>
+    <span class="p">)</span>
+  <span class="p">);</span>
+</code></pre></div></div>
+
+<p>We then syncronize with our GPU to make sure the kernel finishes before reducing to find the maximum value with <code class="language-plaintext highlighter-rouge">thrust::reduce</code>, freeing our device memory, and returning whether all values fell below two.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span><span class="o">+</span><span class="p">(</span><span class="mi">81</span><span class="o">*</span><span class="mi">3</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">thrust</span><span class="o">::</span><span class="n">maximum</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
+  <span class="n">device_free</span><span class="p">(</span><span class="n">d_ar</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Let’s move on to our most complex example, the C++ CUDA-enabled, MPI-distributed implementation.</p>
+
+<h2 id="c--cuda--mpi"><a href="#content">C++ &amp; CUDA &amp; MPI</a></h2>
+
+<p>Now that we’re using two extra paradigms, CUDA GPU device offloading and MPI distributed computing, our code is looking more noisy.
+It’s still pretty much the same solution as our non-distributed CUDA solution though.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="n">isgood</span><span class="p">(</span><span class="k">const</span> <span class="n">Board</span> <span class="o">&amp;</span><span class="n">board</span><span class="p">,</span> <span class="kt">int</span> <span class="n">rank</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">chunk</span> <span class="o">=</span> <span class="p">(</span><span class="mi">81</span> <span class="o">+</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">size</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">rows</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">size</span><span class="p">),</span>
+             <span class="n">cols</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">size</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">rows</span> <span class="o">+</span> <span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">size</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+  <span class="n">setrc</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim3</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">cols</span><span class="p">));</span>
+  <span class="k">auto</span> <span class="n">d_ar</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span> <span class="o">+</span> <span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="n">setar</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">chunk</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span>
+      <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">d_ar</span><span class="p">),</span>
+      <span class="n">raw_pointer_cast</span><span class="p">((</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">board</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">board</span><span class="p">.</span><span class="n">end</span><span class="p">())).</span><span class="n">data</span><span class="p">()),</span>
+      <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">cols</span><span class="p">),</span> <span class="n">chunk</span> <span class="o">*</span> <span class="n">rank</span><span class="p">);</span>
+  <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">h_ar</span> <span class="o">=</span> <span class="n">host_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span> <span class="o">+</span> <span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">));</span>
+  <span class="k">auto</span> <span class="n">gar</span> <span class="o">=</span> <span class="n">host_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">h_ar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">MPI_INT</span><span class="p">,</span> <span class="n">MPI_SUM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>
+             <span class="n">MPI_COMM_WORLD</span><span class="p">);</span>
+  <span class="n">device_free</span><span class="p">(</span><span class="n">rows</span><span class="p">);</span> <span class="n">device_free</span><span class="p">(</span><span class="n">cols</span><span class="p">);</span> <span class="n">device_free</span><span class="p">(</span><span class="n">d_ar</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">rank</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">thrust</span><span class="o">::</span><span class="n">host</span><span class="p">,</span> <span class="n">gar</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">thrust</span><span class="o">::</span><span class="n">maximum</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
+  <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">setar</code> kernel is a bit different from our non distributed CUDA solution since we’re only operating on a subset of our sudoku board.
+We set the values in our final sum matrix for the row, column and block submatrices just like before.
+This time however, we’re given this <code class="language-plaintext highlighter-rouge">offset</code> parameter.
+This is because we’re not just running CUDA kernels, we’re running CUDA kernels on multiple processes and potentially multiple machines, so we’re only performing a subset of the full set of operations.
+This offset parameter tells us where we should start relative to the entire set of operations.
+We’re also not using the builtin <code class="language-plaintext highlighter-rouge">threadIdx.y</code> value since we’re launching our kernel in a 1D grid with precalculated row and column indices instead of a 2D grid.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__global__</span> <span class="kt">void</span> <span class="nf">setar</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">ar</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">board</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">rows</span><span class="p">,</span>
+                      <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">cols</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">c</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="mi">0</span> <span class="o">==</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">bi</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">)</span> <span class="o">*</span> <span class="n">blksz</span> <span class="o">+</span> <span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">blksz</span><span class="p">);</span>
+  <span class="n">atomicAdd</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ar</span><span class="p">[</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If we return to the start of our top-level function, you’ll see that we calculate the work that should be performed on this MPI process.
+We also set up our row and column indices using our cartesian product kernel.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">const</span> <span class="k">auto</span> <span class="n">chunk</span> <span class="o">=</span> <span class="p">(</span><span class="mi">81</span> <span class="o">+</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">size</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">rows</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">size</span><span class="p">),</span>
+             <span class="n">cols</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">size</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">rows</span> <span class="o">+</span> <span class="p">(</span><span class="n">chunk</span> <span class="o">*</span> <span class="n">size</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+  <span class="n">setrc</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim3</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">cols</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>We then set up our final sum matrix on the device:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">auto</span> <span class="n">d_ar</span> <span class="o">=</span> <span class="n">device_malloc</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">fill</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span> <span class="o">+</span> <span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>And then launch our core kernel to perform the operations assigned to the current rank:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">setar</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">chunk</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span>
+      <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">d_ar</span><span class="p">),</span>
+      <span class="n">raw_pointer_cast</span><span class="p">((</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">board</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">board</span><span class="p">.</span><span class="n">end</span><span class="p">())).</span><span class="n">data</span><span class="p">()),</span>
+      <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">cols</span><span class="p">),</span> <span class="n">chunk</span> <span class="o">*</span> <span class="n">rank</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>We syncronize with our GPU device and copy the data to a host vector before reducing the final sum array across all of our ranks using MPI.
+Note that if we used a GPU-enabled MPI provider we could send the data on the device directly to another system’s GPU without copying the memory to the host, but this has other complications so I kept it simple for this example.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
+  <span class="k">auto</span> <span class="n">h_ar</span> <span class="o">=</span> <span class="n">host_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span> <span class="o">+</span> <span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">));</span>
+  <span class="k">auto</span> <span class="n">gar</span> <span class="o">=</span> <span class="n">host_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">81</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">h_ar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">MPI_INT</span><span class="p">,</span> <span class="n">MPI_SUM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">MPI_COMM_WORLD</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>And then we perform our final reduction on our root rank to see if we have any cells with values greater than 1.
+We could perform this reduction on the device, but it’s probably not worth it to copy the data back to the device for just one operation.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">if</span> <span class="p">(</span><span class="n">rank</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">thrust</span><span class="o">::</span><span class="n">host</span><span class="p">,</span> <span class="n">gar</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">gar</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                <span class="n">thrust</span><span class="o">::</span><span class="n">maximum</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
+  <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>And there we have it, our sudoku validator is running on multiple processes and using GPUs.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>mpirun <span class="nt">-n</span> 7 ./src/thrust/lc-valid-sudoku-mpi-thrust
+<span class="go">true
+true
+false
+false
+</span></code></pre></div></div>
+
+<p>Now let’s move on to Fortran.</p>
+
+<h2 id="fortran"><a href="#content">Fortran</a></h2>
+
+<p>You’re likely not surprised that this looks a lot like our previous solutions.</p>
+
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="p">(</span><span class="n">board</span><span class="p">,</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
+  </span><span class="k">implicit</span><span class="w"> </span><span class="k">none</span><span class="w">
+  </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="mi">0</span><span class="p">:(</span><span class="nb">shape</span><span class="o">*</span><span class="nb">shape</span><span class="p">)</span><span class="mi">-1</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="k">in</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">board</span><span class="w">
+  </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="k">out</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">ret</span><span class="w">
+  </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="mi">0</span><span class="p">:(</span><span class="nb">shape</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">shape</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="mi">-1</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">ar</span><span class="w">
+  </span><span class="kt">integer</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">bx</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w">
+  </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+  </span><span class="k">do</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">shape</span><span class="mi">-1</span><span class="w">
+    </span><span class="k">do</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">shape</span><span class="mi">-1</span><span class="w">
+      </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">board</span><span class="p">(</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w">
+      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span><span class="w">
+      </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">      
+      </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+      </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.lt.</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span><span class="k">end</span><span class="w"> </span><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="w">
+</span></code></pre></div></div>
+
+<p>If I clear away the declarations and initializations, this looks fairly readable.
+You may notice that I have to repeat myself a few times because there’s not a really nice way to incremenet a value in fortran.</p>
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="p">(</span><span class="n">board</span><span class="p">,</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
+  </span><span class="k">do</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">shape</span><span class="mi">-1</span><span class="w">
+    </span><span class="k">do</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">shape</span><span class="mi">-1</span><span class="w">
+      </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">board</span><span class="p">(</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w">
+      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span><span class="w">
+      </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">      
+      </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+      </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.lt.</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">
+</span><span class="k">end</span><span class="w"> </span><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Now we move on to the MPI-distributed Fortran implementation.
+This solution is pretty long so I’ll break the function into a few slides like a sliding window.</p>
+
+<h2 id="fortran--mpi"><a href="#content">Fortran &amp; MPI</a></h2>
+
+<p>Here is the full solution.</p>
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="p">(</span><span class="n">board</span><span class="p">,</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
+  </span><span class="k">use</span><span class="w"> </span><span class="n">mpi</span><span class="w">
+  </span><span class="k">implicit</span><span class="w"> </span><span class="k">none</span><span class="w">
+  </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="nb">shape</span><span class="o">*</span><span class="nb">shape</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="k">in</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">board</span><span class="w">
+  </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="k">out</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">ret</span><span class="w">
+  </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="nb">shape</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">shape</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">ar</span><span class="p">,</span><span class="w"> </span><span class="n">gar</span><span class="w">
+  </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="nb">shape</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">shape</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">rows</span><span class="p">,</span><span class="w"> </span><span class="n">cols</span><span class="w">
+  </span><span class="kt">integer</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">chunk</span><span class="p">,</span><span class="w"> </span><span class="n">rank</span><span class="p">,</span><span class="w"> </span><span class="nb">size</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="w">
+
+  </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+  </span><span class="n">gar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+
+  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Comm_rank</span><span class="p">(</span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">rank</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Comm_size</span><span class="p">(</span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="nb">size</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+
+  </span><span class="k">do</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">shape</span><span class="mi">-1</span><span class="w">
+    </span><span class="k">do</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nb">shape</span><span class="mi">-1</span><span class="w">
+      </span><span class="n">rows</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">row</span><span class="w">
+      </span><span class="n">cols</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="w">
+    </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+
+  </span><span class="n">chunk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="nb">shape</span><span class="o">*</span><span class="nb">shape</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">size</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">/</span><span class="w"> </span><span class="nb">size</span><span class="w">
+
+  </span><span class="k">do</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">rank</span><span class="o">*</span><span class="n">chunk</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">rank</span><span class="o">*</span><span class="n">chunk</span><span class="p">)</span><span class="o">+</span><span class="n">chunk</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="ow">.gt.</span><span class="w"> </span><span class="p">(</span><span class="nb">shape</span><span class="o">*</span><span class="nb">shape</span><span class="p">))</span><span class="w"> </span><span class="k">exit</span><span class="w">
+    </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rows</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w">
+    </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w">
+    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">board</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">cycle</span><span class="w">
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">      
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  
+  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span><span class="w"> </span><span class="n">gar</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="nb">shape</span><span class="o">*</span><span class="nb">shape</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_INT</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_SUM</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Barrier</span><span class="p">(</span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+
+  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="n">rank</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">
+    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="n">gar</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.lt.</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">
+  </span><span class="k">else</span><span class="w">
+    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">.false.</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="w">
+
+</span><span class="k">end</span><span class="w"> </span><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Let’s trim away the declarations and initializations again:</p>
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="p">(</span><span class="n">board</span><span class="p">,</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
+  </span><span class="k">do</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="w">
+    </span><span class="k">do</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="w">
+      </span><span class="n">rows</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">row</span><span class="w">
+      </span><span class="n">cols</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="w">
+    </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="n">chunk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">81</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">size</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">/</span><span class="w"> </span><span class="nb">size</span><span class="w">
+  </span><span class="k">do</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">rank</span><span class="o">*</span><span class="n">chunk</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">rank</span><span class="o">*</span><span class="n">chunk</span><span class="p">)</span><span class="o">+</span><span class="n">chunk</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="ow">.gt.</span><span class="w"> </span><span class="mi">81</span><span class="p">)</span><span class="w"> </span><span class="k">exit</span><span class="w">
+    </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rows</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w">
+    </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w">
+    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">board</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w">
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">      
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span><span class="w"> </span><span class="n">gar</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="mi">81</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_INT</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_SUM</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Barrier</span><span class="p">(</span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="n">rank</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">
+    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="n">gar</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.lt.</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">
+  </span><span class="k">else</span><span class="w">
+    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">.false.</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="w">
+</span><span class="k">end</span><span class="w"> </span><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="w">
+</span></code></pre></div></div>
+
+<p>You’ll notice that I create row and column arrays again because this makes distributing the processes much simpler.</p>
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="k">do</span><span class="w"> </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="w">
+    </span><span class="k">do</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="w">
+      </span><span class="n">rows</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">row</span><span class="w">
+      </span><span class="n">cols</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">col</span><span class="w">
+    </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The core loop is the same as the other distributed solutions.
+I work only on the rows and columns assigned to the current rank.</p>
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="k">do</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">rank</span><span class="o">*</span><span class="n">chunk</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">rank</span><span class="o">*</span><span class="n">chunk</span><span class="p">)</span><span class="o">+</span><span class="n">chunk</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="ow">.gt.</span><span class="w"> </span><span class="mi">81</span><span class="p">)</span><span class="w"> </span><span class="k">exit</span><span class="w">
+    </span><span class="n">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rows</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w">
+    </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cols</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w">
+    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">board</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">))</span><span class="w">
+    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w">
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">      
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ar</span><span class="p">(</span><span class="n">idx3</span><span class="p">(</span><span class="n">bi</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">),</span><span class="w"> </span><span class="n">v</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We reduce the solution across all of our ranks to get the full array on rank 0.
+We then perform our max reduce to get our answer and we return!</p>
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Reduce</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span><span class="w"> </span><span class="n">gar</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="mi">81</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_INT</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_SUM</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+  </span><span class="k">call</span><span class="w"> </span><span class="n">MPI_Barrier</span><span class="p">(</span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="n">ierr</span><span class="p">)</span><span class="w">
+  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="ow">.eq.</span><span class="w"> </span><span class="n">rank</span><span class="p">)</span><span class="w"> </span><span class="k">then</span><span class="w">
+    </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="n">gar</span><span class="p">)</span><span class="w">
+    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="ow">.lt.</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
+  </span><span class="k">else</span><span class="w">
+    </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">.false.</span><span class="w">
+  </span><span class="k">end</span><span class="w"> </span><span class="k">if</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Running this gives us the answers we expect.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>mpirun <span class="nt">-n</span> 7 ./src/fortran/lc-valid-sudoku-ftn-mpi
+<span class="go"> Running with world size of           7
+ T
+ T
+ F
+ F
+</span></code></pre></div></div>
+
+<h2 id="conclusion"><a href="#content">Conclusion</a></h2>
+
+<p>I hope you’ve all enjoyed this video and the foray into distributed computing in a few different programming languages.</p>
+
+<h2 id="youtube-description"><a href="#content">YouTube Description</a></h2>
+
+<p>We solve a Leetcode problem in four languages using various combinations of MPI and CUDA!</p>
+
+<p>0:00 Problem Introduction
+0:36 BQN Solution
+2:07 Solution Strategy
+4:54 Python Solution
+5:42 Python &amp; MPI Solution
+8:01 C++ Solution
+8:55 C++ &amp; MPI Solution
+9:58 C++ &amp; CUDA Solution
+11:24 C++ &amp; MPI &amp; CUDA Solution
+13:31 Fortran Solution
+13:55 Fortran &amp; MPI Solution
+14:38 Conclusion</p>
+
+<p>Written version:</p>
+
+  </div>
+
+  <div class="date">
+    Written on October 19, 2021
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
