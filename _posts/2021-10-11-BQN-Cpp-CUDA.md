@@ -6,6 +6,8 @@ permalink: /bqn-cuda-cpp-lc-longest-valid-parens
 
 Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!
 
+*NOTE: This post is a transcript of [the youtube video linked here](https://youtu.be/3D7sfXzBBXE).*
+
 ## Problem
 
 Hello everyone, today I'd like to go through two solutions to a LeetCode problem.

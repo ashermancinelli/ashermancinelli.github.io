@@ -6,6 +6,8 @@ permalink: /leetcode-distributed-computing
 
 Solving a leetcode problem in four programming languages using two acceleration paradigms!
 
+*NOTE: This post is a transcript of [the youtube video linked here](https://youtu.be/Xk7-xjnEISE).*
+
 In addition to that, we'll be using various combinations of two programming paradigms common in distributed computing: using a GPU to perform some calculations and MPI to distribute our calculation among multiple processes, potentially on multiple machines.
 
 We'll be looking at [this leetcode problem,](https://leetcode.com/problems/valid-sudoku/) which is to determine if a 9 x 9 Sudoku board is valid, but not necessarily solvable.
@@ -918,17 +920,19 @@ I hope you've all enjoyed this video and the foray into distributed computing in
 
 We solve a Leetcode problem in four languages using various combinations of MPI and CUDA!
 
-0:00 Problem Introduction
-0:36 BQN Solution
-2:07 Solution Strategy
-4:54 Python Solution
-5:42 Python & MPI Solution
-8:01 C++ Solution
-8:55 C++ & MPI Solution
-9:58 C++ & CUDA Solution
-11:24 C++ & MPI & CUDA Solution
-13:31 Fortran Solution
-13:55 Fortran & MPI Solution
-14:38 Conclusion
+* 0:00 Problem Introduction
+* 0:36 BQN Solution
+* 2:07 Solution Strategy
+* 4:54 Python Solution
+* 5:42 Python & MPI Solution
+* 8:01 C++ Solution
+* 8:55 C++ & MPI Solution
+* 9:58 C++ & CUDA Solution
+* 11:24 C++ & MPI & CUDA Solution
+* 13:31 Fortran Solution
+* 13:55 Fortran & MPI Solution
+* 14:38 Conclusion
 
-Written version:
+* Written version: http://www.ashermancinelli.com/leetcode-distributed-computing
+* LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
+* GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed
