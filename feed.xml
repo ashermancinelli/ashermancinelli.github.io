@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-19T15:29:21-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-19T15:54:59-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/Xk7-xjnEISE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;In addition to that, we’ll be using various combinations of two programming paradigms common in distributed computing: using a GPU to perform some calculations and MPI to distribute our calculation among multiple processes, potentially on multiple machines.&lt;/p&gt;
 
@@ -852,20 +854,27 @@ We then perform our max reduce to get our answer and we return!&lt;/p&gt;
 
 &lt;p&gt;We solve a Leetcode problem in four languages using various combinations of MPI and CUDA!&lt;/p&gt;
 
-&lt;p&gt;0:00 Problem Introduction
-0:36 BQN Solution
-2:07 Solution Strategy
-4:54 Python Solution
-5:42 Python &amp;amp; MPI Solution
-8:01 C++ Solution
-8:55 C++ &amp;amp; MPI Solution
-9:58 C++ &amp;amp; CUDA Solution
-11:24 C++ &amp;amp; MPI &amp;amp; CUDA Solution
-13:31 Fortran Solution
-13:55 Fortran &amp;amp; MPI Solution
-14:38 Conclusion&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;0:00 Problem Introduction&lt;/li&gt;
+  &lt;li&gt;0:36 BQN Solution&lt;/li&gt;
+  &lt;li&gt;2:07 Solution Strategy&lt;/li&gt;
+  &lt;li&gt;4:54 Python Solution&lt;/li&gt;
+  &lt;li&gt;5:42 Python &amp;amp; MPI Solution&lt;/li&gt;
+  &lt;li&gt;8:01 C++ Solution&lt;/li&gt;
+  &lt;li&gt;8:55 C++ &amp;amp; MPI Solution&lt;/li&gt;
+  &lt;li&gt;9:58 C++ &amp;amp; CUDA Solution&lt;/li&gt;
+  &lt;li&gt;11:24 C++ &amp;amp; MPI &amp;amp; CUDA Solution&lt;/li&gt;
+  &lt;li&gt;13:31 Fortran Solution&lt;/li&gt;
+  &lt;li&gt;13:55 Fortran &amp;amp; MPI Solution&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;14:38 Conclusion&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Written version: http://www.ashermancinelli.com/leetcode-distributed-computing&lt;/li&gt;
+  &lt;li&gt;LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&lt;/li&gt;
+  &lt;li&gt;GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a leetcode problem in four programming languages using two acceleration paradigms!</summary></entry><entry><title type="html">BQN and CUDA C++ LeetCode Solutions</title><link href="/bqn-cuda-cpp-lc-longest-valid-parens" rel="alternate" type="text/html" title="BQN and CUDA C++ LeetCode Solutions" /><published>2021-10-11T00:00:00-06:00</published><updated>2021-10-11T00:00:00-06:00</updated><id>/BQN-Cpp-CUDA</id><content type="html" xml:base="/bqn-cuda-cpp-lc-longest-valid-parens">&lt;p&gt;Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!&lt;/p&gt;
 
-&lt;p&gt;Written version:&lt;/p&gt;</content><author><name></name></author><summary type="html">Solving a leetcode problem in four programming languages using two acceleration paradigms!</summary></entry><entry><title type="html">BQN and CUDA C++ LeetCode Solutions</title><link href="/bqn-cuda-cpp-lc-longest-valid-parens" rel="alternate" type="text/html" title="BQN and CUDA C++ LeetCode Solutions" /><published>2021-10-11T00:00:00-06:00</published><updated>2021-10-11T00:00:00-06:00</updated><id>/BQN-Cpp-CUDA</id><content type="html" xml:base="/bqn-cuda-cpp-lc-longest-valid-parens">&lt;p&gt;Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/3D7sfXzBBXE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
 
