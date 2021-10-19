@@ -1,3 +1,9 @@
+---
+layout: post
+title: Distributed Compilation with Slurm, Distcc, and Ccache
+permalink: /distributed-compilation
+---
+
 First run with projects "clang;clang-tools-extra;flang;llvm" commit cd13f19 10N:
 real	18m4.542s
 user	49m0.695s
