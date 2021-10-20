@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-19T15:54:59-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-19T18:55:52-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/Xk7-xjnEISE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
@@ -15,13 +15,13 @@ Each row, column, and subbox of the grid must have the digits 1-9.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;#bqn&quot;&gt;BQN&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#approach&quot;&gt;Approach&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#python&quot;&gt;Python&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#python-&amp;amp;-mpi&quot;&gt;Python &amp;amp; MPI&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#python-and-mpi&quot;&gt;Python And MPI&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#c++&quot;&gt;C++&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#c++-&amp;amp;-mpi&quot;&gt;C++ &amp;amp; MPI&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#c++-&amp;amp;-cuda&quot;&gt;C++ &amp;amp; CUDA&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#c++-&amp;amp;-cuda-&amp;amp;-mpi&quot;&gt;C++ &amp;amp; CUDA &amp;amp; MPI&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#c++-and-mpi&quot;&gt;C++ And MPI&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#c++-and-cuda&quot;&gt;C++ And CUDA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#c++-and-cuda-and-mpi&quot;&gt;C++ And CUDA And MPI&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#fortran&quot;&gt;Fortran&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#fortran-&amp;amp;-mpi&quot;&gt;Fortran &amp;amp; MPI&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#fortran-and-mpi&quot;&gt;Fortran And MPI&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#youtube-description&quot;&gt;YouTube Video Description&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -250,7 +250,7 @@ False
 False
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;python--mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Python &amp;amp; MPI&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&quot;python-and-mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Python And MPI&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;Now we’ll look at another python example, but this time one that uses MPI to distribute the calculations.&lt;/p&gt;
 
@@ -417,7 +417,7 @@ false
 false
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;c--mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;C++ &amp;amp; MPI&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&quot;c-and-mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;C++ And MPI&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;Here we have our MPI distributed C++ solution, let’s walk through it in a few steps.&lt;/p&gt;
 &lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isgood&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;81&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;board&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rank&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -510,7 +510,7 @@ false
 
 &lt;p&gt;We’ll now take a look at our CUDA-enabled solution.&lt;/p&gt;
 
-&lt;h2 id=&quot;c--cuda&quot;&gt;&lt;a href=&quot;#content&quot;&gt;C++ &amp;amp; CUDA&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&quot;c-and-cuda&quot;&gt;&lt;a href=&quot;#content&quot;&gt;C++ And CUDA&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;Here’s our single-process CUDA implementation.
 I for the most part am using raw CUDA, but I use a few helper methods from Thrust as well, such as the type-safe device malloc and free and some pointer-casting methods.
@@ -578,7 +578,7 @@ We allocate our final array and pass it to our cuda kernel, along with the sudok
 
 &lt;p&gt;Let’s move on to our most complex example, the C++ CUDA-enabled, MPI-distributed implementation.&lt;/p&gt;
 
-&lt;h2 id=&quot;c--cuda--mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;C++ &amp;amp; CUDA &amp;amp; MPI&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&quot;c-and-cuda-and-mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;C++ And CUDA And MPI&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;Now that we’re using two extra paradigms, CUDA GPU device offloading and MPI distributed computing, our code is looking more noisy.
 It’s still pretty much the same solution as our non-distributed CUDA solution though.&lt;/p&gt;
@@ -721,7 +721,7 @@ You may notice that I have to repeat myself a few times because there’s not a 
 &lt;p&gt;Now we move on to the MPI-distributed Fortran implementation.
 This solution is pretty long so I’ll break the function into a few slides like a sliding window.&lt;/p&gt;
 
-&lt;h2 id=&quot;fortran--mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Fortran &amp;amp; MPI&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&quot;fortran-and-mpi&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Fortran And MPI&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;Here is the full solution.&lt;/p&gt;
 &lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;subroutine&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isgood&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;board&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;

@@ -77,13 +77,13 @@ Each row, column, and subbox of the grid must have the digits 1-9.</p>
   <li><a href="#bqn">BQN</a></li>
   <li><a href="#approach">Approach</a></li>
   <li><a href="#python">Python</a></li>
-  <li><a href="#python-&amp;-mpi">Python &amp; MPI</a></li>
+  <li><a href="#python-and-mpi">Python And MPI</a></li>
   <li><a href="#c++">C++</a></li>
-  <li><a href="#c++-&amp;-mpi">C++ &amp; MPI</a></li>
-  <li><a href="#c++-&amp;-cuda">C++ &amp; CUDA</a></li>
-  <li><a href="#c++-&amp;-cuda-&amp;-mpi">C++ &amp; CUDA &amp; MPI</a></li>
+  <li><a href="#c++-and-mpi">C++ And MPI</a></li>
+  <li><a href="#c++-and-cuda">C++ And CUDA</a></li>
+  <li><a href="#c++-and-cuda-and-mpi">C++ And CUDA And MPI</a></li>
   <li><a href="#fortran">Fortran</a></li>
-  <li><a href="#fortran-&amp;-mpi">Fortran &amp; MPI</a></li>
+  <li><a href="#fortran-and-mpi">Fortran And MPI</a></li>
   <li><a href="#conclusion">Conclusion</a></li>
   <li><a href="#youtube-description">YouTube Video Description</a></li>
 </ol>
@@ -312,7 +312,7 @@ False
 False
 </span></code></pre></div></div>
 
-<h2 id="python--mpi"><a href="#content">Python &amp; MPI</a></h2>
+<h2 id="python-and-mpi"><a href="#content">Python And MPI</a></h2>
 
 <p>Now we’ll look at another python example, but this time one that uses MPI to distribute the calculations.</p>
 
@@ -479,7 +479,7 @@ false
 false
 </span></code></pre></div></div>
 
-<h2 id="c--mpi"><a href="#content">C++ &amp; MPI</a></h2>
+<h2 id="c-and-mpi"><a href="#content">C++ And MPI</a></h2>
 
 <p>Here we have our MPI distributed C++ solution, let’s walk through it in a few steps.</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="n">isgood</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">81</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">board</span><span class="p">,</span> <span class="kt">int</span> <span class="n">rank</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span> <span class="p">{</span>
@@ -572,7 +572,7 @@ false
 
 <p>We’ll now take a look at our CUDA-enabled solution.</p>
 
-<h2 id="c--cuda"><a href="#content">C++ &amp; CUDA</a></h2>
+<h2 id="c-and-cuda"><a href="#content">C++ And CUDA</a></h2>
 
 <p>Here’s our single-process CUDA implementation.
 I for the most part am using raw CUDA, but I use a few helper methods from Thrust as well, such as the type-safe device malloc and free and some pointer-casting methods.
@@ -640,7 +640,7 @@ We allocate our final array and pass it to our cuda kernel, along with the sudok
 
 <p>Let’s move on to our most complex example, the C++ CUDA-enabled, MPI-distributed implementation.</p>
 
-<h2 id="c--cuda--mpi"><a href="#content">C++ &amp; CUDA &amp; MPI</a></h2>
+<h2 id="c-and-cuda-and-mpi"><a href="#content">C++ And CUDA And MPI</a></h2>
 
 <p>Now that we’re using two extra paradigms, CUDA GPU device offloading and MPI distributed computing, our code is looking more noisy.
 It’s still pretty much the same solution as our non-distributed CUDA solution though.</p>
@@ -783,7 +783,7 @@ You may notice that I have to repeat myself a few times because there’s not a 
 <p>Now we move on to the MPI-distributed Fortran implementation.
 This solution is pretty long so I’ll break the function into a few slides like a sliding window.</p>
 
-<h2 id="fortran--mpi"><a href="#content">Fortran &amp; MPI</a></h2>
+<h2 id="fortran-and-mpi"><a href="#content">Fortran And MPI</a></h2>
 
 <p>Here is the full solution.</p>
 <div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">subroutine</span><span class="w"> </span><span class="n">isgood</span><span class="p">(</span><span class="n">board</span><span class="p">,</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
