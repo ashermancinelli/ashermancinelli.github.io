@@ -20,13 +20,13 @@ Let's jump right in to our BQN solution.
 1. [BQN](#bqn)
 1. [Approach](#approach)
 1. [Python](#python)
-1. [Python & MPI](#python-&-mpi)
+1. [Python And MPI](#python-and-mpi)
 1. [C++](#c++)
-1. [C++ & MPI](#c++-&-mpi)
-1. [C++ & CUDA](#c++-&-cuda)
-1. [C++ & CUDA & MPI](#c++-&-cuda-&-mpi)
+1. [C++ And MPI](#c++-and-mpi)
+1. [C++ And CUDA](#c++-and-cuda)
+1. [C++ And CUDA And MPI](#c++-and-cuda-and-mpi)
 1. [Fortran](#fortran)
-1. [Fortran & MPI](#fortran-&-mpi)
+1. [Fortran And MPI](#fortran-and-mpi)
 1. [Conclusion](#conclusion)
 1. [YouTube Video Description](#youtube-description)
 
@@ -274,7 +274,7 @@ False
 False
 ```
 
-## [Python & MPI](#content)
+## [Python And MPI](#content)
 
 Now we'll look at another python example, but this time one that uses MPI to distribute the calculations.
 
@@ -454,7 +454,7 @@ false
 false
 ```
 
-## [C++ & MPI](#content)
+## [C++ And MPI](#content)
 
 Here we have our MPI distributed C++ solution, let's walk through it in a few steps.
 ```cpp
@@ -554,7 +554,7 @@ false
 
 We'll now take a look at our CUDA-enabled solution.
 
-## [C++ & CUDA](#content)
+## [C++ And CUDA](#content)
 
 Here's our single-process CUDA implementation.
 I for the most part am using raw CUDA, but I use a few helper methods from Thrust as well, such as the type-safe device malloc and free and some pointer-casting methods.
@@ -628,7 +628,7 @@ We then syncronize with our GPU to make sure the kernel finishes before reducing
 
 Let's move on to our most complex example, the C++ CUDA-enabled, MPI-distributed implementation.
 
-## [C++ & CUDA & MPI](#content)
+## [C++ And CUDA And MPI](#content)
 
 Now that we're using two extra paradigms, CUDA GPU device offloading and MPI distributed computing, our code is looking more noisy.
 It's still pretty much the same solution as our non-distributed CUDA solution though.
@@ -781,7 +781,7 @@ end subroutine isgood
 Now we move on to the MPI-distributed Fortran implementation.
 This solution is pretty long so I'll break the function into a few slides like a sliding window.
 
-## [Fortran & MPI](#content)
+## [Fortran And MPI](#content)
 
 Here is the full solution.
 ```fortran
