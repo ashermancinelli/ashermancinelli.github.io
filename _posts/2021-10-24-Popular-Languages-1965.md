@@ -195,7 +195,7 @@ Now we just have to find the indices in the input where the input is greater tha
 ;Value: (#f #f #t #f)
 ```
 
-Then we can just take the index if the previous map gave use a `#t` true value, or -1 otherwise.
+Then we can just take the index if the previous map gave us a `#t` true value, or -1 otherwise.
 We then take the max of these values to find the peak element.
 ```scheme
 1 ]=> (map
@@ -248,14 +248,14 @@ Of course now we can just wrap all that code in a function:
 
 And we can run it on a few inputs to verify our solution:
 ```scheme
-(for-each
-  (lambda (l)
-    (newline)
-    (display (solve l))
-  (list
-    '(1 2 3 1)
-    '(1 2 1 3 5 6 4)
-    '(2 1 2 3 2 1)))
+1 ]=> (for-each
+        (lambda (l)
+          (newline)
+          (display (solve l))
+        (list
+          '(1 2 3 1)
+          '(1 2 1 3 5 6 4)
+          '(2 1 2 3 2 1)))
 
 2
 5
