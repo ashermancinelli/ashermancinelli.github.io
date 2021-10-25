@@ -16,6 +16,8 @@ I'll be looking at the languages in ascending order based on their popularity in
 
 Along with my solution for each language, I'll give a little bit of history.
 
+<a target="_blank" href="https://github.com/ashermancinelli/algorithm-testbed">All these solutions and the build system needed to compile the examples can be found in this repository.</a>
+
 ## Problem
 
 Find the peak element that is greater than both neighbors.
@@ -23,12 +25,15 @@ Find the peak element that is greater than both neighbors.
 
 ## Content
 
-1. [APL](#apl)
-1. [Lisp](#lisp)
-1. [BASIC](#basic)
-1. [ALGOL](#algol)
-1. [COBOL](#cobol)
+Here's how the various languages stack up.
+We'll start at the bottom with APL and work our way up to Fortran.
+
 1. [Fortran](#fortran)
+1. [COBOL](#cobol)
+1. [ALGOL](#algol)
+1. [BASIC](#basic)
+1. [Lisp](#lisp)
+1. [APL](#apl)
 
 ### [APL](#content)
 
@@ -48,7 +53,7 @@ It was just after this in 1981 that Dyalog APL was born, potentially the most po
 
 Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month in October 2021.
 
-I used the BQN language as my APL of choice, as it's very actively developed and I believe in the developers behind the project.
+I used the BQN language as my APL variant, as it's very actively developed and I believe in the developers behind the project.
 
 APL is the only language where I opted for a newer implementation instead of finding the oldest one possible.
 
@@ -70,7 +75,7 @@ Here's my BQN solution:
 
 And here's the image explanation of the solution.
 These diagrams are meant to be read from top to bottom as the BQN program executes.
-You can generate diagrams like these on your own by clicking the *Explain* button before running your code on the [Try BQN page linked here](https://mlochbaum.github.io/BQN/try.html).
+You can generate diagrams like these on your own by clicking the *Explain* button before running your code on the <a href="https://mlochbaum.github.io/BQN/try.html" target="_blank">Try BQN page linked here.</a>
 
 <center>
 <img 
@@ -416,13 +421,17 @@ The name "Fortran" is derived from [FORmula TRANslation](#ref-ftn-start).
 
 ## References
 
-* <a name="ref-ftn-start" href="https://en.wikipedia.org/wiki/Fortran#History">Fortran history</a>
-* <a name="ref-pop-langs" href="https://statisticsanddata.org/most-popular-programming-languages/">Most Popular Programming Languages</a>
-* <a name="ref-hist-apl-computer-history" href="https://computerhistory.org/blog/the-apl-programming-language-source-code/">The Apl Programming Language Source Code</a>
-* <a name="ref-wiki-iverson">[Kenneth Iverson Wikipedia](https://en.wikipedia.org/wiki/Kenneth_E._Iverson)</a>
-* <a name="ref-ntot" href="https://www.jsoftware.com/papers/tot.htm">*Notation as a Tool of Thought*, Ken Iverson</a>
-* <a name="ref-hist-dyalog" href="https://www.dyalog.com/uploads/files/apl50/Dyalog%20APL%20A%20Personal%20History.pdf">History of Dyalog</a>
-* <a name="ref-gnuapl-stallman" href="https://en.wikipedia.org/wiki/APL_(programming_language)#GNU_APL">GNU APL</a>
-* <a name="ref-pnnl" href="https://www.pnnl.gov/">Pacific Northwest National Laboratory</a>
-* <a name="ref-bqn-hist" href="https://mlochbaum.github.io/BQN/commentary/history.html">BQN's Development History</a>
-* <a name="ref-hist-scheme" href="https://en.wikipedia.org/wiki/History_of_the_Scheme_programming_language">History of the Scheme Programming Language</a>
+* <a target="_blank" name="ref-ftn-start" href="https://en.wikipedia.org/wiki/Fortran#History">Fortran history</a>
+* <a target="_blank" name="ref-pop-langs" href="https://statisticsanddata.org/most-popular-programming-languages/">Most Popular Programming Languages</a>
+* <a target="_blank" name="ref-hist-apl-computer-history" href="https://computerhistory.org/blog/the-apl-programming-language-source-code/">The Apl Programming Language Source Code</a>
+* <a target="_blank" name="ref-wiki-iverson">[Kenneth Iverson Wikipedia](https://en.wikipedia.org/wiki/Kenneth_E._Iverson)</a>
+* <a target="_blank" name="ref-ntot" href="https://www.jsoftware.com/papers/tot.htm">*Notation as a Tool of Thought*, Ken Iverson</a>
+* <a target="_blank" name="ref-hist-dyalog" href="https://www.dyalog.com/uploads/files/apl50/Dyalog%20APL%20A%20Personal%20History.pdf">History of Dyalog</a>
+* <a target="_blank" name="ref-gnuapl-stallman" href="https://en.wikipedia.org/wiki/APL_(programming_language)#GNU_APL">GNU APL</a>
+* <a target="_blank" name="ref-pnnl" href="https://www.pnnl.gov/">Pacific Northwest National Laboratory</a>
+* <a target="_blank" name="ref-bqn-hist" href="https://mlochbaum.github.io/BQN/commentary/history.html">BQN's Development History</a>
+* <a target="_blank" name="ref-hist-scheme" href="https://en.wikipedia.org/wiki/History_of_the_Scheme_programming_language">History of the Scheme Programming Language</a>
+* <a target="_blank" name="ref-apl-wiki" href="https://aplwiki.com/wiki/Main_Page">APL Wiki</a>
+* <a target="_blank" name="ref-apl-wiki-dyalog" href="https://aplwiki.com/wiki/Dyalog_APL">APL Wiki: Dyalog</a>
+* <a target="_blank" name="ref-apl-wiki-logos" href="https://aplwiki.com/wiki/APL_logo">APL Wiki: Logos</a>
+* <a target="_blank" name="ref-alg-testbed-repo" href="https://github.com/ashermancinelli/algorithm-testbed">Repository for all the solutions</a>
