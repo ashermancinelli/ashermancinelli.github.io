@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-26T09:28:34-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-26T16:45:23-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
 
 &lt;p&gt;Most of these languages have changed a lot since the 1960s, so the way I’m using these languages won’t be quite the same as they were used back then.
 For example, I couldn’t find a way to compile and/or run an ALGOL50 program, so I’ll have to use Algol68, a later standard of the language.
 Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
-For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day - except for APL.&lt;/p&gt;
+For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day.&lt;/p&gt;
 
-&lt;p&gt;I’ll stick to using the APL derivative BQN since I’m not interested in learning a new version of APL.
-I’ll be looking at the languages in ascending order based on their popularity in 1965.&lt;/p&gt;
+&lt;p&gt;I’ll be looking at the languages in ascending order based on their popularity in 1965.&lt;/p&gt;
 
 &lt;p&gt;Along with my solution for each language, I’ll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).&lt;/p&gt;
 
@@ -65,69 +64,71 @@ We’ll start at the bottom with APL and work our way up to Fortran.&lt;/p&gt;
 
 &lt;p&gt;APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[&lt;a href=&quot;#ref_hist_apl_computer_history&quot;&gt;ref&lt;/a&gt;].
 Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
-Finally in 1966 the IBM released APL360 written in a bit under 40,000 lines of 360 assembly, called APL after Iverson’s famous paper &lt;em&gt;A Programming Language&lt;/em&gt;.&lt;/p&gt;
+Finally in 1966 the IBM released APL\360 written in a bit under 40,000 lines of Basic Assembly Language 360, called APL after Iverson’s famous paper &lt;em&gt;A Programming Language&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;Just before leaving IBM, in 1979 Iverson gave his famous &lt;em&gt;ACM Turing Award Lecture&lt;/em&gt; titled &lt;em&gt;Notation as a tool of Thought&lt;/em&gt; where he builds up algorithm intuition in the reader using the APL language[&lt;a href=&quot;#ref_ntot&quot;&gt;ref&lt;/a&gt;].
 In 1980, Iverson left IBM for I. P. Sharp Associates where he developed SHARP APL [&lt;a href=&quot;#ref_wiki_iverson&quot;&gt;ref&lt;/a&gt;].
 It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation today and a significant force in the APL community[&lt;a href=&quot;#ref_hist_dyalog&quot;&gt;ref&lt;/a&gt;].
 Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month (October 2021).&lt;/p&gt;
 
-&lt;p&gt;I used the BQN language as my APL variant, as it’s very actively developed and I believe in the developers behind the project.
-APL is the only language where I opted for a newer implementation instead of finding the oldest one possible.
-Marshall Lochbaum began designing BQN in collaboration with his colleagues at Dyalog before taking it on as a personal project in 2020[&lt;a href=&quot;#ref_bqn_hist&quot;&gt;ref&lt;/a&gt;].&lt;/p&gt;
+&lt;p&gt;This solution was given to me by &lt;a href=&quot;https://aplwiki.com/wiki/Ad%C3%A1m_Brudzewsky&quot;&gt;Adám Brudzewsky&lt;/a&gt; on the APL Farm discord server (&lt;a href=&quot;https://mlochbaum.github.io/BQN/index.html#where-can-i-find-bqn-users&quot;&gt;more information on the discord here&lt;/a&gt; and &lt;a href=&quot;https://aplwiki.com/wiki/Forums&quot;&gt;also here&lt;/a&gt;).
+This runs on APL\360 thanks to &lt;a href=&quot;http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html&quot; target=&quot;_blank&quot;&gt;an IBM 5110 emulator with support for BASIC and APL (how cool is this!!!)&lt;/a&gt;
+I used &lt;a href=&quot;http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.pdf&quot; target=&quot;_blank&quot;&gt;this IBM APL\360 User’s Manual&lt;/a&gt; to play around with Adám’s solution in the emulator.&lt;/p&gt;
 
-&lt;p&gt;Here’s my BQN solution:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;NOTE: These solutions use base 1 indices&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     ∇ Z←F L
+[1]    Z←((L&amp;gt;¯1↓0,L)∧(L&amp;gt;1↓L,0))⍳1
+     ∇
+     F 1 2 3 1
+3
+     F 2 1 2 3
+1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here’s a snippet from the user’s manual linked earlier:&lt;/p&gt;
+
+&lt;center&gt;
+&lt;img src=&quot;/images/lc-peak-element/apl360-users-manual.png&quot; alt=&quot;Here's a snippet from the user's manual linked earlier&quot; width=&quot;600&quot; /&gt;
+&lt;/center&gt;
+
+&lt;p&gt;And two more solutions from Adám:&lt;/p&gt;
+
+&lt;h4 id=&quot;second-solution&quot;&gt;Second Solution&lt;/h4&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     ∇ Z←F L;A;B
+[1]    A←L&amp;gt;1↓L,0
+[2]    B←L&amp;gt;¯1↓0,L
+[3]    Z←(A∧B)⍳1
+     ∇
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;third-solution&quot;&gt;Third Solution&lt;/h4&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     ∇ Z←F L
+[1]    Z←(L&amp;gt;⌈⌿¯1 1⌽(2,⍴L)⍴L)⍳1
+     ∇
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I also solved it in BQN just for fun:&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   i0 ← 1‿2‿3‿1
    i1 ← 1‿2‿1‿3‿5‿6‿4
    i2 ← 2‿1‿2‿3‿1
-   F ← ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&amp;lt;⊢)∧(⊢&amp;gt;»))⊐(1˙)
+   F ← ((¯∞⊸«˜&amp;lt;⊢)∧(⊢&amp;gt;¯∞⊸»))⊐(1˙)
    F ¨ i0‿i1‿i2
 ┌─
 · ┌·    ┌·    ┌·
-  · 2   · 1   · 3
+  · 2   · 1   · 0
       ┘     ┘     ┘
                     ┘
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;And here’s the image explanation of the solution.
 These diagrams are meant to be read from top to bottom as the BQN program executes.
-You can generate diagrams like these on your own by clicking the &lt;em&gt;Explain&lt;/em&gt; button before running your code on the &lt;a href=&quot;https://mlochbaum.github.io/BQN/try.html#code=aTAg4oaQIDHigL8y4oC/M+KAvzEKaTEg4oaQIDHigL8y4oC/MeKAvzPigL814oC/NuKAvzQKaTIg4oaQIDLigL8x4oC/MuKAvzPigL8xCkYg4oaQICh7MOKIvigoMi3LnOKJoPCdlakp4qWKMSniiL4wfeKIpyjCqzziiqIp4oinKOKKoj7Cuykp4oqQKDHLmSkKRiDCqCBpMOKAv2kx4oC/aTI=&quot; target=&quot;_blank&quot;&gt;Try BQN page linked here.&lt;/a&gt;&lt;/p&gt;
+You can generate diagrams like these on your own by clicking the &lt;em&gt;Explain&lt;/em&gt; button before running your code on the &lt;a href=&quot;https://mlochbaum.github.io/BQN/try.html#code=ICAgaTAg4oaQIDHigL8y4oC/M+KAvzEKICAgaTEg4oaQIDHigL8y4oC/MeKAvzPigL814oC/NuKAvzQKICAgaTIg4oaQIDLigL8x4oC/MuKAvzPigL8xCgpGIOKGkCAoKMKv4oie4oq4wqvLnDziiqIp4oinKOKKoj7Cr+KInuKKuMK7KSniipAoMcuZKQoKRiDCqCBpMOKAv2kx4oC/aTI=&quot; target=&quot;_blank&quot;&gt;Try BQN page linked here.&lt;/a&gt;&lt;/p&gt;
 
 &lt;center&gt;
 &lt;img src=&quot;/images/lc-peak-element/bqn.png&quot; alt=&quot;Here's an explanation of each part of this solution&quot; width=&quot;600&quot; /&gt;
 &lt;/center&gt;
-
-&lt;p&gt;These two &lt;a href=&quot;https://github.com/mlochbaum/BQN/blob/master/doc/train.md&quot; target=&quot;_blank&quot;&gt;three-trains&lt;/a&gt; give us a bit map indicating positions where the input is greater than the right-shift (the first train) or the left-shift (the second train). &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;∧&lt;/code&gt;-ing these together gives us a mask to get the peak element.&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   (⊢&amp;gt;») 1‿2‿3‿1
-⟨ 1 1 1 0 ⟩
-
-   («&amp;lt;⊢) 1‿2‿3‿1
-⟨ 0 0 1 1 ⟩
-
-   # another 3-train!
-   ((⊢&amp;gt;»)∧(«&amp;lt;⊢)) 1‿2‿3‿1
-⟨ 0 0 1 0 ⟩
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If our first or last element is greater than the inner element however, this will give us a wrong answer:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   ((⊢&amp;gt;»)∧(«&amp;lt;⊢)) 2‿1‿2‿3‿1
-⟨ 1 0 0 1 0 ⟩
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;So we’ll make another bitmap to not select the first or last elements, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;∧&lt;/code&gt; the two together.&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   {0∾((2-˜≠𝕩)⥊1)∾0} 2‿1‿2‿3‿1
-⟨ 0 1 1 1 0 ⟩
-
-   ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&amp;lt;⊢)∧(⊢&amp;gt;»)) 2‿1‿2‿3‿1
-⟨ 0 0 0 1 0 ⟩
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Now we just grab the first true index and we have our answer:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   (({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&amp;lt;⊢)∧(⊢&amp;gt;»))⊐(1˙)) 1‿2‿1‿3‿5‿6‿4
-┌·   
-· 1  
-    ┘
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h3 id=&quot;lisp&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Lisp&lt;/a&gt;&lt;/h3&gt;
 
@@ -151,13 +152,11 @@ I really loved using it and I think I’ll be spending some more quality time wi
 &lt;p&gt;If you have a better scheme solution, please let me know, I’d love to see it.&lt;/p&gt;
 &lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shl&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
 
 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shr&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
 
 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;solve&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -168,9 +167,9 @@ I really loved using it and I think I’ll be spending some more quality time wi
               &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
                    &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
                    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
-                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
-              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))))))&lt;/span&gt;
 
 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;for-each&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -187,13 +186,11 @@ I really loved using it and I think I’ll be spending some more quality time wi
 For example I had to write my own functions to shift a value into a list.&lt;/p&gt;
 &lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shl&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
 
 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shr&lt;/span&gt;
   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Here’s what it looks like to use them.
@@ -217,8 +214,8 @@ Although I had to write my own, it did come easily.&lt;/p&gt;
               &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
                    &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
                    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
-                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
               &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
@@ -229,8 +226,8 @@ If a number is greater than the max of the left and right, we know it’s greate
 &lt;span class=&quot;c1&quot;&gt;;Value: a&lt;/span&gt;
 
 &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
 
 &lt;span class=&quot;c1&quot;&gt;;Value: (2 3 2 3)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -239,8 +236,8 @@ If a number is greater than the max of the left and right, we know it’s greate
 &lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
            &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
-                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
 
 &lt;span class=&quot;c1&quot;&gt;;Value: (#f #f #t #f)&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -253,8 +250,8 @@ We then take the max of these values to find the peak element.&lt;/p&gt;
         &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
              &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
         &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
 
 &lt;span class=&quot;c1&quot;&gt;;Value: (-1 -1 2 -1)&lt;/span&gt;
@@ -268,8 +265,8 @@ We then take the max of these values to find the peak element.&lt;/p&gt;
                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
                      &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
                      &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
-                          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+                          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
                 &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
 &lt;span class=&quot;c1&quot;&gt;;Value: 2&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -284,8 +281,8 @@ We then take the max of these values to find the peak element.&lt;/p&gt;
                     &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
                          &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
                          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
-                              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+                              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
                     &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
       
 &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;solve&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
@@ -336,13 +333,13 @@ BASIC was the product of some brilliant folks and it had a huge impact on the hi
 &lt;p&gt;This solution is pretty much the same solution I used for the rest of the programming languages: I iterate from one greater than the lower bound to one less than the upper bound and check both neighbors to see if we have a peak element.&lt;/p&gt;
 
 &lt;p&gt;I used FreeBASIC to run this example:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;language-basic&quot;&gt;         dim i0(1 to 4) as Integer
+&lt;pre&gt;&lt;code class=&quot;language-basic&quot;&gt;         dim i0(1 to 4) as integer ''{ 1, 2, 3, 1 }
          i0(1) = 1
          i0(2) = 2
          i0(3) = 3
          i0(4) = 1
 
-         dim i1(1 to 7) as Integer
+         dim i1(1 to 7) as integer
          i1(1) = 1
          i1(2) = 2
          i1(3) = 1
@@ -351,15 +348,24 @@ BASIC was the product of some brilliant folks and it had a huge impact on the hi
          i1(6) = 6
          i1(7) = 4
 
-         function solve(prob() as Integer) as Integer
-             for i as Integer = lbound(prob)+1 to ubound(prob)-1
-                 if (prob(i)&amp;gt;prob(i+1) and prob(i)&amp;gt;prob(i-1)) then solve=i-1
+         function solve(prob() as integer) as integer
+             dim vals(1 to ubound(prob)+2) as integer
+             vals(1) = -9999999
+             vals(ubound(prob)+1) = -9999999
+             for i as integer = 1 to ubound(prob)
+                 vals(i) = prob(i)
+                 if (vals(i)&amp;gt;vals(i+1) and vals(i)&amp;gt;vals(i-1)) then solve=i-1
              next
          end function
 
          print solve(i0())
          print solve(i1())
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;./src/freebasic/lc-peak-element-freebasic
+&lt;span class=&quot;go&quot;&gt; 2
+ 5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;h3 id=&quot;algol&quot;&gt;&lt;a href=&quot;#content&quot;&gt;ALGOL&lt;/a&gt;&lt;/h3&gt;
 
@@ -390,16 +396,29 @@ ALGOL was actually designed by an international committee of the ACM during 1958
 
 &lt;pre&gt;&lt;code class=&quot;language-algol&quot;&gt;PROC solve = ([]INT elements)INT: (
   INT found := -1;
-  FOR i FROM 1+(LWB elements) TO (UPB elements)-1
-  DO
-    IF elements[i] &amp;gt; elements[i+1] AND elements[i] &amp;gt; elements[i-1]
-      THEN
-        found := i-1
-      FI
+  [1:(UPB elements)+1]INT vs;
+  vs[1] := - 999 999 999;
+  vs[UPB elements] := - 999 999 999;
+  FOR i FROM LWB elements TO UPB elements DO vs[1+i] := elements[i] OD;
+  FOR i FROM 2 TO UPB elements DO
+    IF vs[i] &amp;gt; vs[i+1] AND vs[i] &amp;gt; vs[i-1] THEN found := i-1 FI
   OD;
-  found 
+  found
 );
+
+main:(
+  []INT i0 = (1,2,3,1);
+  []INT i1 = (1,2,1,3,5,6,4);
+
+  print((&quot;Input #0: &quot;, solve(i0), new line));
+  print((&quot;Input #1: &quot;, solve(i1), new line))
+)
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;a68g ../src/algol68/lc-peak-element.al
+&lt;span class=&quot;gp&quot;&gt;Input #&lt;/span&gt;0:          +3
+&lt;span class=&quot;gp&quot;&gt;Input #&lt;/span&gt;1:          +6
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;I honestly wouldn’t mind writing more Algol down the line.&lt;/p&gt;
 
@@ -435,6 +454,7 @@ Each puncard represented &lt;em&gt;a single line of code&lt;/em&gt;, and the fir
        01 IDX PIC 9(3) VALUE 1.
        01 NPROBLEMS PIC 9(3) VALUE 2.
        01 ANSWERS PIC S9(3) OCCURS 2 TIMES VALUE -1.
+       01 VALS PIC S9(5) OCCURS 15 TIMES.
        PROCEDURE DIVISION.
 
        100-MAIN.
@@ -471,13 +491,21 @@ Each puncard represented &lt;em&gt;a single line of code&lt;/em&gt;, and the fir
            STOP RUN.
 
        SOLVE.
+           MOVE -99999 TO VALS(1).
+           MOVE -99999 TO VALS(SIZES(CURRENT-PROBLEM)).
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX&amp;gt;SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             MOVE PROBLEMS(TMP) TO VALS(1+IDX)
+           END-PERFORM.
+
            PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX&amp;gt;SIZES(CURRENT-PROBL
       -EM)
+             
              COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
              IF PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP - 1)
       -AND PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP + 1)
-               COMPUTE TMP = IDX - 1 END-COMPUTE
-               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+               MOVE IDX TO ANSWERS(CURRENT-PROBLEM)
              END-IF
            END-PERFORM.
 
@@ -485,17 +513,31 @@ Each puncard represented &lt;em&gt;a single line of code&lt;/em&gt;, and the fir
            DISPLAY &quot;IDX=&quot; IDX &quot; VALUE=&quot; PROBLEMS(IDX) END-DISPLAY.
 &lt;/code&gt;&lt;/pre&gt;
 
+&lt;p&gt;Running gives:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ ./src/cobol/lc-peak-element-cobol
++003
++006
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;I certainly felt the weight of this when I tried to write this function:
 Every time I had to change a condition that wrapped a line, I would join the lines together and figure out where the new line break should be, and make sure to get the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-&lt;/code&gt; character in the 7th column.
 I’m sure there are some more modern conventions around COBOL considering &lt;em&gt;5 billion lines of new COBOL code are written every year&lt;/em&gt;[&lt;a href=&quot;#ref_os_wac&quot;&gt;ref&lt;/a&gt;], but I’m pretty content not to write any COBOL for a while.&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;language-cobol&quot;&gt;       SOLVE.
+           MOVE -99999 TO VALS(1).
+           MOVE -99999 TO VALS(SIZES(CURRENT-PROBLEM)).
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX&amp;gt;SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             MOVE PROBLEMS(TMP) TO VALS(1+IDX)
+           END-PERFORM.
+
            PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX&amp;gt;SIZES(CURRENT-PROBL
       -EM)
+             
              COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
              IF PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP - 1)
       -AND PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP + 1)
-               COMPUTE TMP = IDX - 1 END-COMPUTE
-               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+               MOVE IDX TO ANSWERS(CURRENT-PROBLEM)
              END-IF
            END-PERFORM.
 &lt;/code&gt;&lt;/pre&gt;
@@ -531,37 +573,84 @@ The name “Fortran” is derived from &lt;a href=&quot;#ref_ftn_start&quot;&gt;
 It’s written in wonderfully modern and well-maintained C++, and I use the C++ style guide from Flang for my technical teams at my day job.
 Flang is definitely worth keeping an eye on, I think it will become a significant force in HPC in the coming years.&lt;/p&gt;
 
-&lt;p&gt;I used the GNU gfortran compiler in fixed-form F77 mode for this example to get a better feel for historical Fortran:&lt;/p&gt;
+&lt;p&gt;I tried using the g77 compiler from GCC 3.4.4 for this example to get a better feel for historical Fortran, but after removing some syntax I didn’t realize came with f90, I encountered this compiler error, likely because I’m using a 32b version of gcc:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;g77 ./src/fortran/lc-peak-element.f
+&lt;span class=&quot;go&quot;&gt;/tmp/ccYc9ESc.s: Assembler messages:
+/tmp/ccYc9ESc.s:39: Error: invalid instruction suffix for `push'
+/tmp/ccYc9ESc.s:91: Error: invalid instruction suffix for `push'
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;     &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comments&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'c'&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;the&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;p&gt;This at least let me know my code was valid Fortran 77!&lt;/p&gt;
+&lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;     &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comments&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'c'&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;the&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;just&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;like&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;the&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;     &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;punchcards&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
       &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;program&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
         &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;dimension&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;/)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;dimension&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;/)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;       &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;First&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Problem&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;       &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Second&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Problem&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
         &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
         &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
         &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
       &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;program&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
       &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;subroutine&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;intent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;intent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;dimension&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;+2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
         &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 
-        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-          &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;+1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;ow&quot;&gt;.and.&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-99999&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;+1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;+1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;ow&quot;&gt;.and.&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
             &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
             &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
           &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;endif&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
         &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;enddo&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
       &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;subroutine&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;GNU/GCC’s GFortran is also very actively maintained, &lt;a href=&quot;https://developer.nvidia.com/hpc-sdk&quot;&gt;the newest NVIDIA HPC SDK has fantastic Fortran support&lt;/a&gt;, &lt;a href=&quot;https://www.olcf.ornl.gov/frontier/&quot;&gt;the new US Dept. of Energy Exascale supercomputer &lt;em&gt;Frontier&lt;/em&gt;&lt;/a&gt; will use AMD GPUs which have &lt;a href=&quot;https://github.com/ROCmSoftwarePlatform/hipfort&quot;&gt;hipfort, a Fortran interface to AMD GPU libraries&lt;/a&gt;, and &lt;a href=&quot;https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html&quot;&gt;Intel’s GPU platform and Fortran compiler are widely used as well&lt;/a&gt;.
+&lt;p&gt;For Fortran 90 I can do array assignments like this:&lt;/p&gt;
+&lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;instead of this:&lt;/p&gt;
+&lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;+1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;and I don’t get to use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;intent&lt;/code&gt; keyword, both of which were big drawbacks, but this really wasn’t too bad.&lt;/p&gt;
+
+&lt;p&gt;Looking to the future of Fortram, GCC’s GFortran is very actively maintained, &lt;a href=&quot;https://developer.nvidia.com/hpc-sdk&quot;&gt;the newest NVIDIA HPC SDK has fantastic Fortran support&lt;/a&gt;, &lt;a href=&quot;https://www.olcf.ornl.gov/frontier/&quot;&gt;the new US Dept. of Energy Exascale supercomputer &lt;em&gt;Frontier&lt;/em&gt;&lt;/a&gt; will use AMD GPUs which have &lt;a href=&quot;https://github.com/ROCmSoftwarePlatform/hipfort&quot;&gt;hipfort, a Fortran interface to AMD GPU libraries&lt;/a&gt;, and &lt;a href=&quot;https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html&quot;&gt;Intel’s GPU platform and Fortran compiler are widely used as well&lt;/a&gt;.
 Fortran has a wonderfully rich history, and it’s certainly a part of our future.&lt;/p&gt;
 
 &lt;blockquote&gt;
@@ -613,6 +702,14 @@ Fortran has a wonderfully rich history, and it’s certainly a part of our futur
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ecp_frontier&quot; href=&quot;https://www.olcf.ornl.gov/frontier/&quot;&gt;US DOE Frontier Supercomputer at ORNL&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_britannica_algol&quot; href=&quot;https://www.britannica.com/technology/ALGOL-computer-language&quot;&gt;Britannica: ALGOL computer language&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_early_timesharing&quot; href=&quot;https://www.cs.cornell.edu/wya/AcademicComputing/text/earlytimesharing.html&quot;&gt;Cornell University: Early Timesharing&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_apk_wiki_timeline&quot; href=&quot;https://aplwiki.com/index.php?title=Timeline_of_influential_array_languages&quot;&gt;APL Wiki Timeline&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ibm_5110_emu&quot; href=&quot;http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html&quot;&gt;IBM 5110 Emulator&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ibm_apl_bitsavers&quot; href=&quot;http://www.bitsavers.org/pdf/ibm/apl/&quot;&gt;Bit Savers: IBM APL References&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ibm_apl_bitsavers_refcard&quot; href=&quot;http://www.bitsavers.org/pdf/ibm/apl/S210-0007-0_APL_360_Reference_Card.pdf&quot;&gt;APL\360 Reference Card&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ibm_apl_bitsavers_68manual&quot; href=&quot;http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.pdf&quot;&gt;APL\360 User Manual&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_tut_a68&quot; href=&quot;https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.83.4668&amp;amp;rep=rep1&amp;amp;type=pdf&quot;&gt;Tutorial on Algol68&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_g77&quot; href=&quot;http://www.kilmnj.com/g77/&quot;&gt;GNU Fortran 77 (g77) Legacy Site&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_g77_legacy_tarball&quot; href=&quot;https://gfortran.meteodat.ch/download/legacy_g77/&quot;&gt;Legacy G77 tarball&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content><author><name></name></author><summary type="html">We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</summary></entry><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/Xk7-xjnEISE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
