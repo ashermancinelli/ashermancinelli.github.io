@@ -135,7 +135,7 @@ You can generate diagrams like these on your own by clicking the *Explain* butto
 
 <center>
 <img 
-  src="/images/lc-peak-element/bqn.png"
+  src="/images/lc-peak-element/bqn2.png"
   alt="Here's an explanation of each part of this solution"
   width=600/>
 </center>
@@ -348,7 +348,7 @@ This solution is pretty much the same solution I used for the rest of the progra
 
 I used FreeBASIC to run this example:
 ```basic
-         dim i0(1 to 4) as integer ''{ 1, 2, 3, 1 }
+         dim i0(1 to 4) as integer
          i0(1) = 1
          i0(2) = 2
          i0(3) = 3
