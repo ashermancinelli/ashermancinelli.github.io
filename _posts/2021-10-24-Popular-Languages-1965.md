@@ -92,7 +92,7 @@ Here's my BQN solution:
 
 And here's the image explanation of the solution.
 These diagrams are meant to be read from top to bottom as the BQN program executes.
-You can generate diagrams like these on your own by clicking the *Explain* button before running your code on the <a href="https://mlochbaum.github.io/BQN/try.html" target="_blank">Try BQN page linked here.</a>
+You can generate diagrams like these on your own by clicking the *Explain* button before running your code on the <a href="https://mlochbaum.github.io/BQN/try.html#code=aTAg4oaQIDHigL8y4oC/M+KAvzEKaTEg4oaQIDHigL8y4oC/MeKAvzPigL814oC/NuKAvzQKaTIg4oaQIDLigL8x4oC/MuKAvzPigL8xCkYg4oaQICh7MOKIvigoMi3LnOKJoPCdlakp4qWKMSniiL4wfeKIpyjCqzziiqIp4oinKOKKoj7Cuykp4oqQKDHLmSkKRiDCqCBpMOKAv2kx4oC/aTI=" target="_blank">Try BQN page linked here.</a>
 
 <center>
 <img 
