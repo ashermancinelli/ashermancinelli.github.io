@@ -9,9 +9,8 @@ We use the 6 most popular programming languages of the 1960's to solve a leetcod
 Most of these languages have changed a lot since the 1960s, so the way I'm using these languages won't be quite the same as they were used back then.
 For example, I couldn't find a way to compile and/or run an ALGOL50 program, so I'll have to use Algol68, a later standard of the language.
 Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
-For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day - except for APL.
+For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day.
 
-I'll stick to using the APL derivative BQN since I'm not interested in learning a new version of APL.
 I'll be looking at the languages in ascending order based on their popularity in 1965.
 
 Along with my solution for each language, I'll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).
@@ -65,34 +64,74 @@ We'll start at the bottom with APL and work our way up to Fortran.
 
 APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[[ref](#ref_hist_apl_computer_history)].
 Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
-Finally in 1966 the IBM released APL360 written in a bit under 40,000 lines of 360 assembly, called APL after Iverson's famous paper *A Programming Language*.
+Finally in 1966 the IBM released APL\360 written in a bit under 40,000 lines of Basic Assembly Language 360, called APL after Iverson's famous paper *A Programming Language*.
 
 Just before leaving IBM, in 1979 Iverson gave his famous *ACM Turing Award Lecture* titled *Notation as a tool of Thought* where he builds up algorithm intuition in the reader using the APL language[[ref](#ref_ntot)].
 In 1980, Iverson left IBM for I. P. Sharp Associates where he developed SHARP APL [[ref](#ref_wiki_iverson)].
 It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation today and a significant force in the APL community[[ref](#ref_hist_dyalog)].
 Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month (October 2021).
 
-I used the BQN language as my APL variant, as it's very actively developed and I believe in the developers behind the project.
-APL is the only language where I opted for a newer implementation instead of finding the oldest one possible.
-Marshall Lochbaum began designing BQN in collaboration with his colleagues at Dyalog before taking it on as a personal project in 2020[[ref](#ref_bqn_hist)].
+This solution was given to me by [Ad&aacute;m Brudzewsky](https://aplwiki.com/wiki/Ad%C3%A1m_Brudzewsky) on the APL Farm discord server ([more information on the discord here](https://mlochbaum.github.io/BQN/index.html#where-can-i-find-bqn-users) and [also here](https://aplwiki.com/wiki/Forums)).
+This runs on APL\360 thanks to <a href="http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html" target="_blank">an IBM 5110 emulator with support for BASIC and APL (how cool is this!!!)</a>
+I used <a href="http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.pdf" target="_blank">this IBM APL\360 User's Manual</a> to play around with Ad&aacute;m's solution in the emulator.
 
-Here's my BQN solution:
+*NOTE: These solutions use base 1 indices*
+
+```
+     ∇ Z←F L
+[1]    Z←((L>¯1↓0,L)∧(L>1↓L,0))⍳1
+     ∇
+     F 1 2 3 1
+3
+     F 2 1 2 3
+1
+```
+
+Here's a snippet from the user's manual linked earlier:
+
+<center>
+<img 
+  src="/images/lc-peak-element/apl360-users-manual.png"
+  alt="Here's a snippet from the user's manual linked earlier"
+  width=600/>
+</center>
+
+And two more solutions from Ad&aacute;m:
+
+#### Second Solution
+```
+     ∇ Z←F L;A;B
+[1]    A←L>1↓L,0
+[2]    B←L>¯1↓0,L
+[3]    Z←(A∧B)⍳1
+     ∇
+```
+
+#### Third Solution
+
+```
+     ∇ Z←F L
+[1]    Z←(L>⌈⌿¯1 1⌽(2,⍴L)⍴L)⍳1
+     ∇
+```
+
+I also solved it in BQN just for fun:
 ```
    i0 ← 1‿2‿3‿1
    i1 ← 1‿2‿1‿3‿5‿6‿4
    i2 ← 2‿1‿2‿3‿1
-   F ← ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«<⊢)∧(⊢>»))⊐(1˙)
+   F ← ((¯∞⊸«˜<⊢)∧(⊢>¯∞⊸»))⊐(1˙)
    F ¨ i0‿i1‿i2
 ┌─
 · ┌·    ┌·    ┌·
-  · 2   · 1   · 3
+  · 2   · 1   · 0
       ┘     ┘     ┘
                     ┘
 ```
 
 And here's the image explanation of the solution.
 These diagrams are meant to be read from top to bottom as the BQN program executes.
-You can generate diagrams like these on your own by clicking the *Explain* button before running your code on the <a href="https://mlochbaum.github.io/BQN/try.html#code=aTAg4oaQIDHigL8y4oC/M+KAvzEKaTEg4oaQIDHigL8y4oC/MeKAvzPigL814oC/NuKAvzQKaTIg4oaQIDLigL8x4oC/MuKAvzPigL8xCkYg4oaQICh7MOKIvigoMi3LnOKJoPCdlakp4qWKMSniiL4wfeKIpyjCqzziiqIp4oinKOKKoj7Cuykp4oqQKDHLmSkKRiDCqCBpMOKAv2kx4oC/aTI=" target="_blank">Try BQN page linked here.</a>
+You can generate diagrams like these on your own by clicking the *Explain* button before running your code on the <a href="https://mlochbaum.github.io/BQN/try.html#code=ICAgaTAg4oaQIDHigL8y4oC/M+KAvzEKICAgaTEg4oaQIDHigL8y4oC/MeKAvzPigL814oC/NuKAvzQKICAgaTIg4oaQIDLigL8x4oC/MuKAvzPigL8xCgpGIOKGkCAoKMKv4oie4oq4wqvLnDziiqIp4oinKOKKoj7Cr+KInuKKuMK7KSniipAoMcuZKQoKRiDCqCBpMOKAv2kx4oC/aTI=" target="_blank">Try BQN page linked here.</a>
 
 <center>
 <img 
@@ -100,42 +139,6 @@ You can generate diagrams like these on your own by clicking the *Explain* butto
   alt="Here's an explanation of each part of this solution"
   width=600/>
 </center>
-
-These two <a href="https://github.com/mlochbaum/BQN/blob/master/doc/train.md" target="_blank">three-trains</a> give us a bit map indicating positions where the input is greater than the right-shift (the first train) or the left-shift (the second train). `∧`-ing these together gives us a mask to get the peak element.
-```
-   (⊢>») 1‿2‿3‿1
-⟨ 1 1 1 0 ⟩
-
-   («<⊢) 1‿2‿3‿1
-⟨ 0 0 1 1 ⟩
-
-   # another 3-train!
-   ((⊢>»)∧(«<⊢)) 1‿2‿3‿1
-⟨ 0 0 1 0 ⟩
-```
-
-If our first or last element is greater than the inner element however, this will give us a wrong answer:
-```
-   ((⊢>»)∧(«<⊢)) 2‿1‿2‿3‿1
-⟨ 1 0 0 1 0 ⟩
-```
-
-So we'll make another bitmap to not select the first or last elements, and `∧` the two together.
-```
-   {0∾((2-˜≠𝕩)⥊1)∾0} 2‿1‿2‿3‿1
-⟨ 0 1 1 1 0 ⟩
-
-   ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«<⊢)∧(⊢>»)) 2‿1‿2‿3‿1
-⟨ 0 0 0 1 0 ⟩
-```
-
-Now we just grab the first true index and we have our answer:
-```
-   (({0∾((2-˜≠𝕩)⥊1)∾0}∧(«<⊢)∧(⊢>»))⊐(1˙)) 1‿2‿1‿3‿5‿6‿4
-┌·   
-· 1  
-    ┘
-```
 
 ### [Lisp](#content)
 
@@ -158,13 +161,11 @@ If you have a better scheme solution, please let me know, I'd love to see it.
 ```scheme
 (define shl
   (lambda (v l)
-    (reverse (cons v (reverse (cdr l))))
-    ))
+    (reverse (cons v (reverse (cdr l))))))
 
 (define shr
   (lambda (v l)
-    (cons v (reverse (cdr (reverse l))))
-    ))
+    (cons v (reverse (cdr (reverse l))))))
 
 (define solve
   (lambda (input)
@@ -175,9 +176,9 @@ If you have a better scheme solution, please let me know, I'd love to see it.
               (map >
                    input
                    (map max
-                        (shl 0 input)
-                        (shr 0 input)))
-              (iota (length input))))))
+                        (shl -99999 input)
+                        (shr -99999 input)))
+              (iota (length input)))))))
 
 (for-each
   (lambda (l)
@@ -195,13 +196,11 @@ For example I had to write my own functions to shift a value into a list.
 ```scheme
 (define shl
   (lambda (v l)
-    (reverse (cons v (reverse (cdr l))))
-    ))
+    (reverse (cons v (reverse (cdr l))))))
 
 (define shr
   (lambda (v l)
-    (cons v (reverse (cdr (reverse l))))
-    ))
+    (cons v (reverse (cdr (reverse l))))))
 ```
 
 Here's what it looks like to use them.
@@ -227,8 +226,8 @@ Let's walk through this solution inside-out.
               (map >
                    input
                    (map max
-                        (shl 0 input)
-                        (shr 0 input)))
+                        (shl -99999 input)
+                        (shr -99999 input)))
               (iota (length input))))))
 ```
 
@@ -240,8 +239,8 @@ If a number is greater than the max of the left and right, we know it's greater 
 ;Value: a
 
 1 ]=> (map max
-        (shl 0 input)
-        (shr 0 input))
+        (shl -99999 input)
+        (shr -99999 input))
 
 ;Value: (2 3 2 3)
 ```
@@ -251,8 +250,8 @@ Now we just have to find the indices in the input where the input is greater tha
       (map >
            input
            (map max
-                (shl 0 input)
-                (shr 0 input)))
+                (shl -99999 input)
+                (shr -99999 input)))
 
 ;Value: (#f #f #t #f)
 ```
@@ -266,8 +265,8 @@ We then take the max of these values to find the peak element.
         (map >
              input
              (map max
-                  (shl 0 input)
-                  (shr 0 input)))
+                  (shl -99999 input)
+                  (shr -99999 input)))
         (iota (length input)))
 
 ;Value: (-1 -1 2 -1)
@@ -282,8 +281,8 @@ Here's the same code as before, we've just wrapped it in a max reduce to get our
                 (map >
                      input
                      (map max
-                          (shl 0 input)
-                          (shr 0 input)))
+                          (shl -99999 input)
+                          (shr -99999 input)))
                 (iota (length input))))
 ;Value: 2
 ```
@@ -299,8 +298,8 @@ Of course now we can just wrap all that code in a function:
                     (map >
                          input
                          (map max
-                              (shl 0 input)
-                              (shr 0 input)))
+                              (shl -99999 input)
+                              (shr -99999 input)))
                     (iota (length input))))))
       
 1 ]=> (solve '(1 2 3 1))
@@ -349,13 +348,13 @@ This solution is pretty much the same solution I used for the rest of the progra
 
 I used FreeBASIC to run this example:
 ```basic
-         dim i0(1 to 4) as Integer
+         dim i0(1 to 4) as integer ''{ 1, 2, 3, 1 }
          i0(1) = 1
          i0(2) = 2
          i0(3) = 3
          i0(4) = 1
 
-         dim i1(1 to 7) as Integer
+         dim i1(1 to 7) as integer
          i1(1) = 1
          i1(2) = 2
          i1(3) = 1
@@ -364,14 +363,24 @@ I used FreeBASIC to run this example:
          i1(6) = 6
          i1(7) = 4
 
-         function solve(prob() as Integer) as Integer
-             for i as Integer = lbound(prob)+1 to ubound(prob)-1
-                 if (prob(i)>prob(i+1) and prob(i)>prob(i-1)) then solve=i-1
+         function solve(prob() as integer) as integer
+             dim vals(1 to ubound(prob)+2) as integer
+             vals(1) = -9999999
+             vals(ubound(prob)+1) = -9999999
+             for i as integer = 1 to ubound(prob)
+                 vals(i) = prob(i)
+                 if (vals(i)>vals(i+1) and vals(i)>vals(i-1)) then solve=i-1
              next
          end function
 
          print solve(i0())
          print solve(i1())
+```
+
+```console
+$ ./src/freebasic/lc-peak-element-freebasic
+ 2
+ 5
 ```
 
 ### [ALGOL](#content)
@@ -403,15 +412,29 @@ ALGOL was actually designed by an international committee of the ACM during 1958
 ```algol
 PROC solve = ([]INT elements)INT: (
   INT found := -1;
-  FOR i FROM 1+(LWB elements) TO (UPB elements)-1
-  DO
-    IF elements[i] > elements[i+1] AND elements[i] > elements[i-1]
-      THEN
-        found := i-1
-      FI
+  [1:(UPB elements)+1]INT vs;
+  vs[1] := - 999 999 999;
+  vs[UPB elements] := - 999 999 999;
+  FOR i FROM LWB elements TO UPB elements DO vs[1+i] := elements[i] OD;
+  FOR i FROM 2 TO UPB elements DO
+    IF vs[i] > vs[i+1] AND vs[i] > vs[i-1] THEN found := i-1 FI
   OD;
-  found 
+  found
 );
+
+main:(
+  []INT i0 = (1,2,3,1);
+  []INT i1 = (1,2,1,3,5,6,4);
+
+  print(("Input #0: ", solve(i0), new line));
+  print(("Input #1: ", solve(i1), new line))
+)
+```
+
+```console
+$ a68g ../src/algol68/lc-peak-element.al
+Input #0:          +3
+Input #1:          +6
 ```
 
 I honestly wouldn't mind writing more Algol down the line.
@@ -447,6 +470,7 @@ Each puncard represented *a single line of code*, and the first six and final ei
        01 IDX PIC 9(3) VALUE 1.
        01 NPROBLEMS PIC 9(3) VALUE 2.
        01 ANSWERS PIC S9(3) OCCURS 2 TIMES VALUE -1.
+       01 VALS PIC S9(5) OCCURS 15 TIMES.
        PROCEDURE DIVISION.
 
        100-MAIN.
@@ -483,13 +507,21 @@ Each puncard represented *a single line of code*, and the first six and final ei
            STOP RUN.
 
        SOLVE.
+           MOVE -99999 TO VALS(1).
+           MOVE -99999 TO VALS(SIZES(CURRENT-PROBLEM)).
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX>SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             MOVE PROBLEMS(TMP) TO VALS(1+IDX)
+           END-PERFORM.
+
            PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX>SIZES(CURRENT-PROBL
       -EM)
+             
              COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
              IF PROBLEMS(TMP) > PROBLEMS(TMP - 1)
       -AND PROBLEMS(TMP) > PROBLEMS(TMP + 1)
-               COMPUTE TMP = IDX - 1 END-COMPUTE
-               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+               MOVE IDX TO ANSWERS(CURRENT-PROBLEM)
              END-IF
            END-PERFORM.
 
@@ -497,18 +529,33 @@ Each puncard represented *a single line of code*, and the first six and final ei
            DISPLAY "IDX=" IDX " VALUE=" PROBLEMS(IDX) END-DISPLAY.
 ```
 
+Running gives:
+```
+$ ./src/cobol/lc-peak-element-cobol
++003
++006
+```
+
 I certainly felt the weight of this when I tried to write this function:
 Every time I had to change a condition that wrapped a line, I would join the lines together and figure out where the new line break should be, and make sure to get the `-` character in the 7th column.
 I'm sure there are some more modern conventions around COBOL considering *5 billion lines of new COBOL code are written every year*[[ref](#ref_os_wac)], but I'm pretty content not to write any COBOL for a while.
 ```cobol
        SOLVE.
+           MOVE -99999 TO VALS(1).
+           MOVE -99999 TO VALS(SIZES(CURRENT-PROBLEM)).
+           PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX>SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             MOVE PROBLEMS(TMP) TO VALS(1+IDX)
+           END-PERFORM.
+
            PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX>SIZES(CURRENT-PROBL
       -EM)
+             
              COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
              IF PROBLEMS(TMP) > PROBLEMS(TMP - 1)
       -AND PROBLEMS(TMP) > PROBLEMS(TMP + 1)
-               COMPUTE TMP = IDX - 1 END-COMPUTE
-               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+               MOVE IDX TO ANSWERS(CURRENT-PROBLEM)
              END-IF
            END-PERFORM.
 ```
@@ -542,38 +589,88 @@ Fortran still is one of the most used programming languages in high performance 
 It's written in wonderfully modern and well-maintained C++, and I use the C++ style guide from Flang for my technical teams at my day job.
 Flang is definitely worth keeping an eye on, I think it will become a significant force in HPC in the coming years.
 
-I used the GNU gfortran compiler in fixed-form F77 mode for this example to get a better feel for historical Fortran:
+I tried using the g77 compiler from GCC 3.4.4 for this example to get a better feel for historical Fortran, but after removing some syntax I didn't realize came with f90, I encountered this compiler error, likely because I'm using a 32b version of gcc:
+```console
+$ g77 ./src/fortran/lc-peak-element.f
+/tmp/ccYc9ESc.s: Assembler messages:
+/tmp/ccYc9ESc.s:39: Error: invalid instruction suffix for `push'
+/tmp/ccYc9ESc.s:91: Error: invalid instruction suffix for `push'
+```
 
+This at least let me know my code was valid Fortran 77!
 ```fortran
-c     Comments require a 'c'in the first column
+c     Comments require a 'c'in the first column, just like the
+c     punchcards!
       program main
         integer :: ret
-        integer, dimension(4) :: i0 = (/1, 2, 3, 1/)
-        integer, dimension(7) :: i1 = (/1,2,1,3,5,6,4/)
+        integer :: i0(4)
+        integer :: i1(7)
+
+c       First Problem
+        i0(1) = 1
+        i0(2) = 2
+        i0(3) = 3
+        i0(4) = 1
+
+c       Second Problem
+        i1(1) = 1
+        i1(2) = 2
+        i1(3) = 1
+        i1(4) = 2
+        i1(5) = 4
+        i1(6) = 2
+        i1(7) = 1
+
         ret = -1
-        call solve(i0, size(i0), ret)
+
+        call solve(i0, 4, ret)
         print*,ret
-        call solve(i1, size(i1), ret)
+
+        call solve(i1, 7, ret)
         print*,ret
+
       end program
 
       subroutine solve(input, len, ret)
-        integer, intent(in) :: len
-        integer, intent(out) :: ret
-        integer, dimension(len) :: input
+        integer :: input(len)
+        integer :: len
+        integer :: ret
 
+        integer :: vals(len+2)
         integer :: i
 
-        do i = 2, (len-1)
-          if (input(i) > input(i+1) .and. input(i) > input(i-1)) then
+        vals(1) = -99999
+        vals(len) = -99999
+
+        do i = 2, len
+          vals(i) = input(i+1)
+        end do
+
+        do i = 2, len
+          if (vals(i) > vals(i+1) .and. vals(i) > vals(i-1)) then
             ret = i-1
             return
           endif
         enddo
+
       end subroutine
 ```
 
-GNU/GCC's GFortran is also very actively maintained, [the newest NVIDIA HPC SDK has fantastic Fortran support](https://developer.nvidia.com/hpc-sdk), [the new US Dept. of Energy Exascale supercomputer *Frontier*](https://www.olcf.ornl.gov/frontier/) will use AMD GPUs which have [hipfort, a Fortran interface to AMD GPU libraries](https://github.com/ROCmSoftwarePlatform/hipfort), and [Intel's GPU platform and Fortran compiler are widely used as well](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html).
+For Fortran 90 I can do array assignments like this:
+```fortran
+vals(2:len) = input
+```
+
+instead of this:
+```fortran
+        do i = 2, len
+          vals(i) = input(i+1)
+        end do
+```
+
+and I don't get to use the `intent` keyword, both of which were big drawbacks, but this really wasn't too bad.
+
+Looking to the future of Fortram, GCC's GFortran is very actively maintained, [the newest NVIDIA HPC SDK has fantastic Fortran support](https://developer.nvidia.com/hpc-sdk), [the new US Dept. of Energy Exascale supercomputer *Frontier*](https://www.olcf.ornl.gov/frontier/) will use AMD GPUs which have [hipfort, a Fortran interface to AMD GPU libraries](https://github.com/ROCmSoftwarePlatform/hipfort), and [Intel's GPU platform and Fortran compiler are widely used as well](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html).
 Fortran has a wonderfully rich history, and it's certainly a part of our future.
 
 > Much of my work has come from being lazy. I didn't like writing programs, and so, when I was working on the IBM 701, writing programs for computing missile trajectories, I started work on a programming system to make it easier to write programs.
@@ -614,3 +711,10 @@ I hope you all enjoyed foray into the history of programming languages (and comp
 * <a target="_blank" name="ref_britannica_algol" href="https://www.britannica.com/technology/ALGOL-computer-language">Britannica: ALGOL computer language</a>
 * <a target="_blank" name="ref_early_timesharing" href="https://www.cs.cornell.edu/wya/AcademicComputing/text/earlytimesharing.html">Cornell University: Early Timesharing</a>
 * <a target="_blank" name="ref_apk_wiki_timeline" href="https://aplwiki.com/index.php?title=Timeline_of_influential_array_languages">APL Wiki Timeline</a>
+* <a target="_blank" name="ref_ibm_5110_emu" href="http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html">IBM 5110 Emulator</a>
+* <a target="_blank" name="ref_ibm_apl_bitsavers" href="http://www.bitsavers.org/pdf/ibm/apl/">Bit Savers: IBM APL References</a>
+* <a target="_blank" name="ref_ibm_apl_bitsavers_refcard" href="http://www.bitsavers.org/pdf/ibm/apl/S210-0007-0_APL_360_Reference_Card.pdf">APL\360 Reference Card</a>
+* <a target="_blank" name="ref_ibm_apl_bitsavers_68manual" href="http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.pdf">APL\360 User Manual</a>
+* <a target="_blank" name="ref_tut_a68" href="https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.83.4668&rep=rep1&type=pdf">Tutorial on Algol68</a>
+* <a target="_blank" name="ref_g77" href="http://www.kilmnj.com/g77/">GNU Fortran 77 (g77) Legacy Site</a>
+* <a target="_blank" name="ref_g77_legacy_tarball" href="https://gfortran.meteodat.ch/download/legacy_g77/">Legacy G77 tarball</a>
