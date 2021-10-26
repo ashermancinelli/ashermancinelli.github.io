@@ -613,4 +613,4 @@ I hope you all enjoyed foray into the history of programming languages (and comp
 * <a target="_blank" name="ref_ecp_frontier" href="https://www.olcf.ornl.gov/frontier/">US DOE Frontier Supercomputer at ORNL</a>
 * <a target="_blank" name="ref_britannica_algol" href="https://www.britannica.com/technology/ALGOL-computer-language">Britannica: ALGOL computer language</a>
 * <a target="_blank" name="ref_early_timesharing" href="https://www.cs.cornell.edu/wya/AcademicComputing/text/earlytimesharing.html">Cornell University: Early Timesharing</a>
-
+* <a target="_blank" name="ref_apk_wiki_timeline" href="https://aplwiki.com/index.php?title=Timeline_of_influential_array_languages">APL Wiki Timeline</a>
