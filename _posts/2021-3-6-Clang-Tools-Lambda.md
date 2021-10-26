@@ -506,7 +506,9 @@ The full code listings can be found in the [repository linked here](https://gith
 The code snippets used here for example purposes will not map perfectly to the current repository, but should
 serve as a concrete starting point.
 
-## Additional References
+{% include footer.html %}
+
+## References
 
 1. [Lambda Capture tool](https://github.com/ashermancinelli/lambda-capture-checker)
 1. [RAJA](https://github.com/LLNL/RAJA/blob/main/docs/sphinx/user_guide/index.rst)

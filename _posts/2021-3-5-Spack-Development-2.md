@@ -239,3 +239,5 @@ Read on for discussion on additional uses for environments you should consider i
 [Previous in this Series](/spack1)
 
 [Next in this Series](/spack3)
+
+{% include footer.html %}

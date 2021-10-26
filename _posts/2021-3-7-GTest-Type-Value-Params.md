@@ -328,6 +328,8 @@ all:
 	$(CXX) addone_test.cpp $(CFLAGS) -o tests
 ```
 
+{% include footer.html %}
+
 ## References
 
 - [Blog Post: Parameterized testing with GTest](https://www.sandordargo.com/blog/2019/04/24/parameterized-testing-with-gtest)

@@ -95,3 +95,5 @@ This way, the profiling team may work on a known working configuration of the so
 [Previous in this Series](/spack2)
 
 [Next in this Series](/spack4)
+
+{% include footer.html %}
