@@ -1,0 +1,6 @@
+gem 'kramdown-parser-gfm'
+gem 'jekyll-spaceship'
+gem 'jekyll-feed'
+gem 'jekyll'
+gem 'jemoji'
+gem 'jekyll-sitemap'

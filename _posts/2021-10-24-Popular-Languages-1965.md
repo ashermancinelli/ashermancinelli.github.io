@@ -1,28 +1,26 @@
 ---
 layout: post
-title: Using the Most Popular Programming Languages of 1965
-permalink: /pop-langs-1965
+title: Using the Most Popular Programming Languages of the '60s
+permalink: /pop-langs-1960s
 ---
 
-We use the 6 most popular programming languages of 1965 to solve a leetcode problem!
+We use the 6 most popular programming languages of the 1960's to solve a leetcode problem!
 
-Most of these langauges have changed *so* much since 1965, so the way I'm using these languages won't be *exactly* the same as they were used back then.
+Most of these languages have changed a lot since the 1960s, so the way I'm using these languages won't be quite the same as they were used back then.
 For example, I couldn't find a way to compile and/or run an ALGOL50 program, so I'll have to use Algol68, a later standard of the language.
 Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
-For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the langauge back in the day - except for APL.
-I'll stick to using the APL derivative BQN since I'm not as interested in learning a new version of APL.
+For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day - except for APL.
 
+I'll stick to using the APL derivative BQN since I'm not interested in learning a new version of APL.
 I'll be looking at the languages in ascending order based on their popularity in 1965.
 
-Along with my solution for each language, I'll give a little bit of history.
+Along with my solution for each language, I'll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).
 
 <a target="_blank" href="https://github.com/ashermancinelli/algorithm-testbed">All these solutions and the build system needed to compile the examples can be found in this repository.</a>
 
 ## Problem
 
-[
-Find the peak element.
-Element that is greater than both neighbors.
+[Find the element that is greater than both neighbors, aka the peak element.
 ](https://leetcode.com/problems/find-peak-element/)
 
 #### Example 1:
@@ -66,25 +64,16 @@ We'll start at the bottom with APL and work our way up to Fortran.
 > Edsger Dijkstra
 
 APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[[ref](#ref_hist_apl_computer_history)].
-
 Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
-
 Finally in 1966 the IBM released APL360 written in a bit under 40,000 lines of 360 assembly, called APL after Iverson's famous paper *A Programming Language*.
 
-It was at this time that some of my colleagues at Pacific Northwest National Laboratory first tried APL on the IBM mainframes, and when Richard Stallman wrote a text editor in APL [[ref](#ref_gnuapl_stallman)].
-
 Just before leaving IBM, in 1979 Iverson gave his famous *ACM Turing Award Lecture* titled *Notation as a tool of Thought* where he builds up algorithm intuition in the reader using the APL language[[ref](#ref_ntot)].
-
 In 1980, Iverson left IBM for I. P. Sharp Associates where he developed SHARP APL [[ref](#ref_wiki_iverson)].
-
 It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation today and a significant force in the APL community[[ref](#ref_hist_dyalog)].
-
-Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month in October 2021.
+Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month (October 2021).
 
 I used the BQN language as my APL variant, as it's very actively developed and I believe in the developers behind the project.
-
 APL is the only language where I opted for a newer implementation instead of finding the oldest one possible.
-
 Marshall Lochbaum began designing BQN in collaboration with his colleagues at Dyalog before taking it on as a personal project in 2020[[ref](#ref_bqn_hist)].
 
 Here's my BQN solution:
@@ -111,6 +100,42 @@ You can generate diagrams like these on your own by clicking the *Explain* butto
   alt="Here's an explanation of each part of this solution"
   width=600/>
 </center>
+
+These two <a href="https://github.com/mlochbaum/BQN/blob/master/doc/train.md" target="_blank">three-trains</a> give us a bit map indicating positions where the input is greater than the right-shift (the first train) or the left-shift (the second train). `∧`-ing these together gives us a mask to get the peak element.
+```
+   (⊢>») 1‿2‿3‿1
+⟨ 1 1 1 0 ⟩
+
+   («<⊢) 1‿2‿3‿1
+⟨ 0 0 1 1 ⟩
+
+   # another 3-train!
+   ((⊢>»)∧(«<⊢)) 1‿2‿3‿1
+⟨ 0 0 1 0 ⟩
+```
+
+If our first or last element is greater than the inner element however, this will give us a wrong answer:
+```
+   ((⊢>»)∧(«<⊢)) 2‿1‿2‿3‿1
+⟨ 1 0 0 1 0 ⟩
+```
+
+So we'll make another bitmap to not select the first or last elements, and `∧` the two together.
+```
+   {0∾((2-˜≠𝕩)⥊1)∾0} 2‿1‿2‿3‿1
+⟨ 0 1 1 1 0 ⟩
+
+   ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«<⊢)∧(⊢>»)) 2‿1‿2‿3‿1
+⟨ 0 0 0 1 0 ⟩
+```
+
+Now we just grab the first true index and we have our answer:
+```
+   (({0∾((2-˜≠𝕩)⥊1)∾0}∧(«<⊢)∧(⊢>»))⊐(1˙)) 1‿2‿1‿3‿5‿6‿4
+┌·   
+· 1  
+    ┘
+```
 
 ### [Lisp](#content)
 
@@ -305,17 +330,32 @@ And we can run it on a few inputs to verify our solution:
 >
 > Edsger Dijkstra
 
-stands for "Beginner’s All-Purpose Symbolic Instruction Code"[[ref](#ref_time_basic)].
+BASIC stands for *Beginner’s All-Purpose Symbolic Instruction Code*[[ref](#ref_time_basic)].
+BASIC was designed by two math professors at Dartmouth College in 1964.
+John Kemeny, one of the co-creators of BASIC attended lectures from  John von Neumann and worked as Albert Einstein’s mathematical assistant for a time[[ref](#ref_time_basic)], and Tom Kurtz, the other co-creator, first proposed the concept of time-sharing[[ref](#ref_early_timesharing)].
+These guys were clearly pretty bright.
+BASIC was probably the first beginner-oriented language, with the goal of getting students started writing programs as quickly as possible.
 
-I used FreeBASIC for this example.
+> We needed a language that could be ‘taught’ to virtually all students (and faculty) without their having to take a course.
+>
+> Thomas Kurtz, co-inventor of BASIC
+
+Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned when I wrote Excel macros when I worked in the finance department of [Micron](https://www.micron.com/).
+
+Although it was a programming on-ramp for me, I still have to side with Dijkstra on BASIC (although maybe not so harshly).
+BASIC was the product of some brilliant folks and it had a huge impact on the history of programming, but I can't say I recommend it today.
+
+This solution is pretty much the same solution I used for the rest of the programming languages: I iterate from one greater than the lower bound to one less than the upper bound and check both neighbors to see if we have a peak element.
+
+I used FreeBASIC to run this example:
 ```basic
-         dim i0(1 to 4) as integer
+         dim i0(1 to 4) as Integer
          i0(1) = 1
          i0(2) = 2
          i0(3) = 3
          i0(4) = 1
 
-         dim i1(1 to 7) as integer
+         dim i1(1 to 7) as Integer
          i1(1) = 1
          i1(2) = 2
          i1(3) = 1
@@ -325,7 +365,7 @@ I used FreeBASIC for this example.
          i1(7) = 4
 
          function solve(prob() as Integer) as Integer
-             for i as integer = lbound(prob)+1 to ubound(prob)-1
+             for i as Integer = lbound(prob)+1 to ubound(prob)-1
                  if (prob(i)>prob(i+1) and prob(i)>prob(i-1)) then solve=i-1
              next
          end function
@@ -572,4 +612,5 @@ I hope you all enjoyed foray into the history of programming languages (and comp
 * <a target="_blank" name="ref_flang" href="https://github.com/llvm/llvm-project/tree/main/flang#flang">Flang Fortran Compiler</a>
 * <a target="_blank" name="ref_ecp_frontier" href="https://www.olcf.ornl.gov/frontier/">US DOE Frontier Supercomputer at ORNL</a>
 * <a target="_blank" name="ref_britannica_algol" href="https://www.britannica.com/technology/ALGOL-computer-language">Britannica: ALGOL computer language</a>
+* <a target="_blank" name="ref_early_timesharing" href="https://www.cs.cornell.edu/wya/AcademicComputing/text/earlytimesharing.html">Cornell University: Early Timesharing</a>
 
