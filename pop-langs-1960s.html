@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Using the Most Popular Programming Languages of the '60s – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!
+
+">
+    <meta property="og:description" content="We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Using the Most Popular Programming Languages of the '60s">
+    <meta property="twitter:title" content="Using the Most Popular Programming Languages of the '60s">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Using the Most Popular Programming Languages of the '60s</h1>
+
+  <div class="entry">
+    <p>We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</p>
+
+<p>Most of these languages have changed a lot since the 1960s, so the way I’m using these languages won’t be quite the same as they were used back then.
+For example, I couldn’t find a way to compile and/or run an ALGOL50 program, so I’ll have to use Algol68, a later standard of the language.
+Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
+For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day - except for APL.</p>
+
+<p>I’ll stick to using the APL derivative BQN since I’m not interested in learning a new version of APL.
+I’ll be looking at the languages in ascending order based on their popularity in 1965.</p>
+
+<p>Along with my solution for each language, I’ll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not <img class="emoji" title=":smile:" alt=":smile:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png" height="20" width="20">).</p>
+
+<p><a target="_blank" href="https://github.com/ashermancinelli/algorithm-testbed">All these solutions and the build system needed to compile the examples can be found in this repository.</a></p>
+
+<h2 id="problem">Problem</h2>
+
+<p><a href="https://leetcode.com/problems/find-peak-element/">Find the element that is greater than both neighbors, aka the peak element.
+</a></p>
+
+<h4 id="example-1">Example 1:</h4>
+
+<p><strong>Input</strong>: <code class="language-plaintext highlighter-rouge">nums = [1,2,3,1]</code></p>
+
+<p><strong>Output</strong>: <code class="language-plaintext highlighter-rouge">2</code></p>
+
+<p><strong>Explanation</strong>: <code class="language-plaintext highlighter-rouge">3</code> is a peak element and your function should return the index number <code class="language-plaintext highlighter-rouge">2</code>.</p>
+
+<h4 id="example-2">Example 2:</h4>
+
+<p><strong>Input</strong>: <code class="language-plaintext highlighter-rouge">nums = [1,2,1,3,5,6,4]</code></p>
+
+<p><strong>Output</strong>: <code class="language-plaintext highlighter-rouge">1</code> or <code class="language-plaintext highlighter-rouge">5</code></p>
+
+<p><strong>Explanation</strong>: Your function can return either index number <code class="language-plaintext highlighter-rouge">1</code> where the peak element is <code class="language-plaintext highlighter-rouge">2</code>, or index number <code class="language-plaintext highlighter-rouge">5</code> where the peak element is <code class="language-plaintext highlighter-rouge">6</code>.</p>
+
+<h4 id="constraints">Constraints:</h4>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">1 &lt;= nums.length &lt;= 1000</code></li>
+  <li><code class="language-plaintext highlighter-rouge">-231 &lt;= nums[i] &lt;= 231 - 1</code></li>
+  <li>
+<code class="language-plaintext highlighter-rouge">nums[i] != nums[i + 1]</code> for all valid <code class="language-plaintext highlighter-rouge">i</code>.</li>
+</ul>
+
+<h2 id="content">Content</h2>
+
+<p>Here’s how the various languages stack up.
+We’ll start at the bottom with APL and work our way up to Fortran.</p>
+
+<ol>
+  <li><a href="#fortran">Fortran</a></li>
+  <li><a href="#cobol">COBOL</a></li>
+  <li><a href="#algol">ALGOL</a></li>
+  <li><a href="#basic">BASIC</a></li>
+  <li><a href="#lisp">Lisp</a></li>
+  <li><a href="#apl">APL</a></li>
+</ol>
+
+<h3 id="apl"><a href="#content">APL</a></h3>
+
+<blockquote>
+  <p>APL is a mistake, carried through to perfection. It is the language of the future for the programming techniques of the past: it creates a new generation of coding bums.</p>
+
+  <p>Edsger Dijkstra</p>
+</blockquote>
+
+<p>APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[<a href="#ref_hist_apl_computer_history">ref</a>].
+Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
+Finally in 1966 the IBM released APL360 written in a bit under 40,000 lines of 360 assembly, called APL after Iverson’s famous paper <em>A Programming Language</em>.</p>
+
+<p>Just before leaving IBM, in 1979 Iverson gave his famous <em>ACM Turing Award Lecture</em> titled <em>Notation as a tool of Thought</em> where he builds up algorithm intuition in the reader using the APL language[<a href="#ref_ntot">ref</a>].
+In 1980, Iverson left IBM for I. P. Sharp Associates where he developed SHARP APL [<a href="#ref_wiki_iverson">ref</a>].
+It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation today and a significant force in the APL community[<a href="#ref_hist_dyalog">ref</a>].
+Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month (October 2021).</p>
+
+<p>I used the BQN language as my APL variant, as it’s very actively developed and I believe in the developers behind the project.
+APL is the only language where I opted for a newer implementation instead of finding the oldest one possible.
+Marshall Lochbaum began designing BQN in collaboration with his colleagues at Dyalog before taking it on as a personal project in 2020[<a href="#ref_bqn_hist">ref</a>].</p>
+
+<p>Here’s my BQN solution:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i0 ← 1‿2‿3‿1
+   i1 ← 1‿2‿1‿3‿5‿6‿4
+   i2 ← 2‿1‿2‿3‿1
+   F ← ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&lt;⊢)∧(⊢&gt;»))⊐(1˙)
+   F ¨ i0‿i1‿i2
+┌─
+· ┌·    ┌·    ┌·
+  · 2   · 1   · 3
+      ┘     ┘     ┘
+                    ┘
+</code></pre></div></div>
+
+<p>And here’s the image explanation of the solution.
+These diagrams are meant to be read from top to bottom as the BQN program executes.
+You can generate diagrams like these on your own by clicking the <em>Explain</em> button before running your code on the <a href="https://mlochbaum.github.io/BQN/try.html" target="_blank">Try BQN page linked here.</a></p>
+
+<center>
+<img src="/images/lc-peak-element/bqn.png" alt="Here's an explanation of each part of this solution" width="600">
+</center>
+
+<p>These two <a href="https://github.com/mlochbaum/BQN/blob/master/doc/train.md" target="_blank">three-trains</a> give us a bit map indicating positions where the input is greater than the right-shift (the first train) or the left-shift (the second train). <code class="language-plaintext highlighter-rouge">∧</code>-ing these together gives us a mask to get the peak element.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   (⊢&gt;») 1‿2‿3‿1
+⟨ 1 1 1 0 ⟩
+
+   («&lt;⊢) 1‿2‿3‿1
+⟨ 0 0 1 1 ⟩
+
+   # another 3-train!
+   ((⊢&gt;»)∧(«&lt;⊢)) 1‿2‿3‿1
+⟨ 0 0 1 0 ⟩
+</code></pre></div></div>
+
+<p>If our first or last element is greater than the inner element however, this will give us a wrong answer:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   ((⊢&gt;»)∧(«&lt;⊢)) 2‿1‿2‿3‿1
+⟨ 1 0 0 1 0 ⟩
+</code></pre></div></div>
+
+<p>So we’ll make another bitmap to not select the first or last elements, and <code class="language-plaintext highlighter-rouge">∧</code> the two together.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   {0∾((2-˜≠𝕩)⥊1)∾0} 2‿1‿2‿3‿1
+⟨ 0 1 1 1 0 ⟩
+
+   ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&lt;⊢)∧(⊢&gt;»)) 2‿1‿2‿3‿1
+⟨ 0 0 0 1 0 ⟩
+</code></pre></div></div>
+
+<p>Now we just grab the first true index and we have our answer:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   (({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&lt;⊢)∧(⊢&gt;»))⊐(1˙)) 1‿2‿1‿3‿5‿6‿4
+┌·   
+· 1  
+    ┘
+</code></pre></div></div>
+
+<h3 id="lisp"><a href="#content">Lisp</a></h3>
+
+<blockquote>
+  <p>LISP has been jokingly described as “the most intelligent way to misuse a computer”. I think that description a great compliment because it transmits the full flavor of liberation: it has assisted a number of our most gifted fellow humans in thinking previously impossible thoughts.</p>
+
+  <p>Edsger Dijkstra</p>
+</blockquote>
+
+<p>The 5th most popular programming language in 1965 was Lisp.</p>
+
+<p>Lisp was invented by John McCarthy in 1958 at MIT with his paper <em>Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I</em>, paralleling Ken Iverson’s paper <em>A Programming Language</em>.[<a href="#ref_hist_scheme">ref</a>].</p>
+
+<p>I used MIT Scheme for my Lisp since it seems like the oldest lisp implementation that I can still install.</p>
+
+<p>Although Scheme is such an old language, it felt very futuristic and clean.
+I’ve used other lisps before, but I’m nowhere near an expert.
+Scheme felt like a wonderful and comprehensible tool.
+I really loved using it and I think I’ll be spending some more quality time with Scheme in these videos.</p>
+
+<p>If you have a better scheme solution, please let me know, I’d love to see it.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">define</span> <span class="nv">shl</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">v</span> <span class="nv">l</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">reverse</span> <span class="p">(</span><span class="nb">cons</span> <span class="nv">v</span> <span class="p">(</span><span class="nb">reverse</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">l</span><span class="p">))))</span>
+    <span class="p">))</span>
+
+<span class="p">(</span><span class="k">define</span> <span class="nv">shr</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">v</span> <span class="nv">l</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">cons</span> <span class="nv">v</span> <span class="p">(</span><span class="nb">reverse</span> <span class="p">(</span><span class="nb">cdr</span> <span class="p">(</span><span class="nb">reverse</span> <span class="nv">l</span><span class="p">))))</span>
+    <span class="p">))</span>
+
+<span class="p">(</span><span class="k">define</span> <span class="nv">solve</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">input</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">reduce</span> <span class="nv">max</span> <span class="mi">0</span>
+            <span class="p">(</span><span class="nb">map</span>
+              <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">a</span> <span class="nv">b</span><span class="p">)</span>
+                <span class="p">(</span><span class="k">if</span> <span class="nv">a</span> <span class="nv">b</span> <span class="mi">-1</span><span class="p">))</span>
+              <span class="p">(</span><span class="nb">map</span> <span class="nv">&gt;</span>
+                   <span class="nv">input</span>
+                   <span class="p">(</span><span class="nb">map</span> <span class="nv">max</span>
+                        <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)</span>
+                        <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)))</span>
+              <span class="p">(</span><span class="nf">iota</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">input</span><span class="p">))))))</span>
+
+<span class="p">(</span><span class="nb">for-each</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">l</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">newline</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">display</span> <span class="p">(</span><span class="nf">solve</span> <span class="nv">l</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">newline</span><span class="p">))</span>
+  <span class="p">(</span><span class="nb">list</span>
+    <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">1</span> <span class="mi">3</span> <span class="mi">5</span> <span class="mi">6</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="o">'</span><span class="p">(</span><span class="nf">2</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">2</span> <span class="mi">1</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>I did find that the builtin functions for Scheme were a bit lacking.
+For example I had to write my own functions to shift a value into a list.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">define</span> <span class="nv">shl</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">v</span> <span class="nv">l</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">reverse</span> <span class="p">(</span><span class="nb">cons</span> <span class="nv">v</span> <span class="p">(</span><span class="nb">reverse</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">l</span><span class="p">))))</span>
+    <span class="p">))</span>
+
+<span class="p">(</span><span class="k">define</span> <span class="nv">shr</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">v</span> <span class="nv">l</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">cons</span> <span class="nv">v</span> <span class="p">(</span><span class="nb">reverse</span> <span class="p">(</span><span class="nb">cdr</span> <span class="p">(</span><span class="nb">reverse</span> <span class="nv">l</span><span class="p">))))</span>
+    <span class="p">))</span>
+</code></pre></div></div>
+
+<p>Here’s what it looks like to use them.
+Although I had to write my own, it did come easily.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="c1">;Value: (2 3 0)</span>
+
+<span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>
+
+<span class="c1">;Value: (0 1 2)</span>
+</code></pre></div></div>
+
+<p>Let’s walk through this solution inside-out.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="k">define</span> <span class="nv">solve</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">input</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">reduce</span> <span class="nv">max</span> <span class="mi">0</span>
+            <span class="p">(</span><span class="nb">map</span>
+              <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">a</span> <span class="nv">b</span><span class="p">)</span>
+                <span class="p">(</span><span class="k">if</span> <span class="nv">a</span> <span class="nv">b</span> <span class="mi">-1</span><span class="p">))</span>
+              <span class="p">(</span><span class="nb">map</span> <span class="nv">&gt;</span>
+                   <span class="nv">input</span>
+                   <span class="p">(</span><span class="nb">map</span> <span class="nv">max</span>
+                        <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)</span>
+                        <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)))</span>
+              <span class="p">(</span><span class="nf">iota</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">input</span><span class="p">))))))</span>
+</code></pre></div></div>
+
+<p>For an input <code class="language-plaintext highlighter-rouge">(1 2 3 1)</code>, we’ll find the max of shifting left and right.
+If a number is greater than the max of the left and right, we know it’s greater than both the left and the right value.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="k">define</span> <span class="nv">input</span> <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;Value: a</span>
+
+<span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nb">map</span> <span class="nv">max</span>
+        <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">))</span>
+
+<span class="c1">;Value: (2 3 2 3)</span>
+</code></pre></div></div>
+
+<p>Now we just have to find the indices in the input where the input is greater than the last return value, the greater of either shift.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code>      <span class="p">(</span><span class="nb">map</span> <span class="nv">&gt;</span>
+           <span class="nv">input</span>
+           <span class="p">(</span><span class="nb">map</span> <span class="nv">max</span>
+                <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)</span>
+                <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)))</span>
+
+<span class="c1">;Value: (#f #f #t #f)</span>
+</code></pre></div></div>
+
+<p>Then we can just take the index if the previous map gave us a <code class="language-plaintext highlighter-rouge">#t</code> true value, or -1 otherwise.
+We then take the max of these values to find the peak element.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nb">map</span>
+        <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">a</span> <span class="nv">b</span><span class="p">)</span>
+          <span class="p">(</span><span class="k">if</span> <span class="nv">a</span> <span class="nv">b</span> <span class="mi">-1</span><span class="p">))</span>
+        <span class="p">(</span><span class="nb">map</span> <span class="nv">&gt;</span>
+             <span class="nv">input</span>
+             <span class="p">(</span><span class="nb">map</span> <span class="nv">max</span>
+                  <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)</span>
+                  <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)))</span>
+        <span class="p">(</span><span class="nf">iota</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">input</span><span class="p">)))</span>
+
+<span class="c1">;Value: (-1 -1 2 -1)</span>
+</code></pre></div></div>
+
+<p>Here’s the same code as before, we’ve just wrapped it in a max reduce to get our final answer.</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">reduce</span> <span class="nv">max</span> <span class="mi">0</span>
+              <span class="p">(</span><span class="nb">map</span>
+                <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">a</span> <span class="nv">b</span><span class="p">)</span>
+                  <span class="p">(</span><span class="k">if</span> <span class="nv">a</span> <span class="nv">b</span> <span class="mi">-1</span><span class="p">))</span>
+                <span class="p">(</span><span class="nb">map</span> <span class="nv">&gt;</span>
+                     <span class="nv">input</span>
+                     <span class="p">(</span><span class="nb">map</span> <span class="nv">max</span>
+                          <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)</span>
+                          <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)))</span>
+                <span class="p">(</span><span class="nf">iota</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">input</span><span class="p">))))</span>
+<span class="c1">;Value: 2</span>
+</code></pre></div></div>
+
+<p>Of course now we can just wrap all that code in a function:</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="k">define</span> <span class="nv">solve</span>
+        <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">input</span><span class="p">)</span>
+          <span class="p">(</span><span class="nf">reduce</span> <span class="nv">max</span> <span class="mi">0</span>
+                  <span class="p">(</span><span class="nb">map</span>
+                    <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">a</span> <span class="nv">b</span><span class="p">)</span>
+                      <span class="p">(</span><span class="k">if</span> <span class="nv">a</span> <span class="nv">b</span> <span class="mi">-1</span><span class="p">))</span>
+                    <span class="p">(</span><span class="nb">map</span> <span class="nv">&gt;</span>
+                         <span class="nv">input</span>
+                         <span class="p">(</span><span class="nb">map</span> <span class="nv">max</span>
+                              <span class="p">(</span><span class="nf">shl</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)</span>
+                              <span class="p">(</span><span class="nf">shr</span> <span class="mi">0</span> <span class="nv">input</span><span class="p">)))</span>
+                    <span class="p">(</span><span class="nf">iota</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">input</span><span class="p">))))))</span>
+      
+<span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">solve</span> <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;Value: 2</span>
+</code></pre></div></div>
+
+<p>And we can run it on a few inputs to verify our solution:</p>
+<div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nb">for-each</span>
+        <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">l</span><span class="p">)</span>
+          <span class="p">(</span><span class="nb">newline</span><span class="p">)</span>
+          <span class="p">(</span><span class="nb">display</span> <span class="p">(</span><span class="nf">solve</span> <span class="nv">l</span><span class="p">))</span>
+        <span class="p">(</span><span class="nb">list</span>
+          <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>
+          <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">1</span> <span class="mi">3</span> <span class="mi">5</span> <span class="mi">6</span> <span class="mi">4</span><span class="p">)</span>
+          <span class="o">'</span><span class="p">(</span><span class="nf">2</span> <span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">2</span> <span class="mi">1</span><span class="p">)))</span>
+
+<span class="mi">2</span>
+<span class="mi">5</span>
+<span class="mi">3</span>
+</code></pre></div></div>
+
+<h3 id="basic"><a href="#content">BASIC</a></h3>
+
+<blockquote>
+  <p>It is practically impossible to teach good programming to students that have had a prior exposure to BASIC: as potential programmers they are mentally mutilated beyond hope of regeneration.</p>
+
+  <p>Edsger Dijkstra</p>
+</blockquote>
+
+<p>BASIC stands for <em>Beginner’s All-Purpose Symbolic Instruction Code</em>[<a href="#ref_time_basic">ref</a>].
+BASIC was designed by two math professors at Dartmouth College in 1964.
+John Kemeny, one of the co-creators of BASIC attended lectures from  John von Neumann and worked as Albert Einstein’s mathematical assistant for a time[<a href="#ref_time_basic">ref</a>], and Tom Kurtz, the other co-creator, first proposed the concept of time-sharing[<a href="#ref_early_timesharing">ref</a>].
+These guys were clearly pretty bright.
+BASIC was probably the first beginner-oriented language, with the goal of getting students started writing programs as quickly as possible.</p>
+
+<blockquote>
+  <p>We needed a language that could be ‘taught’ to virtually all students (and faculty) without their having to take a course.</p>
+
+  <p>Thomas Kurtz, co-inventor of BASIC</p>
+</blockquote>
+
+<p>Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned when I wrote Excel macros when I worked in the finance department of <a href="https://www.micron.com/">Micron</a>.</p>
+
+<p>Although it was a programming on-ramp for me, I still have to side with Dijkstra on BASIC (although maybe not so harshly).
+BASIC was the product of some brilliant folks and it had a huge impact on the history of programming, but I can’t say I recommend it today.</p>
+
+<p>This solution is pretty much the same solution I used for the rest of the programming languages: I iterate from one greater than the lower bound to one less than the upper bound and check both neighbors to see if we have a peak element.</p>
+
+<p>I used FreeBASIC to run this example:</p>
+<pre><code class="language-basic">         dim i0(1 to 4) as Integer
+         i0(1) = 1
+         i0(2) = 2
+         i0(3) = 3
+         i0(4) = 1
+
+         dim i1(1 to 7) as Integer
+         i1(1) = 1
+         i1(2) = 2
+         i1(3) = 1
+         i1(4) = 3
+         i1(5) = 5
+         i1(6) = 6
+         i1(7) = 4
+
+         function solve(prob() as Integer) as Integer
+             for i as Integer = lbound(prob)+1 to ubound(prob)-1
+                 if (prob(i)&gt;prob(i+1) and prob(i)&gt;prob(i-1)) then solve=i-1
+             next
+         end function
+
+         print solve(i0())
+         print solve(i1())
+</code></pre>
+
+<h3 id="algol"><a href="#content">ALGOL</a></h3>
+
+<p>You may notice that Algol is the only language that does not have a scathing quote from Dijkstra.
+This is probably in part because Dijkstra was a significant contributor to Algol![<a href="#ref_cwi_dijkstra">ref</a>]</p>
+
+<blockquote>
+  <p>In 1958-1959, Dijkstra was involved in a number of meetings that culminated in the publication of the report defining the ALGOL 60 language. Ironically, Dijkstra’s name does not appear in the list of 13 authors of the final report: it seems he left the committee prematurely because he could not agree with the majority opinions.[<a href="#ref_cwi_dijkstra">ref</a>]</p>
+</blockquote>
+
+<p>Algol/Fortran family tree:</p>
+<center>
+<img src="./images/lc-peak-element/algol-fortran-fam-tree.png" alt="Algol/Fortran Family Tree" width="600">
+</center>
+
+<blockquote>
+  <p>Here is a language so far ahead of its time that it was not only an improvement on its predecessors but also on nearly all its successors.</p>
+
+  <p>Tony Hoare[<a href="https://en.wikipedia.org/wiki/ALGOL">ref</a>]</p>
+</blockquote>
+
+<p>I’m using the Algol68 Genie compiler-interpreter for this code.
+I honestly found Algol pretty usable!
+I saw some code that used function pointers, and it looked pretty clean.
+It seems like Algol has some pretty modern first-class-function capabilities.
+I can see why it was the language in which computer algorithms were published for many years[<a href="#ref_britannica_algol">ref</a>].
+ALGOL was actually designed by an international committee of the ACM during 1958–60 for this purpose.</p>
+
+<pre><code class="language-algol">PROC solve = ([]INT elements)INT: (
+  INT found := -1;
+  FOR i FROM 1+(LWB elements) TO (UPB elements)-1
+  DO
+    IF elements[i] &gt; elements[i+1] AND elements[i] &gt; elements[i-1]
+      THEN
+        found := i-1
+      FI
+  OD;
+  found 
+);
+</code></pre>
+
+<p>I honestly wouldn’t mind writing more Algol down the line.</p>
+
+<h3 id="cobol"><a href="#content">COBOL</a></h3>
+
+<blockquote>
+  <p>The use of COBOL cripples the mind; its teaching should, therefore, be regarded as a criminal offense.</p>
+
+  <p>Edsger Dijkstra</p>
+</blockquote>
+
+<p>The history behind COBOL is extremely inspiring and exciting, however I have to side with Dijkstra.
+COBOL was <em>very</em> painful to use.
+And I only learned the most shallow bit of COBOL - in order to read more like plain English, COBOL has <strong>over 300 keywords</strong>. 
+I can only imagine what it feels like to maintain a 500k line COBOL codebase.</p>
+
+<p>I used the GNUCobol compiler for this example.
+You’ll notice that everything is indented - COBOL, like several of the other languages I’m covering here, was originally used on a punchcard <a href="#ref_os_wac">as explained in this article from opensource.com</a>.
+Each puncard represented <em>a single line of code</em>, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers</p>
+
+<pre><code class="language-cobol">       ID DIVISION.
+       PROGRAM-ID. ARRAYTEST.
+       ENVIRONMENT DIVISION.
+       DATA DIVISION. 
+       WORKING-STORAGE SECTION.
+      * Store both problems and their sizes and answers in one
+      * structure
+       01 SIZES PIC 9(3) OCCURS 2 TIMES VALUE 0.
+       01 OFFSETS PIC 9(3) OCCURS 2 TIMES VALUE 0.
+       01 PROBLEMS PIC 9(3) OCCURS 12 TIMES VALUE 0.
+       01 CURRENT-PROBLEM PIC 9(3) VALUE 0.
+       01 TMP PIC 9(3) VALUE 0.
+       01 IDX PIC 9(3) VALUE 1.
+       01 NPROBLEMS PIC 9(3) VALUE 2.
+       01 ANSWERS PIC S9(3) OCCURS 2 TIMES VALUE -1.
+       PROCEDURE DIVISION.
+
+       100-MAIN.
+
+      *    Set up problem [1,2,3,1]
+           MOVE 4 TO SIZES(1).
+           MOVE 0 TO OFFSETS(1).
+
+           MOVE 1 TO PROBLEMS(1).
+           MOVE 2 TO PROBLEMS(2).
+           MOVE 3 TO PROBLEMS(3).
+           MOVE 1 TO PROBLEMS(4).
+
+      *    Set up problem [1,2,1,3,5,6,4]
+           MOVE 7 TO SIZES(2).
+           MOVE 4 TO OFFSETS(2).
+
+           MOVE 1 TO PROBLEMS(5).
+           MOVE 2 TO PROBLEMS(6).
+           MOVE 1 TO PROBLEMS(7).
+           MOVE 3 TO PROBLEMS(8).
+           MOVE 5 TO PROBLEMS(9).
+           MOVE 6 TO PROBLEMS(10).
+           MOVE 4 TO PROBLEMS(11).
+
+      *    Run solve procedure on both problems
+           PERFORM VARYING CURRENT-PROBLEM FROM 1 BY 1 UNTIL CURRENT-PRO
+      -BLEM &gt; NPROBLEMS
+             MOVE OFFSETS(CURRENT-PROBLEM) TO IDX
+             PERFORM SOLVE
+             DISPLAY ANSWERS(CURRENT-PROBLEM) END-DISPLAY
+           END-PERFORM.
+
+           STOP RUN.
+
+       SOLVE.
+           PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX&gt;SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             IF PROBLEMS(TMP) &gt; PROBLEMS(TMP - 1)
+      -AND PROBLEMS(TMP) &gt; PROBLEMS(TMP + 1)
+               COMPUTE TMP = IDX - 1 END-COMPUTE
+               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+             END-IF
+           END-PERFORM.
+
+       PRINT-AR.
+           DISPLAY "IDX=" IDX " VALUE=" PROBLEMS(IDX) END-DISPLAY.
+</code></pre>
+
+<p>I certainly felt the weight of this when I tried to write this function:
+Every time I had to change a condition that wrapped a line, I would join the lines together and figure out where the new line break should be, and make sure to get the <code class="language-plaintext highlighter-rouge">-</code> character in the 7th column.
+I’m sure there are some more modern conventions around COBOL considering <em>5 billion lines of new COBOL code are written every year</em>[<a href="#ref_os_wac">ref</a>], but I’m pretty content not to write any COBOL for a while.</p>
+<pre><code class="language-cobol">       SOLVE.
+           PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX&gt;SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             IF PROBLEMS(TMP) &gt; PROBLEMS(TMP - 1)
+      -AND PROBLEMS(TMP) &gt; PROBLEMS(TMP + 1)
+               COMPUTE TMP = IDX - 1 END-COMPUTE
+               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+             END-IF
+           END-PERFORM.
+</code></pre>
+
+<p>Now on to the inspiring stuff: TLDR COBOL was designed by a consensus-driven committee with a huge focus on portability, and led by women.</p>
+
+<p>In 1959 Grace Hopper, a retired Navy officer, organized a meeting of users and manufacturers to conceive of a programming language in response to Mary Hawes’s call for a portable programming language, a language that could be compiled and ran on computers from multiple manufacturers.
+<a href="#ref_twitter_bryce_cobol">You can read more about the history of COBOL on this Twitter thread from Bryce Lelbach which you should <em>definitely</em> check out.</a></p>
+
+<p>I think we have a lot to learn from COBOL, a lot to be thankful for.
+<a href="#ref_iso_homepage">The ISO</a> didn’t come along until 1988, long after Grace Hopper initiated the committee for the development of COBOL.
+I’m sure we owe a huge debt to COBOL and the women-led consensus-driven model, and I want to learn all I can from that history.</p>
+
+<p>I still don’t want to write COBOL though <img class="emoji" title=":smile:" alt=":smile:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png" height="20" width="20">.</p>
+
+<h3 id="fortran"><a href="#content">Fortran</a></h3>
+
+<blockquote>
+  <p>FORTRAN, ‘the infantile disorder’, by now nearly 20 years old, is hopelessly inadequate for whatever computer application you have in mind today: it is now too clumsy, too risky, and too expensive to use.</p>
+
+  <p>Edsger Dijkstra</p>
+</blockquote>
+
+<p>Fortran, the grand finale, #1 on our list.
+I <em>completely</em> disagree with Dijkstra on this one - I love Fortran’s history and I occasionally write it professionally.</p>
+
+<p>In 1953, John Backus submitted a proposal to his bosses at IBM to develop a more practical alternative to assembly language[<a href="#ref_ftn_start">ref</a>].
+The first compiler didn’t come around until 1957.
+The name “Fortran” is derived from <a href="#ref_ftn_start">FORmula TRANslation</a>, and very quickly became the lingua franca for scientific computing.</p>
+
+<p>Fortran still is one of the most used programming languages in high performance computing (HPC), and it’s not going away any time soon.
+<a href="https://github.com/llvm/llvm-project/tree/main/flang#flang">The Flang project, part of the LLVM project,</a> is a modern Fortran compiler targeting the 2018 standard with support for OpenACC, OpenMP and other cool optimization stuff.
+It’s written in wonderfully modern and well-maintained C++, and I use the C++ style guide from Flang for my technical teams at my day job.
+Flang is definitely worth keeping an eye on, I think it will become a significant force in HPC in the coming years.</p>
+
+<p>I used the GNU gfortran compiler in fixed-form F77 mode for this example to get a better feel for historical Fortran:</p>
+
+<div class="language-fortran highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">c</span><span class="w">     </span><span class="n">Comments</span><span class="w"> </span><span class="n">require</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="s1">'c'</span><span class="k">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="n">column</span><span class="w">
+      </span><span class="k">program</span><span class="w"> </span><span class="n">main</span><span class="w">
+        </span><span class="kt">integer</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">ret</span><span class="w">
+        </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">i0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(/</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">/)</span><span class="w">
+        </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(/</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">/)</span><span class="w">
+        </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="w">
+        </span><span class="k">call</span><span class="w"> </span><span class="n">solve</span><span class="p">(</span><span class="n">i0</span><span class="p">,</span><span class="w"> </span><span class="nb">size</span><span class="p">(</span><span class="n">i0</span><span class="p">),</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
+        </span><span class="k">print</span><span class="o">*</span><span class="p">,</span><span class="n">ret</span><span class="w">
+        </span><span class="k">call</span><span class="w"> </span><span class="n">solve</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span><span class="w"> </span><span class="nb">size</span><span class="p">(</span><span class="n">i1</span><span class="p">),</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
+        </span><span class="k">print</span><span class="o">*</span><span class="p">,</span><span class="n">ret</span><span class="w">
+      </span><span class="k">end</span><span class="w"> </span><span class="k">program</span><span class="w">
+
+      </span><span class="k">subroutine</span><span class="w"> </span><span class="n">solve</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">,</span><span class="w"> </span><span class="n">ret</span><span class="p">)</span><span class="w">
+        </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="k">in</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="nb">len</span><span class="w">
+        </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="k">out</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">ret</span><span class="w">
+        </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">dimension</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">input</span><span class="w">
+
+        </span><span class="kt">integer</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="n">i</span><span class="w">
+
+        </span><span class="k">do</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nb">len</span><span class="mi">-1</span><span class="p">)</span><span class="w">
+          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">input</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">input</span><span class="p">(</span><span class="n">i</span><span class="mi">+1</span><span class="p">)</span><span class="w"> </span><span class="ow">.and.</span><span class="w"> </span><span class="n">input</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">input</span><span class="p">(</span><span class="n">i</span><span class="mi">-1</span><span class="p">))</span><span class="w"> </span><span class="k">then</span><span class="w">
+            </span><span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="mi">-1</span><span class="w">
+            </span><span class="k">return</span><span class="w">
+          </span><span class="k">endif</span><span class="w">
+        </span><span class="k">enddo</span><span class="w">
+      </span><span class="k">end</span><span class="w"> </span><span class="k">subroutine</span><span class="w">
+</span></code></pre></div></div>
+
+<p>GNU/GCC’s GFortran is also very actively maintained, <a href="https://developer.nvidia.com/hpc-sdk">the newest NVIDIA HPC SDK has fantastic Fortran support</a>, <a href="https://www.olcf.ornl.gov/frontier/">the new US Dept. of Energy Exascale supercomputer <em>Frontier</em></a> will use AMD GPUs which have <a href="https://github.com/ROCmSoftwarePlatform/hipfort">hipfort, a Fortran interface to AMD GPU libraries</a>, and <a href="https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html">Intel’s GPU platform and Fortran compiler are widely used as well</a>.
+Fortran has a wonderfully rich history, and it’s certainly a part of our future.</p>
+
+<blockquote>
+  <p>Much of my work has come from being lazy. I didn’t like writing programs, and so, when I was working on the IBM 701, writing programs for computing missile trajectories, I started work on a programming system to make it easier to write programs.</p>
+
+  <p>John Backus</p>
+</blockquote>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I hope you all enjoyed foray into the history of programming languages (and computing in general)!</p>
+
+<h2> Contact </h2>
+
+<p>You can reach me at any of the links below:</p>
+
+<ul>
+  <li><a target="_blank" href="https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ">YouTube</a></li>
+  <li><a target="_blank" href="https://www.linkedin.com/in/asher-mancinelli-bb4a56144/">LinkedIn</a></li>
+  <li><a target="_blank" href="https://github.com/ashermancinelli">GitHub</a></li>
+  <li><a target="_blank" href="mailto:ashermancinelli@gmail.com">Personal Email</a></li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a target="_blank" name="ref_ftn_start" href="https://en.wikipedia.org/wiki/Fortran#History">Fortran history</a></li>
+  <li><a target="_blank" name="ref_pop_langs" href="https://statisticsanddata.org/most-popular-programming-languages/">Most Popular Programming Languages</a></li>
+  <li><a target="_blank" name="ref_hist_apl_computer_history" href="https://computerhistory.org/blog/the-apl-programming-language-source-code/">The Apl Programming Language Source Code</a></li>
+  <li>
+<a target="_blank" name="ref_wiki_iverson"></a><a href="https://en.wikipedia.org/wiki/Kenneth_E._Iverson">Kenneth Iverson Wikipedia</a>
+</li>
+  <li><a target="_blank" name="ref_ntot" href="https://www.jsoftware.com/papers/tot.htm"><em>Notation as a Tool of Thought</em>, Ken Iverson</a></li>
+  <li><a target="_blank" name="ref_hist_dyalog" href="https://www.dyalog.com/uploads/files/apl50/Dyalog%20APL%20A%20Personal%20History.pdf">History of Dyalog</a></li>
+  <li><a target="_blank" name="ref_gnuapl_stallman" href="https://en.wikipedia.org/wiki/APL_(programming_language)#GNU_APL">GNU APL</a></li>
+  <li><a target="_blank" name="ref_pnnl" href="https://www.pnnl.gov/">Pacific Northwest National Laboratory</a></li>
+  <li><a target="_blank" name="ref_bqn_hist" href="https://mlochbaum.github.io/BQN/commentary/history.html">BQN’s Development History</a></li>
+  <li><a target="_blank" name="ref_hist_scheme" href="https://en.wikipedia.org/wiki/History_of_the_Scheme_programming_language">History of the Scheme Programming Language</a></li>
+  <li><a target="_blank" name="ref_apl_wiki" href="https://aplwiki.com/wiki/Main_Page">APL Wiki</a></li>
+  <li><a target="_blank" name="ref_apl_wiki_dyalog" href="https://aplwiki.com/wiki/Dyalog_APL">APL Wiki: Dyalog</a></li>
+  <li><a target="_blank" name="ref_apl_wiki_logos" href="https://aplwiki.com/wiki/APL_logo">APL Wiki: Logos</a></li>
+  <li><a target="_blank" name="ref_alg_testbed_repo" href="https://github.com/ashermancinelli/algorithm-testbed">Repository for all the solutions</a></li>
+  <li><a target="_blank" name="ref_time_basic" href="https://time.com/69316/basic/">Fifty Years of BASIC, the Programming Language That Made Computers Personal</a></li>
+  <li><a target="_blank" name="ref_cwi_dijkstra" href="https://www.cwi.nl/about/history/e-w-dijkstra-brilliant-colourful-and-opinionated">Edsger W. Dijkstra: Brilliant, Colourful, and Opinionated</a></li>
+  <li><a target="_blank" name="ref_si_cobol" href="https://americanhistory.si.edu/cobol/introduction">National Museum of American History</a></li>
+  <li><a target="_blank" name="ref_wiki_cobol" href="https://en.wikipedia.org/wiki/COBOL#:~:text=To%20support%20this%20English%2Dlike,ARE%20%2C%20and%20VALUE%20and%20VALUES%20.">Wikipedia: COBOL</a></li>
+  <li><a target="_blank" name="ref_os_wac" href="https://opensource.com/article/17/8/what-about-cobol">opensource.com: Don’t hate COBOL until you’ve tried it</a></li>
+  <li><a target="_blank" name="ref_twitter_bryce_cobol" href="https://twitter.com/blelbach/status/1259313973318451200">Bryce Lelbach Twitter Thread on COBOL</a></li>
+  <li><a target="_blank" name="ref_iso_homepage" href="https://www.iso.org/technical-committees.html">International Organization for Standardization (ISO)</a></li>
+  <li><a target="_blank" name="ref_flang" href="https://github.com/llvm/llvm-project/tree/main/flang#flang">Flang Fortran Compiler</a></li>
+  <li><a target="_blank" name="ref_ecp_frontier" href="https://www.olcf.ornl.gov/frontier/">US DOE Frontier Supercomputer at ORNL</a></li>
+  <li><a target="_blank" name="ref_britannica_algol" href="https://www.britannica.com/technology/ALGOL-computer-language">Britannica: ALGOL computer language</a></li>
+  <li><a target="_blank" name="ref_early_timesharing" href="https://www.cs.cornell.edu/wya/AcademicComputing/text/earlytimesharing.html">Cornell University: Early Timesharing</a></li>
+</ul>
+
+
+  </div>
+
+  <div class="date">
+    Written on October 24, 2021
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>

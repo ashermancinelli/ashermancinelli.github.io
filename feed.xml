@@ -1,4 +1,619 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-19T18:55:52-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-26T09:06:56-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+
+&lt;p&gt;Most of these languages have changed a lot since the 1960s, so the way I’m using these languages won’t be quite the same as they were used back then.
+For example, I couldn’t find a way to compile and/or run an ALGOL50 program, so I’ll have to use Algol68, a later standard of the language.
+Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
+For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day - except for APL.&lt;/p&gt;
+
+&lt;p&gt;I’ll stick to using the APL derivative BQN since I’m not interested in learning a new version of APL.
+I’ll be looking at the languages in ascending order based on their popularity in 1965.&lt;/p&gt;
+
+&lt;p&gt;Along with my solution for each language, I’ll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).&lt;/p&gt;
+
+&lt;p&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli/algorithm-testbed&quot;&gt;All these solutions and the build system needed to compile the examples can be found in this repository.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://leetcode.com/problems/find-peak-element/&quot;&gt;Find the element that is greater than both neighbors, aka the peak element.
+&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;example-1&quot;&gt;Example 1:&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;Input&lt;/strong&gt;: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nums = [1,2,3,1]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Output&lt;/strong&gt;: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Explanation&lt;/strong&gt;: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;3&lt;/code&gt; is a peak element and your function should return the index number &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h4 id=&quot;example-2&quot;&gt;Example 2:&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;Input&lt;/strong&gt;: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nums = [1,2,1,3,5,6,4]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Output&lt;/strong&gt;: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;5&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Explanation&lt;/strong&gt;: Your function can return either index number &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1&lt;/code&gt; where the peak element is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2&lt;/code&gt;, or index number &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;5&lt;/code&gt; where the peak element is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;6&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h4 id=&quot;constraints&quot;&gt;Constraints:&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1 &amp;lt;= nums.length &amp;lt;= 1000&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-231 &amp;lt;= nums[i] &amp;lt;= 231 - 1&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nums[i] != nums[i + 1]&lt;/code&gt; for all valid &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;i&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;content&quot;&gt;Content&lt;/h2&gt;
+
+&lt;p&gt;Here’s how the various languages stack up.
+We’ll start at the bottom with APL and work our way up to Fortran.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;#fortran&quot;&gt;Fortran&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#cobol&quot;&gt;COBOL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#algol&quot;&gt;ALGOL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#basic&quot;&gt;BASIC&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#lisp&quot;&gt;Lisp&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#apl&quot;&gt;APL&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;apl&quot;&gt;&lt;a href=&quot;#content&quot;&gt;APL&lt;/a&gt;&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;APL is a mistake, carried through to perfection. It is the language of the future for the programming techniques of the past: it creates a new generation of coding bums.&lt;/p&gt;
+
+  &lt;p&gt;Edsger Dijkstra&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[&lt;a href=&quot;#ref_hist_apl_computer_history&quot;&gt;ref&lt;/a&gt;].
+Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
+Finally in 1966 the IBM released APL360 written in a bit under 40,000 lines of 360 assembly, called APL after Iverson’s famous paper &lt;em&gt;A Programming Language&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Just before leaving IBM, in 1979 Iverson gave his famous &lt;em&gt;ACM Turing Award Lecture&lt;/em&gt; titled &lt;em&gt;Notation as a tool of Thought&lt;/em&gt; where he builds up algorithm intuition in the reader using the APL language[&lt;a href=&quot;#ref_ntot&quot;&gt;ref&lt;/a&gt;].
+In 1980, Iverson left IBM for I. P. Sharp Associates where he developed SHARP APL [&lt;a href=&quot;#ref_wiki_iverson&quot;&gt;ref&lt;/a&gt;].
+It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation today and a significant force in the APL community[&lt;a href=&quot;#ref_hist_dyalog&quot;&gt;ref&lt;/a&gt;].
+Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month (October 2021).&lt;/p&gt;
+
+&lt;p&gt;I used the BQN language as my APL variant, as it’s very actively developed and I believe in the developers behind the project.
+APL is the only language where I opted for a newer implementation instead of finding the oldest one possible.
+Marshall Lochbaum began designing BQN in collaboration with his colleagues at Dyalog before taking it on as a personal project in 2020[&lt;a href=&quot;#ref_bqn_hist&quot;&gt;ref&lt;/a&gt;].&lt;/p&gt;
+
+&lt;p&gt;Here’s my BQN solution:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   i0 ← 1‿2‿3‿1
+   i1 ← 1‿2‿1‿3‿5‿6‿4
+   i2 ← 2‿1‿2‿3‿1
+   F ← ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&amp;lt;⊢)∧(⊢&amp;gt;»))⊐(1˙)
+   F ¨ i0‿i1‿i2
+┌─
+· ┌·    ┌·    ┌·
+  · 2   · 1   · 3
+      ┘     ┘     ┘
+                    ┘
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And here’s the image explanation of the solution.
+These diagrams are meant to be read from top to bottom as the BQN program executes.
+You can generate diagrams like these on your own by clicking the &lt;em&gt;Explain&lt;/em&gt; button before running your code on the &lt;a href=&quot;https://mlochbaum.github.io/BQN/try.html&quot; target=&quot;_blank&quot;&gt;Try BQN page linked here.&lt;/a&gt;&lt;/p&gt;
+
+&lt;center&gt;
+&lt;img src=&quot;/images/lc-peak-element/bqn.png&quot; alt=&quot;Here's an explanation of each part of this solution&quot; width=&quot;600&quot; /&gt;
+&lt;/center&gt;
+
+&lt;p&gt;These two &lt;a href=&quot;https://github.com/mlochbaum/BQN/blob/master/doc/train.md&quot; target=&quot;_blank&quot;&gt;three-trains&lt;/a&gt; give us a bit map indicating positions where the input is greater than the right-shift (the first train) or the left-shift (the second train). &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;∧&lt;/code&gt;-ing these together gives us a mask to get the peak element.&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   (⊢&amp;gt;») 1‿2‿3‿1
+⟨ 1 1 1 0 ⟩
+
+   («&amp;lt;⊢) 1‿2‿3‿1
+⟨ 0 0 1 1 ⟩
+
+   # another 3-train!
+   ((⊢&amp;gt;»)∧(«&amp;lt;⊢)) 1‿2‿3‿1
+⟨ 0 0 1 0 ⟩
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If our first or last element is greater than the inner element however, this will give us a wrong answer:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   ((⊢&amp;gt;»)∧(«&amp;lt;⊢)) 2‿1‿2‿3‿1
+⟨ 1 0 0 1 0 ⟩
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;So we’ll make another bitmap to not select the first or last elements, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;∧&lt;/code&gt; the two together.&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   {0∾((2-˜≠𝕩)⥊1)∾0} 2‿1‿2‿3‿1
+⟨ 0 1 1 1 0 ⟩
+
+   ({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&amp;lt;⊢)∧(⊢&amp;gt;»)) 2‿1‿2‿3‿1
+⟨ 0 0 0 1 0 ⟩
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we just grab the first true index and we have our answer:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   (({0∾((2-˜≠𝕩)⥊1)∾0}∧(«&amp;lt;⊢)∧(⊢&amp;gt;»))⊐(1˙)) 1‿2‿1‿3‿5‿6‿4
+┌·   
+· 1  
+    ┘
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;lisp&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Lisp&lt;/a&gt;&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;LISP has been jokingly described as “the most intelligent way to misuse a computer”. I think that description a great compliment because it transmits the full flavor of liberation: it has assisted a number of our most gifted fellow humans in thinking previously impossible thoughts.&lt;/p&gt;
+
+  &lt;p&gt;Edsger Dijkstra&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The 5th most popular programming language in 1965 was Lisp.&lt;/p&gt;
+
+&lt;p&gt;Lisp was invented by John McCarthy in 1958 at MIT with his paper &lt;em&gt;Recursive Functions of Symbolic Expressions and Their Computation by Machine, Part I&lt;/em&gt;, paralleling Ken Iverson’s paper &lt;em&gt;A Programming Language&lt;/em&gt;.[&lt;a href=&quot;#ref_hist_scheme&quot;&gt;ref&lt;/a&gt;].&lt;/p&gt;
+
+&lt;p&gt;I used MIT Scheme for my Lisp since it seems like the oldest lisp implementation that I can still install.&lt;/p&gt;
+
+&lt;p&gt;Although Scheme is such an old language, it felt very futuristic and clean.
+I’ve used other lisps before, but I’m nowhere near an expert.
+Scheme felt like a wonderful and comprehensible tool.
+I really loved using it and I think I’ll be spending some more quality time with Scheme in these videos.&lt;/p&gt;
+
+&lt;p&gt;If you have a better scheme solution, please let me know, I’d love to see it.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shl&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shr&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;solve&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
+                   &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
+                   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;for-each&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;newline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;display&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;solve&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;newline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;list&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I did find that the builtin functions for Scheme were a bit lacking.
+For example I had to write my own functions to shift a value into a list.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shl&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;shr&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cons&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cdr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;reverse&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here’s what it looks like to use them.
+Although I had to write my own, it did come easily.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;Value: (2 3 0)&lt;/span&gt;
+
+&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;Value: (0 1 2)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s walk through this solution inside-out.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;solve&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
+                   &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
+                   &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For an input &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(1 2 3 1)&lt;/code&gt;, we’ll find the max of shifting left and right.
+If a number is greater than the max of the left and right, we know it’s greater than both the left and the right value.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;Value: a&lt;/span&gt;
+
+&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;Value: (2 3 2 3)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we just have to find the indices in the input where the input is greater than the last return value, the greater of either shift.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
+           &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
+           &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;Value: (#f #f #t #f)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then we can just take the index if the previous map gave us a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;#t&lt;/code&gt; true value, or -1 otherwise.
+We then take the max of these values to find the peak element.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
+             &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
+             &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;Value: (-1 -1 2 -1)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here’s the same code as before, we’ve just wrapped it in a max reduce to get our final answer.&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
+                     &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
+                     &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
+                          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;;Value: 2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Of course now we can just wrap all that code in a function:&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;define&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;solve&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt;
+                    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                      &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+                    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;&amp;gt;&lt;/span&gt;
+                         &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;
+                         &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;max&lt;/span&gt;
+                              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shl&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                              &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;shr&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+                    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;iota&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))))&lt;/span&gt;
+      
+&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;solve&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;;Value: 2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And we can run it on a few inputs to verify our solution:&lt;/p&gt;
+&lt;div class=&quot;language-scheme highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;for-each&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;newline&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;display&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;solve&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;list&lt;/span&gt;
+          &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;o&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+
+&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;basic&quot;&gt;&lt;a href=&quot;#content&quot;&gt;BASIC&lt;/a&gt;&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;It is practically impossible to teach good programming to students that have had a prior exposure to BASIC: as potential programmers they are mentally mutilated beyond hope of regeneration.&lt;/p&gt;
+
+  &lt;p&gt;Edsger Dijkstra&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;BASIC stands for &lt;em&gt;Beginner’s All-Purpose Symbolic Instruction Code&lt;/em&gt;[&lt;a href=&quot;#ref_time_basic&quot;&gt;ref&lt;/a&gt;].
+BASIC was designed by two math professors at Dartmouth College in 1964.
+John Kemeny, one of the co-creators of BASIC attended lectures from  John von Neumann and worked as Albert Einstein’s mathematical assistant for a time[&lt;a href=&quot;#ref_time_basic&quot;&gt;ref&lt;/a&gt;], and Tom Kurtz, the other co-creator, first proposed the concept of time-sharing[&lt;a href=&quot;#ref_early_timesharing&quot;&gt;ref&lt;/a&gt;].
+These guys were clearly pretty bright.
+BASIC was probably the first beginner-oriented language, with the goal of getting students started writing programs as quickly as possible.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;We needed a language that could be ‘taught’ to virtually all students (and faculty) without their having to take a course.&lt;/p&gt;
+
+  &lt;p&gt;Thomas Kurtz, co-inventor of BASIC&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned when I wrote Excel macros when I worked in the finance department of &lt;a href=&quot;https://www.micron.com/&quot;&gt;Micron&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Although it was a programming on-ramp for me, I still have to side with Dijkstra on BASIC (although maybe not so harshly).
+BASIC was the product of some brilliant folks and it had a huge impact on the history of programming, but I can’t say I recommend it today.&lt;/p&gt;
+
+&lt;p&gt;This solution is pretty much the same solution I used for the rest of the programming languages: I iterate from one greater than the lower bound to one less than the upper bound and check both neighbors to see if we have a peak element.&lt;/p&gt;
+
+&lt;p&gt;I used FreeBASIC to run this example:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-basic&quot;&gt;         dim i0(1 to 4) as Integer
+         i0(1) = 1
+         i0(2) = 2
+         i0(3) = 3
+         i0(4) = 1
+
+         dim i1(1 to 7) as Integer
+         i1(1) = 1
+         i1(2) = 2
+         i1(3) = 1
+         i1(4) = 3
+         i1(5) = 5
+         i1(6) = 6
+         i1(7) = 4
+
+         function solve(prob() as Integer) as Integer
+             for i as Integer = lbound(prob)+1 to ubound(prob)-1
+                 if (prob(i)&amp;gt;prob(i+1) and prob(i)&amp;gt;prob(i-1)) then solve=i-1
+             next
+         end function
+
+         print solve(i0())
+         print solve(i1())
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;algol&quot;&gt;&lt;a href=&quot;#content&quot;&gt;ALGOL&lt;/a&gt;&lt;/h3&gt;
+
+&lt;p&gt;You may notice that Algol is the only language that does not have a scathing quote from Dijkstra.
+This is probably in part because Dijkstra was a significant contributor to Algol![&lt;a href=&quot;#ref_cwi_dijkstra&quot;&gt;ref&lt;/a&gt;]&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;In 1958-1959, Dijkstra was involved in a number of meetings that culminated in the publication of the report defining the ALGOL 60 language. Ironically, Dijkstra’s name does not appear in the list of 13 authors of the final report: it seems he left the committee prematurely because he could not agree with the majority opinions.[&lt;a href=&quot;#ref_cwi_dijkstra&quot;&gt;ref&lt;/a&gt;]&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Algol/Fortran family tree:&lt;/p&gt;
+&lt;center&gt;
+&lt;img src=&quot;./images/lc-peak-element/algol-fortran-fam-tree.png&quot; alt=&quot;Algol/Fortran Family Tree&quot; width=&quot;600&quot; /&gt;
+&lt;/center&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Here is a language so far ahead of its time that it was not only an improvement on its predecessors but also on nearly all its successors.&lt;/p&gt;
+
+  &lt;p&gt;Tony Hoare[&lt;a href=&quot;https://en.wikipedia.org/wiki/ALGOL&quot;&gt;ref&lt;/a&gt;]&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I’m using the Algol68 Genie compiler-interpreter for this code.
+I honestly found Algol pretty usable!
+I saw some code that used function pointers, and it looked pretty clean.
+It seems like Algol has some pretty modern first-class-function capabilities.
+I can see why it was the language in which computer algorithms were published for many years[&lt;a href=&quot;#ref_britannica_algol&quot;&gt;ref&lt;/a&gt;].
+ALGOL was actually designed by an international committee of the ACM during 1958–60 for this purpose.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-algol&quot;&gt;PROC solve = ([]INT elements)INT: (
+  INT found := -1;
+  FOR i FROM 1+(LWB elements) TO (UPB elements)-1
+  DO
+    IF elements[i] &amp;gt; elements[i+1] AND elements[i] &amp;gt; elements[i-1]
+      THEN
+        found := i-1
+      FI
+  OD;
+  found 
+);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I honestly wouldn’t mind writing more Algol down the line.&lt;/p&gt;
+
+&lt;h3 id=&quot;cobol&quot;&gt;&lt;a href=&quot;#content&quot;&gt;COBOL&lt;/a&gt;&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The use of COBOL cripples the mind; its teaching should, therefore, be regarded as a criminal offense.&lt;/p&gt;
+
+  &lt;p&gt;Edsger Dijkstra&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The history behind COBOL is extremely inspiring and exciting, however I have to side with Dijkstra.
+COBOL was &lt;em&gt;very&lt;/em&gt; painful to use.
+And I only learned the most shallow bit of COBOL - in order to read more like plain English, COBOL has &lt;strong&gt;over 300 keywords&lt;/strong&gt;. 
+I can only imagine what it feels like to maintain a 500k line COBOL codebase.&lt;/p&gt;
+
+&lt;p&gt;I used the GNUCobol compiler for this example.
+You’ll notice that everything is indented - COBOL, like several of the other languages I’m covering here, was originally used on a punchcard &lt;a href=&quot;#ref_os_wac&quot;&gt;as explained in this article from opensource.com&lt;/a&gt;.
+Each puncard represented &lt;em&gt;a single line of code&lt;/em&gt;, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-cobol&quot;&gt;       ID DIVISION.
+       PROGRAM-ID. ARRAYTEST.
+       ENVIRONMENT DIVISION.
+       DATA DIVISION. 
+       WORKING-STORAGE SECTION.
+      * Store both problems and their sizes and answers in one
+      * structure
+       01 SIZES PIC 9(3) OCCURS 2 TIMES VALUE 0.
+       01 OFFSETS PIC 9(3) OCCURS 2 TIMES VALUE 0.
+       01 PROBLEMS PIC 9(3) OCCURS 12 TIMES VALUE 0.
+       01 CURRENT-PROBLEM PIC 9(3) VALUE 0.
+       01 TMP PIC 9(3) VALUE 0.
+       01 IDX PIC 9(3) VALUE 1.
+       01 NPROBLEMS PIC 9(3) VALUE 2.
+       01 ANSWERS PIC S9(3) OCCURS 2 TIMES VALUE -1.
+       PROCEDURE DIVISION.
+
+       100-MAIN.
+
+      *    Set up problem [1,2,3,1]
+           MOVE 4 TO SIZES(1).
+           MOVE 0 TO OFFSETS(1).
+
+           MOVE 1 TO PROBLEMS(1).
+           MOVE 2 TO PROBLEMS(2).
+           MOVE 3 TO PROBLEMS(3).
+           MOVE 1 TO PROBLEMS(4).
+
+      *    Set up problem [1,2,1,3,5,6,4]
+           MOVE 7 TO SIZES(2).
+           MOVE 4 TO OFFSETS(2).
+
+           MOVE 1 TO PROBLEMS(5).
+           MOVE 2 TO PROBLEMS(6).
+           MOVE 1 TO PROBLEMS(7).
+           MOVE 3 TO PROBLEMS(8).
+           MOVE 5 TO PROBLEMS(9).
+           MOVE 6 TO PROBLEMS(10).
+           MOVE 4 TO PROBLEMS(11).
+
+      *    Run solve procedure on both problems
+           PERFORM VARYING CURRENT-PROBLEM FROM 1 BY 1 UNTIL CURRENT-PRO
+      -BLEM &amp;gt; NPROBLEMS
+             MOVE OFFSETS(CURRENT-PROBLEM) TO IDX
+             PERFORM SOLVE
+             DISPLAY ANSWERS(CURRENT-PROBLEM) END-DISPLAY
+           END-PERFORM.
+
+           STOP RUN.
+
+       SOLVE.
+           PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX&amp;gt;SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             IF PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP - 1)
+      -AND PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP + 1)
+               COMPUTE TMP = IDX - 1 END-COMPUTE
+               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+             END-IF
+           END-PERFORM.
+
+       PRINT-AR.
+           DISPLAY &quot;IDX=&quot; IDX &quot; VALUE=&quot; PROBLEMS(IDX) END-DISPLAY.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I certainly felt the weight of this when I tried to write this function:
+Every time I had to change a condition that wrapped a line, I would join the lines together and figure out where the new line break should be, and make sure to get the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-&lt;/code&gt; character in the 7th column.
+I’m sure there are some more modern conventions around COBOL considering &lt;em&gt;5 billion lines of new COBOL code are written every year&lt;/em&gt;[&lt;a href=&quot;#ref_os_wac&quot;&gt;ref&lt;/a&gt;], but I’m pretty content not to write any COBOL for a while.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-cobol&quot;&gt;       SOLVE.
+           PERFORM VARYING IDX FROM 2 BY 1 UNTIL IDX&amp;gt;SIZES(CURRENT-PROBL
+      -EM)
+             COMPUTE TMP = IDX + OFFSETS(CURRENT-PROBLEM) END-COMPUTE
+             IF PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP - 1)
+      -AND PROBLEMS(TMP) &amp;gt; PROBLEMS(TMP + 1)
+               COMPUTE TMP = IDX - 1 END-COMPUTE
+               MOVE TMP TO ANSWERS(CURRENT-PROBLEM)
+             END-IF
+           END-PERFORM.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now on to the inspiring stuff: TLDR COBOL was designed by a consensus-driven committee with a huge focus on portability, and led by women.&lt;/p&gt;
+
+&lt;p&gt;In 1959 Grace Hopper, a retired Navy officer, organized a meeting of users and manufacturers to conceive of a programming language in response to Mary Hawes’s call for a portable programming language, a language that could be compiled and ran on computers from multiple manufacturers.
+&lt;a href=&quot;#ref_twitter_bryce_cobol&quot;&gt;You can read more about the history of COBOL on this Twitter thread from Bryce Lelbach which you should &lt;em&gt;definitely&lt;/em&gt; check out.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;I think we have a lot to learn from COBOL, a lot to be thankful for.
+&lt;a href=&quot;#ref_iso_homepage&quot;&gt;The ISO&lt;/a&gt; didn’t come along until 1988, long after Grace Hopper initiated the committee for the development of COBOL.
+I’m sure we owe a huge debt to COBOL and the women-led consensus-driven model, and I want to learn all I can from that history.&lt;/p&gt;
+
+&lt;p&gt;I still don’t want to write COBOL though :smile:.&lt;/p&gt;
+
+&lt;h3 id=&quot;fortran&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Fortran&lt;/a&gt;&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;FORTRAN, ‘the infantile disorder’, by now nearly 20 years old, is hopelessly inadequate for whatever computer application you have in mind today: it is now too clumsy, too risky, and too expensive to use.&lt;/p&gt;
+
+  &lt;p&gt;Edsger Dijkstra&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Fortran, the grand finale, #1 on our list.
+I &lt;em&gt;completely&lt;/em&gt; disagree with Dijkstra on this one - I love Fortran’s history and I occasionally write it professionally.&lt;/p&gt;
+
+&lt;p&gt;In 1953, John Backus submitted a proposal to his bosses at IBM to develop a more practical alternative to assembly language[&lt;a href=&quot;#ref_ftn_start&quot;&gt;ref&lt;/a&gt;].
+The first compiler didn’t come around until 1957.
+The name “Fortran” is derived from &lt;a href=&quot;#ref_ftn_start&quot;&gt;FORmula TRANslation&lt;/a&gt;, and very quickly became the lingua franca for scientific computing.&lt;/p&gt;
+
+&lt;p&gt;Fortran still is one of the most used programming languages in high performance computing (HPC), and it’s not going away any time soon.
+&lt;a href=&quot;https://github.com/llvm/llvm-project/tree/main/flang#flang&quot;&gt;The Flang project, part of the LLVM project,&lt;/a&gt; is a modern Fortran compiler targeting the 2018 standard with support for OpenACC, OpenMP and other cool optimization stuff.
+It’s written in wonderfully modern and well-maintained C++, and I use the C++ style guide from Flang for my technical teams at my day job.
+Flang is definitely worth keeping an eye on, I think it will become a significant force in HPC in the coming years.&lt;/p&gt;
+
+&lt;p&gt;I used the GNU gfortran compiler in fixed-form F77 mode for this example to get a better feel for historical Fortran:&lt;/p&gt;
+
+&lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;     &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comments&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'c'&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;the&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;program&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;dimension&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;/)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;dimension&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;/)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;program&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+      &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;subroutine&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;solve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;intent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;intent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;dimension&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+        &lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;integer&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;+1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;ow&quot;&gt;.and.&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;endif&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;enddo&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;subroutine&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;GNU/GCC’s GFortran is also very actively maintained, &lt;a href=&quot;https://developer.nvidia.com/hpc-sdk&quot;&gt;the newest NVIDIA HPC SDK has fantastic Fortran support&lt;/a&gt;, &lt;a href=&quot;https://www.olcf.ornl.gov/frontier/&quot;&gt;the new US Dept. of Energy Exascale supercomputer &lt;em&gt;Frontier&lt;/em&gt;&lt;/a&gt; will use AMD GPUs which have &lt;a href=&quot;https://github.com/ROCmSoftwarePlatform/hipfort&quot;&gt;hipfort, a Fortran interface to AMD GPU libraries&lt;/a&gt;, and &lt;a href=&quot;https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html&quot;&gt;Intel’s GPU platform and Fortran compiler are widely used as well&lt;/a&gt;.
+Fortran has a wonderfully rich history, and it’s certainly a part of our future.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Much of my work has come from being lazy. I didn’t like writing programs, and so, when I was working on the IBM 701, writing programs for computing missile trajectories, I started work on a programming system to make it easier to write programs.&lt;/p&gt;
+
+  &lt;p&gt;John Backus&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;I hope you all enjoyed foray into the history of programming languages (and computing in general)!&lt;/p&gt;
+
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ftn_start&quot; href=&quot;https://en.wikipedia.org/wiki/Fortran#History&quot;&gt;Fortran history&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_pop_langs&quot; href=&quot;https://statisticsanddata.org/most-popular-programming-languages/&quot;&gt;Most Popular Programming Languages&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_hist_apl_computer_history&quot; href=&quot;https://computerhistory.org/blog/the-apl-programming-language-source-code/&quot;&gt;The Apl Programming Language Source Code&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_wiki_iverson&quot;&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Kenneth_E._Iverson&quot;&gt;Kenneth Iverson Wikipedia&lt;/a&gt;&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ntot&quot; href=&quot;https://www.jsoftware.com/papers/tot.htm&quot;&gt;&lt;em&gt;Notation as a Tool of Thought&lt;/em&gt;, Ken Iverson&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_hist_dyalog&quot; href=&quot;https://www.dyalog.com/uploads/files/apl50/Dyalog%20APL%20A%20Personal%20History.pdf&quot;&gt;History of Dyalog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_gnuapl_stallman&quot; href=&quot;https://en.wikipedia.org/wiki/APL_(programming_language)#GNU_APL&quot;&gt;GNU APL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_pnnl&quot; href=&quot;https://www.pnnl.gov/&quot;&gt;Pacific Northwest National Laboratory&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_bqn_hist&quot; href=&quot;https://mlochbaum.github.io/BQN/commentary/history.html&quot;&gt;BQN’s Development History&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_hist_scheme&quot; href=&quot;https://en.wikipedia.org/wiki/History_of_the_Scheme_programming_language&quot;&gt;History of the Scheme Programming Language&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_apl_wiki&quot; href=&quot;https://aplwiki.com/wiki/Main_Page&quot;&gt;APL Wiki&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_apl_wiki_dyalog&quot; href=&quot;https://aplwiki.com/wiki/Dyalog_APL&quot;&gt;APL Wiki: Dyalog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_apl_wiki_logos&quot; href=&quot;https://aplwiki.com/wiki/APL_logo&quot;&gt;APL Wiki: Logos&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_alg_testbed_repo&quot; href=&quot;https://github.com/ashermancinelli/algorithm-testbed&quot;&gt;Repository for all the solutions&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_time_basic&quot; href=&quot;https://time.com/69316/basic/&quot;&gt;Fifty Years of BASIC, the Programming Language That Made Computers Personal&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_cwi_dijkstra&quot; href=&quot;https://www.cwi.nl/about/history/e-w-dijkstra-brilliant-colourful-and-opinionated&quot;&gt;Edsger W. Dijkstra: Brilliant, Colourful, and Opinionated&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_si_cobol&quot; href=&quot;https://americanhistory.si.edu/cobol/introduction&quot;&gt;National Museum of American History&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_wiki_cobol&quot; href=&quot;https://en.wikipedia.org/wiki/COBOL#:~:text=To%20support%20this%20English%2Dlike,ARE%20%2C%20and%20VALUE%20and%20VALUES%20.&quot;&gt;Wikipedia: COBOL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_os_wac&quot; href=&quot;https://opensource.com/article/17/8/what-about-cobol&quot;&gt;opensource.com: Don’t hate COBOL until you’ve tried it&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_twitter_bryce_cobol&quot; href=&quot;https://twitter.com/blelbach/status/1259313973318451200&quot;&gt;Bryce Lelbach Twitter Thread on COBOL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_iso_homepage&quot; href=&quot;https://www.iso.org/technical-committees.html&quot;&gt;International Organization for Standardization (ISO)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_flang&quot; href=&quot;https://github.com/llvm/llvm-project/tree/main/flang#flang&quot;&gt;Flang Fortran Compiler&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_ecp_frontier&quot; href=&quot;https://www.olcf.ornl.gov/frontier/&quot;&gt;US DOE Frontier Supercomputer at ORNL&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_britannica_algol&quot; href=&quot;https://www.britannica.com/technology/ALGOL-computer-language&quot;&gt;Britannica: ALGOL computer language&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_early_timesharing&quot; href=&quot;https://www.cs.cornell.edu/wya/AcademicComputing/text/earlytimesharing.html&quot;&gt;Cornell University: Early Timesharing&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</summary></entry><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/Xk7-xjnEISE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
@@ -850,6 +1465,17 @@ We then perform our max reduce to get our answer and we return!&lt;/p&gt;
 
 &lt;p&gt;I hope you’ve all enjoyed this video and the foray into distributed computing in a few different programming languages.&lt;/p&gt;
 
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&quot;youtube-description&quot;&gt;&lt;a href=&quot;#content&quot;&gt;YouTube Description&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;We solve a Leetcode problem in four languages using various combinations of MPI and CUDA!&lt;/p&gt;
@@ -1128,6 +1754,17 @@ If there are multiple points in the substring where the parens are balanced, thi
 You can find all the GPU examples I used in the links below.
 Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do my BQN and CUDA solutions in another video :).&lt;/p&gt;
 
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&quot;links&quot;&gt;Links&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -1137,7 +1774,144 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
   &lt;li&gt;&lt;a href=&quot;http://www.ashermancinelli.com/&quot;&gt;Blog&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://leetcode.com/problems/longest-valid-parentheses/&quot;&gt;LeetCode Problem&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
+
+&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;When designing tests, qualities like code reuse, readability, and execution time
+are not often considered.
+In this post, I’ll look at how we designed the test suite for
+&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
+Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
+inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
+
+&lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;We needed to be sure our linear algebra library would perform as expected
+  after porting the entire thing to use &lt;a href=&quot;https://github.com/LLNL/RAJA&quot;&gt;RAJA&lt;/a&gt;
+  portability library, and&lt;/li&gt;
+  &lt;li&gt;Our timelines were quite aggressive, considering the size of our team and
+  the scope of our porting efforts.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For these reasons, we needed to develop a thorough suite of unit tests to
+&lt;em&gt;verify execution&lt;/em&gt; of our linear algebra kernels after porting to leverage GPU
+devices with an extremely quick turnaround time.
+&lt;em&gt;Code reuse and readability were crucial to our development effort&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;problem-domain-and-design-decisions&quot;&gt;Problem Domain and Design Decisions&lt;/h2&gt;
+
+&lt;p&gt;HiOp’s linear algebra library uses a clean inheritance structure.
+Looking at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVector&lt;/code&gt; abstract interface for example, there are two
+implementations, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorPar&lt;/code&gt;, as seen below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Before we had written the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; implementation, we had to establish
+success criterea for our implementation in the form of unit tests and integration
+tests.
+When we began, we had exactly zero unit tests, so again, code reuse and
+developer productivity would be very important.&lt;/p&gt;
+
+&lt;p&gt;We settled on a unit testing structure that would mimick the inheritance
+design already in place with the linear algebra library.
+Test classes would mirror the system under test such that tests for concrete
+classes would inherit from test classes for the abstract interfaces.&lt;/p&gt;
+
+&lt;p&gt;Let’s use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; class as an example.&lt;/p&gt;
+
+&lt;h2 id=&quot;hiopmatrix-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; Example&lt;/h2&gt;
+
+&lt;p&gt;The top-level interface for HiOp matrices is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; pure virtual class.
+The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt; pure virtual classes are children
+of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From there, each of the two abstract children have regular CPU-bound
+implementations and RAJA-based GPU/OpenMP implementations:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;At each level in this inheritance structure, new methods are added to the interfaces.
+For example, due to memory layout constraints, some methods are feasable only with a
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and do not make much sense with a sparse matrix.
+Thus not all tests for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;To maximize code reuse, we developed the following inheritance structure for our tests:
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt; contained code common to all test classes, such as MPI reduction of
+error codes, pretty-printing test results, floating point comparisons, etc.&lt;/p&gt;
+
+&lt;p&gt;Each of the highest-level linear algebra classes then has a corresponding test
+class which inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt;, eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrix&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopVector&lt;/code&gt;.
+These test classes, just like their corresponding classes in the linear algebra
+library, are abstract - they define tests only for the corresponding interface.&lt;/p&gt;
+
+&lt;p&gt;Child classes of each of these classes implement tests specific to the implementation.
+These classes are concrete, and are used to finally test their respective implementation.
+I’ve ommitted the full structure for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparse&lt;/code&gt; side of the
+inheritance chain to make the diagram more readable below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;See the bottom of this graph - the test driver instantiates an instance of
+each concrete test class and runs all contained tests.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;When the driver is ran, every test all the way up the inheritance chain is run
+on each implementation.
+Tests that apply to all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; classes are run on an instance of every
+concrete child class:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaDense&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixDenseRowMajor&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparseTriplet&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaSparseTriplet&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The concrete child classes enumerated above implemented methods specific to the
+implementation that were needed for the test (eg copying memory back and forth
+between host and device when running with CUDA or HIP).
+This strategy saved us an &lt;em&gt;enormous&lt;/em&gt; amount of developer time and lines of code,
+and also ensured that every implementation conforms to every interface it implements.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;As we developed our test suite, we concurrently developed the RAJA
+implementations of each linear algebra class.
+For each method of each linear algebra class, we first wrote a test and then
+ported the core of the method to run in a RAJA kernel.&lt;/p&gt;
+
+&lt;p&gt;Thanks to this strategy, we were able to port the entire optimization engine
+library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
+a high degree of certainty that our kernels perform correctly.
+HiOp currently only runs in unified virtual memory, and we are actively
+developing the last parts of the optimization routines such that the solver can
+run entirely in device memory.&lt;/p&gt;
+
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/pelesh&quot;&gt;Slaven Peles’s GitHub profile&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/pull/41&quot;&gt;Original PR for HiOp’s polymorphic test suite&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?&lt;/p&gt;
 
 &lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
@@ -1442,6 +2216,17 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
 	&lt;span class=&quot;nv&quot;&gt;$(CXX)&lt;/span&gt; addone_test.cpp &lt;span class=&quot;nv&quot;&gt;$(CFLAGS)&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; tests
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -1450,133 +2235,105 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
   &lt;li&gt;&lt;a href=&quot;https://github.com/google/googletest/blob/master/docs/advanced.md&quot;&gt;GTest advanced docs&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://llvmweekly.org/issue/376&quot;&gt;LLVM Weekly mention&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/llvm/llvm-project/tree/main/flang/unittests&quot;&gt;Flang unittests&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
 
-&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
+&lt;p&gt;In the &lt;a href=&quot;/spack2&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed environment management with Spack, particularly integration with a private repository.
+What are some of the benefits of this, other than onboarding new developers?&lt;/p&gt;
 
-&lt;p&gt;When designing tests, qualities like code reuse, readability, and execution time
-are not often considered.
-In this post, I’ll look at how we designed the test suite for
-&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
-Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
-inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
+&lt;p&gt;As we’ve developed our private spack repository, we’ve also added some spack environments along the way:&lt;/p&gt;
 
-&lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+floodsimulationrepo
+├── environments
+│   ├── jupiter
+│   │   └── env.yaml
+│   ├── saturn
+│   │   └── env.yaml
+│   └── osx
+│       └── env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
 
-&lt;ol&gt;
-  &lt;li&gt;We needed to be sure our linear algebra library would perform as expected
-  after porting the entire thing to use &lt;a href=&quot;https://github.com/LLNL/RAJA&quot;&gt;RAJA&lt;/a&gt;
-  portability library, and&lt;/li&gt;
-  &lt;li&gt;Our timelines were quite aggressive, considering the size of our team and
-  the scope of our porting efforts.&lt;/li&gt;
-&lt;/ol&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;For these reasons, we needed to develop a thorough suite of unit tests to
-&lt;em&gt;verify execution&lt;/em&gt; of our linear algebra kernels after porting to leverage GPU
-devices with an extremely quick turnaround time.
-&lt;em&gt;Code reuse and readability were crucial to our development effort&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;In this post, we’re going to look at using this configuration to reproduce errors and coordinate development and debugging within a large team.&lt;/p&gt;
 
-&lt;h2 id=&quot;problem-domain-and-design-decisions&quot;&gt;Problem Domain and Design Decisions&lt;/h2&gt;
+&lt;h3 id=&quot;reproducing-finicky-errors&quot;&gt;Reproducing Finicky Errors&lt;/h3&gt;
 
-&lt;p&gt;HiOp’s linear algebra library uses a clean inheritance structure.
-Looking at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVector&lt;/code&gt; abstract interface for example, there are two
-implementations, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorPar&lt;/code&gt;, as seen below:&lt;/p&gt;
+&lt;p&gt;Bugs relating to interfaces between libraries are sometimes the most difficult to track down.
+To use an example from my experience, one of my teams was developing a library that builds on the optimization solver &lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, which leverages CUDA, MAGMA, and many BLAS/LAPACK routines.
+After developing some functionality tests to ensure our library was performing as expected, we noticed that on some platforms with certain CUDA devices and CUDA versions, our library was failing to converge within our expected tolerance.
+For weeks we stepped through debuggers and discussed possibile issues with our codebase and the various libraries we depend on to no avail.&lt;/p&gt;
 
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;We eventually enlisted the help of collaborators from another laboratory to build and test our codebase under similar conditions on their platforms to ensure they were able to reproduce the bug.
+In order to ensure our collaborators were able to accurately reproduce the environments in which we found the bug, we created and distributed spack environments specific to that development snapshot.&lt;/p&gt;
 
-&lt;p&gt;Before we had written the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; implementation, we had to establish
-success criterea for our implementation in the form of unit tests and integration
-tests.
-When we began, we had exactly zero unit tests, so again, code reuse and
-developer productivity would be very important.&lt;/p&gt;
+&lt;p&gt;Continuing with our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; example, let us imagine we found a bug when running with CUDA versions v11.0.104 through 11.1 and HiOp v0.3.0 on our imaginary cluster Jupiter, and would like other teammembers to reproduce the bug on differrent platforms but using the same stack.
+We might create an environment file like so:&lt;/p&gt;
 
-&lt;p&gt;We settled on a unit testing structure that would mimick the inheritance
-design already in place with the linear algebra library.
-Test classes would mirror the system under test such that tests for concrete
-classes would inherit from test classes for the abstract interfaces.&lt;/p&gt;
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;c1&quot;&gt;# reproduce-error.yaml&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;spack&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;specs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;^cuda@11.0.104 ^hiop@0.3.0&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;packages&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;cuda&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;11.0.104&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;11.1.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;hiop&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;0.3.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
 
-&lt;p&gt;Let’s use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; class as an example.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;hiopmatrix-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; Example&lt;/h2&gt;
+&lt;p&gt;You can see we’ve established the exact matrix of libraries in which our bug manifests.
+We then asked our collaborators to install all versions of this spack environment and attempt to reproduce our bug, with all certainty that they will accurately reproduce the environment.&lt;/p&gt;
 
-&lt;p&gt;The top-level interface for HiOp matrices is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; pure virtual class.
-The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt; pure virtual classes are children
-of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;We also tend to track these environments in our repository like so:&lt;/p&gt;
 
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+floodsimulationrepo
+├── environments
+│   ├── jupiter
+│   │   ├── env.yaml
+│   │   └── reproduce-error.yaml &amp;lt;---
+│   ├── saturn
+│   │   └── env.yaml
+│   └── osx
+│       └── env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
 
-&lt;p&gt;From there, each of the two abstract children have regular CPU-bound
-implementations and RAJA-based GPU/OpenMP implementations:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;so that in future threads we are able to refer back to the exact configurations which caused bugs in the past.&lt;/p&gt;
 
-&lt;p&gt;At each level in this inheritance structure, new methods are added to the interfaces.
-For example, due to memory layout constraints, some methods are feasable only with a
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and do not make much sense with a sparse matrix.
-Thus not all tests for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;With this strategy, we are able to maintain a reproducible and consistent software stack with robust coordination between teams.
+Another potential use-case of this strategy is to coordinate profiling efforts - each month or so a spack environment which instantiates a development snapshot of the development stack may be distributed to profiling teams.
+This way, the profiling team may work on a known working configuration of the software stack to identify performance bottlenecks while the core development team continues developing.&lt;/p&gt;
 
-&lt;p&gt;To maximize code reuse, we developed the following inheritance structure for our tests:
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt; contained code common to all test classes, such as MPI reduction of
-error codes, pretty-printing test results, floating point comparisons, etc.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/spack2&quot;&gt;Previous in this Series&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Each of the highest-level linear algebra classes then has a corresponding test
-class which inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt;, eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrix&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopVector&lt;/code&gt;.
-These test classes, just like their corresponding classes in the linear algebra
-library, are abstract - they define tests only for the corresponding interface.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/spack4&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Child classes of each of these classes implement tests specific to the implementation.
-These classes are concrete, and are used to finally test their respective implementation.
-I’ve ommitted the full structure for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparse&lt;/code&gt; side of the
-inheritance chain to make the diagram more readable below.&lt;/p&gt;
+&lt;h2&gt; Contact &lt;/h2&gt;
 
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;See the bottom of this graph - the test driver instantiates an instance of
-each concrete test class and runs all contained tests.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;When the driver is ran, every test all the way up the inheritance chain is run
-on each implementation.
-Tests that apply to all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; classes are run on an instance of every
-concrete child class:&lt;/p&gt;
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaDense&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixDenseRowMajor&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparseTriplet&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaSparseTriplet&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The concrete child classes enumerated above implemented methods specific to the
-implementation that were needed for the test (eg copying memory back and forth
-between host and device when running with CUDA or HIP).
-This strategy saved us an &lt;em&gt;enormous&lt;/em&gt; amount of developer time and lines of code,
-and also ensured that every implementation conforms to every interface it implements.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;As we developed our test suite, we concurrently developed the RAJA
-implementations of each linear algebra class.
-For each method of each linear algebra class, we first wrote a test and then
-ported the core of the method to run in a RAJA kernel.&lt;/p&gt;
-
-&lt;p&gt;Thanks to this strategy, we were able to port the entire optimization engine
-library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
-a high degree of certainty that our kernels perform correctly.
-HiOp currently only runs in unified virtual memory, and we are actively
-developing the last parts of the optimization routines such that the solver can
-run entirely in device memory.&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/pelesh&quot;&gt;Slaven Peles’s GitHub profile&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/pull/41&quot;&gt;Original PR for HiOp’s polymorphic test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
 What about cases that are not formally errors, but should not exist in your codebase?
 This post explores using Clang tools to address this case.&lt;/p&gt;
 
@@ -2059,7 +2816,18 @@ codebase.&lt;/p&gt;
 The code snippets used here for example purposes will not map perfectly to the current repository, but should
 serve as a concrete starting point.&lt;/p&gt;
 
-&lt;h2 id=&quot;additional-references&quot;&gt;Additional References&lt;/h2&gt;
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
 &lt;ol&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/ashermancinelli/lambda-capture-checker&quot;&gt;Lambda Capture tool&lt;/a&gt;&lt;/li&gt;
@@ -2070,94 +2838,7 @@ serve as a concrete starting point.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://clang.llvm.org/docs/RAVFrontendAction.html&quot;&gt;Clang AST Visitor documentation&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=E6i8jmiy8MY&amp;amp;ab_channel=CppNow&quot;&gt;Peter Goldsborough’s C++Now talk on Clang/LLVM tools&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code. What about cases that are not formally errors, but should not exist in your codebase? This post explores using Clang tools to address this case.</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;In the &lt;a href=&quot;/spack2&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed environment management with Spack, particularly integration with a private repository.
-What are some of the benefits of this, other than onboarding new developers?&lt;/p&gt;
-
-&lt;p&gt;As we’ve developed our private spack repository, we’ve also added some spack environments along the way:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-floodsimulationrepo
-├── environments
-│   ├── jupiter
-│   │   └── env.yaml
-│   ├── saturn
-│   │   └── env.yaml
-│   └── osx
-│       └── env.yaml
-├── packges
-│   ├── ipopt
-│   │   └── package.py
-│   └── floodsimulation
-│       └── package.py
-└── repo.yaml
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;In this post, we’re going to look at using this configuration to reproduce errors and coordinate development and debugging within a large team.&lt;/p&gt;
-
-&lt;h3 id=&quot;reproducing-finicky-errors&quot;&gt;Reproducing Finicky Errors&lt;/h3&gt;
-
-&lt;p&gt;Bugs relating to interfaces between libraries are sometimes the most difficult to track down.
-To use an example from my experience, one of my teams was developing a library that builds on the optimization solver &lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, which leverages CUDA, MAGMA, and many BLAS/LAPACK routines.
-After developing some functionality tests to ensure our library was performing as expected, we noticed that on some platforms with certain CUDA devices and CUDA versions, our library was failing to converge within our expected tolerance.
-For weeks we stepped through debuggers and discussed possibile issues with our codebase and the various libraries we depend on to no avail.&lt;/p&gt;
-
-&lt;p&gt;We eventually enlisted the help of collaborators from another laboratory to build and test our codebase under similar conditions on their platforms to ensure they were able to reproduce the bug.
-In order to ensure our collaborators were able to accurately reproduce the environments in which we found the bug, we created and distributed spack environments specific to that development snapshot.&lt;/p&gt;
-
-&lt;p&gt;Continuing with our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; example, let us imagine we found a bug when running with CUDA versions v11.0.104 through 11.1 and HiOp v0.3.0 on our imaginary cluster Jupiter, and would like other teammembers to reproduce the bug on differrent platforms but using the same stack.
-We might create an environment file like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-&lt;span class=&quot;c1&quot;&gt;# reproduce-error.yaml&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;spack&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;specs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop&lt;/span&gt;
-    &lt;span class=&quot;s&quot;&gt;^cuda@11.0.104 ^hiop@0.3.0&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;packages&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;cuda&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;11.0.104&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;11.1.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;hiop&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;0.3.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;You can see we’ve established the exact matrix of libraries in which our bug manifests.
-We then asked our collaborators to install all versions of this spack environment and attempt to reproduce our bug, with all certainty that they will accurately reproduce the environment.&lt;/p&gt;
-
-&lt;p&gt;We also tend to track these environments in our repository like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-floodsimulationrepo
-├── environments
-│   ├── jupiter
-│   │   ├── env.yaml
-│   │   └── reproduce-error.yaml &amp;lt;---
-│   ├── saturn
-│   │   └── env.yaml
-│   └── osx
-│       └── env.yaml
-├── packges
-│   ├── ipopt
-│   │   └── package.py
-│   └── floodsimulation
-│       └── package.py
-└── repo.yaml
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;so that in future threads we are able to refer back to the exact configurations which caused bugs in the past.&lt;/p&gt;
-
-&lt;p&gt;With this strategy, we are able to maintain a reproducible and consistent software stack with robust coordination between teams.
-Another potential use-case of this strategy is to coordinate profiling efforts - each month or so a spack environment which instantiates a development snapshot of the development stack may be distributed to profiling teams.
-This way, the profiling team may work on a known working configuration of the software stack to identify performance bottlenecks while the core development team continues developing.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/spack2&quot;&gt;Previous in this Series&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/spack4&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Spack for Package Development Part 2</title><link href="/spack2" rel="alternate" type="text/html" title="Spack for Package Development Part 2" /><published>2021-03-05T00:00:00-07:00</published><updated>2021-03-05T00:00:00-07:00</updated><id>/Spack-Development-2</id><content type="html" xml:base="/spack2">&lt;p&gt;Second in this series, this post focuses on &lt;em&gt;getting stared with environments&lt;/em&gt;.&lt;/p&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code. What about cases that are not formally errors, but should not exist in your codebase? This post explores using Clang tools to address this case.</summary></entry><entry><title type="html">Spack for Package Development Part 2</title><link href="/spack2" rel="alternate" type="text/html" title="Spack for Package Development Part 2" /><published>2021-03-05T00:00:00-07:00</published><updated>2021-03-05T00:00:00-07:00</updated><id>/Spack-Development-2</id><content type="html" xml:base="/spack2">&lt;p&gt;Second in this series, this post focuses on &lt;em&gt;getting stared with environments&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;In the &lt;a href=&quot;/spack1&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed the following points:&lt;/p&gt;
 
@@ -2385,7 +3066,18 @@ Assuming &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Floo
 
 &lt;p&gt;&lt;a href=&quot;/spack1&quot;&gt;Previous in this Series&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;/spack3&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry><entry><title type="html">Spack for Package Development Part 1</title><link href="/spack1" rel="alternate" type="text/html" title="Spack for Package Development Part 1" /><published>2021-03-04T00:00:00-07:00</published><updated>2021-03-04T00:00:00-07:00</updated><id>/Spack-Development-1</id><content type="html" xml:base="/spack1">&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/&quot;&gt;Spack&lt;/a&gt; is typically used for package deployment, however this post will be about package &lt;em&gt;development&lt;/em&gt; with Spack.
+&lt;p&gt;&lt;a href=&quot;/spack3&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry><entry><title type="html">Spack for Package Development Part 1</title><link href="/spack1" rel="alternate" type="text/html" title="Spack for Package Development Part 1" /><published>2021-03-04T00:00:00-07:00</published><updated>2021-03-04T00:00:00-07:00</updated><id>/Spack-Development-1</id><content type="html" xml:base="/spack1">&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/&quot;&gt;Spack&lt;/a&gt; is typically used for package deployment, however this post will be about package &lt;em&gt;development&lt;/em&gt; with Spack.
 First in this series, this post focuses on &lt;em&gt;motivation and introduction&lt;/em&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
@@ -2481,4 +3173,15 @@ Each release of your package may serve as a time to submit all of your modificat
 &lt;p&gt;This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
 The next post will go further into managing environments and multi-platform configurations.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;/spack2&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Spack is typically used for package deployment, however this post will be about package development with Spack. First in this series, this post focuses on motivation and introduction.</summary></entry></feed>
+&lt;p&gt;&lt;a href=&quot;/spack2&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Spack is typically used for package deployment, however this post will be about package development with Spack. First in this series, this post focuses on motivation and introduction.</summary></entry></feed>
