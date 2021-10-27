@@ -9,11 +9,13 @@ We use the 6 most popular programming languages of the 1960's to solve a leetcod
 Most of these languages have changed a lot since the 1960s, so the way I'm using these languages won't be quite the same as they were used back then.
 For example, I couldn't find a way to compile and/or run an ALGOL50 program, so I'll have to use Algol68, a later standard of the language.
 Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
+Many of the languages were originally written on punchcards and physically inserted into a punchard reader, and I don't have access to any of that.
 For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day.
 
 I'll be looking at the languages in ascending order based on their popularity in 1965.
 
 Along with my solution for each language, I'll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).
+His scathing remarks about almost every language on this list were too good to leave out.
 
 <a target="_blank" href="https://github.com/ashermancinelli/algorithm-testbed">All these solutions and the build system needed to compile the examples can be found in this repository.</a>
 
@@ -64,15 +66,16 @@ We'll start at the bottom with APL and work our way up to Fortran.
 
 APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[[ref](#ref_hist_apl_computer_history)].
 Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
-Finally in 1966 the IBM released APL\360 written in a bit under 40,000 lines of Basic Assembly Language 360, called APL after Iverson's famous paper *A Programming Language*.
+Iverson's paper *A Programming Language* was published in 1962, and would be the basis for naming the language *APL*.
+Finally in 1966 the IBM released APL\360 written in a bit under 40,000 lines of Basic Assembly Language 360.
 
 Just before leaving IBM, in 1979 Iverson gave his famous *ACM Turing Award Lecture* titled *Notation as a tool of Thought* where he builds up algorithm intuition in the reader using the APL language[[ref](#ref_ntot)].
 In 1980, Iverson left IBM for I. P. Sharp Associates where he developed SHARP APL [[ref](#ref_wiki_iverson)].
-It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation today and a significant force in the APL community[[ref](#ref_hist_dyalog)].
+It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation tothis day and a significant force in the APL community[[ref](#ref_hist_dyalog)].
 Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month (October 2021).
 
 This solution was given to me by [Ad&aacute;m Brudzewsky](https://aplwiki.com/wiki/Ad%C3%A1m_Brudzewsky) on the APL Farm discord server ([more information on the discord here](https://mlochbaum.github.io/BQN/index.html#where-can-i-find-bqn-users) and [also here](https://aplwiki.com/wiki/Forums)).
-This runs on APL\360 thanks to <a href="http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html" target="_blank">an IBM 5110 emulator with support for BASIC and APL (how cool is this!!!)</a>
+This runs on APL\360 thanks to <a href="http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html" target="_blank">an IBM 5110 emulator (how cool is this!!!)</a>
 I used <a href="http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.pdf" target="_blank">this IBM APL\360 User's Manual</a> to play around with Ad&aacute;m's solution in the emulator.
 
 *NOTE: These solutions use base 1 indices*
@@ -339,12 +342,14 @@ BASIC was probably the first beginner-oriented language, with the goal of gettin
 >
 > Thomas Kurtz, co-inventor of BASIC
 
-Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned when I wrote Excel macros when I worked in the finance department of [Micron](https://www.micron.com/).
+Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned, writing Excel macros for the finance department of the company I worked for.
 
 Although it was a programming on-ramp for me, I still have to side with Dijkstra on BASIC (although maybe not so harshly).
 BASIC was the product of some brilliant folks and it had a huge impact on the history of programming, but I can't say I recommend it today.
 
-This solution is pretty much the same solution I used for the rest of the programming languages: I iterate from one greater than the lower bound to one less than the upper bound and check both neighbors to see if we have a peak element.
+This solution is pretty much the same solution I used for the rest of the programming languages:
+create a wrapper array so I can pretend that out of bounds in either direction is -∞.
+I then check all the values to see if any element is greater than the elements to its left and right.
 
 I used FreeBASIC to run this example:
 ```basic
@@ -445,14 +450,13 @@ I honestly wouldn't mind writing more Algol down the line.
 >
 > Edsger Dijkstra
 
-The history behind COBOL is extremely inspiring and exciting, however I have to side with Dijkstra.
-COBOL was *very* painful to use.
+The history behind COBOL is extremely inspiring and exciting, however COBOL was *very* painful to use.
 And I only learned the most shallow bit of COBOL - in order to read more like plain English, COBOL has **over 300 keywords**. 
 I can only imagine what it feels like to maintain a 500k line COBOL codebase.
 
 I used the GNUCobol compiler for this example.
 You'll notice that everything is indented - COBOL, like several of the other languages I'm covering here, was originally used on a punchcard [as explained in this article from opensource.com](#ref_os_wac).
-Each puncard represented *a single line of code*, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers
+Each puncard represented *a single line of code*, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers, which you'll see here as an asterisk `*` for comments, and a dash `-` for line continuation.
 
 ```cobol
        ID DIVISION.
@@ -565,11 +569,12 @@ Now on to the inspiring stuff: TLDR COBOL was designed by a consensus-driven com
 In 1959 Grace Hopper, a retired Navy officer, organized a meeting of users and manufacturers to conceive of a programming language in response to Mary Hawes's call for a portable programming language, a language that could be compiled and ran on computers from multiple manufacturers.
 [You can read more about the history of COBOL on this Twitter thread from Bryce Lelbach which you should *definitely* check out.](#ref_twitter_bryce_cobol)
 
-I think we have a lot to learn from COBOL, a lot to be thankful for.
+I think we have a lot to learn from COBOL, and a lot to be thankful for.
 [The ISO](#ref_iso_homepage) didn't come along until 1988, long after Grace Hopper initiated the committee for the development of COBOL.
-I'm sure we owe a huge debt to COBOL and the women-led consensus-driven model, and I want to learn all I can from that history.
+I'm sure we owe a huge debt to COBOL and the women-led consensus-driven community that gave us COBOL.
+I want to learn all I can from that history.
 
-I still don't want to write COBOL though :smile:.
+I don't want to write any more COBOL than I have to though :smile:.
 
 ### [Fortran](#content)
 
@@ -589,7 +594,7 @@ Fortran still is one of the most used programming languages in high performance 
 It's written in wonderfully modern and well-maintained C++, and I use the C++ style guide from Flang for my technical teams at my day job.
 Flang is definitely worth keeping an eye on, I think it will become a significant force in HPC in the coming years.
 
-I tried using the g77 compiler from GCC 3.4.4 for this example to get a better feel for historical Fortran, but after removing some syntax I didn't realize came with f90, I encountered this compiler error, likely because I'm using a 32b version of gcc:
+I tried using the g77 compiler from GCC 3.4.4 for this example to get a better feel for historical Fortran, but after removing some syntax I didn't realize came with f90, I realized the 32b build of GCC would probably not be able to target my modern machine.
 ```console
 $ g77 ./src/fortran/lc-peak-element.f
 /tmp/ccYc9ESc.s: Assembler messages:
@@ -598,6 +603,7 @@ $ g77 ./src/fortran/lc-peak-element.f
 ```
 
 This at least let me know my code was valid Fortran 77!
+After removing any compilation errors with g77, I just built the example with gfortran from gcc 11.2.
 ```fortran
 c     Comments require a 'c'in the first column, just like the
 c     punchcards!
@@ -656,7 +662,7 @@ c       Second Problem
       end subroutine
 ```
 
-For Fortran 90 I can do array assignments like this:
+For Fortran 90 I can do array assignments like this, which I really like:
 ```fortran
 vals(2:len) = input
 ```
@@ -670,7 +676,7 @@ instead of this:
 
 and I don't get to use the `intent` keyword, both of which were big drawbacks, but this really wasn't too bad.
 
-Looking to the future of Fortram, GCC's GFortran is very actively maintained, [the newest NVIDIA HPC SDK has fantastic Fortran support](https://developer.nvidia.com/hpc-sdk), [the new US Dept. of Energy Exascale supercomputer *Frontier*](https://www.olcf.ornl.gov/frontier/) will use AMD GPUs which have [hipfort, a Fortran interface to AMD GPU libraries](https://github.com/ROCmSoftwarePlatform/hipfort), and [Intel's GPU platform and Fortran compiler are widely used as well](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html).
+Looking to the future of Fortran, GCC's GFortran is very actively maintained, [the newest NVIDIA HPC SDK has fantastic Fortran support](https://developer.nvidia.com/hpc-sdk), [the new US Dept. of Energy Exascale supercomputer *Frontier*](https://www.olcf.ornl.gov/frontier/) will use AMD GPUs which have [hipfort, a Fortran interface to AMD GPU libraries](https://github.com/ROCmSoftwarePlatform/hipfort), and [Intel's GPU platform and Fortran compiler are widely used as well](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html).
 Fortran has a wonderfully rich history, and it's certainly a part of our future.
 
 > Much of my work has come from being lazy. I didn't like writing programs, and so, when I was working on the IBM 701, writing programs for computing missile trajectories, I started work on a programming system to make it easier to write programs.
@@ -682,6 +688,18 @@ Fortran has a wonderfully rich history, and it's certainly a part of our future.
 I hope you all enjoyed foray into the history of programming languages (and computing in general)!
 
 {% include footer.html %}
+
+<!---
+
+YouTube Description:
+
+You can find a longer version with more references here:
+Blog Post: http://www.ashermancinelli.com/pop-langs-1960s
+
+GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed
+LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
+
+-->
 
 ## References
 
