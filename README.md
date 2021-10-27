@@ -2,6 +2,8 @@
 
 [Personal website for loosely associated blog posts.](https://ashermancinelli.github.io)
 
+You will need GNU Make (GPLv3) and Ruby (GPLv2) to build this website.
+
 ## Personal Notes
 
 To deploy:
