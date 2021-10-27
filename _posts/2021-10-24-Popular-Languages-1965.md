@@ -690,15 +690,26 @@ I hope you all enjoyed foray into the history of programming languages (and comp
 {% include footer.html %}
 
 <!---
+## YouTube Description:
 
-YouTube Description:
+Solve a leetcode problem with the most popular programming languages of the '60s!
+
+Timestamps:
+0:00 Intro
+0:38 Leetcode problem introduction
+1:07 APL
+3:34 Lisp
+5:30 BASIC
+7:10 ALGOL
+8:05 COBOL
+10:35 Fortran
+12:58 Conclusion
 
 You can find a longer version with more references here:
 Blog Post: http://www.ashermancinelli.com/pop-langs-1960s
 
 GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed
 LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
-
 -->
 
 ## References
