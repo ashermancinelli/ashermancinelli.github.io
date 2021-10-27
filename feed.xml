@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-27T09:50:53-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-27T13:23:24-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
 
 &lt;p&gt;Most of these languages have changed a lot since the 1960s, so the way I’m using these languages won’t be quite the same as they were used back then.
 For example, I couldn’t find a way to compile and/or run an ALGOL50 program, so I’ll have to use Algol68, a later standard of the language.
@@ -11,7 +11,14 @@ For the most part, I made some attempt to use an older version of each language 
 &lt;p&gt;Along with my solution for each language, I’ll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).
 His scathing remarks about almost every language on this list were too good to leave out.&lt;/p&gt;
 
-&lt;p&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli/algorithm-testbed&quot;&gt;All these solutions and the build system needed to compile the examples can be found in this repository.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli/algorithm-testbed&quot;&gt;
+All these solutions and the build system needed to compile the examples can be found in this repository.
+&lt;/a&gt;
+&lt;strong&gt;&lt;em&gt;NOTE: The repo linked above has been temporarily made private due to intellectual property questions and will be restored as soon as possible.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://youtu.be/lYfCNa9coC4&quot; target=&quot;_blank&quot;&gt;
+See the youtube video version of this content linked here.
+&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
 
@@ -681,15 +688,26 @@ Fortran has a wonderfully rich history, and it’s certainly a part of our futur
 &lt;/ul&gt;
 
 &lt;!---
+## YouTube Description:
 
-YouTube Description:
+Solve a leetcode problem with the most popular programming languages of the '60s!
+
+Timestamps:
+0:00 Intro
+0:38 Leetcode problem introduction
+1:07 APL
+3:34 Lisp
+5:30 BASIC
+7:10 ALGOL
+8:05 COBOL
+10:35 Fortran
+12:58 Conclusion
 
 You can find a longer version with more references here:
 Blog Post: http://www.ashermancinelli.com/pop-langs-1960s
 
 GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed
 LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
-
 --&gt;
 
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
