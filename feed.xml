@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-26T16:48:30-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-27T08:42:05-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
 
 &lt;p&gt;Most of these languages have changed a lot since the 1960s, so the way I’m using these languages won’t be quite the same as they were used back then.
 For example, I couldn’t find a way to compile and/or run an ALGOL50 program, so I’ll have to use Algol68, a later standard of the language.
@@ -7,7 +7,8 @@ For the most part, I made some attempt to use an older version of each language 
 
 &lt;p&gt;I’ll be looking at the languages in ascending order based on their popularity in 1965.&lt;/p&gt;
 
-&lt;p&gt;Along with my solution for each language, I’ll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).&lt;/p&gt;
+&lt;p&gt;Along with my solution for each language, I’ll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).
+His scathing remarks about almost every language on this list were too good to leave out.&lt;/p&gt;
 
 &lt;p&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli/algorithm-testbed&quot;&gt;All these solutions and the build system needed to compile the examples can be found in this repository.&lt;/a&gt;&lt;/p&gt;
 
@@ -64,15 +65,16 @@ We’ll start at the bottom with APL and work our way up to Fortran.&lt;/p&gt;
 
 &lt;p&gt;APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[&lt;a href=&quot;#ref_hist_apl_computer_history&quot;&gt;ref&lt;/a&gt;].
 Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
-Finally in 1966 the IBM released APL\360 written in a bit under 40,000 lines of Basic Assembly Language 360, called APL after Iverson’s famous paper &lt;em&gt;A Programming Language&lt;/em&gt;.&lt;/p&gt;
+Iverson’s paper &lt;em&gt;A Programming Language&lt;/em&gt; was published in 1962, and would be the basis for naming the language &lt;em&gt;APL&lt;/em&gt;.
+Finally in 1966 the IBM released APL\360 written in a bit under 40,000 lines of Basic Assembly Language 360.&lt;/p&gt;
 
 &lt;p&gt;Just before leaving IBM, in 1979 Iverson gave his famous &lt;em&gt;ACM Turing Award Lecture&lt;/em&gt; titled &lt;em&gt;Notation as a tool of Thought&lt;/em&gt; where he builds up algorithm intuition in the reader using the APL language[&lt;a href=&quot;#ref_ntot&quot;&gt;ref&lt;/a&gt;].
 In 1980, Iverson left IBM for I. P. Sharp Associates where he developed SHARP APL [&lt;a href=&quot;#ref_wiki_iverson&quot;&gt;ref&lt;/a&gt;].
-It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation today and a significant force in the APL community[&lt;a href=&quot;#ref_hist_dyalog&quot;&gt;ref&lt;/a&gt;].
+It was just after this in 1981 that Dyalog APL was born, potentially the most popular APL implementation tothis day and a significant force in the APL community[&lt;a href=&quot;#ref_hist_dyalog&quot;&gt;ref&lt;/a&gt;].
 Ken Iverson moved on from IPSharp in 1990 to JSoftware to write the J programming language along with Roger Hui, a colleague from I.P. SHARP, who sadly passed away earlier this month (October 2021).&lt;/p&gt;
 
 &lt;p&gt;This solution was given to me by &lt;a href=&quot;https://aplwiki.com/wiki/Ad%C3%A1m_Brudzewsky&quot;&gt;Adám Brudzewsky&lt;/a&gt; on the APL Farm discord server (&lt;a href=&quot;https://mlochbaum.github.io/BQN/index.html#where-can-i-find-bqn-users&quot;&gt;more information on the discord here&lt;/a&gt; and &lt;a href=&quot;https://aplwiki.com/wiki/Forums&quot;&gt;also here&lt;/a&gt;).
-This runs on APL\360 thanks to &lt;a href=&quot;http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html&quot; target=&quot;_blank&quot;&gt;an IBM 5110 emulator with support for BASIC and APL (how cool is this!!!)&lt;/a&gt;
+This runs on APL\360 thanks to &lt;a href=&quot;http://web.archive.org/web/20201111235017/http://members.aon.at/nkehrer/ibm_5110/emu5110.html&quot; target=&quot;_blank&quot;&gt;an IBM 5110 emulator (how cool is this!!!)&lt;/a&gt;
 I used &lt;a href=&quot;http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.pdf&quot; target=&quot;_blank&quot;&gt;this IBM APL\360 User’s Manual&lt;/a&gt; to play around with Adám’s solution in the emulator.&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: These solutions use base 1 indices&lt;/em&gt;&lt;/p&gt;
@@ -325,15 +327,17 @@ BASIC was probably the first beginner-oriented language, with the goal of gettin
   &lt;p&gt;Thomas Kurtz, co-inventor of BASIC&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned when I wrote Excel macros when I worked in the finance department of &lt;a href=&quot;https://www.micron.com/&quot;&gt;Micron&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned, writing Excel macros for the finance department of the company I worked for.&lt;/p&gt;
 
 &lt;p&gt;Although it was a programming on-ramp for me, I still have to side with Dijkstra on BASIC (although maybe not so harshly).
 BASIC was the product of some brilliant folks and it had a huge impact on the history of programming, but I can’t say I recommend it today.&lt;/p&gt;
 
-&lt;p&gt;This solution is pretty much the same solution I used for the rest of the programming languages: I iterate from one greater than the lower bound to one less than the upper bound and check both neighbors to see if we have a peak element.&lt;/p&gt;
+&lt;p&gt;This solution is pretty much the same solution I used for the rest of the programming languages:
+create a wrapper array so I can pretend that out of bounds in either direction is -∞.
+I then check all the values to see if any element is greater than the elements to its left and right.&lt;/p&gt;
 
 &lt;p&gt;I used FreeBASIC to run this example:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;language-basic&quot;&gt;         dim i0(1 to 4) as integer ''{ 1, 2, 3, 1 }
+&lt;pre&gt;&lt;code class=&quot;language-basic&quot;&gt;         dim i0(1 to 4) as integer
          i0(1) = 1
          i0(2) = 2
          i0(3) = 3
@@ -430,14 +434,13 @@ main:(
   &lt;p&gt;Edsger Dijkstra&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;The history behind COBOL is extremely inspiring and exciting, however I have to side with Dijkstra.
-COBOL was &lt;em&gt;very&lt;/em&gt; painful to use.
+&lt;p&gt;The history behind COBOL is extremely inspiring and exciting, however COBOL was &lt;em&gt;very&lt;/em&gt; painful to use.
 And I only learned the most shallow bit of COBOL - in order to read more like plain English, COBOL has &lt;strong&gt;over 300 keywords&lt;/strong&gt;. 
 I can only imagine what it feels like to maintain a 500k line COBOL codebase.&lt;/p&gt;
 
 &lt;p&gt;I used the GNUCobol compiler for this example.
 You’ll notice that everything is indented - COBOL, like several of the other languages I’m covering here, was originally used on a punchcard &lt;a href=&quot;#ref_os_wac&quot;&gt;as explained in this article from opensource.com&lt;/a&gt;.
-Each puncard represented &lt;em&gt;a single line of code&lt;/em&gt;, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers&lt;/p&gt;
+Each puncard represented &lt;em&gt;a single line of code&lt;/em&gt;, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers, which you’ll see here as an asterisk &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*&lt;/code&gt; for comments, and a dash &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-&lt;/code&gt; for line continuation.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-cobol&quot;&gt;       ID DIVISION.
        PROGRAM-ID. ARRAYTEST.
@@ -547,11 +550,12 @@ I’m sure there are some more modern conventions around COBOL considering &lt;e
 &lt;p&gt;In 1959 Grace Hopper, a retired Navy officer, organized a meeting of users and manufacturers to conceive of a programming language in response to Mary Hawes’s call for a portable programming language, a language that could be compiled and ran on computers from multiple manufacturers.
 &lt;a href=&quot;#ref_twitter_bryce_cobol&quot;&gt;You can read more about the history of COBOL on this Twitter thread from Bryce Lelbach which you should &lt;em&gt;definitely&lt;/em&gt; check out.&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;I think we have a lot to learn from COBOL, a lot to be thankful for.
+&lt;p&gt;I think we have a lot to learn from COBOL, and a lot to be thankful for.
 &lt;a href=&quot;#ref_iso_homepage&quot;&gt;The ISO&lt;/a&gt; didn’t come along until 1988, long after Grace Hopper initiated the committee for the development of COBOL.
-I’m sure we owe a huge debt to COBOL and the women-led consensus-driven model, and I want to learn all I can from that history.&lt;/p&gt;
+I’m sure we owe a huge debt to COBOL and the women-led consensus-driven community that gave us COBOL.
+I want to learn all I can from that history.&lt;/p&gt;
 
-&lt;p&gt;I still don’t want to write COBOL though :smile:.&lt;/p&gt;
+&lt;p&gt;I don’t want to write any more COBOL than I have to though :smile:.&lt;/p&gt;
 
 &lt;h3 id=&quot;fortran&quot;&gt;&lt;a href=&quot;#content&quot;&gt;Fortran&lt;/a&gt;&lt;/h3&gt;
 
@@ -573,14 +577,15 @@ The name “Fortran” is derived from &lt;a href=&quot;#ref_ftn_start&quot;&gt;
 It’s written in wonderfully modern and well-maintained C++, and I use the C++ style guide from Flang for my technical teams at my day job.
 Flang is definitely worth keeping an eye on, I think it will become a significant force in HPC in the coming years.&lt;/p&gt;
 
-&lt;p&gt;I tried using the g77 compiler from GCC 3.4.4 for this example to get a better feel for historical Fortran, but after removing some syntax I didn’t realize came with f90, I encountered this compiler error, likely because I’m using a 32b version of gcc:&lt;/p&gt;
+&lt;p&gt;I tried using the g77 compiler from GCC 3.4.4 for this example to get a better feel for historical Fortran, but after removing some syntax I didn’t realize came with f90, I realized the 32b build of GCC would probably not be able to target my modern machine.&lt;/p&gt;
 &lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;g77 ./src/fortran/lc-peak-element.f
 &lt;span class=&quot;go&quot;&gt;/tmp/ccYc9ESc.s: Assembler messages:
 /tmp/ccYc9ESc.s:39: Error: invalid instruction suffix for `push'
 /tmp/ccYc9ESc.s:91: Error: invalid instruction suffix for `push'
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;This at least let me know my code was valid Fortran 77!&lt;/p&gt;
+&lt;p&gt;This at least let me know my code was valid Fortran 77!
+After removing any compilation errors with g77, I just built the example with gfortran from gcc 11.2.&lt;/p&gt;
 &lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;     &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comments&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'c'&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;the&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;column&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;just&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;like&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;the&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;     &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;punchcards&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
       &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;program&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
@@ -638,7 +643,7 @@ Flang is definitely worth keeping an eye on, I think it will become a significan
       &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;subroutine&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;For Fortran 90 I can do array assignments like this:&lt;/p&gt;
+&lt;p&gt;For Fortran 90 I can do array assignments like this, which I really like:&lt;/p&gt;
 &lt;div class=&quot;language-fortran highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;vals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
@@ -673,6 +678,18 @@ Fortran has a wonderfully rich history, and it’s certainly a part of our futur
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;!---
+
+YouTube Description:
+
+You can find a longer version with more references here:
+Blog Post: http://www.ashermancinelli.com/pop-langs-1960s
+
+GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed
+LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
+
+--&gt;
 
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
