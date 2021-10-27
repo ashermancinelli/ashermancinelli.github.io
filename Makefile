@@ -21,3 +21,5 @@ deploy: install
 		git commit -m 'Publish' && \
 		git push
 
+# Sometimes I forget which one
+publish: deploy

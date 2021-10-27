@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-27T14:23:15-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-10-27T16:02:31-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;p&gt;Most of these languages have changed a lot since the 1960s, so the way I’m using these languages won’t be quite the same as they were used back then.
 For example, I couldn’t find a way to compile and/or run an ALGOL50 program, so I’ll have to use Algol68, a later standard of the language.
@@ -687,6 +695,14 @@ Fortran has a wonderfully rich history, and it’s certainly a part of our futur
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
 &lt;!---
 ## YouTube Description:
 
@@ -749,6 +765,14 @@ LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
 &lt;/ul&gt;</content><author><name></name></author><summary type="html">We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</summary></entry><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/Xk7-xjnEISE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;p&gt;In addition to that, we’ll be using various combinations of two programming paradigms common in distributed computing: using a GPU to perform some calculations and MPI to distribute our calculation among multiple processes, potentially on multiple machines.&lt;/p&gt;
 
@@ -1609,6 +1633,14 @@ We then perform our max reduce to get our answer and we return!&lt;/p&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
 &lt;h2 id=&quot;youtube-description&quot;&gt;&lt;a href=&quot;#content&quot;&gt;YouTube Description&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;We solve a Leetcode problem in four languages using various combinations of MPI and CUDA!&lt;/p&gt;
@@ -1634,6 +1666,14 @@ We then perform our max reduce to get our answer and we return!&lt;/p&gt;
 &lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a leetcode problem in four programming languages using two acceleration paradigms!</summary></entry><entry><title type="html">BQN and CUDA C++ LeetCode Solutions</title><link href="/bqn-cuda-cpp-lc-longest-valid-parens" rel="alternate" type="text/html" title="BQN and CUDA C++ LeetCode Solutions" /><published>2021-10-11T00:00:00-06:00</published><updated>2021-10-11T00:00:00-06:00</updated><id>/BQN-Cpp-CUDA</id><content type="html" xml:base="/bqn-cuda-cpp-lc-longest-valid-parens">&lt;p&gt;Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/3D7sfXzBBXE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
 
@@ -1898,6 +1938,14 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
 &lt;h2 id=&quot;links&quot;&gt;Links&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -1908,6 +1956,14 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
   &lt;li&gt;&lt;a href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://leetcode.com/problems/longest-valid-parentheses/&quot;&gt;LeetCode Problem&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
 
@@ -2036,6 +2092,14 @@ run entirely in device memory.&lt;/p&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -2046,6 +2110,14 @@ run entirely in device memory.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
 
@@ -2360,6 +2432,14 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -2369,6 +2449,14 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
   &lt;li&gt;&lt;a href=&quot;http://llvmweekly.org/issue/376&quot;&gt;LLVM Weekly mention&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/llvm/llvm-project/tree/main/flang/unittests&quot;&gt;Flang unittests&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;p&gt;In the &lt;a href=&quot;/spack2&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed environment management with Spack, particularly integration with a private repository.
 What are some of the benefits of this, other than onboarding new developers?&lt;/p&gt;
@@ -2466,9 +2554,25 @@ This way, the profiling team may work on a known working configuration of the so
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
+&lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
 What about cases that are not formally errors, but should not exist in your codebase?
 This post explores using Clang tools to address this case.&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;h2 id=&quot;example-use-case&quot;&gt;Example Use Case&lt;/h2&gt;
 
@@ -2960,6 +3064,14 @@ serve as a concrete starting point.&lt;/p&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
 &lt;ol&gt;
@@ -2989,6 +3101,14 @@ serve as a concrete starting point.&lt;/p&gt;
   &lt;li&gt;Using environments for continuous integration&lt;/li&gt;
   &lt;li&gt;Managing configurations for distributed and multi-platform development&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;h2 id=&quot;managing-environments&quot;&gt;Managing Environments&lt;/h2&gt;
 
@@ -3210,8 +3330,24 @@ Assuming &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Floo
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry><entry><title type="html">Spack for Package Development Part 1</title><link href="/spack1" rel="alternate" type="text/html" title="Spack for Package Development Part 1" /><published>2021-03-04T00:00:00-07:00</published><updated>2021-03-04T00:00:00-07:00</updated><id>/Spack-Development-1</id><content type="html" xml:base="/spack1">&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/&quot;&gt;Spack&lt;/a&gt; is typically used for package deployment, however this post will be about package &lt;em&gt;development&lt;/em&gt; with Spack.
+&lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry><entry><title type="html">Spack for Package Development Part 1</title><link href="/spack1" rel="alternate" type="text/html" title="Spack for Package Development Part 1" /><published>2021-03-04T00:00:00-07:00</published><updated>2021-03-04T00:00:00-07:00</updated><id>/Spack-Development-1</id><content type="html" xml:base="/spack1">&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/&quot;&gt;Spack&lt;/a&gt; is typically used for package deployment, however this post will be about package &lt;em&gt;development&lt;/em&gt; with Spack.
 First in this series, this post focuses on &lt;em&gt;motivation and introduction&lt;/em&gt;.&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
 
 &lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
 
@@ -3317,4 +3453,12 @@ The next post will go further into managing environments and multi-platform conf
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Spack is typically used for package deployment, however this post will be about package development with Spack. First in this series, this post focuses on motivation and introduction.</summary></entry></feed>
+&lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Spack is typically used for package deployment, however this post will be about package development with Spack. First in this series, this post focuses on motivation and introduction.</summary></entry></feed>
