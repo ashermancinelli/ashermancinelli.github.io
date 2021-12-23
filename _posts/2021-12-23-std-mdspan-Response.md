@@ -114,6 +114,10 @@ Make sure to check out Daisy Hollman's appearance on CppCast, Context Free's You
 
 ## Links
 
+* Godbolt links:
+    * [Example 1](https://godbolt.org/z/eWKev9nas)
+    * [Example 2](https://godbolt.org/z/Phr1vh9zs)
+    * [Example 3](https://godbolt.org/z/Wrr4dhEs8)
 * [ContextFree's YouTube channel](https://www.youtube.com/c/ContextFree/videos)
 * [Kokkos mdspan implementation](https://github.com/kokkos/mdspan)
 * [Intro to mdspan wiki article](https://github.com/kokkos/mdspan/wiki/A-Gentle-Introduction-to-mdspan)
