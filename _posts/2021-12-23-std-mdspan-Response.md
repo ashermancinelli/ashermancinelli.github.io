@@ -114,6 +114,7 @@ Make sure to check out Daisy Hollman's appearance on CppCast, Context Free's You
 
 ## Links
 
+* [`mdspan` paper, revision 14](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0009r14.html)
 * Godbolt links:
     * [Example 1](https://godbolt.org/z/eWKev9nas)
     * [Example 2](https://godbolt.org/z/Phr1vh9zs)
