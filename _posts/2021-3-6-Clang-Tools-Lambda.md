@@ -8,6 +8,8 @@ Compilers are extremely proficient at catching (and even suggesting fixes for) e
 What about cases that are not formally errors, but should not exist in your codebase?
 This post explores using Clang tools to address this case.
 
+{% include disclaimer.html %}
+
 ## Example Use Case
 
 When using portability libraries such as [RAJA](https://github.com/LLNL/RAJA/blob/main/docs/sphinx/user_guide/index.rst) and

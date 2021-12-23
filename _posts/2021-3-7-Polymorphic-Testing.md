@@ -6,6 +6,8 @@ permalink: /poly-testing
 
 Design principles apply to your tests more often then you might think!
 
+{% include disclaimer.html %}
+
 ## Intro
 
 When designing tests, qualities like code reuse, readability, and execution time

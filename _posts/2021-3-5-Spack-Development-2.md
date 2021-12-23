@@ -19,6 +19,8 @@ In the following post(s), we'll discuss the following in greater detail:
 * Using environments for continuous integration
 * Managing configurations for distributed and multi-platform development
 
+{% include disclaimer.html %}
+
 ## Managing Environments
 
 One of the most useful features of Spack is it's support for [environments](https://spack.readthedocs.io/en/latest/environments.html).

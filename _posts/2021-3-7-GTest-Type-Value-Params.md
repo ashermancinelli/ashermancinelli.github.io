@@ -7,6 +7,8 @@ permalink: /gtest-type-val-param
 GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?
 
+{% include disclaimer.html %}
+
 ## Getting Started
 
 The need for this arose when converting some of Flang's unit tests to use GTest

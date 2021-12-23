@@ -8,6 +8,8 @@ Solving a leetcode problem in four programming languages using two acceleration 
 
 *NOTE: This post is a transcript of [the youtube video linked here](https://youtu.be/Xk7-xjnEISE).*
 
+{% include disclaimer.html %}
+
 In addition to that, we'll be using various combinations of two programming paradigms common in distributed computing: using a GPU to perform some calculations and MPI to distribute our calculation among multiple processes, potentially on multiple machines.
 
 We'll be looking at [this leetcode problem,](https://leetcode.com/problems/valid-sudoku/) which is to determine if a 9 x 9 Sudoku board is valid, but not necessarily solvable.

@@ -6,6 +6,8 @@ permalink: /hpc-primer-1
 
 First lessons in distributed and high-performance computing.
 
+{% include disclaimer.html %}
+
 ### Intro
 
 High-performance computing (HPC) is an exciting field with a rich history.

@@ -6,6 +6,8 @@ permalink: /pop-langs-1960s
 
 We use the 6 most popular programming languages of the 1960's to solve a leetcode problem!
 
+{% include disclaimer.html %}
+
 Most of these languages have changed a lot since the 1960s, so the way I'm using these languages won't be quite the same as they were used back then.
 For example, I couldn't find a way to compile and/or run an ALGOL50 program, so I'll have to use Algol68, a later standard of the language.
 Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
@@ -17,7 +19,14 @@ I'll be looking at the languages in ascending order based on their popularity in
 Along with my solution for each language, I'll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).
 His scathing remarks about almost every language on this list were too good to leave out.
 
-<a target="_blank" href="https://github.com/ashermancinelli/algorithm-testbed">All these solutions and the build system needed to compile the examples can be found in this repository.</a>
+<a target="_blank" href="https://github.com/ashermancinelli/algorithm-testbed">
+All these solutions and the build system needed to compile the examples can be found in this repository.
+</a>
+***NOTE: The repo linked above has been temporarily made private due to intellectual property questions and will be restored as soon as possible.***
+
+<a href="https://youtu.be/lYfCNa9coC4" target="_blank">
+See the youtube video version of this content linked here.
+</a>
 
 ## Problem
 
