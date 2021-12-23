@@ -1,4 +1,141 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-11-07T15:25:03-08:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-07:00</published><updated>2021-10-24T00:00:00-07:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-12-23T12:42:55-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">std::mdspan and Tensors in Modern C++</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="std::mdspan and Tensors in Modern C++" /><published>2021-12-23T00:00:00-07:00</published><updated>2021-12-23T00:00:00-07:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors">&lt;p&gt;Tensors in modern C++&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h2 id=&quot;tensors&quot;&gt;Tensors&lt;/h2&gt;
+
+&lt;p&gt;A YouTuber by the name of &lt;a href=&quot;https://www.youtube.com/c/ContextFree/videos&quot;&gt;Context Free&lt;/a&gt; posted a few videos about tensors in various programming languages, including C++ (&lt;a href=&quot;https://youtu.be/WbpbEilgQBc&quot;&gt;first video&lt;/a&gt;, &lt;a href=&quot;https://youtu.be/ICxxKeE4GuA&quot;&gt;second video&lt;/a&gt;).
+I loved these videos, but I noticed ContextFree failed to mention &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mdspan&lt;/code&gt;, a new library feature coming to C++23.&lt;/p&gt;
+
+&lt;h2 id=&quot;stdmdspan&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mdspan&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mdspan&lt;/code&gt; (or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::experimental::mdspan&lt;/code&gt; until the proposal is accepted-I’ll be using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;stdex::mdspan&lt;/code&gt;, as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;stdex&lt;/code&gt; is a common alias for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::experimental&lt;/code&gt;) is an alias for a more complex type, but at it’s core it is a pointer plus some number of &lt;em&gt;extents&lt;/em&gt;.
+&lt;em&gt;Extents&lt;/em&gt; are either sizes of a given dimension on an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt;, or the sentinal &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::dynamic_extent&lt;/code&gt;, which indicates the extent is &lt;em&gt;dynamic&lt;/em&gt;, and doesn’t have to be supplied at compile-time.
+These extents and the sentinal &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dynamic_extent&lt;/code&gt; can be mixed and matched.
+This powerful capability allows users to work with data as if it were a complex matrix structure while the underlying data remain linear.&lt;/p&gt;
+
+&lt;p&gt;For example, given raw data, an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; may be constructed and passed to some library that expects a matrix with rank 3:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// https://godbolt.org/z/eWKev9nas&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_3d&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;
+                 &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                 &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extents&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;
+                     &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dynamic_extent&lt;/span&gt;
+                   &lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dynamic_extent&lt;/span&gt;
+                   &lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dynamic_extent&lt;/span&gt;
+                 &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+               &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_3d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;500&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that we will have to be more careful if we mix-and-match compile-time and run-time extents.&lt;/p&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// https://godbolt.org/z/Phr1vh9zs&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_3d&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extents&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dynamic_extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dynamic_extent&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_3d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;27&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_3d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_3d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// work(mat_3d&amp;lt;int&amp;gt;(raw, 3, 0, 9)) will fail bc extents don't match!&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;After supplying a dummy implementation of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;work&lt;/code&gt; to print the shape, we get&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;mat has shape [100, 5, 1]
+mat has shape [4, 5, 5]
+mat has shape [10, 1, 50]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In either case, the underlying data is the same, though it’s &lt;em&gt;viewed&lt;/em&gt; differently in each of the invocations of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;some_library::work&lt;/code&gt;.
+It’s no coincidence that &lt;em&gt;view&lt;/em&gt; seems like a natural name for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; - &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; was developed by the authors of the portable execution library Kokkos and inspired by the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kokkos::View&lt;/code&gt; type.&lt;/p&gt;
+
+&lt;h2 id=&quot;subspans&quot;&gt;Subspans&lt;/h2&gt;
+
+&lt;p&gt;Just like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::span&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; has support for taking subspans of a given span.
+This is more complicated with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; however, due to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt;’s variadic extents.&lt;/p&gt;
+
+&lt;p&gt;There are three ways to take a slice of an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt;:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;An integer index into the respective dimension&lt;/li&gt;
+  &lt;li&gt;A &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::tuple&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::pair&lt;/code&gt; begin/end pair of indices&lt;/li&gt;
+  &lt;li&gt;The special value &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::full_extent&lt;/code&gt; indicating all elements of the dimension should be selected in the subspan&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For example:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// https://godbolt.org/z/Wrr4dhEs8&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;27&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iota&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;27&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// full will have shape [3,3,3]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;full&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// sub will have shape [1,3] and values [18,19,20]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sub&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;submdspan&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;full&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pair&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;full_extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that using a single value as an extent passed to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;submdspan&lt;/code&gt; squashes the dimension to 0, while passing a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pair&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tuple&lt;/code&gt; will keep the dimension around, even if that dimension is 1.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pair&lt;/code&gt;/&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tuple&lt;/code&gt; do not effect rank, while passing an index as an extent does.&lt;/p&gt;
+
+&lt;p&gt;I hope this article was enough to get you interested in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; and the future of C++!
+Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s YouTube channel, and the reference implementation of C++23’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mdspan&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h2 id=&quot;links&quot;&gt;Links&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/c/ContextFree/videos&quot;&gt;ContextFree’s YouTube channel&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/kokkos/mdspan&quot;&gt;Kokkos mdspan implementation&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/kokkos/mdspan/wiki/A-Gentle-Introduction-to-mdspan&quot;&gt;Intro to mdspan wiki article&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/KMT3G9Ese&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mdspan&lt;/code&gt; on compiler explorer&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://cppcast.com/too-cute-mdspan/&quot;&gt;CppCast episode with Daisy Hollman&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Tensors in modern C++</summary></entry><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
 &lt;h4&gt;DISCLAIMER&lt;/h4&gt;
@@ -762,7 +899,7 @@ LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_tut_a68&quot; href=&quot;https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.83.4668&amp;amp;rep=rep1&amp;amp;type=pdf&quot;&gt;Tutorial on Algol68&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_g77&quot; href=&quot;http://www.kilmnj.com/g77/&quot;&gt;GNU Fortran 77 (g77) Legacy Site&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_g77_legacy_tarball&quot; href=&quot;https://gfortran.meteodat.ch/download/legacy_g77/&quot;&gt;Legacy G77 tarball&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</summary></entry><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-07:00</published><updated>2021-10-19T00:00:00-07:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</summary></entry><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/Xk7-xjnEISE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
@@ -1663,7 +1800,7 @@ We then perform our max reduce to get our answer and we return!&lt;/p&gt;
   &lt;li&gt;Written version: http://www.ashermancinelli.com/leetcode-distributed-computing&lt;/li&gt;
   &lt;li&gt;LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&lt;/li&gt;
   &lt;li&gt;GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a leetcode problem in four programming languages using two acceleration paradigms!</summary></entry><entry><title type="html">BQN and CUDA C++ LeetCode Solutions</title><link href="/bqn-cuda-cpp-lc-longest-valid-parens" rel="alternate" type="text/html" title="BQN and CUDA C++ LeetCode Solutions" /><published>2021-10-11T00:00:00-07:00</published><updated>2021-10-11T00:00:00-07:00</updated><id>/BQN-Cpp-CUDA</id><content type="html" xml:base="/bqn-cuda-cpp-lc-longest-valid-parens">&lt;p&gt;Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a leetcode problem in four programming languages using two acceleration paradigms!</summary></entry><entry><title type="html">BQN and CUDA C++ LeetCode Solutions</title><link href="/bqn-cuda-cpp-lc-longest-valid-parens" rel="alternate" type="text/html" title="BQN and CUDA C++ LeetCode Solutions" /><published>2021-10-11T00:00:00-06:00</published><updated>2021-10-11T00:00:00-06:00</updated><id>/BQN-Cpp-CUDA</id><content type="html" xml:base="/bqn-cuda-cpp-lc-longest-valid-parens">&lt;p&gt;Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/3D7sfXzBBXE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
@@ -1955,7 +2092,7 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
   &lt;li&gt;&lt;a href=&quot;http://www.ashermancinelli.com/&quot;&gt;Blog&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://leetcode.com/problems/longest-valid-parentheses/&quot;&gt;LeetCode Problem&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-08:00</published><updated>2021-03-07T00:00:00-08:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
 &lt;h4&gt;DISCLAIMER&lt;/h4&gt;
@@ -2108,7 +2245,7 @@ run entirely in device memory.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-08:00</published><updated>2021-03-07T00:00:00-08:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
@@ -2448,121 +2585,7 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
   &lt;li&gt;&lt;a href=&quot;https://github.com/google/googletest/blob/master/docs/advanced.md&quot;&gt;GTest advanced docs&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://llvmweekly.org/issue/376&quot;&gt;LLVM Weekly mention&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/llvm/llvm-project/tree/main/flang/unittests&quot;&gt;Flang unittests&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-08:00</published><updated>2021-03-06T00:00:00-08:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;p&gt;In the &lt;a href=&quot;/spack2&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed environment management with Spack, particularly integration with a private repository.
-What are some of the benefits of this, other than onboarding new developers?&lt;/p&gt;
-
-&lt;p&gt;As we’ve developed our private spack repository, we’ve also added some spack environments along the way:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-floodsimulationrepo
-├── environments
-│   ├── jupiter
-│   │   └── env.yaml
-│   ├── saturn
-│   │   └── env.yaml
-│   └── osx
-│       └── env.yaml
-├── packges
-│   ├── ipopt
-│   │   └── package.py
-│   └── floodsimulation
-│       └── package.py
-└── repo.yaml
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;In this post, we’re going to look at using this configuration to reproduce errors and coordinate development and debugging within a large team.&lt;/p&gt;
-
-&lt;h3 id=&quot;reproducing-finicky-errors&quot;&gt;Reproducing Finicky Errors&lt;/h3&gt;
-
-&lt;p&gt;Bugs relating to interfaces between libraries are sometimes the most difficult to track down.
-To use an example from my experience, one of my teams was developing a library that builds on the optimization solver &lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, which leverages CUDA, MAGMA, and many BLAS/LAPACK routines.
-After developing some functionality tests to ensure our library was performing as expected, we noticed that on some platforms with certain CUDA devices and CUDA versions, our library was failing to converge within our expected tolerance.
-For weeks we stepped through debuggers and discussed possibile issues with our codebase and the various libraries we depend on to no avail.&lt;/p&gt;
-
-&lt;p&gt;We eventually enlisted the help of collaborators from another laboratory to build and test our codebase under similar conditions on their platforms to ensure they were able to reproduce the bug.
-In order to ensure our collaborators were able to accurately reproduce the environments in which we found the bug, we created and distributed spack environments specific to that development snapshot.&lt;/p&gt;
-
-&lt;p&gt;Continuing with our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; example, let us imagine we found a bug when running with CUDA versions v11.0.104 through 11.1 and HiOp v0.3.0 on our imaginary cluster Jupiter, and would like other teammembers to reproduce the bug on differrent platforms but using the same stack.
-We might create an environment file like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-&lt;span class=&quot;c1&quot;&gt;# reproduce-error.yaml&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;spack&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;specs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop&lt;/span&gt;
-    &lt;span class=&quot;s&quot;&gt;^cuda@11.0.104 ^hiop@0.3.0&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;packages&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;cuda&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;11.0.104&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;11.1.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;hiop&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;0.3.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;You can see we’ve established the exact matrix of libraries in which our bug manifests.
-We then asked our collaborators to install all versions of this spack environment and attempt to reproduce our bug, with all certainty that they will accurately reproduce the environment.&lt;/p&gt;
-
-&lt;p&gt;We also tend to track these environments in our repository like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-floodsimulationrepo
-├── environments
-│   ├── jupiter
-│   │   ├── env.yaml
-│   │   └── reproduce-error.yaml &amp;lt;---
-│   ├── saturn
-│   │   └── env.yaml
-│   └── osx
-│       └── env.yaml
-├── packges
-│   ├── ipopt
-│   │   └── package.py
-│   └── floodsimulation
-│       └── package.py
-└── repo.yaml
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;so that in future threads we are able to refer back to the exact configurations which caused bugs in the past.&lt;/p&gt;
-
-&lt;p&gt;With this strategy, we are able to maintain a reproducible and consistent software stack with robust coordination between teams.
-Another potential use-case of this strategy is to coordinate profiling efforts - each month or so a spack environment which instantiates a development snapshot of the development stack may be distributed to profiling teams.
-This way, the profiling team may work on a known working configuration of the software stack to identify performance bottlenecks while the core development team continues developing.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/spack2&quot;&gt;Previous in this Series&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/spack4&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt; Contact &lt;/h2&gt;
-
-&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-08:00</published><updated>2021-03-06T00:00:00-08:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
 What about cases that are not formally errors, but should not exist in your codebase?
 This post explores using Clang tools to address this case.&lt;/p&gt;
 
@@ -3083,7 +3106,121 @@ serve as a concrete starting point.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://clang.llvm.org/docs/RAVFrontendAction.html&quot;&gt;Clang AST Visitor documentation&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=E6i8jmiy8MY&amp;amp;ab_channel=CppNow&quot;&gt;Peter Goldsborough’s C++Now talk on Clang/LLVM tools&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code. What about cases that are not formally errors, but should not exist in your codebase? This post explores using Clang tools to address this case.</summary></entry><entry><title type="html">Spack for Package Development Part 2</title><link href="/spack2" rel="alternate" type="text/html" title="Spack for Package Development Part 2" /><published>2021-03-05T00:00:00-08:00</published><updated>2021-03-05T00:00:00-08:00</updated><id>/Spack-Development-2</id><content type="html" xml:base="/spack2">&lt;p&gt;Second in this series, this post focuses on &lt;em&gt;getting stared with environments&lt;/em&gt;.&lt;/p&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code. What about cases that are not formally errors, but should not exist in your codebase? This post explores using Clang tools to address this case.</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;p&gt;In the &lt;a href=&quot;/spack2&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed environment management with Spack, particularly integration with a private repository.
+What are some of the benefits of this, other than onboarding new developers?&lt;/p&gt;
+
+&lt;p&gt;As we’ve developed our private spack repository, we’ve also added some spack environments along the way:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+floodsimulationrepo
+├── environments
+│   ├── jupiter
+│   │   └── env.yaml
+│   ├── saturn
+│   │   └── env.yaml
+│   └── osx
+│       └── env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this post, we’re going to look at using this configuration to reproduce errors and coordinate development and debugging within a large team.&lt;/p&gt;
+
+&lt;h3 id=&quot;reproducing-finicky-errors&quot;&gt;Reproducing Finicky Errors&lt;/h3&gt;
+
+&lt;p&gt;Bugs relating to interfaces between libraries are sometimes the most difficult to track down.
+To use an example from my experience, one of my teams was developing a library that builds on the optimization solver &lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, which leverages CUDA, MAGMA, and many BLAS/LAPACK routines.
+After developing some functionality tests to ensure our library was performing as expected, we noticed that on some platforms with certain CUDA devices and CUDA versions, our library was failing to converge within our expected tolerance.
+For weeks we stepped through debuggers and discussed possibile issues with our codebase and the various libraries we depend on to no avail.&lt;/p&gt;
+
+&lt;p&gt;We eventually enlisted the help of collaborators from another laboratory to build and test our codebase under similar conditions on their platforms to ensure they were able to reproduce the bug.
+In order to ensure our collaborators were able to accurately reproduce the environments in which we found the bug, we created and distributed spack environments specific to that development snapshot.&lt;/p&gt;
+
+&lt;p&gt;Continuing with our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; example, let us imagine we found a bug when running with CUDA versions v11.0.104 through 11.1 and HiOp v0.3.0 on our imaginary cluster Jupiter, and would like other teammembers to reproduce the bug on differrent platforms but using the same stack.
+We might create an environment file like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+&lt;span class=&quot;c1&quot;&gt;# reproduce-error.yaml&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;spack&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;specs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;^cuda@11.0.104 ^hiop@0.3.0&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;packages&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;cuda&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;11.0.104&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;11.1.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;hiop&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;versions&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;0.3.0&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You can see we’ve established the exact matrix of libraries in which our bug manifests.
+We then asked our collaborators to install all versions of this spack environment and attempt to reproduce our bug, with all certainty that they will accurately reproduce the environment.&lt;/p&gt;
+
+&lt;p&gt;We also tend to track these environments in our repository like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+floodsimulationrepo
+├── environments
+│   ├── jupiter
+│   │   ├── env.yaml
+│   │   └── reproduce-error.yaml &amp;lt;---
+│   ├── saturn
+│   │   └── env.yaml
+│   └── osx
+│       └── env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;so that in future threads we are able to refer back to the exact configurations which caused bugs in the past.&lt;/p&gt;
+
+&lt;p&gt;With this strategy, we are able to maintain a reproducible and consistent software stack with robust coordination between teams.
+Another potential use-case of this strategy is to coordinate profiling efforts - each month or so a spack environment which instantiates a development snapshot of the development stack may be distributed to profiling teams.
+This way, the profiling team may work on a known working configuration of the software stack to identify performance bottlenecks while the core development team continues developing.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/spack2&quot;&gt;Previous in this Series&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/spack4&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Spack for Package Development Part 2</title><link href="/spack2" rel="alternate" type="text/html" title="Spack for Package Development Part 2" /><published>2021-03-05T00:00:00-07:00</published><updated>2021-03-05T00:00:00-07:00</updated><id>/Spack-Development-2</id><content type="html" xml:base="/spack2">&lt;p&gt;Second in this series, this post focuses on &lt;em&gt;getting stared with environments&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;In the &lt;a href=&quot;/spack1&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed the following points:&lt;/p&gt;
 
@@ -3338,7 +3475,7 @@ Assuming &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Floo
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
   &lt;/em&gt;
-&lt;/font&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry><entry><title type="html">Spack for Package Development Part 1</title><link href="/spack1" rel="alternate" type="text/html" title="Spack for Package Development Part 1" /><published>2021-03-04T00:00:00-08:00</published><updated>2021-03-04T00:00:00-08:00</updated><id>/Spack-Development-1</id><content type="html" xml:base="/spack1">&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/&quot;&gt;Spack&lt;/a&gt; is typically used for package deployment, however this post will be about package &lt;em&gt;development&lt;/em&gt; with Spack.
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry><entry><title type="html">Spack for Package Development Part 1</title><link href="/spack1" rel="alternate" type="text/html" title="Spack for Package Development Part 1" /><published>2021-03-04T00:00:00-07:00</published><updated>2021-03-04T00:00:00-07:00</updated><id>/Spack-Development-1</id><content type="html" xml:base="/spack1">&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/&quot;&gt;Spack&lt;/a&gt; is typically used for package deployment, however this post will be about package &lt;em&gt;development&lt;/em&gt; with Spack.
 First in this series, this post focuses on &lt;em&gt;motivation and introduction&lt;/em&gt;.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
