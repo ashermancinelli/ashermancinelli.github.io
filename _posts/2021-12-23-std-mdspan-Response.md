@@ -1,6 +1,6 @@
 ---
 layout: post
-title: std::mdspan and Tensors in Modern C++
+title: A Look at std::mdspan
 permalink: /std-mdspan-tensors
 ---
 
