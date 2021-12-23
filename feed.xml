@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-12-23T12:42:55-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">std::mdspan and Tensors in Modern C++</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="std::mdspan and Tensors in Modern C++" /><published>2021-12-23T00:00:00-07:00</published><updated>2021-12-23T00:00:00-07:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors">&lt;p&gt;Tensors in modern C++&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-12-23T12:54:07-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">std::mdspan and Tensors in Modern C++</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="std::mdspan and Tensors in Modern C++" /><published>2021-12-23T00:00:00-07:00</published><updated>2021-12-23T00:00:00-07:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors">&lt;p&gt;Tensors in modern C++&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
 &lt;h4&gt;DISCLAIMER&lt;/h4&gt;
@@ -130,6 +130,13 @@ Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s
 &lt;h2 id=&quot;links&quot;&gt;Links&lt;/h2&gt;
 
 &lt;ul&gt;
+  &lt;li&gt;Godbolt links:
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/eWKev9nas&quot;&gt;Example 1&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/Phr1vh9zs&quot;&gt;Example 2&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/Wrr4dhEs8&quot;&gt;Example 3&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/c/ContextFree/videos&quot;&gt;ContextFree’s YouTube channel&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/kokkos/mdspan&quot;&gt;Kokkos mdspan implementation&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/kokkos/mdspan/wiki/A-Gentle-Introduction-to-mdspan&quot;&gt;Intro to mdspan wiki article&lt;/a&gt;&lt;/li&gt;
