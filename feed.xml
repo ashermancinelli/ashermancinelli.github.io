@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-12-24T13:48:44-08:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">A Look at std::mdspan</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="A Look at std::mdspan" /><published>2021-12-23T00:00:00-08:00</published><updated>2021-12-23T00:00:00-08:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors">&lt;p&gt;New library feature coming to C++23&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-12-24T13:54:35-08:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">A Look at std::mdspan</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="A Look at std::mdspan" /><published>2021-12-23T00:00:00-08:00</published><updated>2021-12-23T00:00:00-08:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors">&lt;p&gt;New library feature coming to C++23&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
 &lt;h4&gt;DISCLAIMER&lt;/h4&gt;
@@ -72,7 +72,7 @@ mat has shape [4, 5, 5]
 mat has shape [10, 1, 50]
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;In either case, the underlying data is the same, though it’s &lt;em&gt;viewed&lt;/em&gt; differently in each of the invocations of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;some_library::work&lt;/code&gt;.
+&lt;p&gt;In either case, the underlying data is the same, though it’s &lt;em&gt;viewed&lt;/em&gt; differently in each of the invocations of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;work&lt;/code&gt;.
 It’s no coincidence that &lt;em&gt;view&lt;/em&gt; seems like a natural name for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; - &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; was developed by the authors of the portable execution library Kokkos and inspired by the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Kokkos::View&lt;/code&gt; type.&lt;/p&gt;
 
 &lt;h2 id=&quot;subspans&quot;&gt;Subspans&lt;/h2&gt;
