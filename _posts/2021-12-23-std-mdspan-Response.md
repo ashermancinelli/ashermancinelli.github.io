@@ -4,7 +4,7 @@ title: A Look at std::mdspan
 permalink: /std-mdspan-tensors
 ---
 
-Tensors in modern C++
+New library feature coming to C++23
 
 {% include disclaimer.html %}
 
@@ -75,7 +75,7 @@ mat has shape [4, 5, 5]
 mat has shape [10, 1, 50]
 ```
 
-In either case, the underlying data is the same, though it's _viewed_ differently in each of the invocations of `some_library::work`.
+In either case, the underlying data is the same, though it's _viewed_ differently in each of the invocations of `work`.
 It's no coincidence that _view_ seems like a natural name for `mdspan` - `mdspan` was developed by the authors of the portable execution library Kokkos and inspired by the `Kokkos::View` type.
 
 ## Subspans
