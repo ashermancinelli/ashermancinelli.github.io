@@ -1,7 +1,269 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-12-24T13:54:35-08:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">A Look at std::mdspan</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="A Look at std::mdspan" /><published>2021-12-23T00:00:00-08:00</published><updated>2021-12-23T00:00:00-08:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors">&lt;p&gt;New library feature coming to C++23&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-15T15:40:27-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">std::expected And Why It’s Awesome</title><link href="/std-expected" rel="alternate" type="text/html" title="std::expected And Why It’s Awesome" /><published>2022-01-15T00:00:00-07:00</published><updated>2022-01-15T00:00:00-07:00</updated><id>/Std-Expected</id><content type="html" xml:base="/std-expected">&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::expected&lt;/code&gt; and some spectacular extensions are hopefully coming to C++23.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h2 id=&quot;existing-practice&quot;&gt;Existing Practice&lt;/h2&gt;
+
+&lt;p&gt;I’m used to seeing code that looks like this, not just in C but in C++ codebases too:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;malloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]));&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dowork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;check_error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domorework&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;check_error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;free&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Integers represent error conditions, and these usually map to an error message like so:&lt;/p&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error_messages&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;success&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;got some failure&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;another kind of failure&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error_types&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;some_failure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;some_other_failure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;check_error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;got error '%s'&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error_messages&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ierr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This way when you encounter an error condition in some function, you just return the corresponding error code like so:&lt;/p&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;dowork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;matrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// do some work here&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/*some error condition*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;some_failure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;// success state&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And the error handler reports the failures:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;  Program returned: 1
+got error 'got some failure'
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;On one hand, there’s a sense of security to writing code like this.
+You always check your error conditions, your code never throws exceptions, and the range of possible failures is very clear.
+I don’t mind this pattern in C, but in C++ we have some goodies that are far nicer to use in my opinion (especially in C++23).&lt;/p&gt;
+
+&lt;h2 id=&quot;why-stdexpected-is-awesome&quot;&gt;Why &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::expected&lt;/code&gt; is Awesome&lt;/h2&gt;
+
+&lt;p&gt;I’ll be using &lt;a href=&quot;https://github.com/kokkos/mdspan&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; from the Kokkos implementation&lt;/a&gt; and &lt;a href=&quot;https://github.com/TartanLlama/expected&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;expected&lt;/code&gt; from Sy Brand’s implementation&lt;/a&gt; for this section.&lt;/p&gt;
+
+&lt;p&gt;In the last year, 3 papers have come through the ISO C++ mailing lists for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::expected&lt;/code&gt;, and &lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html&quot;&gt;the most recent paper from Jeff Garland&lt;/a&gt; proposes some of Sy Brand’s wonderful extensions to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::expected&lt;/code&gt; which allow you to chain together monadic operations on expected values:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;and_then&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;or_else&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;transform&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I think these extensions are &lt;em&gt;extremely&lt;/em&gt; elegant, and I think some folks that are more used to the C-style error handling could be won over.
+Using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::expected&lt;/code&gt; means your errors have &lt;em&gt;value semantics&lt;/em&gt;, which is something I like about the C-stlye error handling.
+Chaining together these operations makes the programmer’s intent so much clearer.&lt;/p&gt;
+
+&lt;p&gt;Let’s look at another example using matrices, but this time using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;expected&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;expected-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;expected&lt;/code&gt; Example&lt;/h3&gt;
+
+&lt;p&gt;I’ll get some &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;using&lt;/code&gt; statements out of the way:&lt;/p&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;experimental&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+    &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extents&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dynamic_extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dynamic_extent&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect_mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;expected&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I can’t help but marvel at how nice and readable this looks:
+The intent of the programmer is very clear in my opinion, even without seeing the rest of the code.&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_unique&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;                  &lt;span class=&quot;c1&quot;&gt;// zero initialize&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;       &lt;span class=&quot;c1&quot;&gt;// set the diagonal of the matrix&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;          &lt;span class=&quot;c1&quot;&gt;// print out some values&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;or_else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;report_errors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// if unexpected, print the error and quit&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;cm&quot;&gt;/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 0.0 1.0 0.0 0.0 0.0 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This leads to some nice and/or interesting patterns.
+Say we want to check that the matrix passed to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;set_diag&lt;/code&gt; is square;
+we could perform our check and return an error message if the check fails, much like we could throw an exception:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;set_diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;make_unexpected&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;expected square matrix!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect_mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I also like using an immediatly invoked lambda for this, but I’m not sure how readable/maintainable this is long-term:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;set_diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect_mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;make_unexpected&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;expected square matrix!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Either way, the error is handled as expected (no pun intended):&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;report_errors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;string_view&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;got error: '{}'&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EXIT_FAILURE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_unique&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// It's not square!&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;or_else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;report_errors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;/*
+ * Program returned: 1
+ * got error: 'expected square matrix!'
+ */&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We can use functors in the expected chain like so:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SetRow&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;expect_mat&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;operator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_unique&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SetRow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;3.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;or_else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;report_errors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 3.5 3.5 3.5 3.5 3.5 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::bind&lt;/code&gt; on a function taking more arguments would also acomplish this:&lt;/p&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;set_row&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect_mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_unique&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_row&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/*mat=*/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/*row=*/&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/*value=*/&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;3.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;or_else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;report_errors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 3.5 3.5 3.5 3.5 3.5 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And of course, lambdas:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_unique&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;raw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set_diag&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;2.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect_mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;and_then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;or_else&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;report_errors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 0.0 1.0 0.0 0.0 0.0 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 2.0 2.0 2.0 2.0 2.0 
+ * 0.0 0.0 0.0 0.0 1.0
+ */&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Hopefully you’ve been won over by the elegance of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;expected&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt;.
+Godbolt links can be found for these examples in the links below:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/jPqdYPEv9&quot;&gt;C-style example&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/hWYj34EcW&quot;&gt;Full &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;expected&lt;/code&gt;+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; example&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html&quot;&gt;Jeff Garland’s 12/2022 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;expected&lt;/code&gt; paper&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/TartanLlama&quot;&gt;Sy Brand’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tl::expected&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/kokkos/mdspan&quot;&gt;Kokkos &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mdspan&lt;/code&gt; impl&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><summary type="html">std::expected and some spectacular extensions are hopefully coming to C++23.</summary></entry><entry><title type="html">A Look at std::mdspan</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="A Look at std::mdspan" /><published>2021-12-23T00:00:00-07:00</published><updated>2021-12-23T00:00:00-07:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors">&lt;p&gt;New library feature coming to C++23&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -120,7 +382,6 @@ Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -143,10 +404,9 @@ Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s
   &lt;li&gt;&lt;a href=&quot;https://github.com/kokkos/mdspan/wiki/A-Gentle-Introduction-to-mdspan&quot;&gt;Intro to mdspan wiki article&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/KMT3G9Ese&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::mdspan&lt;/code&gt; on compiler explorer&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://cppcast.com/too-cute-mdspan/&quot;&gt;CppCast episode with Daisy Hollman&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">New library feature coming to C++23</summary></entry><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-07:00</published><updated>2021-10-24T00:00:00-07:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">New library feature coming to C++23</summary></entry><entry><title type="html">Using the Most Popular Programming Languages of the ’60s</title><link href="/pop-langs-1960s" rel="alternate" type="text/html" title="Using the Most Popular Programming Languages of the ’60s" /><published>2021-10-24T00:00:00-06:00</published><updated>2021-10-24T00:00:00-06:00</updated><id>/Popular-Languages-1965</id><content type="html" xml:base="/pop-langs-1960s">&lt;p&gt;We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -841,7 +1101,6 @@ Fortran has a wonderfully rich history, and it’s certainly a part of our futur
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -907,12 +1166,11 @@ LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_tut_a68&quot; href=&quot;https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.83.4668&amp;amp;rep=rep1&amp;amp;type=pdf&quot;&gt;Tutorial on Algol68&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_g77&quot; href=&quot;http://www.kilmnj.com/g77/&quot;&gt;GNU Fortran 77 (g77) Legacy Site&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a target=&quot;_blank&quot; name=&quot;ref_g77_legacy_tarball&quot; href=&quot;https://gfortran.meteodat.ch/download/legacy_g77/&quot;&gt;Legacy G77 tarball&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</summary></entry><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-07:00</published><updated>2021-10-19T00:00:00-07:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!</summary></entry><entry><title type="html">One Problem, Four Languages, Two Paradigms</title><link href="/leetcode-distributed-computing" rel="alternate" type="text/html" title="One Problem, Four Languages, Two Paradigms" /><published>2021-10-19T00:00:00-06:00</published><updated>2021-10-19T00:00:00-06:00</updated><id>/Leetcode-And-Distributed-Computing</id><content type="html" xml:base="/leetcode-distributed-computing">&lt;p&gt;Solving a leetcode problem in four programming languages using two acceleration paradigms!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/Xk7-xjnEISE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -1779,7 +2037,6 @@ We then perform our max reduce to get our answer and we return!&lt;/p&gt;
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -1808,12 +2065,11 @@ We then perform our max reduce to get our answer and we return!&lt;/p&gt;
   &lt;li&gt;Written version: http://www.ashermancinelli.com/leetcode-distributed-computing&lt;/li&gt;
   &lt;li&gt;LinkedIn: https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&lt;/li&gt;
   &lt;li&gt;GitHub Repo for Examples: https://github.com/ashermancinelli/algorithm-testbed&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a leetcode problem in four programming languages using two acceleration paradigms!</summary></entry><entry><title type="html">BQN and CUDA C++ LeetCode Solutions</title><link href="/bqn-cuda-cpp-lc-longest-valid-parens" rel="alternate" type="text/html" title="BQN and CUDA C++ LeetCode Solutions" /><published>2021-10-11T00:00:00-07:00</published><updated>2021-10-11T00:00:00-07:00</updated><id>/BQN-Cpp-CUDA</id><content type="html" xml:base="/bqn-cuda-cpp-lc-longest-valid-parens">&lt;p&gt;Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a leetcode problem in four programming languages using two acceleration paradigms!</summary></entry><entry><title type="html">BQN and CUDA C++ LeetCode Solutions</title><link href="/bqn-cuda-cpp-lc-longest-valid-parens" rel="alternate" type="text/html" title="BQN and CUDA C++ LeetCode Solutions" /><published>2021-10-11T00:00:00-06:00</published><updated>2021-10-11T00:00:00-06:00</updated><id>/BQN-Cpp-CUDA</id><content type="html" xml:base="/bqn-cuda-cpp-lc-longest-valid-parens">&lt;p&gt;Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;NOTE: This post is a transcript of &lt;a href=&quot;https://youtu.be/3D7sfXzBBXE&quot;&gt;the youtube video linked here&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -2084,7 +2340,6 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -2100,164 +2355,10 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
   &lt;li&gt;&lt;a href=&quot;http://www.ashermancinelli.com/&quot;&gt;Blog&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://leetcode.com/problems/longest-valid-parentheses/&quot;&gt;LeetCode Problem&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-08:00</published><updated>2021-03-07T00:00:00-08:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
-
-&lt;p&gt;When designing tests, qualities like code reuse, readability, and execution time
-are not often considered.
-In this post, I’ll look at how we designed the test suite for
-&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
-Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
-inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
-
-&lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;We needed to be sure our linear algebra library would perform as expected
-  after porting the entire thing to use &lt;a href=&quot;https://github.com/LLNL/RAJA&quot;&gt;RAJA&lt;/a&gt;
-  portability library, and&lt;/li&gt;
-  &lt;li&gt;Our timelines were quite aggressive, considering the size of our team and
-  the scope of our porting efforts.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;For these reasons, we needed to develop a thorough suite of unit tests to
-&lt;em&gt;verify execution&lt;/em&gt; of our linear algebra kernels after porting to leverage GPU
-devices with an extremely quick turnaround time.
-&lt;em&gt;Code reuse and readability were crucial to our development effort&lt;/em&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;problem-domain-and-design-decisions&quot;&gt;Problem Domain and Design Decisions&lt;/h2&gt;
-
-&lt;p&gt;HiOp’s linear algebra library uses a clean inheritance structure.
-Looking at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVector&lt;/code&gt; abstract interface for example, there are two
-implementations, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorPar&lt;/code&gt;, as seen below:&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Before we had written the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; implementation, we had to establish
-success criterea for our implementation in the form of unit tests and integration
-tests.
-When we began, we had exactly zero unit tests, so again, code reuse and
-developer productivity would be very important.&lt;/p&gt;
-
-&lt;p&gt;We settled on a unit testing structure that would mimick the inheritance
-design already in place with the linear algebra library.
-Test classes would mirror the system under test such that tests for concrete
-classes would inherit from test classes for the abstract interfaces.&lt;/p&gt;
-
-&lt;p&gt;Let’s use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; class as an example.&lt;/p&gt;
-
-&lt;h2 id=&quot;hiopmatrix-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; Example&lt;/h2&gt;
-
-&lt;p&gt;The top-level interface for HiOp matrices is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; pure virtual class.
-The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt; pure virtual classes are children
-of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;From there, each of the two abstract children have regular CPU-bound
-implementations and RAJA-based GPU/OpenMP implementations:&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;At each level in this inheritance structure, new methods are added to the interfaces.
-For example, due to memory layout constraints, some methods are feasable only with a
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and do not make much sense with a sparse matrix.
-Thus not all tests for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;To maximize code reuse, we developed the following inheritance structure for our tests:
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt; contained code common to all test classes, such as MPI reduction of
-error codes, pretty-printing test results, floating point comparisons, etc.&lt;/p&gt;
-
-&lt;p&gt;Each of the highest-level linear algebra classes then has a corresponding test
-class which inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt;, eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrix&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopVector&lt;/code&gt;.
-These test classes, just like their corresponding classes in the linear algebra
-library, are abstract - they define tests only for the corresponding interface.&lt;/p&gt;
-
-&lt;p&gt;Child classes of each of these classes implement tests specific to the implementation.
-These classes are concrete, and are used to finally test their respective implementation.
-I’ve ommitted the full structure for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparse&lt;/code&gt; side of the
-inheritance chain to make the diagram more readable below.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;See the bottom of this graph - the test driver instantiates an instance of
-each concrete test class and runs all contained tests.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;When the driver is ran, every test all the way up the inheritance chain is run
-on each implementation.
-Tests that apply to all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; classes are run on an instance of every
-concrete child class:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaDense&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixDenseRowMajor&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparseTriplet&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaSparseTriplet&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The concrete child classes enumerated above implemented methods specific to the
-implementation that were needed for the test (eg copying memory back and forth
-between host and device when running with CUDA or HIP).
-This strategy saved us an &lt;em&gt;enormous&lt;/em&gt; amount of developer time and lines of code,
-and also ensured that every implementation conforms to every interface it implements.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;As we developed our test suite, we concurrently developed the RAJA
-implementations of each linear algebra class.
-For each method of each linear algebra class, we first wrote a test and then
-ported the core of the method to run in a RAJA kernel.&lt;/p&gt;
-
-&lt;p&gt;Thanks to this strategy, we were able to port the entire optimization engine
-library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
-a high degree of certainty that our kernels perform correctly.
-HiOp currently only runs in unified virtual memory, and we are actively
-developing the last parts of the optimization routines such that the solver can
-run entirely in device memory.&lt;/p&gt;
-
-&lt;h2&gt; Contact &lt;/h2&gt;
-
-&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/pelesh&quot;&gt;Slaven Peles’s GitHub profile&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/pull/41&quot;&gt;Original PR for HiOp’s polymorphic test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-08:00</published><updated>2021-03-07T00:00:00-08:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -2578,7 +2679,6 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -2593,12 +2693,162 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
   &lt;li&gt;&lt;a href=&quot;https://github.com/google/googletest/blob/master/docs/advanced.md&quot;&gt;GTest advanced docs&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://llvmweekly.org/issue/376&quot;&gt;LLVM Weekly mention&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/llvm/llvm-project/tree/main/flang/unittests&quot;&gt;Flang unittests&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-08:00</published><updated>2021-03-06T00:00:00-08:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
+
+&lt;p&gt;When designing tests, qualities like code reuse, readability, and execution time
+are not often considered.
+In this post, I’ll look at how we designed the test suite for
+&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
+Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
+inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
+
+&lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;We needed to be sure our linear algebra library would perform as expected
+  after porting the entire thing to use &lt;a href=&quot;https://github.com/LLNL/RAJA&quot;&gt;RAJA&lt;/a&gt;
+  portability library, and&lt;/li&gt;
+  &lt;li&gt;Our timelines were quite aggressive, considering the size of our team and
+  the scope of our porting efforts.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For these reasons, we needed to develop a thorough suite of unit tests to
+&lt;em&gt;verify execution&lt;/em&gt; of our linear algebra kernels after porting to leverage GPU
+devices with an extremely quick turnaround time.
+&lt;em&gt;Code reuse and readability were crucial to our development effort&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;problem-domain-and-design-decisions&quot;&gt;Problem Domain and Design Decisions&lt;/h2&gt;
+
+&lt;p&gt;HiOp’s linear algebra library uses a clean inheritance structure.
+Looking at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVector&lt;/code&gt; abstract interface for example, there are two
+implementations, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorPar&lt;/code&gt;, as seen below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Before we had written the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; implementation, we had to establish
+success criterea for our implementation in the form of unit tests and integration
+tests.
+When we began, we had exactly zero unit tests, so again, code reuse and
+developer productivity would be very important.&lt;/p&gt;
+
+&lt;p&gt;We settled on a unit testing structure that would mimick the inheritance
+design already in place with the linear algebra library.
+Test classes would mirror the system under test such that tests for concrete
+classes would inherit from test classes for the abstract interfaces.&lt;/p&gt;
+
+&lt;p&gt;Let’s use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; class as an example.&lt;/p&gt;
+
+&lt;h2 id=&quot;hiopmatrix-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; Example&lt;/h2&gt;
+
+&lt;p&gt;The top-level interface for HiOp matrices is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; pure virtual class.
+The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt; pure virtual classes are children
+of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From there, each of the two abstract children have regular CPU-bound
+implementations and RAJA-based GPU/OpenMP implementations:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;At each level in this inheritance structure, new methods are added to the interfaces.
+For example, due to memory layout constraints, some methods are feasable only with a
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and do not make much sense with a sparse matrix.
+Thus not all tests for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;To maximize code reuse, we developed the following inheritance structure for our tests:
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt; contained code common to all test classes, such as MPI reduction of
+error codes, pretty-printing test results, floating point comparisons, etc.&lt;/p&gt;
+
+&lt;p&gt;Each of the highest-level linear algebra classes then has a corresponding test
+class which inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt;, eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrix&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopVector&lt;/code&gt;.
+These test classes, just like their corresponding classes in the linear algebra
+library, are abstract - they define tests only for the corresponding interface.&lt;/p&gt;
+
+&lt;p&gt;Child classes of each of these classes implement tests specific to the implementation.
+These classes are concrete, and are used to finally test their respective implementation.
+I’ve ommitted the full structure for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparse&lt;/code&gt; side of the
+inheritance chain to make the diagram more readable below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;See the bottom of this graph - the test driver instantiates an instance of
+each concrete test class and runs all contained tests.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;When the driver is ran, every test all the way up the inheritance chain is run
+on each implementation.
+Tests that apply to all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; classes are run on an instance of every
+concrete child class:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaDense&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixDenseRowMajor&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparseTriplet&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaSparseTriplet&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The concrete child classes enumerated above implemented methods specific to the
+implementation that were needed for the test (eg copying memory back and forth
+between host and device when running with CUDA or HIP).
+This strategy saved us an &lt;em&gt;enormous&lt;/em&gt; amount of developer time and lines of code,
+and also ensured that every implementation conforms to every interface it implements.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;As we developed our test suite, we concurrently developed the RAJA
+implementations of each linear algebra class.
+For each method of each linear algebra class, we first wrote a test and then
+ported the core of the method to run in a RAJA kernel.&lt;/p&gt;
+
+&lt;p&gt;Thanks to this strategy, we were able to port the entire optimization engine
+library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
+a high degree of certainty that our kernels perform correctly.
+HiOp currently only runs in unified virtual memory, and we are actively
+developing the last parts of the optimization routines such that the solver can
+run entirely in device memory.&lt;/p&gt;
+
+&lt;h2&gt; Contact &lt;/h2&gt;
+
+&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/pelesh&quot;&gt;Slaven Peles’s GitHub profile&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/pull/41&quot;&gt;Original PR for HiOp’s polymorphic test suite&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
 What about cases that are not formally errors, but should not exist in your codebase?
 This post explores using Clang tools to address this case.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -3096,7 +3346,6 @@ serve as a concrete starting point.&lt;/p&gt;
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -3114,10 +3363,9 @@ serve as a concrete starting point.&lt;/p&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://clang.llvm.org/docs/RAVFrontendAction.html&quot;&gt;Clang AST Visitor documentation&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=E6i8jmiy8MY&amp;amp;ab_channel=CppNow&quot;&gt;Peter Goldsborough’s C++Now talk on Clang/LLVM tools&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code. What about cases that are not formally errors, but should not exist in your codebase? This post explores using Clang tools to address this case.</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-08:00</published><updated>2021-03-06T00:00:00-08:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code. What about cases that are not formally errors, but should not exist in your codebase? This post explores using Clang tools to address this case.</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -3223,12 +3471,11 @@ This way, the profiling team may work on a known working configuration of the so
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
   &lt;/em&gt;
-&lt;/font&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Spack for Package Development Part 2</title><link href="/spack2" rel="alternate" type="text/html" title="Spack for Package Development Part 2" /><published>2021-03-05T00:00:00-08:00</published><updated>2021-03-05T00:00:00-08:00</updated><id>/Spack-Development-2</id><content type="html" xml:base="/spack2">&lt;p&gt;Second in this series, this post focuses on &lt;em&gt;getting stared with environments&lt;/em&gt;.&lt;/p&gt;
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Spack for Package Development Part 2</title><link href="/spack2" rel="alternate" type="text/html" title="Spack for Package Development Part 2" /><published>2021-03-05T00:00:00-07:00</published><updated>2021-03-05T00:00:00-07:00</updated><id>/Spack-Development-2</id><content type="html" xml:base="/spack2">&lt;p&gt;Second in this series, this post focuses on &lt;em&gt;getting stared with environments&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;In the &lt;a href=&quot;/spack1&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed the following points:&lt;/p&gt;
 
@@ -3248,7 +3495,6 @@ This way, the profiling team may work on a known working configuration of the so
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
@@ -3478,132 +3724,8 @@ Assuming &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Floo
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
   &lt;em&gt;
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
   &lt;/em&gt;
-&lt;/font&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry><entry><title type="html">Spack for Package Development Part 1</title><link href="/spack1" rel="alternate" type="text/html" title="Spack for Package Development Part 1" /><published>2021-03-04T00:00:00-08:00</published><updated>2021-03-04T00:00:00-08:00</updated><id>/Spack-Development-1</id><content type="html" xml:base="/spack1">&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/&quot;&gt;Spack&lt;/a&gt; is typically used for package deployment, however this post will be about package &lt;em&gt;development&lt;/em&gt; with Spack.
-First in this series, this post focuses on &lt;em&gt;motivation and introduction&lt;/em&gt;.&lt;/p&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
-
-&lt;p&gt;Most upstream Spack packages are quite stable.
-In my experience, the majority of Spack packages are based on packages that have already existed for a long time, and a member of the community created a Spack package to install it (eg OpenMPI).
-In this case, the options and versions for the package are probably set-in-stone.
-There are likely very few PRs submitted for these packages, and users can rely on the dependencies and installation process staying mostly the same.&lt;/p&gt;
-
-&lt;p&gt;For a package under extremely heavy development however, this is not the case.
-To use a package manager &lt;em&gt;and&lt;/em&gt; iterate rapidly on a package, I think there are roughly 3 criteria for that package manager:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Adding a new &lt;em&gt;dependency&lt;/em&gt; should be easy and fast&lt;/li&gt;
-  &lt;li&gt;Adding new &lt;em&gt;versions&lt;/em&gt; should be easy and fast&lt;/li&gt;
-  &lt;li&gt;Adding new &lt;em&gt;options&lt;/em&gt; should be easy and fast&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;In my opinion, using the typical Spack workflow of submitting a pull request to the upstream Spack repository for every meaningful change meets none of these critera.&lt;/p&gt;
-
-&lt;h2 id=&quot;configuring-spack-repositories&quot;&gt;Configuring Spack Repositories&lt;/h2&gt;
-
-&lt;p&gt;An alternative strategy is to use Spack’s support for external repositories.
-A repository is simply a directory which contains a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;repo.yaml&lt;/code&gt; file and a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;packages/&lt;/code&gt; directory
-under which Spack packages reside.&lt;/p&gt;
-
-&lt;p&gt;For example, creating the file&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# repo.yaml&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;repo&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;namespace&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;examplerepo&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;in a directory with a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;packages&lt;/code&gt; subdirectory like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;examplerepo
-├── packges
-│   └── examplepackage
-│       └── package.py
-└── repo.yaml
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;is a valid repository.&lt;/p&gt;
-
-&lt;p&gt;Running &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spack repo add .&lt;/code&gt; in this directory will add the path to that repository to your Spack configuration:&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# ~/.spack/repos.yaml&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;repos&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$spack/var/spack/repos/builtin&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/path/to/examplerepo&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;After configuring your example repository, you are able to install packages from it directly!
-If your package conflicts with a builtin package, you may install it using the namespace set in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;examplerepo/repo.yaml&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# If examplepackage is unique:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;examplepackage
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# If examplepackage conflicts with a builtin package:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;examplerepo.examplepackage
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;3rd-party-packages-in-your-spack-repo&quot;&gt;3rd Party Packages in Your Spack Repo&lt;/h2&gt;
-
-&lt;p&gt;The most common case that I have found of a package conflicting with a builtin is when one of your packages relies on a fork of an upstream package, so you maintain a modified version of the upstream package (in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;examplerepo/packages/forked-package/package.py&lt;/code&gt;, for example).
-This allows developers to iterate quickly and modify dependencies without attempting to maintain a fork of the entire spack repository.&lt;/p&gt;
-
-&lt;p&gt;For example, let’s say you’re developing a package FloodSimulation which relies on OpenMPI and Ipopt.
-As you develop your software, you realize the Ipopt Spack package doesn’t expose all of Ipopt’s configuration options, and you need to make rather significant edits to the Ipopt Spack package.
-You could go through the pull request process upstream, however if you have many similar edits to many other packages, you may want to maintain an Ipopt fork in your spack repository:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;floodsimulationrepo
-├── packges
-│   ├── ipopt
-│   │   └── package.py
-│   └── floodsimulation
-│       └── package.py
-└── repo.yaml
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;You may then install FloodSimulation with your fork of Ipopt like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;floodsimulation ^floodsimulationrepo.ipopt
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If you track your private spack repository with source control, it is quite easy to maintain your small package repository while your key packages are under heavy development.
-Each release of your package may serve as a time to submit all of your modifications to forked packages as well as the spack package descriptions to upstream spack such that end users are able to fully take advantage of your configuration.&lt;/p&gt;
-
-&lt;p&gt;This strategy alone has the potential to save a significant amount of developer time when heavily developing a package.
-The next post will go further into managing environments and multi-platform configurations.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/spack2&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt; Contact &lt;/h2&gt;
-
-&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-&lt;h4&gt;DISCLAIMER&lt;/h4&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;</content><author><name></name></author><summary type="html">Spack is typically used for package deployment, however this post will be about package development with Spack. First in this series, this post focuses on motivation and introduction.</summary></entry></feed>
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry></feed>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>std::expected And Why It's Awesome – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="std::expected and some spectacular extensions are hopefully coming to C++23.
+
+">
+    <meta property="og:description" content="std::expected and some spectacular extensions are hopefully coming to C++23.
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="std::expected And Why It's Awesome">
+    <meta property="twitter:title" content="std::expected And Why It's Awesome">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>std::expected And Why It's Awesome</h1>
+
+  <div class="entry">
+    <p><code class="language-plaintext highlighter-rouge">std::expected</code> and some spectacular extensions are hopefully coming to C++23.</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="existing-practice">Existing Practice</h2>
+
+<p>I’m used to seeing code that looks like this, not just in C but in C++ codebases too:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">ierr</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="o">*</span> <span class="n">mat</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">[</span><span class="mi">100</span><span class="p">]));</span>
+
+  <span class="n">ierr</span> <span class="o">=</span> <span class="n">dowork</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+  <span class="n">check_error</span><span class="p">(</span><span class="n">ierr</span><span class="p">);</span>
+
+  <span class="n">ierr</span> <span class="o">=</span> <span class="n">domorework</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+  <span class="n">check_error</span><span class="p">(</span><span class="n">ierr</span><span class="p">);</span>
+
+  <span class="n">free</span><span class="p">(</span><span class="n">mat</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Integers represent error conditions, and these usually map to an error message like so:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">error_messages</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">"success"</span><span class="p">,</span>
+    <span class="s">"got some failure"</span><span class="p">,</span>
+    <span class="s">"another kind of failure"</span><span class="p">,</span>
+<span class="p">};</span>
+<span class="k">enum</span> <span class="n">error_types</span> <span class="p">{</span>
+    <span class="n">success</span><span class="p">,</span>
+    <span class="n">some_failure</span><span class="p">,</span>
+    <span class="n">some_other_failure</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">check_error</span><span class="p">(</span><span class="kt">int</span> <span class="n">ierr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ierr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"got error '%s'</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">error_messages</span><span class="p">[</span><span class="n">ierr</span><span class="p">]);</span>
+        <span class="n">exit</span><span class="p">(</span><span class="n">ierr</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This way when you encounter an error condition in some function, you just return the corresponding error code like so:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">dowork</span><span class="p">(</span><span class="kt">double</span><span class="o">*</span> <span class="n">matrix</span><span class="p">,</span> <span class="kt">int</span> <span class="n">M</span><span class="p">,</span> <span class="kt">int</span> <span class="n">N</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// do some work here</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="cm">/*some error condition*/</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">some_failure</span><span class="p">;</span>
+
+  <span class="c1">// success state</span>
+  <span class="k">return</span> <span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>And the error handler reports the failures:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">  Program returned: 1
+got error 'got some failure'
+</span></code></pre></div></div>
+
+<p>On one hand, there’s a sense of security to writing code like this.
+You always check your error conditions, your code never throws exceptions, and the range of possible failures is very clear.
+I don’t mind this pattern in C, but in C++ we have some goodies that are far nicer to use in my opinion (especially in C++23).</p>
+
+<h2 id="why-stdexpected-is-awesome">Why <code class="language-plaintext highlighter-rouge">std::expected</code> is Awesome</h2>
+
+<p>I’ll be using <a href="https://github.com/kokkos/mdspan"><code class="language-plaintext highlighter-rouge">mdspan</code> from the Kokkos implementation</a> and <a href="https://github.com/TartanLlama/expected"><code class="language-plaintext highlighter-rouge">expected</code> from Sy Brand’s implementation</a> for this section.</p>
+
+<p>In the last year, 3 papers have come through the ISO C++ mailing lists for <code class="language-plaintext highlighter-rouge">std::expected</code>, and <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">the most recent paper from Jeff Garland</a> proposes some of Sy Brand’s wonderful extensions to <code class="language-plaintext highlighter-rouge">std::expected</code> which allow you to chain together monadic operations on expected values:</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">and_then</code></li>
+  <li><code class="language-plaintext highlighter-rouge">or_else</code></li>
+  <li><code class="language-plaintext highlighter-rouge">transform</code></li>
+</ol>
+
+<p>I think these extensions are <em>extremely</em> elegant, and I think some folks that are more used to the C-style error handling could be won over.
+Using <code class="language-plaintext highlighter-rouge">std::expected</code> means your errors have <em>value semantics</em>, which is something I like about the C-stlye error handling.
+Chaining together these operations makes the programmer’s intent so much clearer.</p>
+
+<p>Let’s look at another example using matrices, but this time using <code class="language-plaintext highlighter-rouge">expected</code> and <code class="language-plaintext highlighter-rouge">mdspan</code>.</p>
+
+<h3 id="expected-example">
+<code class="language-plaintext highlighter-rouge">expected</code> Example</h3>
+
+<p>I’ll get some <code class="language-plaintext highlighter-rouge">using</code> statements out of the way:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">namespace</span> <span class="n">stdex</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">experimental</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">mat_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> 
+    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span>
+      <span class="n">stdex</span><span class="o">::</span><span class="n">dynamic_extent</span><span class="p">,</span>
+      <span class="n">stdex</span><span class="o">::</span><span class="n">dynamic_extent</span>
+    <span class="o">&gt;</span>
+  <span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">expect_mat</span> <span class="o">=</span> <span class="n">tl</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="n">mat_t</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>I can’t help but marvel at how nice and readable this looks:
+The intent of the programmer is very clear in my opinion, even without seeing the rest of the code.</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+  <span class="k">auto</span> <span class="n">mat</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">raw</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+  <span class="n">setup</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>                  <span class="c1">// zero initialize</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">set_diag</span><span class="p">)</span>       <span class="c1">// set the diagonal of the matrix</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">print</span><span class="p">)</span>          <span class="c1">// print out some values</span>
+    <span class="p">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">report_errors</span><span class="p">);</span>  <span class="c1">// if unexpected, print the error and quit</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 0.0 1.0 0.0 0.0 0.0 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */</span>
+</code></pre></div></div>
+
+<p>This leads to some nice and/or interesting patterns.
+Say we want to check that the matrix passed to <code class="language-plaintext highlighter-rouge">set_diag</code> is square;
+we could perform our check and return an error message if the check fails, much like we could throw an exception:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">set_diag</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">mat</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">make_unexpected</span><span class="p">(</span><span class="s">"expected square matrix!"</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">mat</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="n">expect_mat</span><span class="p">(</span><span class="n">mat</span><span class="p">);</span>
+<span class="p">}</span> 
+</code></pre></div></div>
+
+<p>I also like using an immediatly invoked lambda for this, but I’m not sure how readable/maintainable this is long-term:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">set_diag</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">mat</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="o">?</span> <span class="p">[</span><span class="o">=</span><span class="p">]</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">mat</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+      <span class="k">return</span> <span class="n">expect_mat</span><span class="p">(</span><span class="n">mat</span><span class="p">);</span>
+    <span class="p">}()</span>
+    <span class="o">:</span> <span class="n">make_unexpected</span><span class="p">(</span><span class="s">"expected square matrix!"</span><span class="p">);</span>
+<span class="p">}</span> 
+</code></pre></div></div>
+
+<p>Either way, the error is handled as expected (no pun intended):</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">report_errors</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span> <span class="n">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">fmt</span><span class="o">::</span><span class="n">print</span><span class="p">(</span><span class="s">"got error: '{}'</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">exit</span><span class="p">(</span><span class="n">EXIT_FAILURE</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+  <span class="c1">// It's not square!</span>
+  <span class="k">auto</span> <span class="n">mat</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">raw</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">setup</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">set_diag</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">print</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">report_errors</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cm">/*
+ * Program returned: 1
+ * got error: 'expected square matrix!'
+ */</span>
+</code></pre></div></div>
+
+<p>We can use functors in the expected chain like so:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="nc">SetRow</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">row</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">value</span><span class="p">;</span>
+  <span class="n">expect_mat</span> <span class="k">operator</span><span class="p">()(</span><span class="n">mat_t</span> <span class="n">mat</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">mat</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">mat</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+  <span class="k">auto</span> <span class="n">mat</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">raw</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+  <span class="n">setup</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">set_diag</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">SetRow</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">})</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">print</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">report_errors</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cm">/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 3.5 3.5 3.5 3.5 3.5 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */</span>
+</code></pre></div></div>
+
+<p>Using <code class="language-plaintext highlighter-rouge">std::bind</code> on a function taking more arguments would also acomplish this:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">set_row</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">mat</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">row</span><span class="p">,</span> <span class="kt">double</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">mat</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">expect_mat</span><span class="p">(</span><span class="n">mat</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+  <span class="k">auto</span> <span class="n">mat</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">raw</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+  <span class="n">setup</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">set_diag</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">set_row</span><span class="p">,</span> <span class="cm">/*mat=*/</span><span class="n">_1</span><span class="p">,</span> <span class="cm">/*row=*/</span><span class="mi">1</span><span class="p">,</span> <span class="cm">/*value=*/</span><span class="mf">3.5</span><span class="p">))</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">print</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">report_errors</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cm">/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 3.5 3.5 3.5 3.5 3.5 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */</span>
+</code></pre></div></div>
+
+<p>And of course, lambdas:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">auto</span> <span class="n">raw</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">25</span><span class="p">);</span>
+  <span class="k">auto</span> <span class="n">mat</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">raw</span><span class="p">.</span><span class="n">get</span><span class="p">(),</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+  <span class="n">setup</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">set_diag</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">([]</span> <span class="p">(</span><span class="k">auto</span> <span class="n">mat</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">mat</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">;</span>
+      <span class="k">return</span> <span class="n">expect_mat</span><span class="p">(</span><span class="n">mat</span><span class="p">);</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="n">and_then</span><span class="p">(</span><span class="n">print</span><span class="p">)</span>
+    <span class="p">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">report_errors</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cm">/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 0.0 1.0 0.0 0.0 0.0 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 2.0 2.0 2.0 2.0 2.0 
+ * 0.0 0.0 0.0 0.0 1.0
+ */</span>
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Hopefully you’ve been won over by the elegance of <code class="language-plaintext highlighter-rouge">expected</code> and <code class="language-plaintext highlighter-rouge">mdspan</code>.
+Godbolt links can be found for these examples in the links below:</p>
+
+<ol>
+  <li><a href="https://godbolt.org/z/jPqdYPEv9">C-style example</a></li>
+  <li><a href="https://godbolt.org/z/hWYj34EcW">Full <code class="language-plaintext highlighter-rouge">expected</code>+<code class="language-plaintext highlighter-rouge">mdspan</code> example</a></li>
+  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">Jeff Garland’s 12/2022 <code class="language-plaintext highlighter-rouge">expected</code> paper</a></li>
+  <li><a href="https://github.com/TartanLlama">Sy Brand’s <code class="language-plaintext highlighter-rouge">tl::expected</code></a></li>
+  <li><a href="https://github.com/kokkos/mdspan">Kokkos <code class="language-plaintext highlighter-rouge">mdspan</code> impl</a></li>
+</ol>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+
+  </div>
+
+  <div class="date">
+    Written on January 15, 2022
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
