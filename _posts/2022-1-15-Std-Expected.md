@@ -172,6 +172,10 @@ int main() {
  */
 ```
 
+### 3 Ways to use the Monadic Functions on an Expected Value
+
+#### 1. Functor
+
 We can use functors in the expected chain like so:
 ```cpp
 struct SetRow {
@@ -202,6 +206,8 @@ int main() {
  */
 ```
 
+#### 2. Binding Args to a Function that Takes Multiple Arguments
+
 Using `std::bind` on a function taking more arguments would also acomplish this:
 
 ```cpp
@@ -229,7 +235,10 @@ int main() {
  */
 ```
 
+#### 3. Lambdas
+
 And of course, lambdas:
+
 ```cpp
 int main() {
   auto raw = std::make_unique<double[]>(25);
