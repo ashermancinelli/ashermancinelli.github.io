@@ -268,6 +268,7 @@ int main() {
 Hopefully you've been won over by the elegance of `expected` and `mdspan`.
 Godbolt links can be found for these examples in the links below:
 
+1. [YouTube version of this content](https://youtu.be/uj9ozuzZy6g)
 1. [C-style example](https://godbolt.org/z/jPqdYPEv9)
 1. [Full `expected`+`mdspan` example](https://godbolt.org/z/hWYj34EcW)
 1. [Jeff Garland's 12/2022 `expected` paper](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html)
