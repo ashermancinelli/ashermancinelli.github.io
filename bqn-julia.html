@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>(👷 Under Construction 🏗) BQN &amp; Julia – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="BQN and Julia battle to the death!
+
+">
+    <meta property="og:description" content="BQN and Julia battle to the death!
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="(👷 Under Construction 🏗) BQN &amp; Julia">
+    <meta property="twitter:title" content="(👷 Under Construction 🏗) BQN &amp; Julia">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>(👷 Under Construction 🏗) BQN &amp; Julia</h1>
+
+  <div class="entry">
+    <p>BQN and Julia battle to the death!</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="why">Why?</h2>
+
+<p>Raz (@miguelraz_ on Twitter) suggested we work through some problems in BQN and Julia, each in the language we know less about, guiding each other through the problems.</p>
+
+<h2 id="bqn">BQN</h2>
+
+<p>In our first call, Raz and I went through a couple BQN primitives to get him started with the language.
+These are my notes from getting him set up:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿3⥊↕10 # set up a matrix
+┌─
+╵ 0 1 2
+  3 4 5
+  6 7 8
+        ┘
+   ⌽3‿3⥊↕10 # reverse it
+┌─
+╵ 6 7 8
+  3 4 5
+  0 1 2
+        ┘
+
+   # transpose it and marvel at the
+   # relationship between the ⌽ and ⍉ glyphs
+   ⍉3‿3⥊↕10 
+┌─
+╵ 0 3 6
+  1 4 7
+  2 5 8
+        ┘
+</code></pre></div></div>
+
+<p>When looking at the keyboard in the JS repl, it’s helpful to note that:</p>
+
+<ul>
+  <li>Functions are in green</li>
+  <li>1 Mod are in purple/pink</li>
+  <li>2 Mod are in yellow</li>
+</ul>
+
+<p>Try to get a good feel for ¨, ⌜, and ´ as these are oft-used modifiers.</p>
+
+<p>Note also that the following glyphs are special: <code class="language-plaintext highlighter-rouge">𝕤𝕩𝕨𝕣𝕗𝕘</code>.
+These have special meaning inside function and modifier blocks.
+For example:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   _Hi_←{(𝕨𝔽𝕩)+(𝕨𝔾𝕩)}
+(2-modifier block)
+   5 + _Hi_ × 3
+23
+</code></pre></div></div>
+
+<p>Within the <code class="language-plaintext highlighter-rouge">_Hi_</code> block:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>𝕤←{(𝕨+𝕩)+(𝕨×𝕩)}
+𝕨←5
+𝕩←3
+𝕣←{(𝕨𝔽𝕩)+(𝕨𝔾𝕩)}
+𝔽←+
+𝔾←×
+</code></pre></div></div>
+
+<p><img src="/images/bqn-julia/2modifblock.png" alt="Image explanation of this"></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+
+  </div>
+
+  <div class="date">
+    Written on January 26, 2002
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
