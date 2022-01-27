@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;500&display=swap" rel="stylesheet">
+
+<script>
+
+  
+var VP = {
+  w: 1600,
+  h: 800
+}
+var AMdata = ``;
+var vmg = d3.select('body')
+    .append('svg').attr('id', 'logo')
+    .attr('width', VP.w)
+    .attr('height', VP.h)
+    .append('g');
+
+var _transitions = [
+  {
+    transitionForward: () => {
+
+      vmg.append('path')
+        .attr('d', bqndata)
+        .attr('id', 'bqntext')
+        .attr("stroke", "#147d2c")
+        .attr('fill', 'none')
+        .attr('stroke-width', 6)
+      var t = d3.select('#bqntext');
+      var l = t.node().getTotalLength();
+      t
+        .attr("stroke-dasharray", l/2 + " " + l/2)
+        .attr("stroke-dashoffset", l/2)
+        .transition()
+        .ease(d3.easePoly.exponent(2))
+        .attr("stroke-dashoffset", 0)
+        .duration(3000);
+    },
+  },
+];
+</script>
+</body>
+</html>

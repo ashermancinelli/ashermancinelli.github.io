@@ -1,4 +1,148 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-26T15:57:11-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">std::expected And Why It’s Awesome</title><link href="/std-expected" rel="alternate" type="text/html" title="std::expected And Why It’s Awesome" /><published>2022-01-15T00:00:00-07:00</published><updated>2022-01-15T00:00:00-07:00</updated><id>/Std-Expected</id><content type="html" xml:base="/std-expected">&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::expected&lt;/code&gt; and some spectacular extensions are hopefully coming to C++23.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-27T13:14:30-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">C++ Paper Reivew</title><link href="/iso-cpp-review" rel="alternate" type="text/html" title="C++ Paper Reivew" /><published>2022-01-27T00:00:00-07:00</published><updated>2022-01-27T00:00:00-07:00</updated><id>/Cpp-Paper-Review</id><content type="html" xml:base="/iso-cpp-review">&lt;p&gt;My notes from reviewing papers in the &lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/&quot;&gt;ISO C++ mailing list&lt;/a&gt;.&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h1 id=&quot;conversions-from-ranges-to-containers-r7&quot;&gt;&lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf&quot;&gt;&lt;em&gt;Conversions from ranges to containers&lt;/em&gt;, r7&lt;/a&gt;&lt;/h1&gt;
+
+&lt;h2 id=&quot;overview-section&quot;&gt;&lt;em&gt;Overview&lt;/em&gt; section&lt;/h2&gt;
+
+&lt;p&gt;Comment contains a spelling error:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//Pipe syntaxe&lt;/span&gt;
+             &lt;span class=&quot;err&quot;&gt;↑&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ranges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;take&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ranges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;considerations-section&quot;&gt;&lt;em&gt;Considerations&lt;/em&gt; section&lt;/h2&gt;
+
+&lt;p&gt;‘Cpp17Iterators’ is not italicized as it is elsewhere in the paper.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;This is sufficiently complex and error-prone approach that multiple blog posts and stackoverflow questions address it:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;might be better written as:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;This approach is sufficiently complex and error-prone such that multiple blog posts and stackoverflow questions address it:&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;ctad-section&quot;&gt;&lt;em&gt;CTAD&lt;/em&gt; section&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Adding a tag solves this issue(although one needs to remember using a tag!).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;There seems to be no space in between “issue” and the open paren.&lt;/p&gt;
+
+&lt;p&gt;The following might be more readable:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Adding a tag solves this issue (although one must remember to use a tag!).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;ambiguous-conversions-section&quot;&gt;&lt;em&gt;Ambiguous conversions&lt;/em&gt; section&lt;/h2&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;There are other issues is with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vector&amp;lt;any&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The following might be more readable:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The other issue is with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vector&amp;lt;any&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Uses of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::&lt;/code&gt; are inconsistent: why use bare &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;any&lt;/code&gt; but keep &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::vector&lt;/code&gt;?&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;any&lt;/code&gt; is also used without code font in this section.&lt;/p&gt;
+
+&lt;h2 id=&quot;using-from_range-section&quot;&gt;&lt;em&gt;using from_range&lt;/em&gt; section&lt;/h2&gt;
+
+&lt;p&gt;Many instances of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;char const*&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vector&amp;lt;...&amp;gt;&lt;/code&gt; do not use code font.&lt;/p&gt;</content><author><name></name></author><category term="c++" /><summary type="html">My notes from reviewing papers in the ISO C++ mailing list.</summary></entry><entry><title type="html">BQN &amp;amp; Julia</title><link href="/bqn-julia" rel="alternate" type="text/html" title="BQN &amp;amp; Julia" /><published>2022-01-26T00:00:00-07:00</published><updated>2022-01-26T00:00:00-07:00</updated><id>/BQN-Julia-Battle-To-The-Death</id><content type="html" xml:base="/bqn-julia">&lt;p&gt;BQN and Julia battle to the death!&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h2 id=&quot;why&quot;&gt;Why?&lt;/h2&gt;
+
+&lt;p&gt;Raz (@miguelraz_ on Twitter) suggested we work through some problems in BQN and Julia, each in the language we know less about, guiding each other through the problems.&lt;/p&gt;
+
+&lt;h2 id=&quot;bqn&quot;&gt;BQN&lt;/h2&gt;
+
+&lt;p&gt;In our first call, Raz and I went through a couple BQN primitives to get him started with the language.
+These are my notes from getting him set up:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   3‿3⥊↕10 # set up a matrix
+┌─
+╵ 0 1 2
+  3 4 5
+  6 7 8
+        ┘
+   ⌽3‿3⥊↕10 # reverse it
+┌─
+╵ 6 7 8
+  3 4 5
+  0 1 2
+        ┘
+
+   # transpose it and marvel at the
+   # relationship between the ⌽ and ⍉ glyphs
+   ⍉3‿3⥊↕10 
+┌─
+╵ 0 3 6
+  1 4 7
+  2 5 8
+        ┘
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When looking at the keyboard in the JS repl, it’s helpful to note that:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Functions are in green&lt;/li&gt;
+  &lt;li&gt;1 Mod are in purple/pink&lt;/li&gt;
+  &lt;li&gt;2 Mod are in yellow&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Try to get a good feel for ¨, ⌜, and ´ as these are oft-used modifiers.&lt;/p&gt;
+
+&lt;p&gt;Note also that the following glyphs are special: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;𝕤𝕩𝕨𝕣𝕗𝕘&lt;/code&gt;.
+These have special meaning inside function and modifier blocks.
+For example:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   _Hi_←{(𝕨𝔽𝕩)+(𝕨𝔾𝕩)}
+(2-modifier block)
+   5 + _Hi_ × 3
+23
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Within the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_Hi_&lt;/code&gt; block:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;𝕤←{(𝕨+𝕩)+(𝕨×𝕩)}
+𝕨←5
+𝕩←3
+𝕣←{(𝕨𝔽𝕩)+(𝕨𝔾𝕩)}
+𝔽←+
+𝔾←×
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/bqn-julia/2modifblock.png&quot; alt=&quot;Image explanation of this&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><category term="bqn" /><summary type="html">BQN and Julia battle to the death!</summary></entry><entry><title type="html">std::expected And Why It’s Awesome</title><link href="/std-expected" rel="alternate" type="text/html" title="std::expected And Why It’s Awesome" /><published>2022-01-15T00:00:00-07:00</published><updated>2022-01-15T00:00:00-07:00</updated><id>/Std-Expected</id><content type="html" xml:base="/std-expected">&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::expected&lt;/code&gt; and some spectacular extensions are hopefully coming to C++23.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
@@ -2365,158 +2509,7 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
   &lt;li&gt;&lt;a href=&quot;http://www.ashermancinelli.com/&quot;&gt;Blog&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://leetcode.com/problems/longest-valid-parentheses/&quot;&gt;LeetCode Problem&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
-
-&lt;p&gt;When designing tests, qualities like code reuse, readability, and execution time
-are not often considered.
-In this post, I’ll look at how we designed the test suite for
-&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
-Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
-inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
-
-&lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;We needed to be sure our linear algebra library would perform as expected
-  after porting the entire thing to use &lt;a href=&quot;https://github.com/LLNL/RAJA&quot;&gt;RAJA&lt;/a&gt;
-  portability library, and&lt;/li&gt;
-  &lt;li&gt;Our timelines were quite aggressive, considering the size of our team and
-  the scope of our porting efforts.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;For these reasons, we needed to develop a thorough suite of unit tests to
-&lt;em&gt;verify execution&lt;/em&gt; of our linear algebra kernels after porting to leverage GPU
-devices with an extremely quick turnaround time.
-&lt;em&gt;Code reuse and readability were crucial to our development effort&lt;/em&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;problem-domain-and-design-decisions&quot;&gt;Problem Domain and Design Decisions&lt;/h2&gt;
-
-&lt;p&gt;HiOp’s linear algebra library uses a clean inheritance structure.
-Looking at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVector&lt;/code&gt; abstract interface for example, there are two
-implementations, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorPar&lt;/code&gt;, as seen below:&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Before we had written the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; implementation, we had to establish
-success criterea for our implementation in the form of unit tests and integration
-tests.
-When we began, we had exactly zero unit tests, so again, code reuse and
-developer productivity would be very important.&lt;/p&gt;
-
-&lt;p&gt;We settled on a unit testing structure that would mimick the inheritance
-design already in place with the linear algebra library.
-Test classes would mirror the system under test such that tests for concrete
-classes would inherit from test classes for the abstract interfaces.&lt;/p&gt;
-
-&lt;p&gt;Let’s use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; class as an example.&lt;/p&gt;
-
-&lt;h2 id=&quot;hiopmatrix-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; Example&lt;/h2&gt;
-
-&lt;p&gt;The top-level interface for HiOp matrices is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; pure virtual class.
-The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt; pure virtual classes are children
-of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;From there, each of the two abstract children have regular CPU-bound
-implementations and RAJA-based GPU/OpenMP implementations:&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;At each level in this inheritance structure, new methods are added to the interfaces.
-For example, due to memory layout constraints, some methods are feasable only with a
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and do not make much sense with a sparse matrix.
-Thus not all tests for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;To maximize code reuse, we developed the following inheritance structure for our tests:
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt; contained code common to all test classes, such as MPI reduction of
-error codes, pretty-printing test results, floating point comparisons, etc.&lt;/p&gt;
-
-&lt;p&gt;Each of the highest-level linear algebra classes then has a corresponding test
-class which inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt;, eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrix&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopVector&lt;/code&gt;.
-These test classes, just like their corresponding classes in the linear algebra
-library, are abstract - they define tests only for the corresponding interface.&lt;/p&gt;
-
-&lt;p&gt;Child classes of each of these classes implement tests specific to the implementation.
-These classes are concrete, and are used to finally test their respective implementation.
-I’ve ommitted the full structure for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparse&lt;/code&gt; side of the
-inheritance chain to make the diagram more readable below.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;See the bottom of this graph - the test driver instantiates an instance of
-each concrete test class and runs all contained tests.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;When the driver is ran, every test all the way up the inheritance chain is run
-on each implementation.
-Tests that apply to all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; classes are run on an instance of every
-concrete child class:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaDense&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixDenseRowMajor&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparseTriplet&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaSparseTriplet&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The concrete child classes enumerated above implemented methods specific to the
-implementation that were needed for the test (eg copying memory back and forth
-between host and device when running with CUDA or HIP).
-This strategy saved us an &lt;em&gt;enormous&lt;/em&gt; amount of developer time and lines of code,
-and also ensured that every implementation conforms to every interface it implements.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;As we developed our test suite, we concurrently developed the RAJA
-implementations of each linear algebra class.
-For each method of each linear algebra class, we first wrote a test and then
-ported the core of the method to run in a RAJA kernel.&lt;/p&gt;
-
-&lt;p&gt;Thanks to this strategy, we were able to port the entire optimization engine
-library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
-a high degree of certainty that our kernels perform correctly.
-HiOp currently only runs in unified virtual memory, and we are actively
-developing the last parts of the optimization routines such that the solver can
-run entirely in device memory.&lt;/p&gt;
-
-&lt;h2&gt; Contact &lt;/h2&gt;
-
-&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/pelesh&quot;&gt;Slaven Peles’s GitHub profile&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/pull/41&quot;&gt;Original PR for HiOp’s polymorphic test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
+&lt;/ul&gt;</content><author><name></name></author><category term="bqn, c++, cuda, leetcode" /><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
@@ -2854,9 +2847,7 @@ parameterized test, this time using the &lt;code class=&quot;language-plaintext 
   &lt;li&gt;&lt;a href=&quot;https://github.com/google/googletest/blob/master/docs/advanced.md&quot;&gt;GTest advanced docs&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://llvmweekly.org/issue/376&quot;&gt;LLVM Weekly mention&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/llvm/llvm-project/tree/main/flang/unittests&quot;&gt;Flang unittests&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Clang Tools for Checking Domain-Specific Errors</title><link href="/clang-lambda" rel="alternate" type="text/html" title="Clang Tools for Checking Domain-Specific Errors" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Clang-Tools-Lambda</id><content type="html" xml:base="/clang-lambda">&lt;p&gt;Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
-What about cases that are not formally errors, but should not exist in your codebase?
-This post explores using Clang tools to address this case.&lt;/p&gt;
+&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
@@ -2865,484 +2856,121 @@ This post explores using Clang tools to address this case.&lt;/p&gt;
   &lt;/em&gt;
 &lt;/font&gt;
 
-&lt;h2 id=&quot;example-use-case&quot;&gt;Example Use Case&lt;/h2&gt;
+&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
 
-&lt;p&gt;When using portability libraries such as &lt;a href=&quot;https://github.com/LLNL/RAJA/blob/main/docs/sphinx/user_guide/index.rst&quot;&gt;RAJA&lt;/a&gt; and
-&lt;a href=&quot;https://github.com/kokkos/kokkos&quot;&gt;Kokkos&lt;/a&gt;, the capture clauses of lambda statements are extremely important.
-When developing the open source optimization engine &lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt; to use the portability library RAJA
-in its linear algebra library,
-we ran into an issue where a RAJA &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;forall&lt;/code&gt; statement would implicitly capture the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt; pointer in an instance method
-which would cause memory access errors when running on a GPU device.&lt;/p&gt;
+&lt;p&gt;When designing tests, qualities like code reuse, readability, and execution time
+are not often considered.
+In this post, I’ll look at how we designed the test suite for
+&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
+Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
+inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
 
-&lt;p&gt;For example, let’s say we have the following Vector class:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;RAJA/RAJA.hpp&amp;gt;
-&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Vector&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RAJA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  
-  &lt;span class=&quot;n&quot;&gt;Vector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/*=pointer to data on device*/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-    
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;times_constant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  
-    &lt;span class=&quot;n&quot;&gt;forall&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cuda_exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RangeSegment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Index_type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      
-        &lt;span class=&quot;c1&quot;&gt;// Here, `data` is captured implicitly via `this` pointer&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// even though `this` does not reside on the GPU&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-      
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nl&quot;&gt;private:&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;As described in the comments above, the data lives on the device, but is accessed via the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt; pointer which does not.
-The solution to this memory access error is to create a local copy of the pointer outside the scope of the RAJA lambda:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;times_constant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;local_data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;forall&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cuda_exec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RangeSegment&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Index_type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// Here, `data` is no longer captured implicitly via `this` pointer&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;local_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Of course, this is not an error that will be captured by nvcc, hipcc or another host compiler (that I know of).
-At first we just examined each kernel in our codebase to ensure we did not use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt; pointer implicitly.
-Without too much effort however, we were able to develop a small tool to search our codebase for this exact case.&lt;/p&gt;
-
-&lt;h2 id=&quot;clang-tools&quot;&gt;Clang Tools&lt;/h2&gt;
-
-&lt;p&gt;The first step in creating this tool was to set up a CMake project to link against LLVM libraries.
-The directory structure looked like this:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-lambda-checker
-├── CMakeLists.txt
-└── src
-    ├── CMakeLists.txt
-    ├── driver.cpp
-    └── actions.hpp
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Quite simple, no?
-&lt;a href=&quot;https://clang.llvm.org/docs/RAVFrontendAction.html&quot;&gt;The Clang documentation for frontend actions&lt;/a&gt; walks through a similar task.&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/driver.cpp&lt;/code&gt; contains all of the code to instantiate an AST Action with a clang compiler instance
-(and any options you would like to give your driver), while &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/actions.hpp&lt;/code&gt; contains the actual code to
-traverse the AST.&lt;/p&gt;
-
-&lt;h3 id=&quot;cmake&quot;&gt;CMake&lt;/h3&gt;
-
-&lt;p&gt;In the top-level CMakeLists.txt and after the usual CMake project preamble, we include relevant clang libraries:&lt;/p&gt;
-
-&lt;div class=&quot;language-cmake highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# top-level CMakeLists.txt&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;find_package&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;Clang REQUIRED&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;CMAKE_MODULE_PATH
-  &lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CMAKE_MODULE_PATH&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;LLVM_CMAKE_DIR&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;include&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;AddLLVM&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;include_directories&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;LLVM_INCLUDE_DIRS&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;include_directories&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CLANG_INCLUDE_DIRS&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;add_definitions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;LLVM_DEFINITIONS&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;add_definitions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CLANG_DEFINITIONS&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Then, we added our plugin as a target:&lt;/p&gt;
-
-&lt;div class=&quot;language-cmake highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# top-level CMakeLists.txt&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;add_executable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;LambdaChecker src/driver.cpp&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;target_link_libraries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;LambdaChecker
-  PRIVATE
-  clangAST
-  clangBasic
-  clangFrontend
-  clangSerialization
-  clangTooling
-  clangIndex
-  clangRewrite
-  clangTooling
-  &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;actions&quot;&gt;Actions&lt;/h3&gt;
-
-&lt;p&gt;Before we start with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/actions.hpp&lt;/code&gt;, let us first discuss strategy.
-Finding a potentially dangerous lambda capture requires two predicates for each lambda function found in the AST:&lt;/p&gt;
+&lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;Does the lambda capture &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt;?&lt;/li&gt;
-  &lt;li&gt;Does the lambda dereference &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt; to access a pointer or array-like member?&lt;/li&gt;
+  &lt;li&gt;We needed to be sure our linear algebra library would perform as expected
+  after porting the entire thing to use &lt;a href=&quot;https://github.com/LLNL/RAJA&quot;&gt;RAJA&lt;/a&gt;
+  portability library, and&lt;/li&gt;
+  &lt;li&gt;Our timelines were quite aggressive, considering the size of our team and
+  the scope of our porting efforts.&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;I broke each of these steps into its own frontend action.
-The first simple searches the AST for a lambda function and checks if it captures &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt;:&lt;/p&gt;
-
-&lt;h4 id=&quot;find-lambda-that-captures-this&quot;&gt;Find Lambda that Captures &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt;&lt;/h4&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// src/actions.hpp&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FindLambdaCaptureThis&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RecursiveASTVisitor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FindLambdaCaptureThis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;nl&quot;&gt;public:&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;explicit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FindLambdaCaptureThis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MemberVisitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-
-  &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;VisitLambdaExpr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LambdaExpr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FoundThis&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;capture_begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;capture_end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;capturesThis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;FoundThis&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/* If `this` is not captured, we don't care about it. */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FoundThis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CompoundStmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaBody&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBody&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LambdaBody&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;body_empty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Stmt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaBody&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;MemberVisitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;MemberVisitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TraverseStmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;nl&quot;&gt;private:&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ASTContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;FindLambdaCapturedFields&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MemberVisitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// we'll come back to this&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;You may find that we define the function &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;VisitLambdaExpr&lt;/code&gt; - because this is a special name registered within clang,
-the compiler instance will run this function on any AST node that matches it: every lambda expression.&lt;/p&gt;
-
-&lt;p&gt;Walking through the class above, we first check if the lambda expression captures &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FoundThis&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;capture_begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;capture_end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;it&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;capturesThis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;FoundThis&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If the lambda does not capture &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt;, we can continue traversing the AST:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FoundThis&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Then we make another check to ensure the lambda body is not empty:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CompoundStmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaBody&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBody&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LambdaBody&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;body_empty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If all the above conditions are met, we traverse the body of the lambda to find any pointer- or array-like
-member variables accessed in the lambda:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Stmt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaBody&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;MemberVisitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;MemberVisitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TraverseStmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Now that we have a higher-level AST traversal class to find lambdas that capture &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt;, we can look at our next
-AST traversal class which checks for problematic uses of member variables.
-The member visitor will accept &lt;em&gt;all forms of expressions&lt;/em&gt;, so we only run that visitor on the statements
-in the body of the lambda.
-You may also notice that we set the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Parent&lt;/code&gt; field of our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;MemberVisitor&lt;/code&gt; - this is to improve the quality
-of the diagnostics we are able to emit. We’ll expand on this later.&lt;/p&gt;
-
-&lt;h4 id=&quot;member-visitor&quot;&gt;Member Visitor&lt;/h4&gt;
-
-&lt;p&gt;This AST visitor class ensures no pointer- or array-like member variables are accessed in the lambda&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FindLambdaCapturedFields&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RecursiveASTVisitor&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FindLambdaCapturedFields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;nl&quot;&gt;public:&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;explicit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FindLambdaCapturedFields&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-
-  &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;VisitMemberExpr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MemberExpr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MemberType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/* Problematic use of member variable! Time to generate diagnostic
-     * information. */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MemberType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isArrayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MemberType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-
-      &lt;span class=&quot;cm&quot;&gt;/* Report diagnostic information */&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getDiagnostics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-
-      &lt;span class=&quot;cm&quot;&gt;/* Error message describing the issue */&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getCustomDiagID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-          &lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot;Found lambda capturing pointer-like member variable here.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Report&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBeginLoc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-      &lt;span class=&quot;cm&quot;&gt;/* Remark indicating which member variable triggered the error */&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getCustomDiagID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Note&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot;Member variable declared here:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Report&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getMemberDecl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBeginLoc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-      &lt;span class=&quot;cm&quot;&gt;/* Remark with suggested change to mitigate the issue */&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getCustomDiagID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Remark&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot;Consider creating a local copy of the member variable in local scope&quot;&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot; just outside the lambda capture.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Report&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBeginLoc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-  &lt;span class=&quot;n&quot;&gt;ASTContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;LambdaExpr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;nullptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;First, we check the type of the expression inside the lambda:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MemberType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/* Problematic use of member variable! Time to generate diagnostic
-     * information. */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MemberType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isArrayType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MemberType&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isPointerType&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If we enter this conditional, we’ve found a potential problem! Now what to do?&lt;/p&gt;
-
-&lt;h4 id=&quot;diagnostics&quot;&gt;Diagnostics&lt;/h4&gt;
-
-&lt;p&gt;Clang diagnostics are again a very rich library which won’t be fully flushed out here - please
-consult &lt;a href=&quot;https://clang.llvm.org/doxygen/classclang_1_1DiagnosticsEngine.html&quot;&gt;the documentation for the Clang Diagnostics Engine&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;First order of business in emmitting diagnositcs is to get a handle for a diagnositcs engine capable
-of printing helpful messages to the user of our tool.&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getDiagnostics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Let’s think for a moment about the sort of diagnostic we would like to emit.
-I think we should report three things to the user if a lambda expression meets our 
-critera for an error:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Location in the lambda where the member variable is used via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this&lt;/code&gt; pointer&lt;/li&gt;
-  &lt;li&gt;Location of that member’s declaration&lt;/li&gt;
-  &lt;li&gt;Suggestion for fixing the issue&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Let’s address these one-by-one: first, report the location where the member variable is
-potentially erroneously used.&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getCustomDiagID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-          &lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot;Found lambda capturing pointer-like member variable here.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Report&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBeginLoc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Then, where the member variable was declared:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;cm&quot;&gt;/* Remark indicating which member variable triggered the error */&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getCustomDiagID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Note&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot;Member variable declared here:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Report&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Expr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getMemberDecl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBeginLoc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Finally, a suggestion for fixing the error:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;cm&quot;&gt;/* Remark with suggested change to mitigate the issue */&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getCustomDiagID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DiagnosticsEngine&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Remark&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot;Consider creating a local copy of the member variable in local scope&quot;&lt;/span&gt;
-          &lt;span class=&quot;s&quot;&gt;&quot; just outside the lambda capture.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;DE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Report&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parent&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getBeginLoc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;At this point, we’re essentially done - all we need is a bit of boilerplate code to
-connect our AST consumer classes up to a compiler instance:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LambdaCaptureCheckerConsumer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTConsumer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;nl&quot;&gt;public:&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;explicit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaCaptureCheckerConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Visitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;explicit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaCaptureCheckerConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CompilerInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Visitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getASTContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HandleTranslationUnit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;Visitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TraverseDecl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getTranslationUnitDecl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;nl&quot;&gt;private:&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;FindLambdaCaptureThis&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Visitor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Now we’re done with the file &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/actions.hpp&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h3 id=&quot;driver&quot;&gt;Driver&lt;/h3&gt;
-
-&lt;p&gt;In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/driver.cpp&lt;/code&gt; we create an AST frontend action to create and use the compiler action we defined in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src/actions.hpp&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// src/driver.cpp&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;LambdaCaptureCheckerAction&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTFrontendAction&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;nl&quot;&gt;public:&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;virtual&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unique_ptr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTConsumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CreateASTConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CompilerInstance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Compiler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;llvm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;StringRef&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;InFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unique_ptr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clang&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ASTConsumer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaCaptureCheckerConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Compiler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getASTContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()));&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Here I omit any command line options.
-&lt;a href=&quot;https://llvm.org/docs/CommandLine.html&quot;&gt;The documentation on this topic&lt;/a&gt; is rich,
-so if you would like to add command line options you shouldn’t have too much trouble.&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// src/driver.cpp&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;OptionCategory&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;LambdaCaptureCheckerCategory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;LambdaChecker options&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;CommonOptionsParser&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LambdaCaptureCheckerCategory&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* Create a new Clang Tool instance (a LibTooling environment). */&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ClangTool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Tool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getCompilations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Op&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getSourcePathList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Tool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;newFrontendActionFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LambdaCaptureCheckerAction&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;running&quot;&gt;Running&lt;/h3&gt;
-
-&lt;p&gt;At this point, you may also generate a clang plugin library to use our AST actions
-which can be loaded via compiler invocation, however I opted to stick with a standalone executable.&lt;/p&gt;
-
-&lt;p&gt;In order to fully test our AST action, I also created a subdirectory for examples,
-giving us the following directory structure:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-lambda-checker
-├── CMakeLists.txt
-├── src
-│   ├── CMakeLists.txt
-│   ├── driver.cpp
-│   └── actions.hpp
-└── test
-    └── capture-test.cpp
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Where &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;capture-test.cpp&lt;/code&gt; contains:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// capture-test.cpp&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CaptureTest&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* Should not capture */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* Should not capture */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* OK to capture */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* Method which implicitly captures `this` pointer and modifies member
-   * variable `i`. This is problematic when using portability libraries, as
-   * member variables may not reside on the host. */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodUsingBadCapturePointer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throwaway&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* Raw arrays should not be used either. */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodUsingBadCaptureArray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throwaway&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* The preferred method to mitigate the issue outlined above is to create a
-   * local copy of the pointer and modify the underlying data through the copy.
-   */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodUsingGoodCapture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;localCopy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throwaway&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;localCopy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-  &lt;span class=&quot;cm&quot;&gt;/* Methods which capture `this` variables which are not pointers should not
-   * cause an issue. */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;methodNotCapturingPointer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throwaway&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;I added this as a CMake target such that the compile commands database would be generated for
-our test case (&lt;a href=&quot;https://clang.llvm.org/docs/HowToSetupToolingForLLVM.html&quot;&gt;additional documentation for compile-commands database&lt;/a&gt;).
-To do this, add the following to the top-level &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CMakeLists.txt&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&quot;language-cmake highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# top-level CMakeLists.txt&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;CMAKE_EXPORT_COMPILE_COMMANDS ON&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;nb&quot;&gt;add_executable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;dummy-target test/capture-test.cpp&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This way, we are able to run our plugin driver directly on our test case.&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;lambda-capture
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mkdir &lt;/span&gt;build
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;build
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;cmake .. &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; make
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# At this point, the file `compile_commands.json` should exist in your CWD&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# and you should be able to run the driver on our test case:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;./src/LambdaChecker ../test/capture-test.cpp
-&lt;span class=&quot;go&quot;&gt;/path/to/lambda-capture/test/capture.cpp:17:8: error: Found lambda capturing pointer-like member variable here.
-
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;      *i = 1;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;go&quot;&gt;       ^
-/path/to/lambda-capture/test/capture.cpp:4:3: note: Member variable declared here:
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;  int *i;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;go&quot;&gt;  ^
-/path/to/lambda-capture/test/capture.cpp:16:22: remark: Consider creating a local copy of the member variable in local scope
-just outside the lambda capture.
-    auto throwaway = [=] () {
-
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;As you can see, our tool seems to be correctly identifying our domain-specific error!
-After developing this tool and running it over all of our codebases which make heavy use of portability
-libraries such as RAJA and Kokkos, we are confident that we have purged this error from our
-codebase.&lt;/p&gt;
-
-&lt;p&gt;Hopefully this demonstration helps your team weed out nasty errors like these from your codebase as well.&lt;/p&gt;
-
-&lt;p&gt;The full code listings can be found in the &lt;a href=&quot;https://github.com/ashermancinelli/lambda-capture-checker&quot;&gt;repository linked here&lt;/a&gt;.
-The code snippets used here for example purposes will not map perfectly to the current repository, but should
-serve as a concrete starting point.&lt;/p&gt;
+&lt;p&gt;For these reasons, we needed to develop a thorough suite of unit tests to
+&lt;em&gt;verify execution&lt;/em&gt; of our linear algebra kernels after porting to leverage GPU
+devices with an extremely quick turnaround time.
+&lt;em&gt;Code reuse and readability were crucial to our development effort&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;problem-domain-and-design-decisions&quot;&gt;Problem Domain and Design Decisions&lt;/h2&gt;
+
+&lt;p&gt;HiOp’s linear algebra library uses a clean inheritance structure.
+Looking at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVector&lt;/code&gt; abstract interface for example, there are two
+implementations, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorPar&lt;/code&gt;, as seen below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Before we had written the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; implementation, we had to establish
+success criterea for our implementation in the form of unit tests and integration
+tests.
+When we began, we had exactly zero unit tests, so again, code reuse and
+developer productivity would be very important.&lt;/p&gt;
+
+&lt;p&gt;We settled on a unit testing structure that would mimick the inheritance
+design already in place with the linear algebra library.
+Test classes would mirror the system under test such that tests for concrete
+classes would inherit from test classes for the abstract interfaces.&lt;/p&gt;
+
+&lt;p&gt;Let’s use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; class as an example.&lt;/p&gt;
+
+&lt;h2 id=&quot;hiopmatrix-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; Example&lt;/h2&gt;
+
+&lt;p&gt;The top-level interface for HiOp matrices is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; pure virtual class.
+The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt; pure virtual classes are children
+of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From there, each of the two abstract children have regular CPU-bound
+implementations and RAJA-based GPU/OpenMP implementations:&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;At each level in this inheritance structure, new methods are added to the interfaces.
+For example, due to memory layout constraints, some methods are feasable only with a
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and do not make much sense with a sparse matrix.
+Thus not all tests for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;To maximize code reuse, we developed the following inheritance structure for our tests:
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt; contained code common to all test classes, such as MPI reduction of
+error codes, pretty-printing test results, floating point comparisons, etc.&lt;/p&gt;
+
+&lt;p&gt;Each of the highest-level linear algebra classes then has a corresponding test
+class which inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt;, eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrix&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopVector&lt;/code&gt;.
+These test classes, just like their corresponding classes in the linear algebra
+library, are abstract - they define tests only for the corresponding interface.&lt;/p&gt;
+
+&lt;p&gt;Child classes of each of these classes implement tests specific to the implementation.
+These classes are concrete, and are used to finally test their respective implementation.
+I’ve ommitted the full structure for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparse&lt;/code&gt; side of the
+inheritance chain to make the diagram more readable below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;See the bottom of this graph - the test driver instantiates an instance of
+each concrete test class and runs all contained tests.&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;When the driver is ran, every test all the way up the inheritance chain is run
+on each implementation.
+Tests that apply to all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; classes are run on an instance of every
+concrete child class:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaDense&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixDenseRowMajor&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparseTriplet&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaSparseTriplet&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The concrete child classes enumerated above implemented methods specific to the
+implementation that were needed for the test (eg copying memory back and forth
+between host and device when running with CUDA or HIP).
+This strategy saved us an &lt;em&gt;enormous&lt;/em&gt; amount of developer time and lines of code,
+and also ensured that every implementation conforms to every interface it implements.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;As we developed our test suite, we concurrently developed the RAJA
+implementations of each linear algebra class.
+For each method of each linear algebra class, we first wrote a test and then
+ported the core of the method to run in a RAJA kernel.&lt;/p&gt;
+
+&lt;p&gt;Thanks to this strategy, we were able to port the entire optimization engine
+library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
+a high degree of certainty that our kernels perform correctly.
+HiOp currently only runs in unified virtual memory, and we are actively
+developing the last parts of the optimization routines such that the solver can
+run entirely in device memory.&lt;/p&gt;
 
 &lt;h2&gt; Contact &lt;/h2&gt;
 
@@ -3365,15 +2993,12 @@ serve as a concrete starting point.&lt;/p&gt;
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/ashermancinelli/lambda-capture-checker&quot;&gt;Lambda Capture tool&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/RAJA/blob/main/docs/sphinx/user_guide/index.rst&quot;&gt;RAJA&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/kokkos/kokkos&quot;&gt;Kokkos&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://clang.llvm.org/docs/JSONCompilationDatabase.html&quot;&gt;Clang compile commands database spec&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://clang.llvm.org/docs/HowToSetupToolingForLLVM.html&quot;&gt;Clang compile commands tutorial&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/pelesh&quot;&gt;Slaven Peles’s GitHub profile&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/pull/41&quot;&gt;Original PR for HiOp’s polymorphic test suite&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://clang.llvm.org/docs/RAVFrontendAction.html&quot;&gt;Clang AST Visitor documentation&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=E6i8jmiy8MY&amp;amp;ab_channel=CppNow&quot;&gt;Peter Goldsborough’s C++Now talk on Clang/LLVM tools&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code. What about cases that are not formally errors, but should not exist in your codebase? This post explores using Clang tools to address this case.</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry><entry><title type="html">Spack for Package Development Part 3</title><link href="/spack3" rel="alternate" type="text/html" title="Spack for Package Development Part 3" /><published>2021-03-06T00:00:00-07:00</published><updated>2021-03-06T00:00:00-07:00</updated><id>/Spack-Development-3</id><content type="html" xml:base="/spack3">&lt;p&gt;Third in this series, this post focuses on &lt;em&gt;leveraging environments for debugging and reproducing errors&lt;/em&gt;.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
@@ -3485,257 +3110,4 @@ This way, the profiling team may work on a known working configuration of the so
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
   &lt;/em&gt;
-&lt;/font&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry><entry><title type="html">Spack for Package Development Part 2</title><link href="/spack2" rel="alternate" type="text/html" title="Spack for Package Development Part 2" /><published>2021-03-05T00:00:00-07:00</published><updated>2021-03-05T00:00:00-07:00</updated><id>/Spack-Development-2</id><content type="html" xml:base="/spack2">&lt;p&gt;Second in this series, this post focuses on &lt;em&gt;getting stared with environments&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;In the &lt;a href=&quot;/spack1&quot;&gt;previous post about package development with Spack&lt;/a&gt;, we discussed the following points:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Creating a private spack repository&lt;/li&gt;
-  &lt;li&gt;Maintaining private packages&lt;/li&gt;
-  &lt;li&gt;Maintaining forks of upstream packages&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;In the following post(s), we’ll discuss the following in greater detail:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Managing environments for reproducibility&lt;/li&gt;
-  &lt;li&gt;Using environments for development&lt;/li&gt;
-  &lt;li&gt;Using environments for continuous integration&lt;/li&gt;
-  &lt;li&gt;Managing configurations for distributed and multi-platform development&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;managing-environments&quot;&gt;Managing Environments&lt;/h2&gt;
-
-&lt;p&gt;One of the most useful features of Spack is it’s support for &lt;a href=&quot;https://spack.readthedocs.io/en/latest/environments.html&quot;&gt;environments&lt;/a&gt;.
-An environment is a file describing a package or set of packages you wish to install, along with all of the spack configuration options you wish to use (see documentation linked above for more information).
-In the previous post, we used an example package &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; and a corresponding repository - we’ll continue with this example here.&lt;/p&gt;
-
-&lt;p&gt;When managing a complex and mutable set of dependencies, reproducibility is &lt;em&gt;extremely&lt;/em&gt; important.
-Spack environments allow the development team to document &lt;strong&gt;&lt;em&gt;every single option&lt;/em&gt;&lt;/strong&gt; they used to install a particular package or set of packages.
-For example, let’s say &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; has a few more dependencies: &lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, &lt;a href=&quot;https://icl.cs.utk.edu/projectsfiles/magma/doxygen/index.html&quot;&gt;MAGMA&lt;/a&gt;, CUDA &amp;gt; 10.1, and &lt;a href=&quot;https://gitlab.com/petsc/petsc&quot;&gt;PETSc&lt;/a&gt;.
-Each of these packages has many configuration and installation options, and you may even want to use versions of these packages installed by your system administrator.&lt;/p&gt;
-
-&lt;p&gt;Our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; package may have a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;package.py&lt;/code&gt; file that looks like this:&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;spack&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;os&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FloodSimulation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CMakePackage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;homepage&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;https://github.com/your-username/flood-simulation&quot;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;https://github.com/your-username/flood-simulation.git&quot;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'1.0.0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'v1.0.0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;depends_on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'petsc'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;depends_on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'hiop'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;depends_on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'cuda@10.1:'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;when&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'+cuda'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;depends_on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'magma'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;when&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'+cuda'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cmake_args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'+cuda'&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'-DFLOODSIMULATION_ENABLE_CUDA=ON'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Let us also assume you &lt;em&gt;need&lt;/em&gt; to install with your fork of the PETSc and HiOp spack packages, and that you’d like to use the MAGMA and CUDA installations provided by your system administrator or package manager.
-In this case, you might have an environment file like this:&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-&lt;span class=&quot;c1&quot;&gt;# example-env.yaml&lt;/span&gt;
-&lt;span class=&quot;na&quot;&gt;spack&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;specs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
-  &lt;span class=&quot;na&quot;&gt;packages&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;magma&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;externals&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;magma@2.5.4&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;prefix&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/path/to/magma&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;buildable&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;false&lt;/span&gt;
-    &lt;span class=&quot;na&quot;&gt;cuda&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;externals&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;spec&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;cuda@10.2.89&lt;/span&gt;
-        &lt;span class=&quot;na&quot;&gt;prefix&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;/path/to/cuda&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;buildable&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;false&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Constructing your spack environment from this file is easy as:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-$ spack env create my-environment ./example-env.yaml
-$ spack install
-
-$ # To locate your new installation:
-$ spack location -i floodsimulation
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This way, if another developer needs to reproduce your development environment, you may distribute the environment file to perfectly recreate your installation.
-I reccommend tracking your environments in version control along with the rest of your private spack repository with the following example directory layout:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-floodsimulationrepo
-├── environments
-│   └── example-env.yaml
-├── packges
-│   ├── ipopt
-│   │   └── package.py
-│   └── floodsimulation
-│       └── package.py
-└── repo.yaml
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;using-spack-environments&quot;&gt;Using Spack Environments&lt;/h2&gt;
-
-&lt;p&gt;In my opinion, the three most significant use cases for spack environments are:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Reproducible environments for development&lt;/li&gt;
-  &lt;li&gt;Reproducing finicky errors&lt;/li&gt;
-  &lt;li&gt;Continuous integration/testing&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;reproducible-environments-for-development&quot;&gt;Reproducible Environments for Development&lt;/h3&gt;
-
-&lt;p&gt;With a complex codebase, onboarding often requires significant resources for new developers.
-Gettings started with a new codebase can be challanging, especially when building the software stack in the first place can take up to several days.
-I have found distributing a spack environment which is known to instantiate your software stack on a particular development machine to be a mostly frictionless method of getting new developers started on a codebase.
-With the example environment file above, we specify instructions to instatiate the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; software stack on a particular machine with a couple pre-installed packages.
-If you are developing on many platforms and you need developers up and running on all platforms with a short turnaround time, distributing spack environments will likely be a suitable solution.&lt;/p&gt;
-
-&lt;p&gt;Extending the example above, the following directory structure is a suitable way to maintain spack environments to instatiate the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; stack on multiple platforms.
-Let’s assume you want developers up and running on two clusters, Jupiter and Saturn, as well as OSX for local development:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
-floodsimulationrepo
-├── environments
-│   ├── jupiter
-│   │   └── env.yaml
-│   ├── saturn
-│   │   └── env.yaml
-│   └── osx
-│       └── env.yaml
-├── packges
-│   ├── ipopt
-│   │   └── package.py
-│   └── floodsimulation
-│       └── package.py
-└── repo.yaml
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;In this way, you may simply instruct a new developer to run the following to get started with local development on a Mac:&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# in the directory `floodsimulationrepo`:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;env &lt;/span&gt;create local-development ./environments/osx/env.yaml
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt;
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# Any time the developer logs in to develop locally:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;env &lt;/span&gt;activate local-development
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And when they need to get started developing on the institutional cluster Jupiter:&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;env &lt;/span&gt;create remote-development ./environments/jupiter/env.yaml
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt;
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;an-aside-on-spack-views&quot;&gt;An Aside on Spack Views&lt;/h4&gt;
-
-&lt;p&gt;If you didn’t notice earlier, our environment file contains the line:&lt;/p&gt;
-
-&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;na&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This means that when you activate your spack environment (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;spack env activate &amp;lt;environment name&amp;gt;&lt;/code&gt;), spack will use a “view” by defaul.
-A view is a single installation prefix into which all packages installed via the environment are symbolically linked.&lt;/p&gt;
-
-&lt;p&gt;By default, spack views are installed to:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$SPACK_ROOT/var/spack/environments/&amp;lt;environment name&amp;gt;/.spack-env/
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;and the environment file is installed to&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$SPACK_ROOT/var/spack/environments/&amp;lt;environment name&amp;gt;/spack.yaml
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If our new developer activates her spack environment like so:&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack &lt;span class=&quot;nb&quot;&gt;env &lt;/span&gt;activate local-development
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$SPACK_ROOT&lt;/span&gt;/var/spack/environments/local-development/.spack-env/lib
-&lt;span class=&quot;go&quot;&gt;libmagma.so libhiop.so ...
-
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;she will have access to all of her newly installed libraries in a single installation prefix, automatically added to her &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_LIBRARY_PATH&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DYLD_LIBRARY_PATH&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://spack.readthedocs.io/en/latest/command_index.html?highlight=view#spack-view&quot;&gt;The Spack command reference on views&lt;/a&gt; contains further information on this topic.&lt;/p&gt;
-
-&lt;h4 id=&quot;back-to-using-environments&quot;&gt;Back to Using Environments&lt;/h4&gt;
-
-&lt;p&gt;Now that we have a feel for creating, using, and distributing spack environments, how do we develop with them?&lt;/p&gt;
-
-&lt;p&gt;As we saw in the aside on views above, activating a spack environment with the view option enabled (which is the default) adds the view to the user’s path, library path, etc.
-Assuming &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; is a CMake project (as we specified in the example spack package above) and we have written clean enough CMake to find external libraries, the workflow for building &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt; should be relatively straightforward:&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;git clone https://github.com/your-username/flood-simulation.git
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mkdir &lt;/span&gt;build &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;build
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# At this step, cmake should be able to find all of your libraries in the&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# spack view:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;cmake ../flood-simulation &lt;span class=&quot;nt&quot;&gt;-DCMAKE_INSTALL_PREFIX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PWD&lt;/span&gt;/../insatll
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# If some libraries are not found, simply run `spack location -i package`&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# to find the prefix for the package, and add it manually with ccmake:&lt;/span&gt;
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# Assuming magma is the package cmake failed to find, run this command and&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# copy the path:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;spack location &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; magma
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# Manually add the path to the magma installtion to cmake:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;ccmake
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;make &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt;
-&lt;span class=&quot;go&quot;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;From here, developers may continue the edit-build-test cycle for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;FloodSimulation&lt;/code&gt;, knowing they are using the correct set of dependencies.&lt;/p&gt;
-
-&lt;p&gt;Read on for discussion on additional uses for environments you should consider incorporating into your workflow.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/spack1&quot;&gt;Previous in this Series&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;/spack3&quot;&gt;Next in this Series&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt; Contact &lt;/h2&gt;
-
-&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;</content><author><name></name></author><summary type="html">Second in this series, this post focuses on getting stared with environments.</summary></entry></feed>
+&lt;/font&gt;</content><author><name></name></author><summary type="html">Third in this series, this post focuses on leveraging environments for debugging and reproducing errors.</summary></entry></feed>
