@@ -1,7 +1,9 @@
 ---
 layout: post
-title: (👷 Under Construction 🏗) BQN & Julia
+title: BQN & Julia
 permalink: /bqn-julia
+category: bqn
+wip: true
 ---
 
 BQN and Julia battle to the death!

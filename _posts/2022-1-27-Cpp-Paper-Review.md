@@ -1,0 +1,58 @@
+---
+layout: post
+title: C++ Paper Reivew
+category: c++
+permalink: /iso-cpp-review
+wip: true
+---
+
+My notes from reviewing papers in the [ISO C++ mailing list](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/).
+
+{% include disclaimer.html %}
+
+# [_Conversions from ranges to containers_, r7](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf)
+
+## _Overview_ section
+
+Comment contains a spelling error:
+```cpp
+//Pipe syntaxe
+             ↑
+auto g = l | ranges::view::take(42) | ranges::to<std::vector>();
+```
+
+## _Considerations_ section
+
+'Cpp17Iterators' is not italicized as it is elsewhere in the paper.
+
+> This is sufficiently complex and error-prone approach that multiple blog posts and stackoverflow questions address it:
+
+might be better written as:
+
+> This approach is sufficiently complex and error-prone such that multiple blog posts and stackoverflow questions address it:
+
+## _CTAD_ section
+
+> Adding a tag solves this issue(although one needs to remember using a tag!).
+
+There seems to be no space in between "issue" and the open paren.
+
+The following might be more readable:
+
+> Adding a tag solves this issue (although one must remember to use a tag!).
+
+## _Ambiguous conversions_ section
+
+> There are other issues is with `vector<any>`.
+
+The following might be more readable:
+
+> The other issue is with `vector<any>`.
+
+Uses of `std::` are inconsistent: why use bare `any` but keep `std::vector`?
+
+`any` is also used without code font in this section.
+
+## _using from_range_ section
+
+Many instances of `char const*` and `vector<...>` do not use code font.

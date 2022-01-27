@@ -4,15 +4,45 @@ layout: default
 
 <div class="posts">
   {% for post in site.posts %}
-    <article class="post">
+    {% unless post.wip %}
+      <article class="post">
+        <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+        <div class="entry">
+          {{ post.excerpt }}
+          {% unless post.category == blank %}
+            <em>{{ post.category }}</em>
+          {% endunless %}
+        </div>
 
-      <div class="entry">
-        {{ post.excerpt }}
-      </div>
+        <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+      </article>
+    {% endunless %}
+  {% endfor %}
+</div>
 
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-    </article>
+<hr>
+<h1>Posts In The Works:</h1>
+<h2>These aren't quite ready for primetime, but you can look if you want!</h2>
+<hr>
+
+<div class="posts">
+
+  {% for post in site.posts %}
+    {% if post.wip %}
+      <article class="post">
+
+        <h1><a href="{{ site.baseurl }}{{ post.url }}">(🏗WIP🚧) {{ post.title }}</a></h1>
+
+        <div class="entry">
+          {{ post.excerpt }}
+          {% unless post.category == blank %}
+            <em>{{ post.category }}</em>
+          {% endunless %}
+        </div>
+
+        <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+      </article>
+    {% endif %}
   {% endfor %}
 </div>
