@@ -17,6 +17,7 @@ install:
 
 deploy: install
 	cd $(PREFIX) && \
+		rm -rf pres && \
 		git add . && \
 		git commit -m 'Publish' && \
 		git push
