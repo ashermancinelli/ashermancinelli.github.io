@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-28T10:08:16-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">C++ Paper Reivew</title><link href="/iso-cpp-review" rel="alternate" type="text/html" title="C++ Paper Reivew" /><published>2022-01-27T00:00:00-07:00</published><updated>2022-01-27T00:00:00-07:00</updated><id>/Cpp-Paper-Review</id><content type="html" xml:base="/iso-cpp-review">&lt;p&gt;My notes from reviewing papers in the &lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/&quot;&gt;ISO C++ mailing list&lt;/a&gt;.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-28T10:21:12-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">P1206 Reivew</title><link href="/p1206-review" rel="alternate" type="text/html" title="P1206 Reivew" /><published>2022-01-27T00:00:00-07:00</published><updated>2022-01-27T00:00:00-07:00</updated><id>/P1206-Review</id><content type="html" xml:base="/p1206-review">&lt;p&gt;My notes on &lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf&quot;&gt;&lt;em&gt;Conversions from ranges to containers&lt;/em&gt;, r7&lt;/a&gt;.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
@@ -7,10 +7,7 @@
   &lt;/em&gt;
 &lt;/font&gt;
 
-&lt;h1 id=&quot;conversions-from-ranges-to-containers-r7&quot;&gt;&lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf&quot;&gt;&lt;em&gt;Conversions from ranges to containers&lt;/em&gt;, r7&lt;/a&gt;&lt;/h1&gt;
-&lt;p&gt;&lt;small&gt; &lt;em&gt;Jan 27, 2022&lt;/em&gt; &lt;/small&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;overview-section&quot;&gt;&lt;em&gt;Overview&lt;/em&gt; section&lt;/h2&gt;
+&lt;h3 id=&quot;overview-section&quot;&gt;&lt;em&gt;Overview&lt;/em&gt; section&lt;/h3&gt;
 
 &lt;p&gt;Comment contains a spelling error:&lt;/p&gt;
 &lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//Pipe syntaxe&lt;/span&gt;
@@ -18,7 +15,7 @@
 &lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;g&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ranges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;view&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;take&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ranges&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;considerations-section&quot;&gt;&lt;em&gt;Considerations&lt;/em&gt; section&lt;/h2&gt;
+&lt;h3 id=&quot;considerations-section&quot;&gt;&lt;em&gt;Considerations&lt;/em&gt; section&lt;/h3&gt;
 
 &lt;p&gt;‘Cpp17Iterators’ is not italicized as it is elsewhere in the paper.&lt;/p&gt;
 
@@ -32,7 +29,7 @@
   &lt;p&gt;This approach is sufficiently complex and error-prone such that multiple blog posts and stackoverflow questions address it:&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;ctad-section&quot;&gt;&lt;em&gt;CTAD&lt;/em&gt; section&lt;/h2&gt;
+&lt;h3 id=&quot;ctad-section&quot;&gt;&lt;em&gt;CTAD&lt;/em&gt; section&lt;/h3&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Adding a tag solves this issue(although one needs to remember using a tag!).&lt;/p&gt;
@@ -46,7 +43,7 @@
   &lt;p&gt;Adding a tag solves this issue (although one must remember to use a tag!).&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;ambiguous-conversions-section&quot;&gt;&lt;em&gt;Ambiguous conversions&lt;/em&gt; section&lt;/h2&gt;
+&lt;h3 id=&quot;ambiguous-conversions-section&quot;&gt;&lt;em&gt;Ambiguous conversions&lt;/em&gt; section&lt;/h3&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;There are other issues is with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vector&amp;lt;any&amp;gt;&lt;/code&gt;.&lt;/p&gt;
@@ -62,9 +59,9 @@
 
 &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;any&lt;/code&gt; is also used without code font in this section.&lt;/p&gt;
 
-&lt;h2 id=&quot;using-from_range-section&quot;&gt;&lt;em&gt;using from_range&lt;/em&gt; section&lt;/h2&gt;
+&lt;h3 id=&quot;using-from_range-section&quot;&gt;&lt;em&gt;using from_range&lt;/em&gt; section&lt;/h3&gt;
 
-&lt;p&gt;Many instances of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;char const*&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vector&amp;lt;...&amp;gt;&lt;/code&gt; do not use code font.&lt;/p&gt;</content><author><name></name></author><category term="c++" /><summary type="html">My notes from reviewing papers in the ISO C++ mailing list.</summary></entry><entry><title type="html">BQN &amp;amp; Julia</title><link href="/bqn-julia" rel="alternate" type="text/html" title="BQN &amp;amp; Julia" /><published>2022-01-26T00:00:00-07:00</published><updated>2022-01-26T00:00:00-07:00</updated><id>/BQN-Julia-Battle-To-The-Death</id><content type="html" xml:base="/bqn-julia">&lt;p&gt;BQN and Julia battle to the death!&lt;/p&gt;
+&lt;p&gt;Many instances of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;char const*&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vector&amp;lt;...&amp;gt;&lt;/code&gt; do not use code font.&lt;/p&gt;</content><author><name></name></author><category term="c++, paper review" /><summary type="html">My notes on Conversions from ranges to containers, r7.</summary></entry><entry><title type="html">BQN &amp;amp; Julia</title><link href="/bqn-julia" rel="alternate" type="text/html" title="BQN &amp;amp; Julia" /><published>2022-01-26T00:00:00-07:00</published><updated>2022-01-26T00:00:00-07:00</updated><id>/BQN-Julia-Battle-To-The-Death</id><content type="html" xml:base="/bqn-julia">&lt;p&gt;BQN and Julia battle to the death!&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>C++ Paper Reivew – Asher Mancinelli – HPC Software Development</title>
+    <title>P1206 Reivew – Asher Mancinelli – HPC Software Development</title>
 
         <meta charset="utf-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -9,18 +9,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     
-    <meta name="description" content="My notes from reviewing papers in the ISO C++ mailing list.
+    <meta name="description" content="My notes on Conversions from ranges to containers, r7.
 
 ">
-    <meta property="og:description" content="My notes from reviewing papers in the ISO C++ mailing list.
+    <meta property="og:description" content="My notes on Conversions from ranges to containers, r7.
 
 ">
     
     <meta name="author" content="Asher Mancinelli">
 
     
-    <meta property="og:title" content="C++ Paper Reivew">
-    <meta property="twitter:title" content="C++ Paper Reivew">
+    <meta property="og:title" content="P1206 Reivew">
+    <meta property="twitter:title" content="P1206 Reivew">
     
 
     <link rel="icon" href="/images/chip.png">
@@ -57,10 +57,10 @@
 
     <div id="main" role="main" class="container">
       <article class="post">
-  <h1>C++ Paper Reivew</h1>
+  <h1>P1206 Reivew</h1>
 
   <div class="entry">
-    <p>My notes from reviewing papers in the <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/">ISO C++ mailing list</a>.</p>
+    <p>My notes on <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf"><em>Conversions from ranges to containers</em>, r7</a>.</p>
 
 <font size="-1">
   <em>
@@ -69,11 +69,8 @@
   </em>
 </font>
 
-<h1 id="conversions-from-ranges-to-containers-r7"><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf"><em>Conversions from ranges to containers</em>, r7</a></h1>
-<p><small> <em>Jan 27, 2022</em> </small></p>
-
-<h2 id="overview-section">
-<em>Overview</em> section</h2>
+<h3 id="overview-section">
+<em>Overview</em> section</h3>
 
 <p>Comment contains a spelling error:</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Pipe syntaxe</span>
@@ -81,8 +78,8 @@
 <span class="k">auto</span> <span class="n">g</span> <span class="o">=</span> <span class="n">l</span> <span class="o">|</span> <span class="n">ranges</span><span class="o">::</span><span class="n">view</span><span class="o">::</span><span class="n">take</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span> <span class="o">|</span> <span class="n">ranges</span><span class="o">::</span><span class="n">to</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&gt;</span><span class="p">();</span>
 </code></pre></div></div>
 
-<h2 id="considerations-section">
-<em>Considerations</em> section</h2>
+<h3 id="considerations-section">
+<em>Considerations</em> section</h3>
 
 <p>‘Cpp17Iterators’ is not italicized as it is elsewhere in the paper.</p>
 
@@ -96,8 +93,8 @@
   <p>This approach is sufficiently complex and error-prone such that multiple blog posts and stackoverflow questions address it:</p>
 </blockquote>
 
-<h2 id="ctad-section">
-<em>CTAD</em> section</h2>
+<h3 id="ctad-section">
+<em>CTAD</em> section</h3>
 
 <blockquote>
   <p>Adding a tag solves this issue(although one needs to remember using a tag!).</p>
@@ -111,8 +108,8 @@
   <p>Adding a tag solves this issue (although one must remember to use a tag!).</p>
 </blockquote>
 
-<h2 id="ambiguous-conversions-section">
-<em>Ambiguous conversions</em> section</h2>
+<h3 id="ambiguous-conversions-section">
+<em>Ambiguous conversions</em> section</h3>
 
 <blockquote>
   <p>There are other issues is with <code class="language-plaintext highlighter-rouge">vector&lt;any&gt;</code>.</p>
@@ -128,8 +125,8 @@
 
 <p><code class="language-plaintext highlighter-rouge">any</code> is also used without code font in this section.</p>
 
-<h2 id="using-from_range-section">
-<em>using from_range</em> section</h2>
+<h3 id="using-from_range-section">
+<em>using from_range</em> section</h3>
 
 <p>Many instances of <code class="language-plaintext highlighter-rouge">char const*</code> and <code class="language-plaintext highlighter-rouge">vector&lt;...&gt;</code> do not use code font.</p>
 
