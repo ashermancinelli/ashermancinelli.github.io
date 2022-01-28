@@ -3,8 +3,14 @@ layout: default
 ---
 
 <div class="posts">
+  {% assign year = "dummy" %}
   {% for post in site.posts %}
     {% unless post.wip %}
+      {% assign _year = post.date | date: "%Y" %}
+      {% if _year != year %}
+        {% assign year = _year %}
+        <h4><em>{{ year }}</em></h4>
+      {% endif %}
       <article class="post">
         <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
 

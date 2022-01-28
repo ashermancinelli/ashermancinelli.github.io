@@ -11,6 +11,7 @@ My notes from reviewing papers in the [ISO C++ mailing list](http://www.open-std
 {% include disclaimer.html %}
 
 # [_Conversions from ranges to containers_, r7](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf)
+<small> _Jan 27, 2022_ </small>
 
 ## _Overview_ section
 
