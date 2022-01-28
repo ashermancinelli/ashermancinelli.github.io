@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-27T18:49:34-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">C++ Paper Reivew</title><link href="/iso-cpp-review" rel="alternate" type="text/html" title="C++ Paper Reivew" /><published>2022-01-27T00:00:00-07:00</published><updated>2022-01-27T00:00:00-07:00</updated><id>/Cpp-Paper-Review</id><content type="html" xml:base="/iso-cpp-review">&lt;p&gt;My notes from reviewing papers in the &lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/&quot;&gt;ISO C++ mailing list&lt;/a&gt;.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-27T18:53:34-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">C++ Paper Reivew</title><link href="/iso-cpp-review" rel="alternate" type="text/html" title="C++ Paper Reivew" /><published>2022-01-27T00:00:00-07:00</published><updated>2022-01-27T00:00:00-07:00</updated><id>/Cpp-Paper-Review</id><content type="html" xml:base="/iso-cpp-review">&lt;p&gt;My notes from reviewing papers in the &lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/&quot;&gt;ISO C++ mailing list&lt;/a&gt;.&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
@@ -7,7 +7,8 @@
   &lt;/em&gt;
 &lt;/font&gt;
 
-&lt;h1 id=&quot;conversions-from-ranges-to-containers-r7-jan-27-2022&quot;&gt;&lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf&quot;&gt;&lt;em&gt;Conversions from ranges to containers&lt;/em&gt;, r7&lt;/a&gt; &lt;em&gt;Jan 27, 2022&lt;/em&gt;&lt;/h1&gt;
+&lt;h1 id=&quot;conversions-from-ranges-to-containers-r7&quot;&gt;&lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1206r7.pdf&quot;&gt;&lt;em&gt;Conversions from ranges to containers&lt;/em&gt;, r7&lt;/a&gt;&lt;/h1&gt;
+&lt;p&gt;&lt;small&gt; &lt;em&gt;Jan 27, 2022&lt;/em&gt; &lt;/small&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;overview-section&quot;&gt;&lt;em&gt;Overview&lt;/em&gt; section&lt;/h2&gt;
 
