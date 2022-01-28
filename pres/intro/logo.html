@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;500&display=swap" rel="stylesheet">
+
+<script>
+  
+var VP = {
+  w: 1600,
+  h: 800
+}
+
+var AMdata=`m ${(VP.w/2)-50},${(VP.h/2)-50} 82.107577,113.056501 82.10756,-113.056501 h 27.36919 v 310.90536 h -27.36919 v -254.37711 l -82.10756,113.056501 -82.107577,-113.056501 v 254.37711 h -27.369189 v -84.79237 h -109.47676 l -54.738384,84.79237 h -27.36919 l 191.584334,-310.90536 h 27.369189`
+var Adata=`m ${(VP.w/2)-160},${(VP.h/2)+150} h 82.107569 v -141.320611 l -82.107569,141.320611`
+var g = d3.select('body')
+    .append('svg').attr('id', 'logo')
+    .attr('width', VP.w)
+    .attr('height', VP.h)
+    .append('g');
+
+var i=0;
+var paint = (d) => {
+  g.append('path')
+    .attr('d', d)
+    .attr('id', 'am' + ++i)
+    .attr("stroke", "#fcf8ef")
+    .attr('fill', 'none')
+    .attr('stroke-width', 4)
+  var t = d3.select('#am' + i);
+  var l = t.node().getTotalLength();
+  t
+    .attr("stroke-dasharray", l + " " + l)
+    .attr("stroke-dashoffset", l)
+    .transition()
+    .ease(d3.easePoly.exponent(2))
+    .attr("stroke-dashoffset", 0)
+    .duration(2000);
+};
+var _transitions = [
+  {
+    transitionForward: () => {
+      paint(AMdata);
+      paint(Adata);
+    },
+  },
+];
+</script>
+</body>
+</html>
