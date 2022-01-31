@@ -94,7 +94,7 @@ int maximum_gap(vector<int>& nums) {
 }
 ```
 
-Cleaned up version that uses Range V3 ([godbolt link](https://godbolt.org/z/4Pzfr1z1E)):
+This cleaned up version that uses Range V3 ([godbolt link](https://godbolt.org/z/4Pzfr1z1E)), however it may not use linear time and linear extra space. If you want to be a stickler about the time and space requirements, you can refer to Raz's final Julia solution or my previous C++ solution.
 ```c++
 int solve(auto& v) {
     if (v.size() < 2) return 0;
@@ -127,7 +127,7 @@ I then moved on to BQN:
 My first Julia solution felt very inelegant - I would have written almost the same code verbatim if I were writing Fortran, which Julia is hoping to replace in many instances.
 I look forward to seeing what other solutions the Julia experts could show me.
 
-I don't think this 
+I don't think this solution uses linear time either.
 ```julia
 function solve(nums)
   if length(nums) < 2
@@ -153,11 +153,8 @@ Raz's solution:
 function sol(arr)
     # Bail early if too short
     length(arr) < 2 && return 0
-    # Idea - normalize to positive ints and use RadixSort
-    # then take the maximum of the diff
+    # take the maximum of the diff
     mini = minimum(arr)
-    # Use ternary operator `?` and broadcasted in-place addition `.+=`
-    mini <= 0 ? arr .+= abs(mini) : nothing
     # Use in-place RadixSort to modify `arr`
     sort!(arr, alg = RadixSort)
     # Take the max of the diff
