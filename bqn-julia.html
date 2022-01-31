@@ -151,7 +151,7 @@ For example:</p>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Cleaned up version that uses Range V3 (<a href="https://godbolt.org/z/4Pzfr1z1E">godbolt link</a>):</p>
+<p>This cleaned up version that uses Range V3 (<a href="https://godbolt.org/z/4Pzfr1z1E">godbolt link</a>), however it may not use linear time and linear extra space. If you want to be a stickler about the time and space requirements, you can refer to Raz’s final Julia solution or my previous C++ solution.</p>
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">solve</span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
     <span class="n">sort</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
@@ -182,7 +182,7 @@ I would rather have an adjacent difference view I could pipe to.</p>
 <p>My first Julia solution felt very inelegant - I would have written almost the same code verbatim if I were writing Fortran, which Julia is hoping to replace in many instances.
 I look forward to seeing what other solutions the Julia experts could show me.</p>
 
-<p>I don’t think this</p>
+<p>I don’t think this solution uses linear time either.</p>
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span><span class="nf"> solve</span><span class="x">(</span><span class="n">nums</span><span class="x">)</span>
   <span class="k">if</span> <span class="n">length</span><span class="x">(</span><span class="n">nums</span><span class="x">)</span> <span class="o">&lt;</span> <span class="mi">2</span>
     <span class="k">return</span> <span class="mi">0</span>
@@ -206,11 +206,8 @@ I look forward to seeing what other solutions the Julia experts could show me.</
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span><span class="nf"> sol</span><span class="x">(</span><span class="n">arr</span><span class="x">)</span>
     <span class="c"># Bail early if too short</span>
     <span class="n">length</span><span class="x">(</span><span class="n">arr</span><span class="x">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="k">return</span> <span class="mi">0</span>
-    <span class="c"># Idea - normalize to positive ints and use RadixSort</span>
-    <span class="c"># then take the maximum of the diff</span>
+    <span class="c"># take the maximum of the diff</span>
     <span class="n">mini</span> <span class="o">=</span> <span class="n">minimum</span><span class="x">(</span><span class="n">arr</span><span class="x">)</span>
-    <span class="c"># Use ternary operator `?` and broadcasted in-place addition `.+=`</span>
-    <span class="n">mini</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="o">?</span> <span class="n">arr</span> <span class="o">.+=</span> <span class="n">abs</span><span class="x">(</span><span class="n">mini</span><span class="x">)</span> <span class="o">:</span> <span class="nb">nothing</span>
     <span class="c"># Use in-place RadixSort to modify `arr`</span>
     <span class="n">sort!</span><span class="x">(</span><span class="n">arr</span><span class="x">,</span> <span class="n">alg</span> <span class="o">=</span> <span class="n">RadixSort</span><span class="x">)</span>
     <span class="c"># Take the max of the diff</span>
