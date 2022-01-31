@@ -126,6 +126,8 @@ I then moved on to BQN:
 
 My first Julia solution felt very inelegant - I would have written almost the same code verbatim if I were writing Fortran, which Julia is hoping to replace in many instances.
 I look forward to seeing what other solutions the Julia experts could show me.
+
+I don't think this 
 ```julia
 function solve(nums)
   if length(nums) < 2
@@ -143,6 +145,23 @@ function solve(nums)
     n = i
   end
   return m
+end
+```
+
+Raz's solution:
+```julia
+function sol(arr)
+    # Bail early if too short
+    length(arr) < 2 && return 0
+    # Idea - normalize to positive ints and use RadixSort
+    # then take the maximum of the diff
+    mini = minimum(arr)
+    # Use ternary operator `?` and broadcasted in-place addition `.+=`
+    mini <= 0 ? arr .+= abs(mini) : nothing
+    # Use in-place RadixSort to modify `arr`
+    sort!(arr, alg = RadixSort)
+    # Take the max of the diff
+    maximum(diff(arr))
 end
 ```
 
