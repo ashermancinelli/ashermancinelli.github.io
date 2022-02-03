@@ -1,4 +1,347 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-31T16:10:34-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">reconstructible_range concept Paper Review</title><link href="/p1664-review" rel="alternate" type="text/html" title="reconstructible_range concept Paper Review" /><published>2022-01-31T00:00:00-07:00</published><updated>2022-01-31T00:00:00-07:00</updated><id>/P1664-Review</id><content type="html" xml:base="/p1664-review">&lt;p&gt;Review of P1664&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-03T11:03:24-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">NixOS ❤ Spack</title><link href="/nixos-spack" rel="alternate" type="text/html" title="NixOS ❤ Spack" /><published>2022-02-03T00:00:00-07:00</published><updated>2022-02-03T00:00:00-07:00</updated><id>/NixOS-Spack</id><content type="html" xml:base="/nixos-spack">&lt;p&gt;description&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><category term="spack, nixos" /><summary type="html">description</summary></entry><entry><title type="html">LLVM Development on NixOS</title><link href="/llvm-nixos" rel="alternate" type="text/html" title="LLVM Development on NixOS" /><published>2022-02-02T00:00:00-07:00</published><updated>2022-02-02T00:00:00-07:00</updated><id>/LLVM-Development-On-NixOS</id><content type="html" xml:base="/llvm-nixos">&lt;p&gt;I’ve found NixOS to provide a wonderful development environment after learning a bit of the Nix language - but building and hacking on LLVM on NixOS gave me some trouble.
+Hopefully reading this post will save you the trouble!&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h1 id=&quot;build-environment&quot;&gt;Build Environment&lt;/h1&gt;
+
+&lt;h3 id=&quot;if-youd-just-like-to-see-my-config-go-to-the-end-of-the-post-where-ive-pasted-the-whole-thing&quot;&gt;&lt;strong&gt;&lt;em&gt;If you’d just like to see my config, go to the end of the post where I’ve pasted the whole thing&lt;/em&gt;&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;p&gt;I’m no Nix language expert by any stretch of the imagination, nor am I an expert in dynamic linking or managing an operating system.&lt;/p&gt;
+
+&lt;p&gt;I started with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;nix-shell&lt;/code&gt; example provided in &lt;a href=&quot;https://nixos.wiki/wiki/LLVM&quot;&gt;the nix documentation here&lt;/a&gt; and made additions as I found the need.&lt;/p&gt;
+
+&lt;p&gt;I had to pass the library directories of both GCC and GLIBC using both the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-B&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-L&lt;/code&gt; flags, because some required object files (like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;crt1.o&lt;/code&gt;) must be found at link time, and clang/gcc don’t search &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_LIBRARY_PATH&lt;/code&gt; for these files.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-B&lt;/code&gt; will tell the compilers to look in the provided paths for these files.&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;nv&quot;&gt;libcFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-L &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# The string version of just the gcc flags for NIX_LDFLAGS&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;nixLd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-L &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-L &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib/gcc/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;targetPlatform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;gccFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib/gcc/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;targetPlatform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixLd&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The official documentation uses &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LLVM_ENABLE_PROJECTS&lt;/code&gt; to enable runtimes, which is deprecated, so I first removed that in favor of a manual two-stage build for libc++ and libc++abi.&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;c&quot;&gt;# For building clang itself, we're just using the compiler wrapper and we&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# don't need to inject any flags of our own.&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;cmakeFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DGCC_INSTALL_PREFIX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gcc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DC_INCLUDE_DIRS=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/include&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DCMAKE_BUILD_TYPE=Release&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DCMAKE_INSTALL_PREFIX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;installdir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_ENABLE_PROJECTS=clang&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_TARGETS_TO_BUILD=X86&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;cmakeCmd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;export CC=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/gcc; export CXX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/g++;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeCurses&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/cmake -B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; -S llvm&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeFlags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;To build clang itself, I activate the nix shell and build only clang:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;llvm-project
+&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;nix-shell
+&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$cmakeCmd&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;make &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; build &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;nproc&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I didn’t use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LLVM_ENABLE_RUNTIMES&lt;/code&gt; since I had trouble passing the CMake arguments to the runtime builds through the top-level build.
+The purpose of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LLVM_ENABLE_RUNTIMES&lt;/code&gt; is to build an LLVM project using the just-built clang/LLVM, however compile and link arguments are not passed to the runtime builds using the default &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CMAKE_CXX_FLAGS&lt;/code&gt; as I expected (or at least I was unable to get this to work).&lt;/p&gt;
+
+&lt;p&gt;Instead, I configured a seperate set of cmake arguments for the runtimes, and manually passed the just-built clang compiler as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CXX&lt;/code&gt; to the runtime builds like so:&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;nv&quot;&gt;cmakeRuntimeFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DCMAKE_CXX_FLAGS=&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLIBCXX_TEST_COMPILER_FLAGS=&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLIBCXX_TEST_LINKER_FLAGS=&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_ENABLE_RUNTIMES='libcxx;libcxxabi'&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;cmakeRtCmd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;export CC=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/clang; export CXX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/clang++;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeCurses&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/cmake -B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-rt -S runtimes&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeRuntimeFlags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;llvm-project
+&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$cmakeRtCmd&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;make &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; build-rt &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;nproc&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;testing-linking-running&quot;&gt;Testing, Linking, Running&lt;/h1&gt;
+
+&lt;p&gt;A huge issue with testing arose due to the way NixOS handles it’s dynamic loader.&lt;/p&gt;
+
+&lt;p&gt;When you use software in NixOS, it’s usually found somewhere in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/run/current-system/sw/&lt;/code&gt; prefix, while most software expects to be run from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/local&lt;/code&gt;, or it expects to be able to find key libraries under those prefixes (eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;libc.so&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;Instead, each software component has it’s own prefix under &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/nix/store&lt;/code&gt;, for example:&lt;/p&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;which perl
+&lt;span class=&quot;go&quot;&gt;/run/current-system/sw/bin/perl
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;file &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which perl&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;/run/current-system/sw/bin/perl: symbolic link to 
+    /nix/store/kpzx6f97583zbjyyd7b17rbv057l4vn2-perl-5.34.0/bin/perl
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Each compiler must then know the correct locations of the standard libraries and software components, such as the dynamic loader, the standard C library, etc.
+To acomplish this, Nix-provided compilers ship with &lt;em&gt;wrappers&lt;/em&gt; that inject the required flags.&lt;/p&gt;
+
+&lt;p&gt;If I inspect my GNU compilers, we see that I’m not using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;g++&lt;/code&gt; directly:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;which g++
+&lt;span class=&quot;go&quot;&gt;/nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;file &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which g++&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;/nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++:
+  a /nix/store/v1d8l3zqnia3hccqd0701szhlx22g54z-bash-5.1-p8/bin/bash
+  script, ASCII text executable
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The actual compiler is found in a seperate prefix:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'g++'&lt;/span&gt; &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which g++&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-n1&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;[[ &quot;/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0/bin/g++&quot; = *++ ]] &amp;amp;&amp;amp; isCxx=1 || isCxx=0
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;On my current system, the true compiler is found under &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This becomes an issue with testing LLVM because the tests run executables built with the just-built &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;clang++&lt;/code&gt;, not with the wrapped compiler!
+That’s why we have to inject so many flags in our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.nix&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;When I initially ran &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make check-cxx&lt;/code&gt; to run the tests for libc++, I found errors like this:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;go&quot;&gt;FileNotFoundError: [Errno 2]
+    No such file or directory:
+    '/home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe'
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;It &lt;em&gt;looks&lt;/em&gt; like the tests rely on an executable that’s not there.
+However, if I check that location:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;file /home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe
+&lt;span class=&quot;go&quot;&gt;/home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe:
+ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked,
+interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, with debug_info, not stripped
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;the executable &lt;em&gt;was&lt;/em&gt; built.&lt;/p&gt;
+
+&lt;p&gt;If I try to run it directly, it still appears to not exist:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;/home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe
+&lt;span class=&quot;go&quot;&gt;bash: /home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe:
+  No such file or directory
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;What’s going on here?&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;dynamic-linker&quot;&gt;Dynamic Linker&lt;/h2&gt;
+
+&lt;p&gt;If we return to the output of running &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;file&lt;/code&gt; on our mysterious executable, we see it thinks its dynamic linker is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/lib64/ld-linux-x86-64.so.2&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked,
+interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, with debug_info, not stripped
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;However, if we look for that file, it doesn’t exist:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;file /lib64/ld-linux-x86-64.so.2
+&lt;span class=&quot;go&quot;&gt;/lib64/ld-linux-x86-64.so.2:
+  cannot open `/lib64/ld-linux-x86-64.so.2'
+  (No such file or directory)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;patchelf&lt;/code&gt; utility from the NixOS developers will tell us where the dynamic linker is for a given executable:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;patchelf &lt;span class=&quot;nt&quot;&gt;--print-interpreter&lt;/span&gt; /path/to/llvm-test.exe
+&lt;span class=&quot;go&quot;&gt;/lib64/ld-linux-x86-64.so.2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Again, our executable wasn’t built by a Nix compiler wrapper, it was built by the clang we just compiled ourselves.
+What dynamic linker do other programs on this system use?&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;patchelf &lt;span class=&quot;nt&quot;&gt;--print-interpreter&lt;/span&gt; &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which bash&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;/nix/store/vjq3q7dq8vmc13c3py97v27qwizvq7fd-glibc-2.33-59/lib/ld-linux-x86-64.so.2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;That’s right, everything on NixOS is built in its own prefix.
+If we had used a compiler wrapper, the flags to tell the executable which linker to use would have been injected.&lt;/p&gt;
+
+&lt;p&gt;I found that the linker flag &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--dynamic-linker&lt;/code&gt; will set the dynamic linker path for a given executable, and it’s used here in GCC’s compiler wrapper:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'dynamic-link'&lt;/span&gt; &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which g++&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;        extraBefore+=(&quot;-Wl,-dynamic-linker=$&lt;/span&gt;NIX_DYNAMIC_LINKER_x86_64_unknown_linux_gnu&lt;span class=&quot;s2&quot;&gt;&quot;)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I can’t quite figure out how &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;NIX_DYNAMIC_LINKER_x86_64_unknown_linux_gnu&lt;/code&gt; is set other than that it’s set by the script in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$gcc_wrapper_prefix/nix-support/add-flags.sh&lt;/code&gt;, but I did find the file &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dynamic-linker&lt;/code&gt; under that same prefix:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;file &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which g++&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;/run/current-system/sw/bin/g++: symbolic link to
+  /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0
+&lt;span class=&quot;go&quot;&gt;bin  nix-support
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;ls&lt;/span&gt; /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/nix-support
+&lt;span class=&quot;go&quot;&gt;add-flags.sh      cc-ldflags      libc-crt1-cflags  libcxx-ldflags  orig-libc-dev            utils.bash
+add-hardening.sh  dynamic-linker  libc-ldflags      orig-cc         propagated-build-inputs
+cc-cflags         libc-cflags     libcxx-cxxflags   orig-libc       setup-hook
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;So the file &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$gcc_wrapper_prefix/nix-support/dynamic-linker&lt;/code&gt; contains the path to the dynamic linker the compiler is using:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cat&lt;/span&gt; /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/nix-support/dynamic-linker
+&lt;span class=&quot;go&quot;&gt;/nix/store/vjq3q7dq8vmc13c3py97v27qwizvq7fd-glibc-2.33-59/lib/ld-linux-x86-64.so.2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I’ll then use this in my &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shell.nix&lt;/code&gt; to get the path to the dynamic linker, and then pass that to clang for building the LLVM runtimes so the correct dynamic linker is used for executables built by clang:&lt;/p&gt;
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;nv&quot;&gt;dynLinker&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;fileContents&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/nix-support/dynamic-linker&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-Wno-unused-command-line-argument&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-Wl,--dynamic-linker=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;dynLinker&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+                          &lt;span class=&quot;err&quot;&gt;↑↑↑↑↑↑↑↑↑↑↑↑↑&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;gccFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;libcFlags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I’ve also added &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-Wno-unused-command-line-argument&lt;/code&gt; to the compile flags so we’re not spammed with warnings every time a link directory or file directory I pass to the compiler invokation is ignored.&lt;/p&gt;
+
+&lt;p&gt;We can now finally run our tests.
+Sometimes required binaries are still not found by lit, so I use the check-cxx target to build test dependencies and then I run lit manually:&lt;/p&gt;
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# CTRL-C after the testing targets are actaully built&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;make check-cxx &lt;span class=&quot;nt&quot;&gt;-C&lt;/span&gt; build-rt
+&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;./build/bin/llvm-lit ./libcxx
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;full-config&quot;&gt;Full Config&lt;/h1&gt;
+
+&lt;p&gt;I was able to find lots of information about nix from playing around in the nix repl and using tab completion, like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;nix repl
+&lt;span class=&quot;go&quot;&gt;Welcome to Nix 2.4. Type :? for help.
+
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;nix-repl&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;pkgs &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; import &amp;lt;nixpkgs&amp;gt; &lt;span class=&quot;o&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;nix-repl&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;pkgs.lib.concatStringsSep &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;one&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;two&quot;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;three&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;&quot;one two three&quot;
+
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;nix-repl&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;pkgs.stdenv.cc.&amp;lt;TAB&amp;gt;&amp;lt;TAB&amp;gt;
+&lt;span class=&quot;go&quot;&gt;pkgs.stdenv.cc.__ignoreNulls                pkgs.stdenv.cc.libc_dev
+pkgs.stdenv.cc.all                          pkgs.stdenv.cc.libc_lib
+pkgs.stdenv.cc.args                         pkgs.stdenv.cc.man
+pkgs.stdenv.cc.bintools                     pkgs.stdenv.cc.meta
+&lt;/span&gt;&lt;span class=&quot;c&quot;&gt;...
+&lt;/span&gt;&lt;span class=&quot;go&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;nix-repl&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.stdenv.cc.cc&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;&quot;/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0&quot;
+
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;nix-repl&amp;gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;pkgs.lib.fileContents &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.stdenv.cc&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/nix-support/dynamic-linker&quot;&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;&quot;/nix/store/vjq3q7dq8vmc13c3py97v27qwizvq7fd-glibc-2.33-59/lib/ld-linux-x86-64.so.2&quot;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here’s the full config:&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixpkgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;build&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;installdir&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;install&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;dynLinker&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;fileContents&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/nix-support/dynamic-linker&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;libcFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-L &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# The string version of just the gcc flags for NIX_LDFLAGS&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;nixLd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-L &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-L &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib/gcc/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;targetPlatform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;gccFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/lib/gcc/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;targetPlatform&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gccForLibs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixLd&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;
+      &lt;span class=&quot;s2&quot;&gt;&quot;-Wno-unused-command-line-argument&quot;&lt;/span&gt;
+      &lt;span class=&quot;s2&quot;&gt;&quot;-Wl,--dynamic-linker=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;dynLinker&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;gccFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;libcFlags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# For building clang itself, we're just using the compiler wrapper and we&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# don't need to inject any flags of our own.&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;cmakeFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DGCC_INSTALL_PREFIX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;gcc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DC_INCLUDE_DIRS=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;libc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/include&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DCMAKE_BUILD_TYPE=Release&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DCMAKE_INSTALL_PREFIX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;installdir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_ENABLE_PROJECTS=clang&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_TARGETS_TO_BUILD=X86&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# For configuring a build of LLVM runtimes however, we do need to inject the&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# extra flags.&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;cmakeRuntimeFlags&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DCMAKE_CXX_FLAGS=&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLIBCXX_TEST_COMPILER_FLAGS=&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLIBCXX_TEST_LINKER_FLAGS=&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;-DLLVM_ENABLE_RUNTIMES='libcxx;libcxxabi'&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;cmakeCmd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;export CC=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/gcc; export CXX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/g++;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeCurses&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/cmake -B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; -S llvm&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeFlags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;cmakeRtCmd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;concatStringsSep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot; &quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;export CC=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/clang; export CXX=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/clang++;&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeCurses&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/bin/cmake -B &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;builddir&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;-rt -S runtimes&quot;&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeRuntimeFlags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;mkDerivation&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;llvm-dev-env&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;buildInputs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;bashInteractive&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;cmakeCurses&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;llvmPackages_latest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;llvm&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# where to find libgcc&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;NIX_LDFLAGS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixLd&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# teach clang about C startup file locations&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;CFLAGS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;CXXFLAGS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;flags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;cmakeRuntimeFlags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeRuntimeFlags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;cmakeFlags&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeFlags&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;nv&quot;&gt;cmake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeCmd&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;cmakeRt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cmakeRtCmd&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><category term="c++, nixos, llvm" /><summary type="html">I’ve found NixOS to provide a wonderful development environment after learning a bit of the Nix language - but building and hacking on LLVM on NixOS gave me some trouble. Hopefully reading this post will save you the trouble!</summary></entry><entry><title type="html">reconstructible_range concept Paper Review</title><link href="/p1664-review" rel="alternate" type="text/html" title="reconstructible_range concept Paper Review" /><published>2022-01-31T00:00:00-07:00</published><updated>2022-01-31T00:00:00-07:00</updated><id>/P1664-Review</id><content type="html" xml:base="/p1664-review">&lt;p&gt;Review of P1664&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
@@ -2572,493 +2915,4 @@ Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do 
   &lt;li&gt;&lt;a href=&quot;http://www.ashermancinelli.com/&quot;&gt;Blog&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://leetcode.com/problems/longest-valid-parentheses/&quot;&gt;LeetCode Problem&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><category term="bqn, c++, cuda, leetcode" /><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry><entry><title type="html">GTest Type and Value Parameterized Tests</title><link href="/gtest-type-val-param" rel="alternate" type="text/html" title="GTest Type and Value Parameterized Tests" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/GTest-Type-Value-Params</id><content type="html" xml:base="/gtest-type-val-param">&lt;p&gt;GTest exposes clean interfaces for parameterizing your tests by value and by
-type - but what if you want both?&lt;/p&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
-
-&lt;p&gt;The need for this arose when converting some of Flang’s unit tests to use GTest
-to conform with the rest of LLVM’s testing framework (Flang is LLVM’s fortran 2018 compiler).
-&lt;a href=&quot;https://reviews.llvm.org/D97403&quot;&gt;Linked here is the revision where we needed to parameterize both by value and type.&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Let’s start with an interface to test:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// addone.hpp&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#pragma once
-&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Our first test might look like this:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;gtest/gtest.h&amp;gt;
-#include &quot;addone.hpp&quot;
-&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;TEST&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddTo5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ASSERT_EQ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;addOne(5) != 6!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;What if we want to test multiple values without repeating code?
-Instead of something like this:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;TEST&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddTo5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ASSERT_EQ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;addOne(5) != 6!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ASSERT_EQ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;addOne(6) != 7!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;value-parameterized-tests&quot;&gt;Value Parameterized Tests&lt;/h2&gt;
-
-&lt;p&gt;We can parameterize our test by value with a fixture:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddOneTestsFixture&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TestWithParam&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuple&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;TEST_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAdd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetParam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;GetParam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ASSERT_EQ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;addOne(&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;) != &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;INSTANTIATE_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;AddOneTests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Values&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)));&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This way, our tests run over all values we pass in at the end:&lt;/p&gt;
-
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;./tests
-&lt;span class=&quot;go&quot;&gt;Running main() from /tmp/googletest-20201214-81667-fx54ix/googletest-release-1.10.0/googletest/src/gtest_main.cc
-[==========] Running 3 tests from 1 test suite.
-[----------] Global test environment set-up.
-[----------] 3 tests from AddOneTests/AddOneTestsFixture
-[ RUN      ] AddOneTests/AddOneTestsFixture.doAdd/0
-[       OK ] AddOneTests/AddOneTestsFixture.doAdd/0 (0 ms)
-[ RUN      ] AddOneTests/AddOneTestsFixture.doAdd/1
-[       OK ] AddOneTests/AddOneTestsFixture.doAdd/1 (0 ms)
-[ RUN      ] AddOneTests/AddOneTestsFixture.doAdd/2
-[       OK ] AddOneTests/AddOneTestsFixture.doAdd/2 (0 ms)
-[----------] 3 tests from AddOneTests/AddOneTestsFixture (0 ms total)
-
-[----------] Global test environment tear-down
-[==========] 3 tests from 1 test suite ran. (0 ms total)
-[  PASSED  ] 3 tests.
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;type-parameterized-tests&quot;&gt;Type Parameterized Tests&lt;/h2&gt;
-
-&lt;p&gt;Our interface &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;addOne&lt;/code&gt; takes a template parameter - what if we want to test this
-on multiple types?&lt;/p&gt;
-
-&lt;p&gt;First, we’ll want our fixture to take template parameters and we’ll have to
-declare the fixture as templated in GTest:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddOneTestsFixture&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Test&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;TYPED_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And keep the first iteration of our test, but this time using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TypeParam&lt;/code&gt;
-type exposed by the GTest &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TYPED_TEST_SUITE&lt;/code&gt; api:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;TYPED_TEST_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ASSERT_EQ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TypeParam&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;addOne(5) != 6!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;We’ll also have to register each test with our typed test suite:&lt;/p&gt;
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;REGISTER_TYPED_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;If we had more tests, you would register them in the same statement as above:&lt;/p&gt;
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;REGISTER_TYPED_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddTwo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;We are then able to instantiate our templated test suite with all the types we
-intend to use with our test suite:&lt;/p&gt;
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Types&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Types&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;INSTANTIATE_TYPED_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TestPrefix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Types&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And our type-parameterized tests are working!&lt;/p&gt;
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;./tests
-&lt;span class=&quot;go&quot;&gt;Running main() from /tmp/googletest-20201214-81667-fx54ix/googletest-release-1.10.0/googletest/src/gtest_main.cc
-[==========] Running 4 tests from 4 test suites.
-[----------] Global test environment set-up.
-[----------] 1 test from TestPrefix/AddOneTestsFixture/0, where TypeParam = int
-[ RUN      ] TestPrefix/AddOneTestsFixture/0.doAddOne
-[       OK ] TestPrefix/AddOneTestsFixture/0.doAddOne (0 ms)
-[----------] 1 test from TestPrefix/AddOneTestsFixture/0 (0 ms total)
-
-[----------] 1 test from TestPrefix/AddOneTestsFixture/2, where TypeParam = long long
-[ RUN      ] TestPrefix/AddOneTestsFixture/2.doAddOne
-[       OK ] TestPrefix/AddOneTestsFixture/2.doAddOne (0 ms)
-[----------] 1 test from TestPrefix/AddOneTestsFixture/2 (0 ms total)
-
-[----------] 1 test from TestPrefix/AddOneTestsFixture/3, where TypeParam = unsigned long
-[ RUN      ] TestPrefix/AddOneTestsFixture/3.doAddOne
-[       OK ] TestPrefix/AddOneTestsFixture/3.doAddOne (0 ms)
-[----------] 1 test from TestPrefix/AddOneTestsFixture/3 (0 ms total)
-
-[----------] Global test environment tear-down
-[==========] 4 tests from 4 test suites ran. (0 ms total)
-[  PASSED  ] 4 tests.
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;type-and-value-parameterized-tests&quot;&gt;Type &lt;strong&gt;&lt;em&gt;and&lt;/em&gt;&lt;/strong&gt; Value Parameterized Tests&lt;/h2&gt;
-
-&lt;p&gt;Now is the tricky part - GTest doesn’t expose an API for parameterizing tests
-over values and types so we have to do some work ourselves.&lt;/p&gt;
-
-&lt;p&gt;First, let’s define the types and input data we’ll be parameterizing our tests over:&lt;/p&gt;
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuple&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuple&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;allParams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Test cases for int&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Test cases for long long&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Test cases for size_t&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This structure assumes you may want to add test inputs later on that may be
-different depending on the type.
-If this is not the case and you know your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make_tuple&lt;/code&gt; calls are &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;static_cast&lt;/code&gt;-able
-into your parameter type, you may do the following to reduce code duplication:&lt;/p&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define ADDONE_TESTPARAMS                                                      \
-  { std::make_tuple(1, 2), std::make_tuple(5, 6), std::make_tuple(9, 10), }
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuple&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;allParams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;ADDONE_TESTPARAMS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ADDONE_TESTPARAMS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ADDONE_TESTPARAMS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Now, let’s refactor our fixture to take the types and values we just defined:&lt;/p&gt;
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddOneTestsFixture&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Test&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;allParams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;You may notice we set &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;params&lt;/code&gt; to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::get&amp;lt; ParamT&amp;lt;T&amp;gt; &amp;gt;(allParams)&lt;/code&gt; - this is how
-we accomplish type &lt;em&gt;and&lt;/em&gt; value parameterized tests.
-We use the infrastructure of a type parameterized test, and leverage &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;std::tuple&lt;/code&gt;
-to do the value parameterization.&lt;/p&gt;
-
-&lt;p&gt;For the actual test code, we again reuse most of the test from our first type-
-parameterized test, this time using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;params&lt;/code&gt; field of our test fixture:&lt;/p&gt;
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;TYPED_TEST_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-
-  &lt;span class=&quot;c1&quot;&gt;// Iterate over the parameters configred by our fixture&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;c1&quot;&gt;// The assertions stay the same as in our original type-parameterized test&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ASSERT_EQ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;addOne(&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;) != &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;And voilà! our tests are parameterized over values and types:&lt;/p&gt;
-&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;./tests
-&lt;span class=&quot;go&quot;&gt;Running main() from /tmp/googletest-20201214-81667-fx54ix/googletest-release-1.10.0/googletest/src/gtest_main.cc
-[==========] Running 3 tests from 3 test suites.
-[----------] Global test environment set-up.
-[----------] 1 test from TestPrefix/AddOneTestsFixture/0, where TypeParam = int
-[ RUN      ] TestPrefix/AddOneTestsFixture/0.doAddOne
-[       OK ] TestPrefix/AddOneTestsFixture/0.doAddOne (0 ms)
-[----------] 1 test from TestPrefix/AddOneTestsFixture/0 (0 ms total)
-
-[----------] 1 test from TestPrefix/AddOneTestsFixture/1, where TypeParam = long long
-[ RUN      ] TestPrefix/AddOneTestsFixture/1.doAddOne
-[       OK ] TestPrefix/AddOneTestsFixture/1.doAddOne (0 ms)
-[----------] 1 test from TestPrefix/AddOneTestsFixture/1 (0 ms total)
-
-[----------] 1 test from TestPrefix/AddOneTestsFixture/2, where TypeParam = unsigned long
-[ RUN      ] TestPrefix/AddOneTestsFixture/2.doAddOne
-[       OK ] TestPrefix/AddOneTestsFixture/2.doAddOne (0 ms)
-[----------] 1 test from TestPrefix/AddOneTestsFixture/2 (0 ms total)
-
-[----------] Global test environment tear-down
-[==========] 3 tests from 3 test suites ran. (0 ms total)
-[  PASSED  ] 3 tests.
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;full-code-listing&quot;&gt;Full Code Listing&lt;/h2&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// addone.hpp&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#pragma once
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// addone_test.cpp&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &quot;addone.hpp&quot;
-#include &amp;lt;gtest/gtest.h&amp;gt;
-#include &amp;lt;tuple&amp;gt;
-#include &amp;lt;vector&amp;gt;
-&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuple&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuple&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;allParams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Test cases for int&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Test cases for long long&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Test cases for size_t&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_tuple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;template&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;typename&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;AddOneTestsFixture&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Test&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;allParams&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;ParamT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;TYPED_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;TYPED_TEST_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;auto&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ASSERT_EQ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-      &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;addOne(&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;) != &quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expect&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;!&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;REGISTER_TYPED_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;doAddOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Types&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;testing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Types&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;size_t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;INSTANTIATE_TYPED_TEST_SUITE_P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TestPrefix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AddOneTestsFixture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Types&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Makefile used for this post:&lt;/p&gt;
-&lt;div class=&quot;language-make highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;CFLAGS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-I&lt;/span&gt;/usr/local/Cellar/googletest/1.10.0/include
-&lt;span class=&quot;nv&quot;&gt;CFLAGS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt;/usr/local/Cellar/googletest/1.10.0/lib &lt;span class=&quot;nt&quot;&gt;-lgtest&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-lgtest_main&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;CFLAGS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-lpthread&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;c++17
-&lt;span class=&quot;nv&quot;&gt;CXX&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;  clang++
-
-&lt;span class=&quot;nl&quot;&gt;all&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
-	&lt;span class=&quot;nv&quot;&gt;$(CXX)&lt;/span&gt; addone_test.cpp &lt;span class=&quot;nv&quot;&gt;$(CFLAGS)&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; tests
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2&gt; Contact &lt;/h2&gt;
-
-&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.sandordargo.com/blog/2019/04/24/parameterized-testing-with-gtest&quot;&gt;Blog Post: Parameterized testing with GTest&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/8507385/google-test-is-there-a-way-to-combine-a-test-which-is-both-type-parameterized-a&quot;&gt;SO Question: Is there a way to combine a test which is both type parameterized and value parameterized?&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/google/googletest/blob/master/docs/advanced.md&quot;&gt;GTest advanced docs&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://llvmweekly.org/issue/376&quot;&gt;LLVM Weekly mention&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/llvm/llvm-project/tree/main/flang/unittests&quot;&gt;Flang unittests&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><summary type="html">GTest exposes clean interfaces for parameterizing your tests by value and by type - but what if you want both?</summary></entry><entry><title type="html">Some Polymorphism for your Test Suite</title><link href="/poly-testing" rel="alternate" type="text/html" title="Some Polymorphism for your Test Suite" /><published>2021-03-07T00:00:00-07:00</published><updated>2021-03-07T00:00:00-07:00</updated><id>/Polymorphic-Testing</id><content type="html" xml:base="/poly-testing">&lt;p&gt;Design principles apply to your tests more often then you might think!&lt;/p&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;intro&quot;&gt;Intro&lt;/h2&gt;
-
-&lt;p&gt;When designing tests, qualities like code reuse, readability, and execution time
-are not often considered.
-In this post, I’ll look at how we designed the test suite for
-&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;, a high performance optimization solver.
-Credit for the design goes to &lt;a href=&quot;https://www.linkedin.com/in/slavenpeles/&quot;&gt;Slaven Peles&lt;/a&gt;
-inspired by the &lt;a href=&quot;https://github.com/LLNL/sundials&quot;&gt;Sundials&lt;/a&gt; test suite.&lt;/p&gt;
-
-&lt;p&gt;HiOp’s unit test suite was crucial for the following reasons:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;We needed to be sure our linear algebra library would perform as expected
-  after porting the entire thing to use &lt;a href=&quot;https://github.com/LLNL/RAJA&quot;&gt;RAJA&lt;/a&gt;
-  portability library, and&lt;/li&gt;
-  &lt;li&gt;Our timelines were quite aggressive, considering the size of our team and
-  the scope of our porting efforts.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;For these reasons, we needed to develop a thorough suite of unit tests to
-&lt;em&gt;verify execution&lt;/em&gt; of our linear algebra kernels after porting to leverage GPU
-devices with an extremely quick turnaround time.
-&lt;em&gt;Code reuse and readability were crucial to our development effort&lt;/em&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;problem-domain-and-design-decisions&quot;&gt;Problem Domain and Design Decisions&lt;/h2&gt;
-
-&lt;p&gt;HiOp’s linear algebra library uses a clean inheritance structure.
-Looking at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVector&lt;/code&gt; abstract interface for example, there are two
-implementations, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorPar&lt;/code&gt;, as seen below:&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wVmVjdG9yIDx8LS0gaGlvcFZlY3RvclBhclxuaGlvcFZlY3RvciA8fC0tIGhpb3BWZWN0b3JSYWphUGFyIiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Before we had written the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopVectorRajaPar&lt;/code&gt; implementation, we had to establish
-success criterea for our implementation in the form of unit tests and integration
-tests.
-When we began, we had exactly zero unit tests, so again, code reuse and
-developer productivity would be very important.&lt;/p&gt;
-
-&lt;p&gt;We settled on a unit testing structure that would mimick the inheritance
-design already in place with the linear algebra library.
-Test classes would mirror the system under test such that tests for concrete
-classes would inherit from test classes for the abstract interfaces.&lt;/p&gt;
-
-&lt;p&gt;Let’s use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; class as an example.&lt;/p&gt;
-
-&lt;h2 id=&quot;hiopmatrix-example&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; Example&lt;/h2&gt;
-
-&lt;p&gt;The top-level interface for HiOp matrices is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; pure virtual class.
-The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt; pure virtual classes are children
-of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5jbGFzcyBoaW9wTWF0cml4IHtcbjw8aW50ZXJmYWNlPj5cbn1cbmNsYXNzIGhpb3BNYXRyaXhEZW5zZSB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4U3BhcnNlIHtcbjw8aW50ZXJmYWNlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;From there, each of the two abstract children have regular CPU-bound
-implementations and RAJA-based GPU/OpenMP implementations:&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeERlbnNlXG5oaW9wTWF0cml4IDx8LS0gaGlvcE1hdHJpeFNwYXJzZVxuJSUtXG5oaW9wTWF0cml4U3BhcnNlIDx8LS0gaGlvcE1hdHJpeFNwYXJzZVRyaXBsZXRcbmhpb3BNYXRyaXhTcGFyc2UgPHwtLSBoaW9wTWF0cml4UmFqYVNwYXJzZVRyaXBsZXRcbiUlLVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeFJhamFEZW5zZVxuaGlvcE1hdHJpeERlbnNlIDx8LS0gaGlvcE1hdHJpeERlbnNlUm93TWFqb3JcbiUlLVxuY2xhc3MgaGlvcE1hdHJpeCB7XG48PGludGVyZmFjZT4-XG59XG5jbGFzcyBoaW9wTWF0cml4RGVuc2Uge1xuPDxpbnRlcmZhY2U-PlxufVxuY2xhc3MgaGlvcE1hdHJpeFNwYXJzZSB7XG48PGludGVyZmFjZT4-XG59IiwibWVybWFpZCI6bnVsbH0&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;At each level in this inheritance structure, new methods are added to the interfaces.
-For example, due to memory layout constraints, some methods are feasable only with a
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; and do not make much sense with a sparse matrix.
-Thus not all tests for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixDense&lt;/code&gt; apply to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrixSparse&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;To maximize code reuse, we developed the following inheritance structure for our tests:
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt; contained code common to all test classes, such as MPI reduction of
-error codes, pretty-printing test results, floating point comparisons, etc.&lt;/p&gt;
-
-&lt;p&gt;Each of the highest-level linear algebra classes then has a corresponding test
-class which inherits from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestBase&lt;/code&gt;, eg &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrix&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopVector&lt;/code&gt;.
-These test classes, just like their corresponding classes in the linear algebra
-library, are abstract - they define tests only for the corresponding interface.&lt;/p&gt;
-
-&lt;p&gt;Child classes of each of these classes implement tests specific to the implementation.
-These classes are concrete, and are used to finally test their respective implementation.
-I’ve ommitted the full structure for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparse&lt;/code&gt; side of the
-inheritance chain to make the diagram more readable below.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn0iLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;See the bottom of this graph - the test driver instantiates an instance of
-each concrete test class and runs all contained tests.&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;mermaid&quot; src=&quot;https://mermaid.ink/svg/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG5UZXN0QmFzZSA8fC0tIFRlc3RIaW9wTWF0cml4XG4lJS1cbmNsYXNzIFRlc3RCYXNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuJSUtXG5UZXN0SGlvcE1hdHJpeCA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VcblRlc3RIaW9wTWF0cml4IDx8LS0gVGVzdEhpb3BNYXRyaXhTcGFyc2VcbiUlLVxuY2xhc3MgVGVzdEhpb3BNYXRyaXgge1xuPDxhYnN0cmFjdD4-XG59XG5jbGFzcyBUZXN0SGlvcE1hdHJpeERlbnNlIHtcbjw8YWJzdHJhY3Q-PlxufVxuY2xhc3MgVGVzdEhpb3BNYXRyaXhTcGFyc2Uge1xuPDxhYnN0cmFjdD4-XG59XG4lJS1cblRlc3RIaW9wTWF0cml4RGVuc2UgPHwtLSBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuVGVzdEhpb3BNYXRyaXhEZW5zZSA8fC0tIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvclxuJSUtXG5jbGFzcyBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZSB7XG48PGNvbmNyZXRlPj5cbn1cbmNsYXNzIFRlc3RIaW9wTWF0cml4RGVuc2VSb3dNYWpvciB7XG48PGNvbmNyZXRlPj5cbn1cbiUlLVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeFJhamFEZW5zZVxuRHJpdmVyIC4uPiBUZXN0SGlvcE1hdHJpeERlbnNlUm93TWFqb3IiLCJtZXJtYWlkIjpudWxsfQ&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;When the driver is ran, every test all the way up the inheritance chain is run
-on each implementation.
-Tests that apply to all &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hiopMatrix&lt;/code&gt; classes are run on an instance of every
-concrete child class:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaDense&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixDenseRowMajor&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixSparseTriplet&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TestHiopMatrixRajaSparseTriplet&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The concrete child classes enumerated above implemented methods specific to the
-implementation that were needed for the test (eg copying memory back and forth
-between host and device when running with CUDA or HIP).
-This strategy saved us an &lt;em&gt;enormous&lt;/em&gt; amount of developer time and lines of code,
-and also ensured that every implementation conforms to every interface it implements.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;As we developed our test suite, we concurrently developed the RAJA
-implementations of each linear algebra class.
-For each method of each linear algebra class, we first wrote a test and then
-ported the core of the method to run in a RAJA kernel.&lt;/p&gt;
-
-&lt;p&gt;Thanks to this strategy, we were able to port the entire optimization engine
-library HiOp to leverage CUDA, and HIP, and OpenMP acceleration platforms with
-a high degree of certainty that our kernels perform correctly.
-HiOp currently only runs in unified virtual memory, and we are actively
-developing the last parts of the optimization routines such that the solver can
-run entirely in device memory.&lt;/p&gt;
-
-&lt;h2&gt; Contact &lt;/h2&gt;
-
-&lt;p&gt;You can reach me at any of the links below:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.youtube.com/c/AsherMancinelli&quot;&gt;YouTube&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://www.linkedin.com/in/asher-mancinelli-bb4a56144/&quot;&gt;LinkedIn&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;https://github.com/ashermancinelli&quot;&gt;GitHub&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a target=&quot;_blank&quot; href=&quot;mailto:ashermancinelli@gmail.com&quot;&gt;Personal Email&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;font size=&quot;-1&quot;&gt;
-  &lt;em&gt;
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  &lt;/em&gt;
-&lt;/font&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/pelesh&quot;&gt;Slaven Peles’s GitHub profile&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/pull/41&quot;&gt;Original PR for HiOp’s polymorphic test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop&quot;&gt;HiOp&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/hiop/tree/master/tests/LinAlg&quot;&gt;HiOp’s current linear algebra test suite&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://github.com/LLNL/sundials/tree/master/test/unit_tests/arkode&quot;&gt;Sundials test suite&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><summary type="html">Design principles apply to your tests more often then you might think!</summary></entry></feed>
+&lt;/ul&gt;</content><author><name></name></author><category term="bqn, c++, cuda, leetcode" /><summary type="html">Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</summary></entry></feed>
