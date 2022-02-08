@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mental Model for Compile-Time Programming – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="
+
+">
+    <meta property="og:description" content="
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Mental Model for Compile-Time Programming">
+    <meta property="twitter:title" content="Mental Model for Compile-Time Programming">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Mental Model for Compile-Time Programming</h1>
+
+  <div class="entry">
+    <script async="" src="https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js"></script>
+
+<p>My mental model for compile-time programming.</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h1 id="compile-time-programming">Compile-Time Programming</h1>
+
+<p>The most powerful and compelling features of modern C++ revolve around compile-time programming in my opinion.</p>
+
+<p>Consider the following code snippet (<a href="https://godbolt.org/z/axj4f4Tz9">godbolt</a>):</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="n">enable_bar</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">bar</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">enable_bar</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">bar</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Let the following graph depict the program above, where blue boxes represent runtime code and arrows depict dependencies.
+This graph is a simplified depiction of the dependencies between elements in the abstract syntax tree of the program.</p>
+
+<center>
+<div class="mermaid">
+graph LR
+    A(Return Value) --&gt; B(bar)
+    B --&gt; C(foo)
+    B --&gt; D(enable_bar)
+    C --&gt; E(value)
+</div>
+</center>
+
+<p>At the end of the day, the program <em>really</em> only depends on <code class="language-plaintext highlighter-rouge">enable_bar</code> and <code class="language-plaintext highlighter-rouge">value</code>, and we know the values of both of these at compile-time.
+There are no runtime dependencies of this program, yet the compiler will still emit runtime instructions (even with <code class="language-plaintext highlighter-rouge">-O3</code>) because it doesn’t know for a fact that the dependencies can be resolved at compile time.</p>
+
+<p>Consider this altered version of the code snippet above (<a href="https://godbolt.org/z/s1Ycahn56">godbolt</a>):</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="n">enable_bar</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+
+<span class="n">consteval</span> <span class="kt">int</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">bar</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">enable_bar</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">constexpr</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">bar</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The graphical depiction of this program may now look like this, with the addition that green boxes represent compile-time code:</p>
+
+<center>
+<div class="mermaid">
+graph LR
+    ret(Return Value) --&gt; B(bar)
+    B --&gt; F(foo)
+    B --&gt; E(enable_bar)
+    F --&gt; V(value)
+
+    style V fill:#66ff99,stroke:#00cc66
+    style F fill:#66ff99,stroke:#00cc66
+</div>
+</center>
+
+<p>The dependency-tree representation of the program now contains several nodes that <em>do not require any runtime instructions</em> because we’ve used the <code class="language-plaintext highlighter-rouge">consteval</code> and <code class="language-plaintext highlighter-rouge">constexpr</code> specifiers to inform the compiler that we know everything we need to know in order to call those functions/use those variables at compile-time.</p>
+
+<p>We can take this further:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">constexpr</span> <span class="kt">bool</span> <span class="n">enable_bar</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+
+<span class="n">consteval</span> <span class="kt">int</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">consteval</span> <span class="kt">int</span> <span class="nf">bar</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="k">constexpr</span> <span class="p">(</span><span class="n">enable_bar</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">constexpr</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">bar</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The graph now looks like this:</p>
+
+<center>
+<div class="mermaid">
+graph LR
+    ret(Return Value) --&gt; B(bar)
+    B --&gt; F(foo)
+    B --&gt; E(enable_bar)
+    F --&gt; V(value)
+
+    style V fill:#66ff99,stroke:#00cc66
+    style F fill:#66ff99,stroke:#00cc66
+    style ret fill:#66ff99,stroke:#00cc66
+    style B fill:#66ff99,stroke:#00cc66
+    style E fill:#66ff99,stroke:#00cc66
+</div>
+</center>
+
+<p>Because we’ve informed the compiler that our code can all be called at compile-time, the instructions emitted by the compiler are now very few; there are only <em>three instructions and one label</em> emitted by the compiler:</p>
+
+<pre><code class="language-assembly">main:
+ mov $0x2c,%eax
+ retq 
+ nopw %cs:0x0(%rax,%rax,1)
+</code></pre>
+
+<p>Of course, the assembly emitted by Compiler Explorer is cleaned up and the true assembly is not three instructions long, but hopefully you get the point.</p>
+
+<p>When you do introduce a runtime dependency into your codebase, it’s helpful to keep this in mind; shift <em>as much</em> of the computation in your program as is (reasonably) possible to compile-time code, and you can potentially remove a <em>huge</em> number of instructions that would otherwise be executed every time you run your program.</p>
+
+<p><br></p>
+
+<p>Compile-time programming is one of the most compelling reasons to adopt the newest possible C++ standard you are able to.
+You’ll notice that in our code snippets, we used the <code class="language-plaintext highlighter-rouge">consteval</code> specifier on our functions <code class="language-plaintext highlighter-rouge">bar</code> and <code class="language-plaintext highlighter-rouge">foo</code>.
+This means the result of the function <em>must</em> be a compile-time constant; or, the node in the syntax tree <em>must</em> be green.</p>
+
+<p>In C++ standards older than C++20, <code class="language-plaintext highlighter-rouge">consteval</code> was not available, and <code class="language-plaintext highlighter-rouge">constexpr</code> was the only option (besides preprocessor code).
+Before C++17, <code class="language-plaintext highlighter-rouge">constexpr</code> was weaker, and could not perform as much work.</p>
+
+<p><code class="language-plaintext highlighter-rouge">constexpr</code> only tells the compiler that <em>it is possible</em> to evaluate the value of the function or variable at compile time, but the compiler is not <em>mandated</em> to do so.
+Assuming we only have <code class="language-plaintext highlighter-rouge">constexpr</code> available to us, our graph could only really look like the following, where orange boxes represent <em>potentially</em> compile-time code:</p>
+
+<center>
+<div class="mermaid">
+graph LR
+    R(Return Value) --&gt; B(bar)
+    B --&gt; F(foo)
+    B --&gt; E(enable_bar)
+    F --&gt; V(value)
+
+    style V fill:#66ff99,stroke:#00cc66
+    style E fill:#66ff99,stroke:#00cc66
+
+    style F fill:#ff9933,stroke:#cc660
+    style R fill:#ff9933,stroke:#cc660
+    style B fill:#ff9933,stroke:#cc660
+</div>
+</center>
+
+<p>Imagine one of your coworkers isn’t as privy to compile-time constructs in C++, and adds a potentially runtime-dependent value into this graph.
+The majority of your code may fall back to runtime code simply because one potentially-runtime value was introduced!</p>
+
+<center>
+<div class="mermaid">
+graph LR
+    R(Return Value) --&gt; B(bar)
+    B --&gt; F(foo)
+    B --&gt; E(enable_bar)
+    F --&gt; V(value)
+    F --&gt; Ba(baz)
+
+    style V fill:#66ff99,stroke:#00cc66
+    style E fill:#66ff99,stroke:#00cc66
+</div>
+</center>
+
+<h1 id="links">Links</h1>
+
+<ul>
+  <li><a href="https://isocpp.org/blog/2013/01/when-does-a-constexpr-function-get-evaluated-at-compile-time-stackoverflow">ISO C++ post: <em>When does a constexpr function get evaluated at compile time?</em></a></li>
+</ul>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+
+  </div>
+
+  <hr>
+
+  <div class="date">
+    Written on Feb 6th, 2022
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
