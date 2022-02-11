@@ -252,13 +252,13 @@ $$
 
 --->
 
-<p>Let <code class="language-plaintext highlighter-rouge">p</code> be the result of the dot product of matrix <code class="language-plaintext highlighter-rouge">M</code> and vector <code class="language-plaintext highlighter-rouge">v</code>.
+<p>Let <code class="language-plaintext highlighter-rouge">p</code> be the result of the dot product of matrix <code class="language-plaintext highlighter-rouge">Mat</code> and vector <code class="language-plaintext highlighter-rouge">v</code>.
 The dot product is calculated like so:</p>
 
 <center>
 $$
 \\
-  p \gets M \cdot v =
+  p \gets Mat \cdot v =
   \left[ {\begin{array}{cc}
     (Mat_{0,0} \cdot v_0) + (Mat_{0,1} \cdot v_1) + (Mat_{0,2} \cdot v_2) \\
     (Mat_{1,0} \cdot v_0) + (Mat_{1,1} \cdot v_1) + (Mat_{1,2} \cdot v_2) \\
@@ -288,11 +288,12 @@ $$
 $$
 </center>
 
-<p>We can now overlay the matrix attained by broadcasting values of <code class="language-plaintext highlighter-rouge">v</code> into columns onto the matrix <code class="language-plaintext highlighter-rouge">Mat</code>, creating a matrix of tuples (or a 3d matrix if you prefer):</p>
+<p>We can now overlay the matrix obtained by broadcasting values of <code class="language-plaintext highlighter-rouge">v</code> into columns onto the matrix <code class="language-plaintext highlighter-rouge">Mat</code>, creating a matrix of tuples (or a 3d matrix if you prefer):</p>
 
 <center>
 $$
 \\
+  tuplespace \gets
   \left[ {\begin{array}{cc}
     (Mat_{0,0}, v_0) &amp; (Mat_{0,1}, v_1) &amp; (Mat_{0,2}, v_2) \\
     (Mat_{1,0}, v_0) &amp; (Mat_{1,1}, v_1) &amp; (Mat_{1,2}, v_2) \\
@@ -311,6 +312,7 @@ The book <a href="https://www.worldcat.org/title/how-to-write-parallel-programs-
 <center>
 $$
 \\
+  tuplespace \gets
   \left[ {\begin{array}{ccc}
     (Mat_{0,0}, v_0) &amp; (Mat_{0,1}, v_1) &amp; (Mat_{0,2}, v_2) \\
     \hline \\
@@ -322,16 +324,17 @@ $$
 $$
 </center>
 
-<p>With units of work yielding indices of the output vector:</p>
+<p>Let <em>tuplespace</em> be the 2 dimensional matrix tuple space given above.
+We then may form a vector with units of work yielding indices of the output vector:</p>
 
 <center>
 $$
 \\
   \left[ {\begin{array}{cccc}
-    w(0) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
-    w(1) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
+    w(0) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
+    w(1) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
     \vdots \\
-    w(M) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
+    w(M) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
   \end{array} } \right]
 \\
 $$
@@ -352,10 +355,12 @@ $$
 $$
 </center>
 
-<p>The algorithm each unit of work performs is called <em>transform-reduce</em>, or sometimes <em>map-reduce</em>.</p>
+<p>Our units of work may independently operate on subsets (rows) of our tuple space.</p>
 
-<p>Although <em>transform-reduce</em> might seem like two algorithms (it kinda is!), it is such a universal operation that it is often considered it’s own algorithm (or it’s at least packaged as its own algorithm in libraries).
-For example, <a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">the Thrust library that ships with NVIDI’a CUDA Toolkit has the <em>transform-reduce</em> algorithm built-in.</a></p>
+<p>The algorithm each unit of work performs is called <em>transform-reduce</em> (or sometimes <em>map-reduce</em>).</p>
+
+<p>Although <em>transform-reduce</em> might seem like two algorithms (it kinda is!), it is such a universal operation that it is often considered it’s own algorithm (or at least it’s packaged as its own algorithm in libraries).
+For example, <a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">the Thrust abstraction library that ships with NVIDIA’s CUDA Toolkit has the <em>transform-reduce</em> algorithm built-in.</a></p>
 
 <p>In this case, we would like to <em>transform</em> our input tuples by multiplying two elements together, and then <em>reduce</em> our input using the sum operator.</p>
 
