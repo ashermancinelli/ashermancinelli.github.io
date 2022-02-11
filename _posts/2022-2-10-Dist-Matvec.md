@@ -480,9 +480,69 @@ This excellent podcast episode from the lead HPC architect at NVIDIA explains th
 
 If our code performs _more work overall_ it is less _efficient_.
 If that additional work means we can perform calculations on multiple threads or additional devices resulting in lower runtime, it is _faster_ and we've increased its _speed_.
-This is the key difference between speed and efficiency: Speed is a factor of _time_ and efficiency is a factor of _work_.
+The key difference between speed and efficiency is this: speed is a factor of _time_ and efficiency is a factor of _work_.
 Sometimes optimizing code means improving speed, other times efficiency.
 Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.
+
+# Running on a GPU
+
+There are many layers of abstraction commonly used in HPC for running code on a GPU.
+The abstractions used in this post will be limited to those shipped with the most recent stable distribution of the NVIDIA CUDA Toolkit at the time of writing (11.5) along with the abstractions recommended by the lead HPC programming models architect at NVIDIA, Bryce Adelstein Lelbach.
+These abstractions are almost entirely _compile-time_ abstractions, which means they incur no runtime cost over the raw C equivilant.
+In particular, we will use the structure template `mdspan`, which is likely going to be a part of standard ISO C++23 and explicitly endorsed by Bryce Adelstein Lelbach.
+<a href="https://youtu.be/KK3JXvSiJG4" target="blank">
+See his talk on standard parallelism here.
+</a>
+
+In our cuda c++ example, we'll use the following types for matrices and vectors:
+```cuda
+#include <mdspan.hpp> // single-header version from github
+namespace stdex = std::experimental;
+using mat_t = stdex::mdspan<
+    double,
+    stdex::extents<3, 3>
+  >;
+using vec_t = stdex::mdspan<
+    double,
+    stdex::extents<3>
+  >;
+```
+
+Our setup is then as follows:
+```cuda
+int main() {
+  double dm[9];
+  const auto m = mat_t(dm);
+  for (int i=0; i < 9; i++) m.data()[i] = i;
+
+  double dv[] = { 2., 2., 2. };
+  const auto v = vec_t(dv);
+
+  double dout[3] = {0};
+  const auto out = vec_t(dout);
+
+  dgemv(m, v, out);
+
+  return 0;
+}
+```
+
+Very similar so far.
+
+Adding a host-only solution works the same way:
+```cuda
+void dgemv(mat_t m, vec_t v, vec_t out) {
+  for (int i=0; i < m.static_extent(0); i++)
+    for (int j=0; j < m.static_extent(1); j++)
+      out(i) += v(j) * m(i, j);
+}
+```
+
+Notice how we can index our matrix as we would expect to: with multidimensional indexing.
+Notice also how we can call `static_extent` on our matrix - this determines the length of our matrix in a given dimension at _compile time_, which means we perform _less work at runtime then in the pure C version_ while getting nicer indexing and extent calculations.
+The compile-time and zero-cost abstractions are significant reasons why developers opt for C++ over C.
+For example, compare <a href="https://godbolt.org/z/ssrnz71hs" target="blank">the assembly in this C example</a> to <a href="https://godbolt.org/z/ra8d6arMf" target="blank"> the assembly in this C++ example.  </a>
+This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU's GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).
 
 <!---
 <center>
@@ -498,7 +558,7 @@ graph TD
 </center>
 --->
 
-# Links and References
+# Links, References, Additional Reading
 
 * <a href="https://godbolt.org/z/45j4hedq8" target="blank"> C dgemv and dgemv on tuplespace example on godbolt </a>
 * <a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">BQN dgemv example</a>
@@ -507,6 +567,7 @@ graph TD
 * <a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&referer=brief_results" target="blank">_How to Write Parallel Programs: A First Course_</a>
 * <a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">Thrust parallel algorithms library</a>
 * <a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a>
+* <a href="https://youtu.be/KK3JXvSiJG4" target="blank"> Bryce Adelstein Lelbach's talk on C++ standard parallelism </a>
 
 
 {% include disclaimer.html %}
