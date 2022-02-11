@@ -230,10 +230,9 @@ I'll then use this in my `shell.nix` to get the path to the dynamic linker, and 
 I've also added `-Wno-unused-command-line-argument` to the compile flags so we're not spammed with warnings every time a link directory or file directory I pass to the compiler invokation is ignored.
 
 We can now finally run our tests.
-Sometimes required binaries are still not found by lit, so I use the check-cxx target to build test dependencies and then I run lit manually:
+Sometimes required binaries are still not found by lit, so I use the `cxx-test-depends` target to build test dependencies and then I run lit manually:
 ```console
-$ # CTRL-C after the testing targets are actaully built
-$ make check-cxx -C build-rt
+$ make cxx-test-depends -C build-rt
 $ ./build/bin/llvm-lit ./libcxx
 ```
 
