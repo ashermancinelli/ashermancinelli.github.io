@@ -1,5 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-10T17:10:57-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">HPC 101: Distributed Matrix-Vector Product</title><link href="/dist-matvec" rel="alternate" type="text/html" title="HPC 101: Distributed Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/Dist-Matvec</id><content type="html" xml:base="/dist-matvec">&lt;p&gt;The backbone of all scientific computing is linear algebra, often distributed and often using acceleration hardware and software such as OpenMP, CUDA, etc.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-10T20:09:14-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">HPC 101: Distributed Matrix-Vector Product</title><link href="/dist-matvec" rel="alternate" type="text/html" title="HPC 101: Distributed Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/Dist-Matvec</id><content type="html" xml:base="/dist-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
+&lt;/script&gt;
+
+&lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;!---
+
+  To use:
+  &lt;div class=&quot;mermaid&quot;&gt;
+    graph LR
+      ...
+  &lt;/div&gt;
+
+  ---&gt;
+
+&lt;p&gt;The backbone of all scientific computing is linear algebra, often distributed and often using acceleration hardware and software such as OpenMP, CUDA, etc.
 This post takes you from basic principles to a multi-node, GPU-accelerated example that calculates a matrix-vector product.&lt;/p&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;
+
+&lt;h1 id=&quot;key-takeaways&quot;&gt;Key Takeaways&lt;/h1&gt;
+
+&lt;p&gt;These are the key takeaways from this post.
+If you don’t read the entire post, at least take these points:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Correctness precedes parallelism or performance&lt;/li&gt;
+  &lt;li&gt;Identify and understand the underlying algorithms at play&lt;/li&gt;
+&lt;/ol&gt;
 
 &lt;h1 id=&quot;ground-work&quot;&gt;Ground Work&lt;/h1&gt;
 
@@ -14,6 +46,7 @@ The operation is depicted below.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://godbolt.org/z/Y54Gqafff&quot; target=&quot;blank&quot;&gt;The code for such a calculation might look like this in C&lt;/a&gt;, assuming you’re not using any BLAS or LAPACK routines:&lt;/p&gt;
 
+&lt;p&gt;&lt;a href=&quot;https://godbolt.org/z/qoG7cebno&quot; target=&quot;blank&quot;&gt;(minimal version here)&lt;/a&gt;&lt;/p&gt;
 &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
   &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -83,7 +116,13 @@ Final vec:
 6.0 24.0 42.0 
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Feel free to verify these results and play around with other values using &lt;a href=&quot;https://keisan.casio.com/exec/system/15052033860538&quot; target=&quot;blank&quot;&gt;online software like this casio calculator website.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Feel free to verify these results and play around with other values using &lt;a href=&quot;https://keisan.casio.com/exec/system/15052033860538&quot; target=&quot;blank&quot;&gt;online software like this CASIO calculator website.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Ensuring that we have a &lt;em&gt;correct&lt;/em&gt; algorithm is a precondition for optimizing and parallelizing an algorithm:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Correctness precedes parallelism or performance&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;p&gt;Now to parallelism: how might we go about parallelizing this algorithm?&lt;/p&gt;
 
@@ -122,8 +161,195 @@ Some collection of values are &lt;em&gt;reduced&lt;/em&gt; or &lt;em&gt;folded&l
 &lt;p&gt;You might be thinking to yourself, &lt;em&gt;we are starting with a collection of values (a matrix) and yet we end up with a collection of values (a vector). How is this a reduction/fold?&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;This is a good question: the reduction is not performed over the entire matrix, but only the &lt;em&gt;rows&lt;/em&gt; of the matrix.
-Each row of the matrix is &lt;em&gt;reduced&lt;/em&gt; into a single value.
-If we can thoroughly understand the underlying algorithms at play, parallelizing the algorithm will become much simpler.&lt;/p&gt;
+Each row of the matrix is &lt;em&gt;reduced&lt;/em&gt; into a single value.&lt;/p&gt;
+
+&lt;!---
+
+For the following definitions:
+
+&lt;center&gt;
+$$
+  \\
+  M \gets   \left[ {\begin{array}{cc}
+    0 &amp; 1 &amp; 2 \\
+    3 &amp; 4 &amp; 5 \\
+    6 &amp; 7 &amp; 8 \\
+  \end{array} } \right] ,
+  v \gets \left[ {\begin{array}{cc} 2 \\ 2 \\ 2  \end{array} } \right]
+  \\
+$$
+&lt;/center&gt;
+
+---&gt;
+
+&lt;p&gt;Let &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;p&lt;/code&gt; be the result of the dot product of matrix &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;M&lt;/code&gt; and vector &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v&lt;/code&gt;.
+The dot product is calculated like so:&lt;/p&gt;
+
+&lt;center&gt;
+$$
+\\
+  p \gets M \cdot v =
+  \left[ {\begin{array}{cc}
+    (Mat_{0,0} \cdot v_0) + (Mat_{0,1} \cdot v_1) + (Mat_{0,2} \cdot v_2) \\
+    (Mat_{1,0} \cdot v_0) + (Mat_{1,1} \cdot v_1) + (Mat_{1,2} \cdot v_2) \\
+    (Mat_{2,0} \cdot v_0) + (Mat_{2,1} \cdot v_1) + (Mat_{2,2} \cdot v_2) \\
+  \end{array} } \right]
+\\
+$$
+&lt;!---
+  =   \left[ {\begin{array}{cc}
+    6 \\ 24 \\ 42
+  \end{array} } \right]
+  ---&gt;
+&lt;/center&gt;
+
+&lt;p&gt;Notice how values of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v&lt;/code&gt; are broadcast to match the shape of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Mat&lt;/code&gt;:&lt;/p&gt;
+
+&lt;center&gt;
+$$
+\\
+  \left[ {\begin{array}{c}
+    v_{0} &amp;amp; v_{1} &amp;amp; \cdots &amp;amp; v_{n}\\
+    v_{0} &amp;amp; v_{1} &amp;amp; \cdots &amp;amp; v_{n}\\
+    \vdots &amp;amp; \vdots &amp;amp; \ddots &amp;amp; \vdots\\
+    v_{0} &amp;amp; v_{1} &amp;amp; \cdots &amp;amp; v_{n}\\
+  \end{array} } \right]
+\\
+$$
+&lt;/center&gt;
+
+&lt;p&gt;We can now overlay the matrix attained by broadcasting values of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;v&lt;/code&gt; into columns onto the matrix &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Mat&lt;/code&gt;, creating a matrix of tuples (or a 3d matrix if you prefer):&lt;/p&gt;
+
+&lt;center&gt;
+$$
+\\
+  \left[ {\begin{array}{cc}
+    (Mat_{0,0}, v_0) &amp;amp; (Mat_{0,1}, v_1) &amp;amp; (Mat_{0,2}, v_2) \\
+    (Mat_{1,0}, v_0) &amp;amp; (Mat_{1,1}, v_1) &amp;amp; (Mat_{1,2}, v_2) \\
+    (Mat_{2,0}, v_0) &amp;amp; (Mat_{2,1}, v_1) &amp;amp; (Mat_{2,2}, v_2) \\
+  \end{array} } \right]
+\\
+$$
+&lt;/center&gt;
+
+&lt;p&gt;This is sometimes called a &lt;em&gt;tuple space&lt;/em&gt;, or the &lt;em&gt;domain&lt;/em&gt; of our algorithm.
+The book &lt;a href=&quot;https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&amp;amp;referer=brief_results&quot; target=&quot;blank&quot;&gt;&lt;em&gt;How to Write Parallel Programs: A First Course&lt;/em&gt;&lt;/a&gt; covers tuple spaces in great detail.&lt;/p&gt;
+
+&lt;p&gt;Now that we have constructed our tuple space, we might group our computations into self-contained units of work along each row.&lt;/p&gt;
+
+&lt;p&gt;Partitioning our tuple space row-wise gives:&lt;/p&gt;
+&lt;center&gt;
+$$
+\\
+  \left[ {\begin{array}{ccc}
+    (Mat_{0,0}, v_0) &amp;amp; (Mat_{0,1}, v_1) &amp;amp; (Mat_{0,2}, v_2) \\
+    \hline \\
+    (Mat_{1,0}, v_0) &amp;amp; (Mat_{1,1}, v_1) &amp;amp; (Mat_{1,2}, v_2) \\
+    \hline \\
+    (Mat_{2,0}, v_0) &amp;amp; (Mat_{2,1}, v_1) &amp;amp; (Mat_{2,2}, v_2) \\
+  \end{array} } \right]
+\\
+$$
+&lt;/center&gt;
+
+&lt;p&gt;With units of work yielding indices of the output vector:&lt;/p&gt;
+
+&lt;center&gt;
+$$
+\\
+  \left[ {\begin{array}{cccc}
+    w(0) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
+    w(1) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
+    \vdots \\
+    w(M) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
+  \end{array} } \right]
+\\
+$$
+&lt;/center&gt;
+
+&lt;p&gt;Equivalently:&lt;/p&gt;
+
+&lt;center&gt;
+$$
+\\
+  \left[ {\begin{array}{cccc}
+    w(0) \gets \sum_{i \gets 0}^{N} Mat_{0,i} \cdot v_{i} \\
+    w(1) \gets \sum_{i \gets 0}^{N} Mat_{1,i} \cdot v_{i} \\
+    \vdots \\
+    w(M) \gets \sum_{i \gets 0}^{N} Mat_{M,i} \cdot v_{i} \\
+  \end{array} } \right]
+\\
+$$
+&lt;/center&gt;
+
+&lt;p&gt;The algorithm each unit of work performs is called &lt;em&gt;transform-reduce&lt;/em&gt;, or sometimes &lt;em&gt;map-reduce&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Although &lt;em&gt;transform-reduce&lt;/em&gt; might seem like two algorithms (it kinda is!), it is such a universal operation that it is often considered it’s own algorithm (or it’s at least packaged as its own algorithm in libraries).
+For example, &lt;a href=&quot;https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html&quot; target=&quot;blank&quot;&gt;the Thrust library that ships with NVIDI’a CUDA Toolkit has the &lt;em&gt;transform-reduce&lt;/em&gt; algorithm built-in.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In this case, we would like to &lt;em&gt;transform&lt;/em&gt; our input tuples by multiplying two elements together, and then &lt;em&gt;reduce&lt;/em&gt; our input using the sum operator.&lt;/p&gt;
+
+&lt;p&gt;In Python, a given unit of work might look like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;functools&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;reduce&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;tuplespace_row0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tupl&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;        &lt;span class=&quot;c1&quot;&gt;# use + to reduce
+&lt;/span&gt;            &lt;span class=&quot;nb&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# use * to transform
+&lt;/span&gt;                &lt;span class=&quot;n&quot;&gt;tupl&lt;/span&gt;                   &lt;span class=&quot;c1&quot;&gt;# input tuple
+&lt;/span&gt;                &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Input to map is mat_row
+# Input to reduce is [0, 2, 4]
+# Final value is 6
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuplespace_row0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# yields 6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The following formula is a more formal definition of a single unit of work in our example:&lt;/p&gt;
+
+&lt;center&gt;
+$$
+\\
+  r \gets current rank \\
+  W_{r} \gets \sum_{i \gets 0}^{N} M_{r,i} \cdot v_{i} \\
+\\
+$$
+&lt;/center&gt;
+
+&lt;p&gt;In the above case, the summation is the &lt;em&gt;reduce&lt;/em&gt; operation, and the multiplication of the matrix elements and vector elements is the &lt;em&gt;transform&lt;/em&gt; operation, applied before the reduction.&lt;/p&gt;
+
+&lt;p&gt;The key insight about this reduction is that no unit of work depends on another unit of work.
+The domains of each unit of work are non-overlapping.
+In other words, this algorithm is &lt;em&gt;loop independent&lt;/em&gt; and can be parallelized along the rows of our tuplespace, again given by:&lt;/p&gt;
+
+&lt;center&gt;
+$$
+\\
+  \left[ {\begin{array}{ccc}
+    (Mat_{0,0}, v_0) &amp;amp; (Mat_{0,1}, v_1) &amp;amp; (Mat_{0,2}, v_2) \\
+    \hline \\
+    (Mat_{1,0}, v_0) &amp;amp; (Mat_{1,1}, v_1) &amp;amp; (Mat_{1,2}, v_2) \\
+    \hline \\
+    (Mat_{2,0}, v_0) &amp;amp; (Mat_{2,1}, v_1) &amp;amp; (Mat_{2,2}, v_2) \\
+  \end{array} } \right]
+\\
+$$
+&lt;/center&gt;
+
+&lt;p&gt;It was by identifying and understanding the underlying algorithms (&lt;em&gt;broadcast&lt;/em&gt; and &lt;em&gt;transform-reduce&lt;/em&gt;) of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dgemv&lt;/code&gt; that we are able to determine if and how the algorithm is parallelizable and loop independent.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Identify and understand the underlying algorithms&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;em&gt;NOTE: Even if your operation seems to be loop dependent, there are sometimes clever tricks you can use to parallelize your code. Perhaps you just haven’t been exposed to the correct algorithm yet!&lt;/em&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -169,9 +395,47 @@ Feel free to skip this section; it is not critical to understanding the concepts
 &lt;img height=&quot;300&quot; src=&quot;/images/hpc-101-matvec/bqn-dgemv-explain.png&quot; alt=&quot;Try BQN explanation of dgemv&quot; /&gt;
 &lt;/center&gt;
 
+&lt;h4 id=&quot;c-example&quot;&gt;C++ Example&lt;/h4&gt;
+
+&lt;p&gt;full version: https://godbolt.org/z/TcGshqj65
+stripped version:&lt;/p&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mdspan&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stdex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extents&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;dgemv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fill_n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;extent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;hr /&gt;
 
-&lt;p&gt;We now hopefully understand that a matrix-vector product is formally &lt;em&gt;an array-extended multiply followed by a series of sum-reductions&lt;/em&gt; we can move on to parallelizing the algorithm.&lt;/p&gt;
+&lt;p&gt;We now hopefully understand that a matrix-vector product is formally &lt;em&gt;a broadcasted multiply followed by a series of sum-reductions&lt;/em&gt;, and can move on to parallelizing the algorithm.&lt;/p&gt;
+
+&lt;h1 id=&quot;parallelizing-dgemv&quot;&gt;Parallelizing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DGEMV&lt;/code&gt;&lt;/h1&gt;
+
+&lt;p&gt;We now know that a given index in our output vector can be computed independently of any other indices in the output vector from the respective row in our tuple space.
+We can now perform the first step in parallelizing our algorithm: performing the same operations on separate data.
+When work is parallelized at the &lt;em&gt;instruction&lt;/em&gt; level, it is called &lt;em&gt;SIMD&lt;/em&gt;, or Same Instruction Multiple Data.&lt;/p&gt;
+
+&lt;p&gt;todo: talk about mpi x-way parallelism&lt;/p&gt;
+
+&lt;!---
+&lt;center&gt;
+&lt;div class=&quot;mermaid&quot;&gt;
+graph TD
+  T(tests) -- &gt; C(correctness)
+  I(initial impl) -- &gt; C
+  C -- &gt; P(perf analysis)
+  P -- &gt; A(algorithm analysis)
+  P -- &gt; CC(code generation)
+  A -- &gt; D(distribution)
+&lt;/div&gt;
+&lt;/center&gt;
+---&gt;
 
 &lt;h1 id=&quot;links-and-references&quot;&gt;Links and References&lt;/h1&gt;
 
@@ -179,7 +443,26 @@ Feel free to skip this section; it is not critical to understanding the concepts
   &lt;li&gt;&lt;a href=&quot;https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK&quot; target=&quot;blank&quot;&gt;BQN dgemv example&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/&quot; target=&quot;blank&quot;&gt;Matrix-Vector Product image&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf&quot; target=&quot;blank&quot;&gt;UT Austin slides on loop-carried dependencies and parallelism&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name></name></author><category term="c, c++, cuda, HPC" /><summary type="html">The backbone of all scientific computing is linear algebra, often distributed and often using acceleration hardware and software such as OpenMP, CUDA, etc. This post takes you from basic principles to a multi-node, GPU-accelerated example that calculates a matrix-vector product.</summary></entry><entry><title type="html">Mental Model for Compile-Time Programming</title><link href="/compile-time-programming" rel="alternate" type="text/html" title="Mental Model for Compile-Time Programming" /><published>2022-02-06T00:00:00-07:00</published><updated>2022-02-06T00:00:00-07:00</updated><id>/Compile-Time-Programming</id><content type="html" xml:base="/compile-time-programming">&lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&amp;amp;referer=brief_results&quot; target=&quot;blank&quot;&gt;&lt;em&gt;How to Write Parallel Programs: A First Course&lt;/em&gt;&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html&quot; target=&quot;blank&quot;&gt;Thrust parallel algorithms library&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;font size=&quot;-1&quot;&gt;
+  &lt;em&gt;
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  &lt;/em&gt;
+&lt;/font&gt;</content><author><name></name></author><category term="c, c++, cuda, HPC" /><summary type="html"></summary></entry><entry><title type="html">Mental Model for Compile-Time Programming</title><link href="/compile-time-programming" rel="alternate" type="text/html" title="Mental Model for Compile-Time Programming" /><published>2022-02-06T00:00:00-07:00</published><updated>2022-02-06T00:00:00-07:00</updated><id>/Compile-Time-Programming</id><content type="html" xml:base="/compile-time-programming">&lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;
+
+&lt;!---
+
+  To use:
+  &lt;div class=&quot;mermaid&quot;&gt;
+    graph LR
+      ...
+  &lt;/div&gt;
+
+  ---&gt;
 
 &lt;p&gt;My mental model for compile-time programming.&lt;/p&gt;
 
