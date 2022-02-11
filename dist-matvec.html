@@ -115,9 +115,7 @@ The operation is depicted below.</p>
 <img src="/images/hpc-101-matvec/matvec.png" alt="Matvec dot product, credit this post: https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/">
 </center>
 
-<p><a href="https://godbolt.org/z/Y54Gqafff" target="blank">The code for such a calculation might look like this in C</a>, assuming you’re not using any BLAS or LAPACK routines:</p>
-
-<p><a href="https://godbolt.org/z/qoG7cebno" target="blank">(minimal version here)</a></p>
+<p><a href="https://godbolt.org/z/45j4hedq8" target="blank">The code for such a calculation might look like this in C</a>, assuming you’re not using any BLAS or LAPACK routines:</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
   <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
   <span class="kt">int</span> <span class="n">M</span><span class="p">;</span>
@@ -538,6 +536,8 @@ $$
       <span class="p">.</span><span class="n">tuples</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">],</span>
       <span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">,</span>
     <span class="p">});</span>
+
+  <span class="n">free</span><span class="p">(</span><span class="n">ts</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
@@ -553,8 +553,9 @@ This excellent podcast episode from the lead HPC architect at NVIDIA explains th
 </a></p>
 
 <p>If our code performs <em>more work overall</em> it is less <em>efficient</em>.
-If that additional work means we can perform calculations on multiple threads or devices resulting in lower runtime, it is <em>faster</em> and we’ve increased its <em>speed</em>.
-This is the key difference between speed and efficiency: sometimes optimizing code means improving speed, other times efficiency.
+If that additional work means we can perform calculations on multiple threads or additional devices resulting in lower runtime, it is <em>faster</em> and we’ve increased its <em>speed</em>.
+This is the key difference between speed and efficiency: Speed is a factor of <em>time</em> and efficiency is a factor of <em>work</em>.
+Sometimes optimizing code means improving speed, other times efficiency.
 Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.</p>
 
 <!---
@@ -574,11 +575,13 @@ graph TD
 <h1 id="links-and-references">Links and References</h1>
 
 <ul>
+  <li><a href="https://godbolt.org/z/45j4hedq8" target="blank"> C dgemv and dgemv on tuplespace example on godbolt </a></li>
   <li><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">BQN dgemv example</a></li>
   <li><a href="https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/" target="blank">Matrix-Vector Product image</a></li>
   <li><a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">UT Austin slides on loop-carried dependencies and parallelism</a></li>
   <li><a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&amp;referer=brief_results" target="blank"><em>How to Write Parallel Programs: A First Course</em></a></li>
   <li><a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">Thrust parallel algorithms library</a></li>
+  <li><a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a></li>
 </ul>
 
 <font size="-1">

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-11T10:19:33-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">HPC 101: Distributed Matrix-Vector Product</title><link href="/dist-matvec" rel="alternate" type="text/html" title="HPC 101: Distributed Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/Dist-Matvec</id><content type="html" xml:base="/dist-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-11T11:31:31-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">HPC 101: Distributed Matrix-Vector Product</title><link href="/dist-matvec" rel="alternate" type="text/html" title="HPC 101: Distributed Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/Dist-Matvec</id><content type="html" xml:base="/dist-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
 &lt;/script&gt;
 
 &lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;
@@ -45,9 +45,7 @@ The operation is depicted below.&lt;/p&gt;
 &lt;img src=&quot;/images/hpc-101-matvec/matvec.png&quot; alt=&quot;Matvec dot product, credit this post: https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/&quot; /&gt;
 &lt;/center&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://godbolt.org/z/Y54Gqafff&quot; target=&quot;blank&quot;&gt;The code for such a calculation might look like this in C&lt;/a&gt;, assuming you’re not using any BLAS or LAPACK routines:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://godbolt.org/z/qoG7cebno&quot; target=&quot;blank&quot;&gt;(minimal version here)&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://godbolt.org/z/45j4hedq8&quot; target=&quot;blank&quot;&gt;The code for such a calculation might look like this in C&lt;/a&gt;, assuming you’re not using any BLAS or LAPACK routines:&lt;/p&gt;
 &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
   &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -467,6 +465,8 @@ $$
       &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tuples&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
       &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;free&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
@@ -482,8 +482,9 @@ This excellent podcast episode from the lead HPC architect at NVIDIA explains th
 &lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;If our code performs &lt;em&gt;more work overall&lt;/em&gt; it is less &lt;em&gt;efficient&lt;/em&gt;.
-If that additional work means we can perform calculations on multiple threads or devices resulting in lower runtime, it is &lt;em&gt;faster&lt;/em&gt; and we’ve increased its &lt;em&gt;speed&lt;/em&gt;.
-This is the key difference between speed and efficiency: sometimes optimizing code means improving speed, other times efficiency.
+If that additional work means we can perform calculations on multiple threads or additional devices resulting in lower runtime, it is &lt;em&gt;faster&lt;/em&gt; and we’ve increased its &lt;em&gt;speed&lt;/em&gt;.
+This is the key difference between speed and efficiency: Speed is a factor of &lt;em&gt;time&lt;/em&gt; and efficiency is a factor of &lt;em&gt;work&lt;/em&gt;.
+Sometimes optimizing code means improving speed, other times efficiency.
 Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.&lt;/p&gt;
 
 &lt;!---
@@ -503,11 +504,13 @@ graph TD
 &lt;h1 id=&quot;links-and-references&quot;&gt;Links and References&lt;/h1&gt;
 
 &lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://godbolt.org/z/45j4hedq8&quot; target=&quot;blank&quot;&gt; C dgemv and dgemv on tuplespace example on godbolt &lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK&quot; target=&quot;blank&quot;&gt;BQN dgemv example&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/&quot; target=&quot;blank&quot;&gt;Matrix-Vector Product image&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf&quot; target=&quot;blank&quot;&gt;UT Austin slides on loop-carried dependencies and parallelism&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&amp;amp;referer=brief_results&quot; target=&quot;blank&quot;&gt;&lt;em&gt;How to Write Parallel Programs: A First Course&lt;/em&gt;&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html&quot; target=&quot;blank&quot;&gt;Thrust parallel algorithms library&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://adspthepodcast.com/2021/11/12/Episode-51.html&quot; target=&quot;blank&quot;&gt; ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
