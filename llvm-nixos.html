@@ -274,9 +274,8 @@ cc-cflags         libc-cflags     libcxx-cxxflags   orig-libc       setup-hook
 <p>I’ve also added <code class="language-plaintext highlighter-rouge">-Wno-unused-command-line-argument</code> to the compile flags so we’re not spammed with warnings every time a link directory or file directory I pass to the compiler invokation is ignored.</p>
 
 <p>We can now finally run our tests.
-Sometimes required binaries are still not found by lit, so I use the check-cxx target to build test dependencies and then I run lit manually:</p>
-<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span><span class="c"># CTRL-C after the testing targets are actaully built</span>
-<span class="gp">$</span><span class="w"> </span>make check-cxx <span class="nt">-C</span> build-rt
+Sometimes required binaries are still not found by lit, so I use the <code class="language-plaintext highlighter-rouge">cxx-test-depends</code> target to build test dependencies and then I run lit manually:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>make cxx-test-depends <span class="nt">-C</span> build-rt
 <span class="gp">$</span><span class="w"> </span>./build/bin/llvm-lit ./libcxx
 </code></pre></div></div>
 
