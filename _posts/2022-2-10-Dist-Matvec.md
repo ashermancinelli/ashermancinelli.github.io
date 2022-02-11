@@ -177,13 +177,13 @@ $$
 
 --->
 
-Let `p` be the result of the dot product of matrix `M` and vector `v`.
+Let `p` be the result of the dot product of matrix `Mat` and vector `v`.
 The dot product is calculated like so:
 
 <center>
 $$
 \\
-  p \gets M \cdot v =
+  p \gets Mat \cdot v =
   \left[ {\begin{array}{cc}
     (Mat_{0,0} \cdot v_0) + (Mat_{0,1} \cdot v_1) + (Mat_{0,2} \cdot v_2) \\
     (Mat_{1,0} \cdot v_0) + (Mat_{1,1} \cdot v_1) + (Mat_{1,2} \cdot v_2) \\
@@ -213,11 +213,12 @@ $$
 $$
 </center>
 
-We can now overlay the matrix attained by broadcasting values of `v` into columns onto the matrix `Mat`, creating a matrix of tuples (or a 3d matrix if you prefer):
+We can now overlay the matrix obtained by broadcasting values of `v` into columns onto the matrix `Mat`, creating a matrix of tuples (or a 3d matrix if you prefer):
 
 <center>
 $$
 \\
+  tuplespace \gets
   \left[ {\begin{array}{cc}
     (Mat_{0,0}, v_0) & (Mat_{0,1}, v_1) & (Mat_{0,2}, v_2) \\
     (Mat_{1,0}, v_0) & (Mat_{1,1}, v_1) & (Mat_{1,2}, v_2) \\
@@ -236,6 +237,7 @@ Partitioning our tuple space row-wise gives:
 <center>
 $$
 \\
+  tuplespace \gets
   \left[ {\begin{array}{ccc}
     (Mat_{0,0}, v_0) & (Mat_{0,1}, v_1) & (Mat_{0,2}, v_2) \\
     \hline \\
@@ -247,16 +249,17 @@ $$
 $$
 </center>
 
-With units of work yielding indices of the output vector:
+Let _tuplespace_ be the 2 dimensional matrix tuple space given above.
+We then may form a vector with units of work yielding indices of the output vector:
 
 <center>
 $$
 \\
   \left[ {\begin{array}{cccc}
-    w(0) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
-    w(1) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
+    w(0) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
+    w(1) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
     \vdots \\
-    w(M) \gets \sum_{i \gets 0}^{N} tuple_{0} \cdot tuple_{1} \\
+    w(M) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
   \end{array} } \right]
 \\
 $$
@@ -277,10 +280,12 @@ $$
 $$
 </center>
 
-The algorithm each unit of work performs is called _transform-reduce_, or sometimes _map-reduce_.
+Our units of work may independently operate on subsets (rows) of our tuple space.
 
-Although _transform-reduce_ might seem like two algorithms (it kinda is!), it is such a universal operation that it is often considered it's own algorithm (or it's at least packaged as its own algorithm in libraries).
-For example, <a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">the Thrust library that ships with NVIDI'a CUDA Toolkit has the _transform-reduce_ algorithm built-in.</a>
+The algorithm each unit of work performs is called _transform-reduce_ (or sometimes _map-reduce_).
+
+Although _transform-reduce_ might seem like two algorithms (it kinda is!), it is such a universal operation that it is often considered it's own algorithm (or at least it's packaged as its own algorithm in libraries).
+For example, <a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">the Thrust abstraction library that ships with NVIDIA's CUDA Toolkit has the _transform-reduce_ algorithm built-in.</a>
 
 In this case, we would like to _transform_ our input tuples by multiplying two elements together, and then _reduce_ our input using the sum operator.
 
