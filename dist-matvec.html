@@ -104,146 +104,34 @@ If you don’t read the entire post, at least take these points:</p>
   <li>Speed is not the same as efficiency</li>
 </ol>
 
-<h1 id="ground-work">Ground Work</h1>
+<p><strong><em>NOTE: This post is geared towards those without significant experience in linear algebra, high performance computing, and GPU programming.</em></strong></p>
 
-<p><em>NOTE: This post assumes you have access to a computing cluster with multiple GPU nodes.</em></p>
+<h1 id="outline">Outline</h1>
+
+<ol>
+  <li>Mathematical Understanding of Algorithm
+    <ol>
+      <li>Short Example in Python</li>
+    </ol>
+  </li>
+  <li>Example in C on Host</li>
+  <li>Example in CUDA C</li>
+  <li>Example in C++ on Host</li>
+  <li>Example in CUDA C++</li>
+  <li>Example in BQN</li>
+  <li>Links, References, Additional Reading</li>
+</ol>
+
+<h1 id="mathematical-understanding-of-algorithm">Mathematical Understanding of Algorithm</h1>
 
 <p>We’ll be performing a matrix-vector dot product several ways in this post.
-The operation is depicted below.</p>
+I may refer to the operation as <code class="language-plaintext highlighter-rouge">dgemv</code> as that’s the official name for a matrix-vector product on data of type <code class="language-plaintext highlighter-rouge">double</code> in the BLAS interface, though we will not make any attempt to make our code conformant with BLAS - it’s just a helpful shorthand.</p>
+
+<p>The operation is depicted below:</p>
 
 <center>
 <img src="/images/hpc-101-matvec/matvec.png" alt="Matvec dot product, credit this post: https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/">
 </center>
-
-<p><a href="https://godbolt.org/z/45j4hedq8" target="blank">The code for such a calculation might look like this in C</a>, assuming you’re not using any BLAS or LAPACK routines:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-  <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">M</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">N</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">mat_t</span><span class="p">;</span>
-
-<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-  <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">vec_t</span><span class="p">;</span>
-
-<span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-
-  <span class="c1">// Ensure the output is all set to zero</span>
-  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
-
-  <span class="c1">// For each column</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-
-    <span class="c1">// For each row</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
-
-      <span class="c1">// Sum the products into the output vector</span>
-      <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)];</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Here’s some example data fed into our matrix vector product:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">mat_t</span> <span class="n">m</span><span class="p">;</span>
-  <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
-  <span class="n">m</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">dm</span><span class="p">;</span>
-  <span class="n">m</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-      <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
-
-  <span class="n">vec_t</span> <span class="n">v</span><span class="p">;</span>
-  <span class="n">v</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.</span> <span class="p">};</span>
-  <span class="n">v</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-
-  <span class="n">vec_t</span> <span class="n">out</span><span class="p">;</span>
-  <span class="n">out</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">};</span>
-  <span class="n">out</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-  
-  <span class="n">dgemv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
-
-  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>The output of this program (with some printing code added in):</p>
-<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">Matrix:
-0.0 1.0 2.0 
-3.0 4.0 5.0 
-6.0 7.0 8.0 
-
-Vector:
-2.0 2.0 2.0 
-
-Final vec:
-6.0 24.0 42.0 
-</span></code></pre></div></div>
-
-<p>Feel free to verify these results and play around with other values using <a href="https://keisan.casio.com/exec/system/15052033860538" target="blank">online software like this CASIO calculator website.</a></p>
-
-<p>demonstrating that we have a <em>correct</em> algorithm with tests is a precondition for optimizing and parallelizing an algorithm:</p>
-
-<blockquote>
-  <p>Testing for correctness precedes parallelism or performance</p>
-</blockquote>
-
-<p>Now to parallelism: how might we go about parallelizing this algorithm?</p>
-
-<p>The first part of the code to analyze is the <em>inner loop</em>, particularly for <em>loop dependence</em>.</p>
-
-<h1 id="algorithm-analysis">Algorithm Analysis</h1>
-
-<p>Let’s return to the body of our <code class="language-plaintext highlighter-rouge">dgemv</code> function:</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
-      <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)];</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>The first question we must ask ourselves is this: <em>are any iterations of this loop dependent on values calculated in other iterations of the loop? Is iteration <code class="language-plaintext highlighter-rouge">N</code> dependent on calculations in iteration <code class="language-plaintext highlighter-rouge">N-1</code>?</em>
-In other words, <em>are the loop bodies entirely</em> <strong><em>independent</em></strong> <em>of each other?</em></p>
-
-<p>If so, our algorithm is <em>loop independent</em> and <em>trivially parallelizable</em>.
-<a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">These slides from a UT Austin lecture</a> are helpful additional reading on this topic.</p>
-
-<h2 id="loop-dependence">Loop Dependence</h2>
-
-<p>Let us return to the core loops in <code class="language-plaintext highlighter-rouge">dgemv</code>:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="c1">// loop A</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="c1">// loop B</span>
-      <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)];</span>
-</code></pre></div></div>
-
-<p>The fundamental algorithm at play here is a <em>reduction</em> or a <em>fold</em>.
-If you see these terms elsewhere in literature, documentation, or algorithms in libraries or programming languages, they almost certainly mean the same thing.
-Some collection of values are <em>reduced</em> or <em>folded</em> into a single value.</p>
-
-<p>You might be thinking to yourself, <em>we are starting with a collection of values (a matrix) and yet we end up with a collection of values (a vector). How is this a reduction/fold?</em></p>
-
-<p>This is a good question: the reduction is not performed over the entire matrix, but only the <em>rows</em> of the matrix.
-Each row of the matrix is <em>reduced</em> into a single value.</p>
-
-<!---
-
-For the following definitions:
-
-<center>
-$$
-  \\
-  M \gets   \left[ {\begin{array}{cc}
-    0 & 1 & 2 \\
-    3 & 4 & 5 \\
-    6 & 7 & 8 \\
-  \end{array} } \right] ,
-  v \gets \left[ {\begin{array}{cc} 2 \\ 2 \\ 2  \end{array} } \right]
-  \\
-$$
-</center>
-
---->
 
 <p>Let <code class="language-plaintext highlighter-rouge">p</code> be the result of the dot product of matrix <code class="language-plaintext highlighter-rouge">Mat</code> and vector <code class="language-plaintext highlighter-rouge">v</code>.
 The dot product is calculated like so:</p>
@@ -251,7 +139,37 @@ The dot product is calculated like so:</p>
 <center>
 $$
 \\
-  p \gets Mat \cdot v =
+  p \gets Mat \cdot v
+
+  \\
+
+  =
+
+  v_0 \cdot
+  \left[ {\begin{array}{c}
+    Mat_{0, 0} \\
+    Mat_{1, 0} \\
+    Mat_{2, 0} \\
+  \end{array} } \right]
+  +
+  v_1 \cdot
+  \left[ {\begin{array}{c}
+    Mat_{0, 1} \\
+    Mat_{1, 1} \\
+    Mat_{2, 1} \\
+  \end{array} } \right]
+  +
+  v_2 \cdot
+  \left[ {\begin{array}{c}
+    Mat_{0, 2} \\
+    Mat_{1, 2} \\
+    Mat_{2, 2} \\
+  \end{array} } \right]
+
+  \\
+
+  =
+
   \left[ {\begin{array}{cc}
     (Mat_{0,0} \cdot v_0) + (Mat_{0,1} \cdot v_1) + (Mat_{0,2} \cdot v_2) \\
     (Mat_{1,0} \cdot v_0) + (Mat_{1,1} \cdot v_1) + (Mat_{1,2} \cdot v_2) \\
@@ -281,7 +199,7 @@ $$
 $$
 </center>
 
-<p>We can now overlay the matrix obtained by broadcasting values of <code class="language-plaintext highlighter-rouge">v</code> into columns onto the matrix <code class="language-plaintext highlighter-rouge">Mat</code>, creating a matrix of tuples (or a 3d matrix if you prefer):</p>
+<p>We can broadcast values of <code class="language-plaintext highlighter-rouge">v</code> into columns of a matrix with the same shape as the matrix <code class="language-plaintext highlighter-rouge">Mat</code>, and then pair the <code class="language-plaintext highlighter-rouge">Mat</code> and <code class="language-plaintext highlighter-rouge">v</code> element-wise, creating a matrix of tuples (or a 3d matrix if you prefer):</p>
 
 <center>
 $$
@@ -350,6 +268,46 @@ $$
 
 <p>Our units of work may independently operate on subsets (rows) of our tuple space.</p>
 
+<p>Now to parallelism: how might we go about parallelizing this algorithm?</p>
+
+<p>The first part of the code to analyze is the <em>inner loop</em>, particularly for <em>loop dependence</em>.</p>
+
+<h1 id="algorithm-analysis">Algorithm Analysis</h1>
+
+<p>The first question we must ask ourselves is this: <em>are any iterations of the algorithm dependent on values calculated in other iterations? Is iteration <code class="language-plaintext highlighter-rouge">N</code> dependent on calculations in iteration <code class="language-plaintext highlighter-rouge">N-1</code>?</em>
+In other words, <em>are the loop bodies entirely</em> <strong><em>independent</em></strong> <em>of each other?</em></p>
+
+<p>If so, our algorithm is <em>loop independent</em> and <em>trivially parallelizable</em>.
+<a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">These slides from a UT Austin lecture</a> are helpful additional reading on this topic.</p>
+
+<p>The fundamental algorithm at play here is a <em>reduction</em> or a <em>fold</em>.
+If you see these terms elsewhere in literature, documentation, or algorithms in libraries or programming languages, they almost certainly mean the same thing.
+Some collection of values are <em>reduced</em> or <em>folded</em> into a single value.</p>
+
+<p>You might be thinking to yourself, <em>we are starting with a collection of values (a matrix) and yet we end up with a collection of values (a vector). How is this a reduction/fold?</em></p>
+
+<p>This is a good question: the reduction is not performed over the entire matrix, but only the <em>rows</em> of the matrix.
+Each row of the matrix is <em>reduced</em> into a single value.</p>
+
+<!---
+
+For the following definitions:
+
+<center>
+$$
+  \\
+  M \gets   \left[ {\begin{array}{cc}
+    0 & 1 & 2 \\
+    3 & 4 & 5 \\
+    6 & 7 & 8 \\
+  \end{array} } \right] ,
+  v \gets \left[ {\begin{array}{cc} 2 \\ 2 \\ 2  \end{array} } \right]
+  \\
+$$
+</center>
+
+--->
+
 <p>The algorithm each unit of work performs is called <em>transform-reduce</em> (or sometimes <em>map-reduce</em>).</p>
 
 <p>Although <em>transform-reduce</em> might seem like two algorithms (it kinda is!), it is such a universal operation that it is often considered it’s own algorithm (or at least it’s packaged as its own algorithm in libraries).
@@ -391,7 +349,7 @@ $$
 $$
 </center>
 
-<p>In the above case, the summation is the <em>reduce</em> operation, and the multiplication of the matrix elements and vector elements is the <em>transform</em> operation, applied before the reduction.</p>
+<p>In the above case, the summation is the <em>reduce</em> operation, and the multiplication of the matrix elements and vector elements is the <em>transform</em> operation, transforming each tuple into a scalar before the reduction.</p>
 
 <p>The key insight about this reduction is that no unit of work depends on another unit of work.
 The domains of each unit of work are non-overlapping.
@@ -411,7 +369,7 @@ $$
 $$
 </center>
 
-<p>It was by identifying and understanding the underlying algorithms (<em>broadcast</em> and <em>transform-reduce</em>) of <code class="language-plaintext highlighter-rouge">dgemv</code> that we are able to determine if and how the algorithm is parallelizable and loop independent.</p>
+<p>It was by identifying and understanding the underlying algorithms (<em>broadcast</em> and <em>transform-reduce</em>) of our higher-level algorithm that we are able to determine if and how it is parallelizable and loop independent.</p>
 
 <blockquote>
   <p>Identify and understand the underlying algorithms</p>
@@ -419,59 +377,85 @@ $$
 
 <p><em>NOTE: Even if your operation seems to be loop dependent, there are sometimes clever tricks you can use to parallelize your code. Perhaps you just haven’t been exposed to the correct algorithm yet!</em></p>
 
-<hr>
+<p>We now hopefully understand that a matrix-vector product is formally <em>a broadcasted multiply followed by a series of sum-reductions</em> and that we can parallelize our algorithm by breaking it up into self-contained units of work.
+We can now move on to implementing and parallelizing the algorithm.</p>
 
-<h5 id="bqn-example">BQN Example</h5>
+<h1 id="c-on-the-host">C on the Host</h1>
 
-<p>I’ll briefly use BQN, a descendent of APL, to look at the fundamental algorithms at play; you don’t have to know an APL in order to understand this, but it might be helpful 😁.
-Feel free to skip this section; it is not critical to understanding the concepts.</p>
+<p><a href="https://godbolt.org/z/KqnfKvc4h" target="blank">The code for such a calculation might look like this in C</a>, assuming you’re not using any BLAS or LAPACK routines:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+  <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">M</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">N</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">mat_t</span><span class="p">;</span>
 
-<p><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">Here’s a permalink to the BQN snippet.</a></p>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+  <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">vec_t</span><span class="p">;</span>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   # Same matrix as in our C example
-   mat ← 3‿3⥊↕10
-┌─       
-╵ 0 1 2  
-  3 4 5  
-  6 7 8  
-        ┘
-   # Same vector as in our C example
-   vec ← 3⥊2
-⟨ 2 2 2 ⟩
+<span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
 
-   +˝⎉1 mat×vec
-⟨ 6 24 42 ⟩
+  <span class="c1">// Ensure the output is all set to zero</span>
+  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
+
+  <span class="c1">// For each column</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+
+    <span class="c1">// For each row</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+
+      <span class="c1">// Sum the products into the output vector</span>
+      <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)];</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>The core algorithm is seen in the final expression:</p>
+<p>Here’s some example data fed into our matrix vector product:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">mat_t</span> <span class="n">m</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+  <span class="n">m</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">dm</span><span class="p">;</span>
+  <span class="n">m</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+˝⎉1 mat×vec
-▲    ▲
-│    │     ┌───────────────────────────┐
-│    └─────┤Multiply rows of mat by vec│
-│          │        element-wise       │
-│          └───────────────────────────┘
-│     ┌─────────────────────────┐
-│     │Sum-reduce rows of matrix│
-└─────┤ resulting from mat×vec  │
-      └─────────────────────────┘
+  <span class="n">vec_t</span> <span class="n">v</span><span class="p">;</span>
+  <span class="n">v</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.</span> <span class="p">};</span>
+  <span class="n">v</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+
+  <span class="n">vec_t</span> <span class="n">out</span><span class="p">;</span>
+  <span class="n">out</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">};</span>
+  <span class="n">out</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  
+  <span class="n">dgemv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
-<p>Alternatively:</p>
+<p>The output of this program (with some printing code added in):</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">Matrix:
+0.0 1.0 2.0 
+3.0 4.0 5.0 
+6.0 7.0 8.0 
 
-<center>
-<img height="300" src="/images/hpc-101-matvec/bqn-dgemv-explain.png" alt="Try BQN explanation of dgemv">
-</center>
+Vector:
+2.0 2.0 2.0 
 
-<hr>
+Final vec:
+6.0 24.0 42.0 
+</span></code></pre></div></div>
 
-<p>We now hopefully understand that a matrix-vector product is formally <em>a broadcasted multiply followed by a series of sum-reductions</em>, and can move on to parallelizing the algorithm.</p>
+<p>Feel free to verify these results and play around with other values using <a href="https://keisan.casio.com/exec/system/15052033860538" target="blank">online software like this CASIO calculator website.</a></p>
 
-<h1 id="parallelizing-dgemv">Parallelizing <code class="language-plaintext highlighter-rouge">DGEMV</code>
-</h1>
+<p>Demonstrating that we have a <em>correct</em> algorithm with tests is a precondition for optimizing and parallelizing an algorithm:</p>
 
-<p>We now know that a given index in our output vector can be computed independently of any other indices in the output vector from the respective row in our tuple space.
-We can now perform the first step in parallelizing our algorithm: pulling out a function that performs a <em>single unit of work</em> as identified above.</p>
+<blockquote>
+  <p>Testing for correctness precedes parallelism and performance</p>
+</blockquote>
+
+<p>We know that a given index in our output vector can be computed independently of any other indices in the output vector from the respective row in our tuple space.
+We can then perform the first step in parallelizing our algorithm: pulling out a function that performs a <em>single unit of work</em> as identified above.</p>
 
 <p>In our C example, we might use the following structs to encapsulate our data:</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
@@ -558,7 +542,11 @@ The key difference between speed and efficiency is this: speed is a factor of <e
 Sometimes optimizing code means improving speed, other times efficiency.
 Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.</p>
 
-<h1 id="running-on-a-gpu">Running on a GPU</h1>
+<h1 id="cuda-c">CUDA C</h1>
+
+<h1 id="c-on-the-host-1">C++ on the Host</h1>
+
+<h1 id="cuda-c-1">CUDA C++</h1>
 
 <p>There are many layers of abstraction commonly used in HPC for running code on a GPU.
 The abstractions used in this post will be limited to those shipped with the most recent stable distribution of the NVIDIA CUDA Toolkit at the time of writing (11.5) along with the abstractions recommended by the lead HPC programming models architect at NVIDIA, Bryce Adelstein Lelbach.
@@ -568,7 +556,7 @@ In particular, we will use the structure template <code class="language-plaintex
 See his talk on standard parallelism here.
 </a></p>
 
-<p>In our cuda c++ example, we’ll use the following types for matrices and vectors:</p>
+<p>In our CUDA C++ example, we’ll use the following types for matrices and vectors:</p>
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;mdspan.hpp&gt; // single-header version from github
 </span><span class="k">namespace</span> <span class="n">stdex</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">experimental</span><span class="p">;</span>
 <span class="k">using</span> <span class="n">mat_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
@@ -585,7 +573,7 @@ See his talk on standard parallelism here.
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">iota</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="o">+</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 
   <span class="kt">double</span> <span class="n">dv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span> <span class="p">};</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dv</span><span class="p">);</span>
@@ -601,7 +589,7 @@ See his talk on standard parallelism here.
 
 <p>Very similar so far.</p>
 
-<p>Adding a host-only solution works the same way:</p>
+<p>If we only compute the solution on the host, everything works the same way.</p>
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
@@ -614,6 +602,71 @@ Notice also how we can call <code class="language-plaintext highlighter-rouge">s
 The compile-time and zero-cost abstractions are significant reasons why developers opt for C++ over C.
 For example, compare <a href="https://godbolt.org/z/ssrnz71hs" target="blank">the assembly in this C example</a> to <a href="https://godbolt.org/z/ra8d6arMf" target="blank"> the assembly in this C++ example.  </a>
 This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU’s GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).</p>
+
+<p>Let’s now compute our <code class="language-plaintext highlighter-rouge">dgemv</code> with the work broken up into isolated units, just as before.</p>
+
+<p>We’ll use the following type aliases:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">stdex</span><span class="o">::</span><span class="n">full_extent</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">stdex</span><span class="o">::</span><span class="n">submdspan</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">tuplespace_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
+    <span class="kt">double</span><span class="p">,</span>
+    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span>
+  <span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">tuplespace_row_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
+    <span class="kt">double</span><span class="p">,</span>
+    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span>
+  <span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The setup for the tuplespace and the units of work also look just about the same:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">double</span> <span class="nf">unit_of_work</span><span class="p">(</span><span class="n">tuplespace_row_t</span> <span class="n">tsr</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tsr</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">sum</span> <span class="o">+=</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">tuplespace_data</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">)];</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">tuplespace_data</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">unit_of_work</span><span class="p">(</span><span class="n">submdspan</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>CUDA C++ version:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">constexpr</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ts_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">tuplespace_data</span><span class="p">[</span><span class="n">ts_size</span><span class="p">];</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">tuplespace_data</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+
+  <span class="kt">double</span> <span class="o">*</span><span class="n">dev_tuplespace_data</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev_tuplespace_data</span><span class="p">,</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">dev_tuplespace_data</span><span class="p">,</span> <span class="n">tuplespace_data</span><span class="p">,</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">dev_ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">dev_tuplespace_data</span><span class="p">);</span>
+
+  <span class="kt">double</span> <span class="o">*</span><span class="n">dev_out_data</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev_out_data</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">dev_out</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dev_out_data</span><span class="p">);</span>
+
+  <span class="n">cu</span><span class="o">::</span><span class="n">unit_of_work</span><span class="o">&lt;&lt;&lt;</span><span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">dev_ts</span><span class="p">,</span> <span class="n">dev_out</span><span class="p">);</span>
+
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">dev_out</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span> <span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <!---
 <center>
@@ -629,6 +682,48 @@ graph TD
 </center>
 --->
 
+<h1 id="bqn-example">BQN Example</h1>
+
+<p>Personally, I use BQN to prototype solutions to problems and to better understand the fundamental algorithms at play; you don’t have to know an APL in order to understand this, but it might be helpful.
+Feel free to skip this section; it is not critical to understanding the concepts.</p>
+
+<p><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">Here’s a permalink to the BQN snippet.</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   # Same matrix as in our C example
+   mat ← 3‿3⥊↕10
+┌─       
+╵ 0 1 2  
+  3 4 5  
+  6 7 8  
+        ┘
+   # Same vector as in our C example
+   vec ← 3⥊2
+⟨ 2 2 2 ⟩
+
+   +˝⎉1 mat×vec
+⟨ 6 24 42 ⟩
+</code></pre></div></div>
+
+<p>The core algorithm is seen in the final expression:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+˝⎉1 mat×vec
+▲    ▲
+│    │     ┌───────────────────────────┐
+│    └─────┤Multiply rows of mat by vec│
+│          │        element-wise       │
+│          └───────────────────────────┘
+│     ┌─────────────────────────┐
+│     │Sum-reduce rows of matrix│
+└─────┤ resulting from mat×vec  │
+      └─────────────────────────┘
+</code></pre></div></div>
+
+<p>Alternatively:</p>
+
+<center>
+<img height="300" src="/images/hpc-101-matvec/bqn-dgemv-explain.png" alt="Try BQN explanation of dgemv">
+</center>
+
 <h1 id="links-references-additional-reading">Links, References, Additional Reading</h1>
 
 <ul>
@@ -640,6 +735,7 @@ graph TD
   <li><a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">Thrust parallel algorithms library</a></li>
   <li><a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a></li>
   <li><a href="https://youtu.be/KK3JXvSiJG4" target="blank"> Bryce Adelstein Lelbach’s talk on C++ standard parallelism </a></li>
+  <li><a href="https://github.com/kokkos/mdspan/blob/single-header/mdspan.hpp" target="blank"> Kokkos <code class="language-plaintext highlighter-rouge">mdspan</code> single header </a></li>
 </ul>
 
 <font size="-1">
