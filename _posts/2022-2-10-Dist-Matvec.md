@@ -463,20 +463,19 @@ Most of the time, to run code on a GPU, you do have to perform more work to set 
 
 # CUDA C
 
-# C++ on the Host
+todo
 
-# CUDA C++
+# C++ on the Host
 
 There are many layers of abstraction commonly used in HPC for running code on a GPU.
 The abstractions used in this post will be limited to those shipped with the most recent stable distribution of the NVIDIA CUDA Toolkit at the time of writing (11.5) along with the abstractions recommended by the lead HPC programming models architect at NVIDIA, Bryce Adelstein Lelbach.
 These abstractions are almost entirely _compile-time_ abstractions, which means they incur no runtime cost over the raw C equivilant.
-In particular, we will use the structure template `mdspan`, which is likely going to be a part of standard ISO C++23 and explicitly endorsed by Bryce Adelstein Lelbach.
-<a href="https://youtu.be/KK3JXvSiJG4" target="blank">
-See his talk on standard parallelism here.
-</a>
+In particular, we will use the structure template `mdspan`, which is likely going to be a part of standard ISO C++23.
+`mdspan` is extremely useful on the host as well, so we'll use it in our C++ host example.
+<a href="https://youtu.be/KK3JXvSiJG4" target="blank"> See Bryce's talk on C++ standard parallelism here.  </a>
 
-In our CUDA C++ example, we'll use the following types for matrices and vectors:
-```cuda
+In our C++ examples, we'll use the following type aliases for matrices and vectors:
+```cpp
 #include <mdspan.hpp> // single-header version from github
 namespace stdex = std::experimental;
 using mat_t = stdex::mdspan<
@@ -490,7 +489,7 @@ using vec_t = stdex::mdspan<
 ```
 
 Our setup is then as follows:
-```cuda
+```cpp
 int main() {
   double dm[9];
   const auto m = mat_t(dm);
@@ -508,9 +507,7 @@ int main() {
 }
 ```
 
-Very similar so far.
-
-If we only compute the solution on the host, everything works the same way.
+If we only compute the solution on the host, everything works the same way:
 ```cuda
 void dgemv(mat_t m, vec_t v, vec_t out) {
   for (int i=0; i < m.static_extent(0); i++)
@@ -527,7 +524,7 @@ This is one reason that most compiler vendors choose to write their compilers in
 
 Let's now compute our `dgemv` with the work broken up into isolated units, just as before.
 
-We'll use the following type aliases:
+We'll use the following additional type aliases:
 ```cpp
 using stdex::full_extent;
 using stdex::submdspan;
@@ -565,8 +562,21 @@ void dgemv_on_tuplespace(mat_t m, vec_t v, vec_t out) {
 }
 ```
 
-CUDA C++ version:
+# CUDA C++
+
 ```cpp
+
+__global__
+void unit_of_work(tuplespace_t ts, vec_t out) {
+  // row of tuplespace, and index in output
+  const auto tid = threadIdx.x;
+  const auto tsr = submdspan(ts, tid, full_extent, full_extent);
+  double sum = 0;
+  for (int i=0; i < tsr.static_extent(0); i++)
+    sum += tsr(i, 0) * tsr(i, 1);
+  out(tid) = sum;
+}
+
 void dgemv_on_tuplespace(mat_t m, vec_t v, vec_t out) {
   constexpr std::size_t ts_size = 2 * m.static_extent(0) * m.static_extent(1);
   double tuplespace_data[ts_size];
@@ -578,17 +588,22 @@ void dgemv_on_tuplespace(mat_t m, vec_t v, vec_t out) {
       ts(i, j, 1) = v(i);
     }
 
+  // Allocate memory for tuplespace on device, copy to device
   double *dev_tuplespace_data = nullptr;
   cudaMalloc(&dev_tuplespace_data, ts_size * sizeof(double));
-  cudaMemcpy(dev_tuplespace_data, tuplespace_data, ts_size * sizeof(double), cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_tuplespace_data, tuplespace_data,
+    ts_size * sizeof(double), cudaMemcpyHostToDevice);
   const auto dev_ts = tuplespace_t(dev_tuplespace_data);
 
+  // Allocate memory for output vector on device
   double *dev_out_data = nullptr;
   cudaMalloc(&dev_out_data, m.static_extent(0) * sizeof(double));
   const auto dev_out = vec_t(dev_out_data);
 
+  // Perform units of work on m.static_extent(0) GPU threads
   cu::unit_of_work<<<m.static_extent(0), 1>>>(dev_ts, dev_out);
 
+  // Copy output vector from device to host
   cudaMemcpy(out.data(), dev_out.data(), ts_size * sizeof(double), cudaMemcpyDeviceToHost);
 }
 ```
