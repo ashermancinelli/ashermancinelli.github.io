@@ -20,7 +20,8 @@ These are the key takeaways from this post.
 If you don't read the entire post, at least take these points:
 
 1. Correctness precedes parallelism and performance
-2. Identify and understand the underlying algorithms at play
+1. Identify and understand the underlying algorithms at play
+1. Speed is not the same as efficiency
 
 # Ground Work
 
@@ -36,9 +37,7 @@ The operation is depicted below.
   >
 </center>
 
-<a href="https://godbolt.org/z/Y54Gqafff" target="blank">The code for such a calculation might look like this in C</a>, assuming you're not using any BLAS or LAPACK routines:
-
-<a href="https://godbolt.org/z/qoG7cebno" target="blank">(minimal version here)</a>
+<a href="https://godbolt.org/z/45j4hedq8" target="blank">The code for such a calculation might look like this in C</a>, assuming you're not using any BLAS or LAPACK routines:
 ```c
 typedef struct {
   double* d;
@@ -48,13 +47,13 @@ typedef struct {
 
 typedef struct {
   double* d;
-  int M;
+  int size;
 } vec_t;
 
 void dgemv(mat_t m, vec_t v, vec_t out) {
 
   // Ensure the output is all set to zero
-  memset(out.d, 0.0, out.M);
+  memset(out.d, 0.0, out.size);
 
   // For each column
   for (int i=0; i < m.M; i++)
@@ -71,27 +70,21 @@ Here's some example data fed into our matrix vector product:
 ```c
 int main() {
   mat_t m;
-  m.d = malloc(sizeof(double[9]));
-  m.M = 3;
-  m.N = 3;
-  for (int i=0; i < 9; i++)
-    m.d[i] = (double)i;
+  double dm[9];
+  m.d = dm;
+  m.M = m.N = 3;
+  for (int i=0; i < m.M*m.N; i++)
+      m.d[i] = (double)i;
 
   vec_t v;
-  v.d = malloc(sizeof(double[3]));
-  v.M = 3;
-  for (int i=0; i < 3; i++)
-    v.d[i] = 2.;
-  
+  v.d = (double[]) { 2., 2., 2. };
+  v.size = 3;
+
   vec_t out;
-  out.d = malloc(sizeof(double[3]));
-  out.M = 3;
-
+  out.d = (double[]) { 0, 0, 0 };
+  out.size = 3;
+  
   dgemv(m, v, out);
-
-  free(m.d);
-  free(v.d);
-  free(out.d);
 
   return 0;
 }
@@ -113,9 +106,9 @@ Final vec:
 
 Feel free to verify these results and play around with other values using <a href="https://keisan.casio.com/exec/system/15052033860538" target="blank">online software like this CASIO calculator website.</a>
 
-Ensuring that we have a _correct_ algorithm is a precondition for optimizing and parallelizing an algorithm:
+demonstrating that we have a _correct_ algorithm with tests is a precondition for optimizing and parallelizing an algorithm:
 
-> Correctness precedes parallelism or performance
+> Testing for correctness precedes parallelism or performance
 
 Now to parallelism: how might we go about parallelizing this algorithm?
 
@@ -127,7 +120,7 @@ Let's return to the body of our `dgemv` function:
 
 ```c
 void dgemv(mat_t m, vec_t v, vec_t out) {
-  memset(out.d, 0.0, out.M);
+  memset(out.d, 0.0, out.size);
   for (int i=0; i < m.M; i++)
     for (int j=0; j < m.N; j++)
       out.d[i] += v.d[j] * m.d[j+(i*m.N)];
@@ -396,23 +389,6 @@ Alternatively:
 <img height=300 src="/images/hpc-101-matvec/bqn-dgemv-explain.png" alt="Try BQN explanation of dgemv"/>
 </center>
 
-#### C++ Example
-
-full version: https://godbolt.org/z/TcGshqj65
-stripped version: 
-
-```cpp
-typedef std::span<double, 3> vec_t;
-typedef stdex::mdspan<double, stdex::extents<3, 3>> mat_t;
-
-void dgemv(mat_t m, vec_t v, vec_t out) {
-  std::fill_n(out.data(), out.size(), 0);
-  for (int i=0; i < m.extent(0); i++)
-    for (int j=0; j < m.extent(1); j++)
-      out[i] += v[j] * m(i, j);
-}
-```
-
 <hr>
 
 We now hopefully understand that a matrix-vector product is formally _a broadcasted multiply followed by a series of sum-reductions_, and can move on to parallelizing the algorithm.
@@ -420,10 +396,93 @@ We now hopefully understand that a matrix-vector product is formally _a broadcas
 # Parallelizing `DGEMV`
 
 We now know that a given index in our output vector can be computed independently of any other indices in the output vector from the respective row in our tuple space.
-We can now perform the first step in parallelizing our algorithm: performing the same operations on separate data.
-When work is parallelized at the _instruction_ level, it is called _SIMD_, or Same Instruction Multiple Data.
+We can now perform the first step in parallelizing our algorithm: pulling out a function that performs a _single unit of work_ as identified above.
 
-todo: talk about mpi x-way parallelism
+In our C example, we might use the following structs to encapsulate our data:
+```c
+typedef struct {
+    double matval;
+    double vecval;
+} tuple_t;
+
+typedef struct {
+    tuple_t* tuples;
+    int size;
+} tuplespace_t;
+```
+
+A struct of type `tuplespace_t` may then hold the domain of a single unit of work.
+This is important as we start to parallelize our code: the domain of a unit of work may need to be sent over the network to another computer entirely if we distribute our computation (say with MPI), or it may need to be copied to another component of the current machine if we are to use a GPU.
+
+Our single unit of work then takes a `tuplespace_t` struct and returns a `double`, which is the value of the output vector at a given index:
+
+```c
+double unit_of_work(tuplespace_t ts) {
+  double sum = 0;
+  for (int i=0; i < ts.size; i++)
+    sum += ts.tuples[i].matval * ts.tuples[i].vecval;
+  return sum;
+}
+```
+
+Compare this now with the single unit of work we described above:
+<center>
+$$
+\\
+w(row) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
+\\
+$$
+</center>
+
+Our `dgemv` function now must first construct the tuplespace before passing a segment of the tuplespace to the single unit of work:
+```c
+void dgemv_on_tuplespace(mat_t m, vec_t v, vec_t out) {
+  // allocate memory for our tuplespace
+  // one tuple per entry in the matrix
+  tuple_t* ts = malloc(sizeof(tuple_t[m.M*m.N]));
+
+  // set up tuplespace
+
+  // for each row in matrix
+  for (int i=0; i < m.M; i++)
+
+    // for each column in matrix
+    for (int j=0; j < m.N; j++)
+
+      // elements of vector are broadcast to columns of matrix
+      ts[j+(i*m.N)] = (tuple_t) {
+        .matval = m.d[j+(i*m.N)],
+        .vecval = v.d[i]
+      };
+
+  // dispatch calculations to unit_of_work for each row of mat
+  for (int i=0; i < m.M; i++)
+
+    // element in output vector is determined by passing a row of tuplespace
+    // into our unit of work
+    out.d[i] = unit_of_work((tuplespace_t) {
+      .tuples = &ts[i*m.N],
+      .size = m.N,
+    });
+
+  free(ts);
+}
+```
+
+You might have noticed that our new algorithm has significantly more code than our original implementation.
+This is okay, and it gets at an important point:
+
+> Speed is not the same as efficiency
+
+<a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank">
+This excellent podcast episode from the lead HPC architect at NVIDIA explains this point in detail.
+</a>
+
+If our code performs _more work overall_ it is less _efficient_.
+If that additional work means we can perform calculations on multiple threads or additional devices resulting in lower runtime, it is _faster_ and we've increased its _speed_.
+This is the key difference between speed and efficiency: Speed is a factor of _time_ and efficiency is a factor of _work_.
+Sometimes optimizing code means improving speed, other times efficiency.
+Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.
 
 <!---
 <center>
@@ -441,11 +500,13 @@ graph TD
 
 # Links and References
 
+* <a href="https://godbolt.org/z/45j4hedq8" target="blank"> C dgemv and dgemv on tuplespace example on godbolt </a>
 * <a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">BQN dgemv example</a>
 * <a href="https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/" target="blank">Matrix-Vector Product image</a>
 * <a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">UT Austin slides on loop-carried dependencies and parallelism</a>
 * <a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&referer=brief_results" target="blank">_How to Write Parallel Programs: A First Course_</a>
 * <a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">Thrust parallel algorithms library</a>
+* <a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a>
 
 
 {% include disclaimer.html %}
