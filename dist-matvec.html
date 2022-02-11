@@ -554,9 +554,66 @@ This excellent podcast episode from the lead HPC architect at NVIDIA explains th
 
 <p>If our code performs <em>more work overall</em> it is less <em>efficient</em>.
 If that additional work means we can perform calculations on multiple threads or additional devices resulting in lower runtime, it is <em>faster</em> and we’ve increased its <em>speed</em>.
-This is the key difference between speed and efficiency: Speed is a factor of <em>time</em> and efficiency is a factor of <em>work</em>.
+The key difference between speed and efficiency is this: speed is a factor of <em>time</em> and efficiency is a factor of <em>work</em>.
 Sometimes optimizing code means improving speed, other times efficiency.
 Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.</p>
+
+<h1 id="running-on-a-gpu">Running on a GPU</h1>
+
+<p>There are many layers of abstraction commonly used in HPC for running code on a GPU.
+The abstractions used in this post will be limited to those shipped with the most recent stable distribution of the NVIDIA CUDA Toolkit at the time of writing (11.5) along with the abstractions recommended by the lead HPC programming models architect at NVIDIA, Bryce Adelstein Lelbach.
+These abstractions are almost entirely <em>compile-time</em> abstractions, which means they incur no runtime cost over the raw C equivilant.
+In particular, we will use the structure template <code class="language-plaintext highlighter-rouge">mdspan</code>, which is likely going to be a part of standard ISO C++23 and explicitly endorsed by Bryce Adelstein Lelbach.
+<a href="https://youtu.be/KK3JXvSiJG4" target="blank">
+See his talk on standard parallelism here.
+</a></p>
+
+<p>In our cuda c++ example, we’ll use the following types for matrices and vectors:</p>
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;mdspan.hpp&gt; // single-header version from github
+</span><span class="k">namespace</span> <span class="n">stdex</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">experimental</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">mat_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
+    <span class="kt">double</span><span class="p">,</span>
+    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span>
+  <span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">vec_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
+    <span class="kt">double</span><span class="p">,</span>
+    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span>
+  <span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Our setup is then as follows:</p>
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="kt">double</span> <span class="n">dv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span> <span class="p">};</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dv</span><span class="p">);</span>
+
+  <span class="kt">double</span> <span class="n">dout</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">out</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dout</span><span class="p">);</span>
+
+  <span class="n">dgemv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Very similar so far.</p>
+
+<p>Adding a host-only solution works the same way:</p>
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+=</span> <span class="n">v</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Notice how we can index our matrix as we would expect to: with multidimensional indexing.
+Notice also how we can call <code class="language-plaintext highlighter-rouge">static_extent</code> on our matrix - this determines the length of our matrix in a given dimension at <em>compile time</em>, which means we perform <em>less work at runtime then in the pure C version</em> while getting nicer indexing and extent calculations.
+The compile-time and zero-cost abstractions are significant reasons why developers opt for C++ over C.
+For example, compare <a href="https://godbolt.org/z/ssrnz71hs" target="blank">the assembly in this C example</a> to <a href="https://godbolt.org/z/ra8d6arMf" target="blank"> the assembly in this C++ example.  </a>
+This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU’s GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).</p>
 
 <!---
 <center>
@@ -572,7 +629,7 @@ graph TD
 </center>
 --->
 
-<h1 id="links-and-references">Links and References</h1>
+<h1 id="links-references-additional-reading">Links, References, Additional Reading</h1>
 
 <ul>
   <li><a href="https://godbolt.org/z/45j4hedq8" target="blank"> C dgemv and dgemv on tuplespace example on godbolt </a></li>
@@ -582,6 +639,7 @@ graph TD
   <li><a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&amp;referer=brief_results" target="blank"><em>How to Write Parallel Programs: A First Course</em></a></li>
   <li><a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">Thrust parallel algorithms library</a></li>
   <li><a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a></li>
+  <li><a href="https://youtu.be/KK3JXvSiJG4" target="blank"> Bryce Adelstein Lelbach’s talk on C++ standard parallelism </a></li>
 </ul>
 
 <font size="-1">
