@@ -19,7 +19,7 @@ This post takes you from basic principles to a multi-node, GPU-accelerated examp
 These are the key takeaways from this post.
 If you don't read the entire post, at least take these points:
 
-1. Correctness precedes parallelism or performance
+1. Correctness precedes parallelism and performance
 2. Identify and understand the underlying algorithms at play
 
 # Ground Work
