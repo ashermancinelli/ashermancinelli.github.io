@@ -544,20 +544,19 @@ Most of the time, to run code on a GPU, you do have to perform more work to set 
 
 <h1 id="cuda-c">CUDA C</h1>
 
-<h1 id="c-on-the-host-1">C++ on the Host</h1>
+<p>todo</p>
 
-<h1 id="cuda-c-1">CUDA C++</h1>
+<h1 id="c-on-the-host-1">C++ on the Host</h1>
 
 <p>There are many layers of abstraction commonly used in HPC for running code on a GPU.
 The abstractions used in this post will be limited to those shipped with the most recent stable distribution of the NVIDIA CUDA Toolkit at the time of writing (11.5) along with the abstractions recommended by the lead HPC programming models architect at NVIDIA, Bryce Adelstein Lelbach.
 These abstractions are almost entirely <em>compile-time</em> abstractions, which means they incur no runtime cost over the raw C equivilant.
-In particular, we will use the structure template <code class="language-plaintext highlighter-rouge">mdspan</code>, which is likely going to be a part of standard ISO C++23 and explicitly endorsed by Bryce Adelstein Lelbach.
-<a href="https://youtu.be/KK3JXvSiJG4" target="blank">
-See his talk on standard parallelism here.
-</a></p>
+In particular, we will use the structure template <code class="language-plaintext highlighter-rouge">mdspan</code>, which is likely going to be a part of standard ISO C++23.
+<code class="language-plaintext highlighter-rouge">mdspan</code> is extremely useful on the host as well, so we’ll use it in our C++ host example.
+<a href="https://youtu.be/KK3JXvSiJG4" target="blank"> See Bryce’s talk on C++ standard parallelism here.  </a></p>
 
-<p>In our CUDA C++ example, we’ll use the following types for matrices and vectors:</p>
-<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;mdspan.hpp&gt; // single-header version from github
+<p>In our C++ examples, we’ll use the following type aliases for matrices and vectors:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;mdspan.hpp&gt; // single-header version from github
 </span><span class="k">namespace</span> <span class="n">stdex</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">experimental</span><span class="p">;</span>
 <span class="k">using</span> <span class="n">mat_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
     <span class="kt">double</span><span class="p">,</span>
@@ -570,7 +569,7 @@ See his talk on standard parallelism here.
 </code></pre></div></div>
 
 <p>Our setup is then as follows:</p>
-<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
   <span class="n">std</span><span class="o">::</span><span class="n">iota</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="o">+</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
@@ -587,9 +586,7 @@ See his talk on standard parallelism here.
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Very similar so far.</p>
-
-<p>If we only compute the solution on the host, everything works the same way.</p>
+<p>If we only compute the solution on the host, everything works the same way:</p>
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
@@ -605,7 +602,7 @@ This is one reason that most compiler vendors choose to write their compilers in
 
 <p>Let’s now compute our <code class="language-plaintext highlighter-rouge">dgemv</code> with the work broken up into isolated units, just as before.</p>
 
-<p>We’ll use the following type aliases:</p>
+<p>We’ll use the following additional type aliases:</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">stdex</span><span class="o">::</span><span class="n">full_extent</span><span class="p">;</span>
 <span class="k">using</span> <span class="n">stdex</span><span class="o">::</span><span class="n">submdspan</span><span class="p">;</span>
 <span class="k">using</span> <span class="n">tuplespace_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
@@ -641,8 +638,21 @@ This is one reason that most compiler vendors choose to write their compilers in
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>CUDA C++ version:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+<h1 id="cuda-c-1">CUDA C++</h1>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="n">__global__</span>
+<span class="kt">void</span> <span class="nf">unit_of_work</span><span class="p">(</span><span class="n">tuplespace_t</span> <span class="n">ts</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// row of tuplespace, and index in output</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">tid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">tsr</span> <span class="o">=</span> <span class="n">submdspan</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tid</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tsr</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">sum</span> <span class="o">+=</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">out</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">constexpr</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ts_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="kt">double</span> <span class="n">tuplespace_data</span><span class="p">[</span><span class="n">ts_size</span><span class="p">];</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">tuplespace_data</span><span class="p">);</span>
@@ -653,17 +663,22 @@ This is one reason that most compiler vendors choose to write their compilers in
       <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
     <span class="p">}</span>
 
+  <span class="c1">// Allocate memory for tuplespace on device, copy to device</span>
   <span class="kt">double</span> <span class="o">*</span><span class="n">dev_tuplespace_data</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
   <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev_tuplespace_data</span><span class="p">,</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
-  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">dev_tuplespace_data</span><span class="p">,</span> <span class="n">tuplespace_data</span><span class="p">,</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">dev_tuplespace_data</span><span class="p">,</span> <span class="n">tuplespace_data</span><span class="p">,</span>
+    <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">dev_ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">dev_tuplespace_data</span><span class="p">);</span>
 
+  <span class="c1">// Allocate memory for output vector on device</span>
   <span class="kt">double</span> <span class="o">*</span><span class="n">dev_out_data</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
   <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev_out_data</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">dev_out</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dev_out_data</span><span class="p">);</span>
 
+  <span class="c1">// Perform units of work on m.static_extent(0) GPU threads</span>
   <span class="n">cu</span><span class="o">::</span><span class="n">unit_of_work</span><span class="o">&lt;&lt;&lt;</span><span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">dev_ts</span><span class="p">,</span> <span class="n">dev_out</span><span class="p">);</span>
 
+  <span class="c1">// Copy output vector from device to host</span>
   <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">dev_out</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span> <span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div></div>
