@@ -6,7 +6,7 @@ category: c++
 wip: true
 ---
 
-<script async src="https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js"></script>
+{% include mermaid.html %}
 
 My mental model for compile-time programming.
 
