@@ -101,6 +101,7 @@ If you don’t read the entire post, at least take these points:</p>
 <ol>
   <li>Correctness precedes parallelism and performance</li>
   <li>Identify and understand the underlying algorithms at play</li>
+  <li>Speed is not the same as efficiency</li>
 </ol>
 
 <h1 id="ground-work">Ground Work</h1>
@@ -125,13 +126,13 @@ The operation is depicted below.</p>
 
 <span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
   <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">M</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">vec_t</span><span class="p">;</span>
 
 <span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
 
   <span class="c1">// Ensure the output is all set to zero</span>
-  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">M</span><span class="p">);</span>
+  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
 
   <span class="c1">// For each column</span>
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
@@ -147,27 +148,21 @@ The operation is depicted below.</p>
 <p>Here’s some example data fed into our matrix vector product:</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">mat_t</span> <span class="n">m</span><span class="p">;</span>
-  <span class="n">m</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">[</span><span class="mi">9</span><span class="p">]));</span>
-  <span class="n">m</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-  <span class="n">m</span><span class="p">.</span><span class="n">N</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+  <span class="n">m</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">dm</span><span class="p">;</span>
+  <span class="n">m</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
 
   <span class="n">vec_t</span> <span class="n">v</span><span class="p">;</span>
-  <span class="n">v</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">[</span><span class="mi">3</span><span class="p">]));</span>
-  <span class="n">v</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">.;</span>
-  
+  <span class="n">v</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.</span> <span class="p">};</span>
+  <span class="n">v</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+
   <span class="n">vec_t</span> <span class="n">out</span><span class="p">;</span>
-  <span class="n">out</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">[</span><span class="mi">3</span><span class="p">]));</span>
-  <span class="n">out</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-
+  <span class="n">out</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">};</span>
+  <span class="n">out</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  
   <span class="n">dgemv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
-
-  <span class="n">free</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">);</span>
-  <span class="n">free</span><span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">);</span>
-  <span class="n">free</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">);</span>
 
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
@@ -188,10 +183,10 @@ Final vec:
 
 <p>Feel free to verify these results and play around with other values using <a href="https://keisan.casio.com/exec/system/15052033860538" target="blank">online software like this CASIO calculator website.</a></p>
 
-<p>Ensuring that we have a <em>correct</em> algorithm is a precondition for optimizing and parallelizing an algorithm:</p>
+<p>demonstrating that we have a <em>correct</em> algorithm with tests is a precondition for optimizing and parallelizing an algorithm:</p>
 
 <blockquote>
-  <p>Correctness precedes parallelism or performance</p>
+  <p>Testing for correctness precedes parallelism or performance</p>
 </blockquote>
 
 <p>Now to parallelism: how might we go about parallelizing this algorithm?</p>
@@ -203,7 +198,7 @@ Final vec:
 <p>Let’s return to the body of our <code class="language-plaintext highlighter-rouge">dgemv</code> function:</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">M</span><span class="p">);</span>
+  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
       <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)];</span>
@@ -470,22 +465,6 @@ Feel free to skip this section; it is not critical to understanding the concepts
 <img height="300" src="/images/hpc-101-matvec/bqn-dgemv-explain.png" alt="Try BQN explanation of dgemv">
 </center>
 
-<h4 id="c-example">C++ Example</h4>
-
-<p>full version: https://godbolt.org/z/TcGshqj65
-stripped version:</p>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span> <span class="n">vec_t</span><span class="p">;</span>
-<span class="k">typedef</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;&gt;</span> <span class="n">mat_t</span><span class="p">;</span>
-
-<span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">fill_n</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">out</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
-      <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
 <hr>
 
 <p>We now hopefully understand that a matrix-vector product is formally <em>a broadcasted multiply followed by a series of sum-reductions</em>, and can move on to parallelizing the algorithm.</p>
@@ -494,10 +473,89 @@ stripped version:</p>
 </h1>
 
 <p>We now know that a given index in our output vector can be computed independently of any other indices in the output vector from the respective row in our tuple space.
-We can now perform the first step in parallelizing our algorithm: performing the same operations on separate data.
-When work is parallelized at the <em>instruction</em> level, it is called <em>SIMD</em>, or Same Instruction Multiple Data.</p>
+We can now perform the first step in parallelizing our algorithm: pulling out a function that performs a <em>single unit of work</em> as identified above.</p>
 
-<p>todo: talk about mpi x-way parallelism</p>
+<p>In our C example, we might use the following structs to encapsulate our data:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">double</span> <span class="n">matval</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">vecval</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">tuple_t</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">tuple_t</span><span class="o">*</span> <span class="n">tuples</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">tuplespace_t</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>A struct of type <code class="language-plaintext highlighter-rouge">tuplespace_t</code> may then hold the domain of a single unit of work.
+This is important as we start to parallelize our code: the domain of a unit of work may need to be sent over the network to another computer entirely if we distribute our computation (say with MPI), or it may need to be copied to another component of the current machine if we are to use a GPU.</p>
+
+<p>Our single unit of work then takes a <code class="language-plaintext highlighter-rouge">tuplespace_t</code> struct and returns a <code class="language-plaintext highlighter-rouge">double</code>, which is the value of the output vector at a given index:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">double</span> <span class="nf">unit_of_work</span><span class="p">(</span><span class="n">tuplespace_t</span> <span class="n">ts</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">double</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ts</span><span class="p">.</span><span class="n">size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">sum</span> <span class="o">+=</span> <span class="n">ts</span><span class="p">.</span><span class="n">tuples</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">matval</span> <span class="o">*</span> <span class="n">ts</span><span class="p">.</span><span class="n">tuples</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">vecval</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Compare this now with the single unit of work we described above:</p>
+<center>
+$$
+\\
+w(row) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
+\\
+$$
+</center>
+
+<p>Our <code class="language-plaintext highlighter-rouge">dgemv</code> function now must first construct the tuplespace before passing a segment of the tuplespace to the single unit of work:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// allocate memory for our tuplespace</span>
+  <span class="c1">// one tuple per entry in the matrix</span>
+  <span class="n">tuple_t</span><span class="o">*</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">tuple_t</span><span class="p">[</span><span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">]));</span>
+
+  <span class="c1">// set up tuplespace</span>
+
+  <span class="c1">// for each row in matrix</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+
+    <span class="c1">// for each column in matrix</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+
+      <span class="c1">// elements of vector are broadcast to columns of matrix</span>
+      <span class="n">ts</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tuple_t</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">.</span><span class="n">matval</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)],</span>
+        <span class="p">.</span><span class="n">vecval</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+      <span class="p">};</span>
+
+  <span class="c1">// dispatch calculations to unit_of_work for each row of mat</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+
+    <span class="c1">// element in output vector is determined by passing a row of tuplespace</span>
+    <span class="c1">// into our unit of work</span>
+    <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit_of_work</span><span class="p">((</span><span class="n">tuplespace_t</span><span class="p">)</span> <span class="p">{</span>
+      <span class="p">.</span><span class="n">tuples</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">],</span>
+      <span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">,</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You might have noticed that our new algorithm has significantly more code than our original implementation.
+This is okay, and it gets at an important point:</p>
+
+<blockquote>
+  <p>Speed is not the same as efficiency</p>
+</blockquote>
+
+<p><a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank">
+This excellent podcast episode from the lead HPC architect at NVIDIA explains this point in detail.
+</a></p>
+
+<p>If our code performs <em>more work overall</em> it is less <em>efficient</em>.
+If that additional work means we can perform calculations on multiple threads or devices resulting in lower runtime, it is <em>faster</em> and we’ve increased its <em>speed</em>.
+This is the key difference between speed and efficiency: sometimes optimizing code means improving speed, other times efficiency.
+Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.</p>
 
 <!---
 <center>
