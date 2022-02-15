@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HPC 101: Distributed Matrix-Vector Product – Asher Mancinelli – HPC Software Development</title>
+    <title>HPC 101: Matrix-Vector Product – Asher Mancinelli – HPC Software Development</title>
 
         <meta charset="utf-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -27,8 +27,8 @@
     <meta name="author" content="Asher Mancinelli">
 
     
-    <meta property="og:title" content="HPC 101: Distributed Matrix-Vector Product">
-    <meta property="twitter:title" content="HPC 101: Distributed Matrix-Vector Product">
+    <meta property="og:title" content="HPC 101: Matrix-Vector Product">
+    <meta property="twitter:title" content="HPC 101: Matrix-Vector Product">
     
 
     <link rel="icon" href="/images/chip.png">
@@ -65,7 +65,7 @@
 
     <div id="main" role="main" class="container">
       <article class="post">
-  <h1>HPC 101: Distributed Matrix-Vector Product</h1>
+  <h1>HPC 101: Matrix-Vector Product</h1>
 
   <div class="entry">
     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript">
@@ -84,7 +84,7 @@
   --->
 
 <p>The backbone of all scientific computing is linear algebra, often distributed and often using acceleration hardware and software such as OpenMP, CUDA, etc.
-This post takes you from basic principles to a multi-node, GPU-accelerated example that calculates a matrix-vector product.</p>
+This post takes you from a basic example problem to a GPU-accelerated example that calculates a matrix-vector product.</p>
 
 <font size="-1">
   <em>
@@ -116,7 +116,6 @@ If you don’t read the entire post, at least take these points:</p>
   </li>
   <li>Example in C on Host</li>
   <li>Example in CUDA C</li>
-  <li>Example in C++ on Host</li>
   <li>Example in CUDA C++</li>
   <li>Example in BQN</li>
   <li>Links, References, Additional Reading</li>
@@ -242,10 +241,10 @@ We then may form a vector with units of work yielding indices of the output vect
 $$
 \\
   \left[ {\begin{array}{cccc}
-    w(0) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
-    w(1) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
+    w(0) \gets \sum_{i \gets 0}^{N} tuplespace_{0, i, 0} \cdot tuplespace_{0, i, 1} \\
+    w(1) \gets \sum_{i \gets 0}^{N} tuplespace_{1, i, 0} \cdot tuplespace_{1, i, 1} \\
     \vdots \\
-    w(M) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
+    w(M) \gets \sum_{i \gets 0}^{N} tuplespace_{M, i, 0} \cdot tuplespace_{M, i, 1} \\
   \end{array} } \right]
 \\
 $$
@@ -268,17 +267,13 @@ $$
 
 <p>Our units of work may independently operate on subsets (rows) of our tuple space.</p>
 
-<p>Now to parallelism: how might we go about parallelizing this algorithm?</p>
-
-<p>The first part of the code to analyze is the <em>inner loop</em>, particularly for <em>loop dependence</em>.</p>
-
 <h1 id="algorithm-analysis">Algorithm Analysis</h1>
 
-<p>The first question we must ask ourselves is this: <em>are any iterations of the algorithm dependent on values calculated in other iterations? Is iteration <code class="language-plaintext highlighter-rouge">N</code> dependent on calculations in iteration <code class="language-plaintext highlighter-rouge">N-1</code>?</em>
+<p>The first question we must ask ourselves when parallelizing code is this: <em>are any iterations of the algorithm dependent on values calculated in other iterations? Is iteration <code class="language-plaintext highlighter-rouge">N</code> dependent on calculations in iteration <code class="language-plaintext highlighter-rouge">N-1</code>?</em>
 In other words, <em>are the loop bodies entirely</em> <strong><em>independent</em></strong> <em>of each other?</em></p>
 
 <p>If so, our algorithm is <em>loop independent</em> and <em>trivially parallelizable</em>.
-<a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">These slides from a UT Austin lecture</a> are helpful additional reading on this topic.</p>
+<a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">This slidedeck from a UT Austin lecture</a> are helpful additional reading on this topic.</p>
 
 <p>The fundamental algorithm at play here is a <em>reduction</em> or a <em>fold</em>.
 If you see these terms elsewhere in literature, documentation, or algorithms in libraries or programming languages, they almost certainly mean the same thing.
@@ -544,7 +539,319 @@ Most of the time, to run code on a GPU, you do have to perform more work to set 
 
 <h1 id="cuda-c">CUDA C</h1>
 
-<p>todo</p>
+<p>CUDA C is the basis of the CUDA runtime, and forms the foundation for all other CUDA-related abstractions.
+<a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">
+This CUDA C introductory slide deck is helpful in understanding the basics.
+</a></p>
+
+<h2 id="core-concepts">Core Concepts</h2>
+
+<h3 id="host-and-device">Host and Device</h3>
+
+<p>When working with a GPU, it’s important to keep in mind the difference between the <em>host</em> and the <em>device</em>.</p>
+
+<center>
+<img src="https://cis.temple.edu/~giorgio/cis307/readings/CUDA_processing_flow.png" alt="GPU-CPU interaction">
+</center>
+
+<p>Just like your CPU, your GPU has access to it’s own <em>memory</em>.
+Programming a GPU entails managing your CPU’s memory along with your GPU’s memory.
+If you would like your GPU to have access to some memory you’re using on the CPU, you’ll have to allocate memory on the GPU and copy it over.</p>
+
+<p><a href="https://godbolt.org/z/9eeEedhd5" target="blank">
+If you don’t tell the GPU to perform any work, then your CUDA C code is really just C code:
+</a></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;cstdio&gt;
+</span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">"Hello!"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You can then invoke NVIDIA’s compiler, NVCC, to compile the program:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span><span class="nb">cat </span>hello.cu
+<span class="gp">#</span>include &lt;cstdio&gt;
+<span class="go">int main() {
+</span><span class="gp">  puts("Hello!");</span><span class="w">
+</span><span class="gp">  return 0;</span><span class="w">
+</span><span class="go">}
+</span><span class="gp">$</span><span class="w"> </span>nvcc hello.cu <span class="nt">-o</span> hello <span class="o">&amp;&amp;</span> ./hello
+<span class="go">Hello!
+</span></code></pre></div></div>
+
+<p>If you invoke <code class="language-plaintext highlighter-rouge">nvcc</code> with the <code class="language-plaintext highlighter-rouge">-v</code> flag for extra verbosity, you can see that <code class="language-plaintext highlighter-rouge">nvcc</code> actually uses a <em>host</em> compiler to build the parts of your program that don’t involve running code or manipulating memory on the GPU.
+<code class="language-plaintext highlighter-rouge">nvcc</code> uses multiple passes, where it compiles the CUDA code and generates host-only source for the host compiler to compile.
+<a href="https://godbolt.org/z/axTn1ex5x" target="blank">
+See this Compiler Explorer link and look at the compilation output window in the bottom right pane to see all the output.
+</a>
+Notice that GCC is invoked, along with the program <code class="language-plaintext highlighter-rouge">ptxas</code>.
+PTX is an assembly target, so your CUDA programs will emit ptx code which can be run on your GPU’s special purpose processing units.
+Just as you can use <code class="language-plaintext highlighter-rouge">asm volitile("" : : : "");</code> in C and C++ to write inline assembly, you can also write inline ptx assembly in your programs.
+Also like C and C++, it is almost certainly more effective for you to write your code in a higher level language like CUDA C or C++, and write PTX after profiling and testing, when you are sure you need it.</p>
+
+<p>If you’re careful, you might also have noticed that GCC was passed the command line argument <code class="language-plaintext highlighter-rouge">-x c++</code>, even though we’re working in plain CUDA C.
+This is because cuda code is <em>by default built on the host as C++</em>.
+If you use the oldest CUDA compiler available on Compiler Explorer, you’ll see that it still defaults to building the host code under C++14.</p>
+
+<h3 id="using-the-cuda-runtime">Using the CUDA Runtime</h3>
+
+<p><a href="https://godbolt.org/z/81v3jfehq" target="blank">
+In this example, we introduce three aspects of the CUDA programming model:
+</a></p>
+
+<ul>
+  <li>The special keyword <code class="language-plaintext highlighter-rouge">__global__</code>
+</li>
+  <li>Device memory management</li>
+  <li>Kernel launches</li>
+</ul>
+
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// square.cu</span>
+<span class="cp">#include &lt;cstdio&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+</span>
+<span class="k">__global__</span> <span class="kt">void</span> <span class="nf">square</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">ar</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">tid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">tid</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">*</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="cp">#define N 10
+</span>
+  <span class="c1">// Allocate static memory on host</span>
+  <span class="kt">int</span> <span class="n">ar</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">ar</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="c1">// Allocate memory on device, copy from host to device</span>
+  <span class="kt">int</span><span class="o">*</span> <span class="n">d_ar</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_ar</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]));</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+
+  <span class="c1">// Launch kernel to run on the device</span>
+  <span class="n">square</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+
+  <span class="c1">// Copy memory back from device</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">d_ar</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]),</span> <span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+
+  <span class="c1">// Display values after kernel</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d "</span><span class="p">,</span> <span class="n">ar</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
+
+  <span class="c1">// Deallocate memory</span>
+  <span class="n">cudaFree</span><span class="p">(</span><span class="n">d_ar</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc square.cu <span class="nt">-o</span> square
+<span class="gp">$</span><span class="w"> </span>./square
+<span class="go">0 1 4 9 16 25 36 49 64 81
+</span></code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">__global__</code> indicates that the code <em>runs on the device</em> and is <em>called from the host</em>.
+Keep in mind that we have to <em>memory spaces</em> and two <em>execution spaces</em>.</p>
+
+<p>The following table enumerates common operations in C along with their CUDA counterpart:</p>
+
+<center>
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-0pky">Operation</th>
+    <th class="tg-0pky">C</th>
+    <th class="tg-0pky">CUDA</th>
+    <th class="tg-0pky">Notes</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Dynamically allocate memory</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">malloc</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">cudaMalloc</code></span></td>
+    <td class="tg-0pky">
+</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Copy memory from one location to another</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">memcpy</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">cudaMemcpy</code></span></td>
+    <td class="tg-0pky">
+</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Deallocate memory</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">free</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">cudaFree</code></span></td>
+    <td class="tg-0pky">
+</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call function</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">func()</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#DDD"><code class="language-plaintext highlighter-rouge">func&lt;&lt;&lt;gridSize, blockSize, sharedMemSize, cudaStream&gt;&gt;&gt;()</code></span></td>
+    <td class="tg-0pky">Triple angle-brackets indicate you are running in the <span style="font-style:italic"><em>device execution space</em></span>
+</td>
+  </tr>
+</tbody>
+</table>
+
+</center>
+
+<p><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/#execution-configuration" target="blank">
+The angle brackets surrounding our <em>kernel launch parameters</em> determine how the kernel will be executed by the GPU.
+The possible kernel launch parameters are enumerated at this link.
+</a></p>
+
+<p>The kernel launch parameters determine how many streaming multiprocessors (SMs) will execute code on the GPU.
+The first two parameters are objects of type <code class="language-plaintext highlighter-rouge">dim3</code>, and they can be up to three-dimensional vectors.
+The first kernel launch parameter is the <em>grid size</em>, and the second is the <em>block size</em>.</p>
+
+<p>Grids consist of blocks.</p>
+
+<p>Blocks consist of threads.</p>
+
+<p>Therefore, the total number of threads launched by your kernel will be:</p>
+
+<center>
+$$
+totalthreads \gets gridsize.x \times gridsize.y \times gridsize.z \\
+                   \times blocksize.x \times blocksize.y \times blocksize.z \\
+$$
+</center>
+
+<p>As depicted by the image below, CUDA kernels may be launched with a 1-3 dimensional grid, and a 1-3 dimensional block.</p>
+
+<center>
+<img src="http://www.microway.com/wp-content/uploads/CUDA-GridBlockThread-Structure.png" alt="CUDA Grid and Block Depiction">
+</center>
+
+<p>You might also notice that we guard our operation with this <code class="language-plaintext highlighter-rouge">if</code> statement.</p>
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">if</span> <span class="p">(</span><span class="n">tid</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">*</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">];</span>
+</code></pre></div></div>
+<p>For performance reasons, it’s usually best to launch your kernels with a multiple of the number of threads in a given block on your GPU, so you may launch with more GPU threads than you need.</p>
+
+<p><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#hardware-implementation" target="blank">
+For additional reading on the hardware implementation of the CUDA programming model, please refer to chapter 4 of the NVIDIA CUDA Programming Guide.
+</a></p>
+
+<h3 id="shared-memory">Shared Memory</h3>
+
+<p>Although each thread launches with its own stack memory, threads can share memory just like OS threads.
+The third kernel launch parameter determines how many bytes will be allocated <em>for each block</em> that is launched.</p>
+
+<p><a href="https://godbolt.org/z/nrbdK9nKj" target="blank">
+In the following example, we make use of CUDA shared memory, as indicated by the <code class="language-plaintext highlighter-rouge">__shared__</code> keyword annotating the array in our kernel, as well as our use of the third kernel launch parameter:
+</a></p>
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;cstdio&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+</span>
+<span class="k">__global__</span> <span class="kt">void</span> <span class="nf">mulsum</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">out</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">tid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+  <span class="k">extern</span> <span class="k">__shared__</span> <span class="kt">int</span> <span class="n">tmp</span><span class="p">[];</span>
+  <span class="cm">/* ▲
+   * │     ┌───────────────────────────────┐
+   * │     │External and shared, allocated │
+   * └─────┤by the cuda runtime when kernel│
+   *       │         is launched           │
+   *       └───────────────────────────────┘
+   */</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">tid</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">;</span>
+
+  <span class="n">tmp</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">tid</span><span class="p">];</span>
+
+  <span class="n">__syncthreads</span><span class="p">();</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">tid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+      <span class="n">sum</span> <span class="o">+=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="o">*</span><span class="n">out</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="cp">#define N 10
+</span>
+  <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="kt">int</span> <span class="n">b</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="kt">int</span><span class="o">*</span> <span class="n">d_a</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_a</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]));</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+
+  <span class="kt">int</span><span class="o">*</span> <span class="n">d_b</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_b</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]));</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">d_b</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+
+  <span class="kt">int</span><span class="o">*</span> <span class="n">d_out</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_out</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+
+  <span class="n">mulsum</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+  <span class="cm">/*             ▲
+   *             │    ┌─────────────────────────────────────┐
+   *             └────┤Size of shared memory to be allocated│
+   *                  │         for kernel launch           │
+   *                  └─────────────────────────────────────┘
+   */</span>
+
+  <span class="kt">int</span> <span class="n">out</span><span class="p">;</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
+
+  <span class="n">cudaFree</span><span class="p">(</span><span class="n">d_a</span><span class="p">);</span>
+  <span class="n">cudaFree</span><span class="p">(</span><span class="n">d_b</span><span class="p">);</span>
+  <span class="n">cudaFree</span><span class="p">(</span><span class="n">d_out</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc mul-sum-reduce.cu <span class="nt">-o</span> msr
+<span class="gp">$</span><span class="w"> </span>./msr
+<span class="go">285
+</span></code></pre></div></div>
+
+<p>Notice how our shared memory is declared:</p>
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">extern</span> <span class="k">__shared__</span> <span class="kt">int</span> <span class="n">tmp</span><span class="p">[];</span>
+</code></pre></div></div>
+
+<p>It is <code class="language-plaintext highlighter-rouge">external</code> because we are not allocating the memory in our kernel; it’s allocated by the cuda runtime when we pass the third parameter to the kernel launch parameters:</p>
+
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mulsum</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+               <span class="err">▲</span>
+               <span class="err">│</span>      <span class="err">┌─────────────────────────────────────┐</span>
+               <span class="err">└──────┤</span><span class="n">Size</span> <span class="n">of</span> <span class="n">shared</span> <span class="n">memory</span> <span class="n">to</span> <span class="n">be</span> <span class="n">allocated</span><span class="err">│</span>
+                      <span class="err">│</span>         <span class="k">for</span> <span class="n">kernel</span> <span class="n">launch</span>           <span class="err">│</span>
+                      <span class="err">└─────────────────────────────────────┘</span>
+</code></pre></div></div>
+
+<p>There can only be one segment of shared memory in a kernel launch, so the shared memory segment will be interpreted as whatever type we declare our shared memory with.
+In this case, it’s an array of ints.</p>
+
+<p>We also introduced another CUDA extension to the host language: <code class="language-plaintext highlighter-rouge">__syncthreads()</code>.
+<code class="language-plaintext highlighter-rouge">__syncthreads</code> is a <em>fence</em> or <em>barrier</em>, a point which no thread can cross until all threads have reached it.
+There are many other synchronization primitives in cuda for primitive atomic operations, such as <code class="language-plaintext highlighter-rouge">atomicAdd</code>.</p>
+
+<h3 id="cuda-dgemv">CUDA <code class="language-plaintext highlighter-rouge">DGEMV</code>
+</h3>
+
+<p>We again return to our <code class="language-plaintext highlighter-rouge">dgemv</code> example, this time armed with some knowledge about the CUDA runtime and some software and hardware abstractions.</p>
 
 <h1 id="c-on-the-host-1">C++ on the Host</h1>
 
@@ -751,6 +1058,7 @@ Feel free to skip this section; it is not critical to understanding the concepts
   <li><a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a></li>
   <li><a href="https://youtu.be/KK3JXvSiJG4" target="blank"> Bryce Adelstein Lelbach’s talk on C++ standard parallelism </a></li>
   <li><a href="https://github.com/kokkos/mdspan/blob/single-header/mdspan.hpp" target="blank"> Kokkos <code class="language-plaintext highlighter-rouge">mdspan</code> single header </a></li>
+  <li><a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">CUDA C Introduction Slides</a></li>
 </ul>
 
 <font size="-1">
