@@ -1,0 +1,44 @@
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-0pky">Operation</th>
+    <th class="tg-0pky">C</th>
+    <th class="tg-0pky">CUDA</th>
+    <th class="tg-0pky">Notes</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">Dynamically allocate memory</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`malloc`</span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`cudaMalloc`</span></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Copy memory from one location to another</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`memcpy`</span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`cudaMemcpy`</span></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Deallocate memory</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`free`</span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`cudaFree`</span></td>
+    <td class="tg-0pky"></td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Call function</td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd">`func()`</span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#DDD">`func&lt;&lt;&lt;gridSize, blockSize, sharedMemSize, cudaStream&gt;&gt;&gt;()`</span></td>
+    <td class="tg-0pky">Triple angle-brackets indicate you are running in the <span style="font-style:italic">_device execution space_</span></td>
+  </tr>
+</tbody>
+</table>
