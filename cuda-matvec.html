@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HPC 101: Matrix-Vector Product – Asher Mancinelli – HPC Software Development</title>
+    <title>CUDA 101: Matrix-Vector Product – Asher Mancinelli – HPC Software Development</title>
 
         <meta charset="utf-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -27,8 +27,8 @@
     <meta name="author" content="Asher Mancinelli">
 
     
-    <meta property="og:title" content="HPC 101: Matrix-Vector Product">
-    <meta property="twitter:title" content="HPC 101: Matrix-Vector Product">
+    <meta property="og:title" content="CUDA 101: Matrix-Vector Product">
+    <meta property="twitter:title" content="CUDA 101: Matrix-Vector Product">
     
 
     <link rel="icon" href="/images/chip.png">
@@ -65,7 +65,7 @@
 
     <div id="main" role="main" class="container">
       <article class="post">
-  <h1>HPC 101: Matrix-Vector Product</h1>
+  <h1>CUDA 101: Matrix-Vector Product</h1>
 
   <div class="entry">
     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript">
@@ -83,8 +83,8 @@
 
   --->
 
-<p>The backbone of all scientific computing is linear algebra, often distributed and often using acceleration hardware and software such as OpenMP, CUDA, etc.
-This post takes you from a basic example problem to a GPU-accelerated example that calculates a matrix-vector product.</p>
+<p>The foundation of GPU programming is linear algebra.
+This post takes you from a basic linear algebra example problem to a GPU-accelerated example that calculates a matrix-vector product.</p>
 
 <font size="-1">
   <em>
@@ -104,7 +104,7 @@ If you don’t read the entire post, at least take these points:</p>
   <li>Speed is not the same as efficiency</li>
 </ol>
 
-<p><strong><em>NOTE: This post is geared towards those without significant experience in linear algebra, high performance computing, and GPU programming.</em></strong></p>
+<p><strong><em>NOTE: This post is geared towards those without significant experience in linear algebra, high performance computing, or GPU programming.</em></strong></p>
 
 <h1 id="outline">Outline</h1>
 
@@ -114,17 +114,15 @@ If you don’t read the entire post, at least take these points:</p>
       <li>Short Example in Python</li>
     </ol>
   </li>
-  <li>Example in C on Host</li>
-  <li>Example in CUDA C</li>
-  <li>Example in CUDA C++</li>
-  <li>Example in BQN</li>
+  <li>C on Host</li>
+  <li>CUDA C</li>
+  <li>CUDA C++</li>
   <li>Links, References, Additional Reading</li>
 </ol>
 
 <h1 id="mathematical-understanding-of-algorithm">Mathematical Understanding of Algorithm</h1>
 
-<p>We’ll be performing a matrix-vector dot product several ways in this post.
-I may refer to the operation as <code class="language-plaintext highlighter-rouge">dgemv</code> as that’s the official name for a matrix-vector product on data of type <code class="language-plaintext highlighter-rouge">double</code> in the BLAS interface, though we will not make any attempt to make our code conformant with BLAS - it’s just a helpful shorthand.</p>
+<p>We’ll be performing a matrix-vector dot product several ways in this post.</p>
 
 <p>The operation is depicted below:</p>
 
@@ -217,22 +215,6 @@ $$
 The book <a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&amp;referer=brief_results" target="blank"><em>How to Write Parallel Programs: A First Course</em></a> covers tuple spaces in great detail.</p>
 
 <p>Now that we have constructed our tuple space, we might group our computations into self-contained units of work along each row.</p>
-
-<p>Partitioning our tuple space row-wise gives:</p>
-<center>
-$$
-\\
-  tuplespace \gets
-  \left[ {\begin{array}{ccc}
-    (Mat_{0,0}, v_0) &amp; (Mat_{0,1}, v_1) &amp; (Mat_{0,2}, v_2) \\
-    \hline \\
-    (Mat_{1,0}, v_0) &amp; (Mat_{1,1}, v_1) &amp; (Mat_{1,2}, v_2) \\
-    \hline \\
-    (Mat_{2,0}, v_0) &amp; (Mat_{2,1}, v_1) &amp; (Mat_{2,2}, v_2) \\
-  \end{array} } \right]
-\\
-$$
-</center>
 
 <p>Let <em>tuplespace</em> be the 2 dimensional matrix tuple space given above.
 We then may form a vector with units of work yielding indices of the output vector:</p>
@@ -377,71 +359,49 @@ We can now move on to implementing and parallelizing the algorithm.</p>
 
 <h1 id="c-on-the-host">C on the Host</h1>
 
-<p><a href="https://godbolt.org/z/KqnfKvc4h" target="blank">The code for such a calculation might look like this in C</a>, assuming you’re not using any BLAS or LAPACK routines:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-  <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">M</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">N</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">mat_t</span><span class="p">;</span>
-
-<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-  <span class="kt">double</span><span class="o">*</span> <span class="n">d</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">vec_t</span><span class="p">;</span>
-
-<span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-
-  <span class="c1">// Ensure the output is all set to zero</span>
-  <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
-
-  <span class="c1">// For each column</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-
-    <span class="c1">// For each row</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
-
-      <span class="c1">// Sum the products into the output vector</span>
-      <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)];</span>
+<p><a href="https://godbolt.org/z/T3qzr8fve" target="blank">The code for such a calculation might look like this in C</a>:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">matvecmul</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">mat</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">vec</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">out</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">vec</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">mat</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">n</span><span class="p">)];</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
 <p>Here’s some example data fed into our matrix vector product:</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">mat_t</span> <span class="n">m</span><span class="p">;</span>
-  <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
-  <span class="n">m</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">dm</span><span class="p">;</span>
-  <span class="n">m</span><span class="p">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-      <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">M</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
 
-  <span class="n">vec_t</span> <span class="n">v</span><span class="p">;</span>
-  <span class="n">v</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.,</span> <span class="mi">2</span><span class="p">.</span> <span class="p">};</span>
-  <span class="n">v</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">mat</span><span class="p">[</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
 
-  <span class="n">vec_t</span> <span class="n">out</span><span class="p">;</span>
-  <span class="n">out</span><span class="p">.</span><span class="n">d</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">[])</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">};</span>
-  <span class="n">out</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-  
-  <span class="n">dgemv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">vec</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
 
-  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">out</span><span class="p">[</span><span class="n">M</span><span class="p">];</span>
+
+    <span class="n">memset</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">M</span><span class="p">]));</span>
+    <span class="n">matvecmul</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">vec</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
 <p>The output of this program (with some printing code added in):</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">Matrix:
-0.0 1.0 2.0 
-3.0 4.0 5.0 
-6.0 7.0 8.0 
-
+  0   1   2   3 
+  4   5   6   7 
+  8   9  10  11 
 Vector:
-2.0 2.0 2.0 
-
-Final vec:
-6.0 24.0 42.0 
+  0   1   2   3 
+Output:
+ 14  38  62 
 </span></code></pre></div></div>
 
-<p>Feel free to verify these results and play around with other values using <a href="https://keisan.casio.com/exec/system/15052033860538" target="blank">online software like this CASIO calculator website.</a></p>
+<p>Feel free to verify these results and play around with other values using <a href="https://keisan.casio.com/exec/system/15052033860538" target="blank">online software like this CASIO calculator website</a>, or a scripting language.
+<a href="https://mlochbaum.github.io/BQN/try.html#code=bSDihpAgMwpuIOKGkCA0Ck11bCDihpAgK8ud4oiYw5fijokx4oC/4oieCgptYXQg4oaQIG3igL9u4qWK4oaVMjAwCnZlYyDihpAg4oaVbgoKbWF0IE11bCB2ZWM=" target="blank">
+Here’s an example of the above problem using BQN, one of my favorite languages to use when understanding an algorithm.
+</a></p>
 
 <p>Demonstrating that we have a <em>correct</em> algorithm with tests is a precondition for optimizing and parallelizing an algorithm:</p>
 
@@ -450,30 +410,14 @@ Final vec:
 </blockquote>
 
 <p>We know that a given index in our output vector can be computed independently of any other indices in the output vector from the respective row in our tuple space.
-We can then perform the first step in parallelizing our algorithm: pulling out a function that performs a <em>single unit of work</em> as identified above.</p>
+We can then pull out a function that performs a <em>single unit of work</em> as identified above.</p>
 
-<p>In our C example, we might use the following structs to encapsulate our data:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-    <span class="kt">double</span> <span class="n">matval</span><span class="p">;</span>
-    <span class="kt">double</span> <span class="n">vecval</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">tuple_t</span><span class="p">;</span>
-
-<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
-    <span class="n">tuple_t</span><span class="o">*</span> <span class="n">tuples</span><span class="p">;</span>
-    <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">tuplespace_t</span><span class="p">;</span>
-</code></pre></div></div>
-
-<p>A struct of type <code class="language-plaintext highlighter-rouge">tuplespace_t</code> may then hold the domain of a single unit of work.
-This is important as we start to parallelize our code: the domain of a unit of work may need to be sent over the network to another computer entirely if we distribute our computation (say with MPI), or it may need to be copied to another component of the current machine if we are to use a GPU.</p>
-
-<p>Our single unit of work then takes a <code class="language-plaintext highlighter-rouge">tuplespace_t</code> struct and returns a <code class="language-plaintext highlighter-rouge">double</code>, which is the value of the output vector at a given index:</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">double</span> <span class="nf">unit_of_work</span><span class="p">(</span><span class="n">tuplespace_t</span> <span class="n">ts</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">double</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ts</span><span class="p">.</span><span class="n">size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">sum</span> <span class="o">+=</span> <span class="n">ts</span><span class="p">.</span><span class="n">tuples</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">matval</span> <span class="o">*</span> <span class="n">ts</span><span class="p">.</span><span class="n">tuples</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">vecval</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">unit_of_work</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">mat</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">vec</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">double</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">mat</span> <span class="o">+=</span> <span class="n">row</span> <span class="o">*</span> <span class="n">n</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">sum</span> <span class="o">+=</span> <span class="n">mat</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">vec</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
@@ -481,46 +425,23 @@ This is important as we start to parallelize our code: the domain of a unit of w
 <center>
 $$
 \\
-w(row) \gets \sum_{i \gets 0}^{N} tuple_{i, 0} \cdot tuple_{i, 1} \\
+  r \gets current rank \\
+  W_{r} \gets \sum_{i \gets 0}^{N} M_{r,i} \cdot v_{i} \\
 \\
 $$
 </center>
 
-<p>Our <code class="language-plaintext highlighter-rouge">dgemv</code> function now must first construct the tuplespace before passing a segment of the tuplespace to the single unit of work:</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// allocate memory for our tuplespace</span>
-  <span class="c1">// one tuple per entry in the matrix</span>
-  <span class="n">tuple_t</span><span class="o">*</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">tuple_t</span><span class="p">[</span><span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">]));</span>
-
-  <span class="c1">// set up tuplespace</span>
-
-  <span class="c1">// for each row in matrix</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-
-    <span class="c1">// for each column in matrix</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
-
-      <span class="c1">// elements of vector are broadcast to columns of matrix</span>
-      <span class="n">ts</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tuple_t</span><span class="p">)</span> <span class="p">{</span>
-        <span class="p">.</span><span class="n">matval</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">)],</span>
-        <span class="p">.</span><span class="n">vecval</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-      <span class="p">};</span>
-
-  <span class="c1">// dispatch calculations to unit_of_work for each row of mat</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-
-    <span class="c1">// element in output vector is determined by passing a row of tuplespace</span>
-    <span class="c1">// into our unit of work</span>
-    <span class="n">out</span><span class="p">.</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit_of_work</span><span class="p">((</span><span class="n">tuplespace_t</span><span class="p">)</span> <span class="p">{</span>
-      <span class="p">.</span><span class="n">tuples</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">ts</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">],</span>
-      <span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">N</span><span class="p">,</span>
-    <span class="p">});</span>
-
-  <span class="n">free</span><span class="p">(</span><span class="n">ts</span><span class="p">);</span>
+<p>Our new <code class="language-plaintext highlighter-rouge">matvecmul</code> function can now just iterate over all the rows and dispatch the actual work to the <code class="language-plaintext highlighter-rouge">unit_of_work</code> function.
+We can even use OpenMP to parallelize our loop:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">matvecmul_on_tuplespace</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">mat</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">vec</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">out</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// dispatch calculations to unit_of_work for each row of mat</span>
+    <span class="cp">#pragma omp parallel for
+</span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span> <span class="n">row</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit_of_work</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">vec</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>You might have noticed that our new algorithm has significantly more code than our original implementation.
+<p>You might have noticed that our new implementation has more code than our original implementation, and might be slightly more complex.
 This is okay, and it gets at an important point:</p>
 
 <blockquote>
@@ -540,6 +461,7 @@ Most of the time, to run code on a GPU, you do have to perform more work to set 
 <h1 id="cuda-c">CUDA C</h1>
 
 <p>CUDA C is the basis of the CUDA runtime, and forms the foundation for all other CUDA-related abstractions.
+We’ll take a look at some basic concepts before jumping into the code.
 <a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">
 This CUDA C introductory slide deck is helpful in understanding the basics.
 </a></p>
@@ -586,8 +508,12 @@ See this Compiler Explorer link and look at the compilation output window in the
 </a>
 Notice that GCC is invoked, along with the program <code class="language-plaintext highlighter-rouge">ptxas</code>.
 PTX is an assembly target, so your CUDA programs will emit ptx code which can be run on your GPU’s special purpose processing units.
+<a href="https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html#nvcc-examples" target="blank">
+The command line flags for code generation can be complicated.
+Refer to the official CUDA programming guide when needed.
+</a>
 Just as you can use <code class="language-plaintext highlighter-rouge">asm volitile("" : : : "");</code> in C and C++ to write inline assembly, you can also write inline ptx assembly in your programs.
-Also like C and C++, it is almost certainly more effective for you to write your code in a higher level language like CUDA C or C++, and write PTX after profiling and testing, when you are sure you need it.</p>
+Also like C and C++, it is almost certainly more effective for you to write your code in a higher level language like CUDA C++, and write PTX after profiling and testing, when you are sure you need it.</p>
 
 <p>If you’re careful, you might also have noticed that GCC was passed the command line argument <code class="language-plaintext highlighter-rouge">-x c++</code>, even though we’re working in plain CUDA C.
 This is because cuda code is <em>by default built on the host as C++</em>.
@@ -652,7 +578,7 @@ In this example, we introduce three aspects of the CUDA programming model:
 </span></code></pre></div></div>
 
 <p><code class="language-plaintext highlighter-rouge">__global__</code> indicates that the code <em>runs on the device</em> and is <em>called from the host</em>.
-Keep in mind that we have to <em>memory spaces</em> and two <em>execution spaces</em>.</p>
+Keep in mind that we have two <em>memory spaces</em> and two <em>execution spaces</em>.</p>
 
 <p>The following table enumerates common operations in C along with their CUDA counterpart:</p>
 
@@ -730,7 +656,13 @@ totalthreads \gets gridsize.x \times gridsize.y \times gridsize.z \\
 $$
 </center>
 
-<p>As depicted by the image below, CUDA kernels may be launched with a 1-3 dimensional grid, and a 1-3 dimensional block.</p>
+<p>CUDA kernels may be launched with a 1-3 dimensional grid, and a 1-3 dimensional block.
+The image below might have been launched with these kernel launch parameters:</p>
+
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kt">dim3</span> <span class="nf">grid_size</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="kt">dim3</span> <span class="nf">block_size</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="n">myfunc</span><span class="o">&lt;&lt;&lt;</span><span class="n">grid_size</span><span class="p">,</span> <span class="n">block_size</span><span class="o">&gt;&gt;&gt;</span><span class="p">();</span>
+</code></pre></div></div>
 
 <center>
 <img src="http://www.microway.com/wp-content/uploads/CUDA-GridBlockThread-Structure.png" alt="CUDA Grid and Block Depiction">
@@ -762,11 +694,11 @@ In the following example, we make use of CUDA shared memory, as indicated by the
   <span class="kt">int</span> <span class="n">tid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
   <span class="k">extern</span> <span class="k">__shared__</span> <span class="kt">int</span> <span class="n">tmp</span><span class="p">[];</span>
   <span class="cm">/* ▲
-   * │     ┌───────────────────────────────┐
-   * │     │External and shared, allocated │
-   * └─────┤by the cuda runtime when kernel│
-   *       │         is launched           │
-   *       └───────────────────────────────┘
+   * │  ┌───────────────────────────────┐
+   * │  │External and shared, allocated │
+   * └──┤by the cuda runtime when kernel│
+   *    │         is launched           │
+   *    └───────────────────────────────┘
    */</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">tid</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">)</span>
     <span class="k">return</span><span class="p">;</span>
@@ -803,12 +735,13 @@ In the following example, we make use of CUDA shared memory, as indicated by the
   <span class="kt">int</span><span class="o">*</span> <span class="n">d_out</span><span class="p">;</span>
   <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_out</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
 
-  <span class="n">mulsum</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+  <span class="n">mulsum</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
   <span class="cm">/*             ▲
-   *             │    ┌─────────────────────────────────────┐
-   *             └────┤Size of shared memory to be allocated│
-   *                  │         for kernel launch           │
-   *                  └─────────────────────────────────────┘
+   *             │
+   *    ┌────────┴────────────────────────────┐
+   *    │Size of shared memory to be allocated│
+   *    │         for kernel launch           │
+   *    └─────────────────────────────────────┘
    */</span>
 
   <span class="kt">int</span> <span class="n">out</span><span class="p">;</span>
@@ -822,8 +755,7 @@ In the following example, we make use of CUDA shared memory, as indicated by the
 <span class="p">}</span>
 </code></pre></div></div>
 
-<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc mul-sum-reduce.cu <span class="nt">-o</span> msr
-<span class="gp">$</span><span class="w"> </span>./msr
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc mul-sum-reduce.cu <span class="o">&amp;&amp;</span> ./a.out
 <span class="go">285
 </span></code></pre></div></div>
 
@@ -835,23 +767,119 @@ In the following example, we make use of CUDA shared memory, as indicated by the
 
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mulsum</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
                <span class="err">▲</span>
-               <span class="err">│</span>      <span class="err">┌─────────────────────────────────────┐</span>
-               <span class="err">└──────┤</span><span class="n">Size</span> <span class="n">of</span> <span class="n">shared</span> <span class="n">memory</span> <span class="n">to</span> <span class="n">be</span> <span class="n">allocated</span><span class="err">│</span>
-                      <span class="err">│</span>         <span class="k">for</span> <span class="n">kernel</span> <span class="n">launch</span>           <span class="err">│</span>
-                      <span class="err">└─────────────────────────────────────┘</span>
+               <span class="err">│</span>
+ <span class="err">┌─────────────┴───────────────────────┐</span>
+ <span class="err">│</span><span class="n">Size</span> <span class="n">of</span> <span class="n">shared</span> <span class="n">memory</span> <span class="n">to</span> <span class="n">be</span> <span class="n">allocated</span><span class="err">│</span>
+ <span class="err">│</span>         <span class="k">for</span> <span class="n">kernel</span> <span class="n">launch</span>           <span class="err">│</span>
+ <span class="err">└─────────────────────────────────────┘</span>
 </code></pre></div></div>
 
 <p>There can only be one segment of shared memory in a kernel launch, so the shared memory segment will be interpreted as whatever type we declare our shared memory with.
-In this case, it’s an array of ints.</p>
+In this case, it’s an array of ints.
+Although there is strictly one <em>segment</em> of shared memory in a kernel launch, you can still declare multiple variables as <code class="language-plaintext highlighter-rouge">__shared__</code>, so long as they all fit in the allocated shared memroy.</p>
 
 <p>We also introduced another CUDA extension to the host language: <code class="language-plaintext highlighter-rouge">__syncthreads()</code>.
-<code class="language-plaintext highlighter-rouge">__syncthreads</code> is a <em>fence</em> or <em>barrier</em>, a point which no thread can cross until all threads have reached it.
-There are many other synchronization primitives in cuda for primitive atomic operations, such as <code class="language-plaintext highlighter-rouge">atomicAdd</code>.</p>
+<code class="language-plaintext highlighter-rouge">__syncthreads()</code> is a <em>fence</em> or <em>barrier</em>, a point which no thread <em>in that block</em> can cross until all threads have reached it.
+<code class="language-plaintext highlighter-rouge">__syncthreads()</code>
+There are many other CUDA primitives for atomic, and synchronization operations, such as <code class="language-plaintext highlighter-rouge">atomicAdd</code>.</p>
 
-<h3 id="cuda-dgemv">CUDA <code class="language-plaintext highlighter-rouge">DGEMV</code>
-</h3>
+<h3 id="cuda-mat-vec-multiply">CUDA Mat-Vec Multiply</h3>
 
-<p>We again return to our <code class="language-plaintext highlighter-rouge">dgemv</code> example, this time armed with some knowledge about the CUDA runtime and some software and hardware abstractions.</p>
+<p>We again return to our <code class="language-plaintext highlighter-rouge">matvecmul</code> example, this time armed with some knowledge about the CUDA runtime and some software and hardware abstractions.</p>
+
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;cstdio&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+</span>
+<span class="k">__global__</span> <span class="kt">void</span> <span class="nf">matvecmul</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">mat</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">vec</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">outv</span><span class="p">,</span>
+                          <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kt">int</span> <span class="n">rowidx</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">colidx</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+
+  <span class="k">extern</span> <span class="k">__shared__</span> <span class="kt">int</span> <span class="n">tmp</span><span class="p">[];</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">colidx</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">rowidx</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">tmp</span><span class="p">[</span><span class="n">colidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="n">colidx</span> <span class="o">+</span> <span class="p">(</span><span class="n">rowidx</span> <span class="o">*</span> <span class="n">n</span><span class="p">)]</span> <span class="o">*</span> <span class="n">vec</span><span class="p">[</span><span class="n">colidx</span><span class="p">];</span>
+
+    <span class="n">__syncthreads</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">colidx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">sum</span> <span class="o">+=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+      <span class="n">outv</span><span class="p">[</span><span class="n">rowidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="cp">#define M 10
+</span>  <span class="cp">#define N 15
+</span>
+  <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="kt">int</span> <span class="n">b</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="kt">int</span><span class="o">*</span> <span class="n">d_a</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_a</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">]));</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">]),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+
+  <span class="kt">int</span><span class="o">*</span> <span class="n">d_b</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_b</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]));</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">d_b</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">]),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
+
+  <span class="kt">int</span><span class="o">*</span> <span class="n">d_c</span><span class="p">;</span>
+  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">d_c</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">M</span><span class="p">]));</span>
+
+  <span class="n">matvecmul</span><span class="o">&lt;&lt;&lt;</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">d_c</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+
+  <span class="kt">int</span> <span class="n">c</span><span class="p">[</span><span class="n">M</span><span class="p">];</span>
+  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d_c</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">M</span><span class="p">]),</span> <span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
+
+  <span class="n">cudaFree</span><span class="p">(</span><span class="n">d_a</span><span class="p">);</span>
+  <span class="n">cudaFree</span><span class="p">(</span><span class="n">d_b</span><span class="p">);</span>
+  <span class="n">cudaFree</span><span class="p">(</span><span class="n">d_c</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>After adding some printing code to our example above, we get the following:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc matvecmul.cu <span class="o">&amp;&amp;</span> ./a.out
+<span class="go">Matrix:
+   0    1    2    3    4    5    6    7    8    9   10   11   12   13   14
+  15   16   17   18   19   20   21   22   23   24   25   26   27   28   29
+  30   31   32   33   34   35   36   37   38   39   40   41   42   43   44
+  45   46   47   48   49   50   51   52   53   54   55   56   57   58   59
+  60   61   62   63   64   65   66   67   68   69   70   71   72   73   74
+  75   76   77   78   79   80   81   82   83   84   85   86   87   88   89
+  90   91   92   93   94   95   96   97   98   99  100  101  102  103  104
+ 105  106  107  108  109  110  111  112  113  114  115  116  117  118  119
+ 120  121  122  123  124  125  126  127  128  129  130  131  132  133  134
+ 135  136  137  138  139  140  141  142  143  144  145  146  147  148  149
+
+Vector:
+   0    1    2    3    4    5    6    7    8    9   10   11   12   13   14
+
+Output:
+1015 2590 4165 5740 7315 8890 10465 12040 13615 15190
+</span></code></pre></div></div>
+
+<p><a href="https://mlochbaum.github.io/BQN/try.html#code=TXVsIOKGkCAry53iiJjDl+KOiTHigL/iiJ4KCm3ihpAxMOKAvzE14qWK4oaVMjAwCnbihpDihpUxNQoKbSBNdWwgdg==" target="blank">
+This BQN example verifies the output from our CUDA program:
+</a></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Mul ← +˝∘×⎉1‿∞
+   m←10‿15⥊↕200
+   v←↕15
+   m Mul v
+⟨ 1015 2590 4165 5740 7315 8890 10465 12040 13615 15190 ⟩
+</code></pre></div></div>
+
+<p>In our CUDA C example, we launch a block for each row of our matrix.
+This way, we can share memory between each thread operating on a given row of the matrix.
+A single thread per row can then perform the sum reduction and assign the value to the index in the output vector.</p>
 
 <h1 id="c-on-the-host-1">C++ on the Host</h1>
 
@@ -887,14 +915,14 @@ In particular, we will use the structure template <code class="language-plaintex
   <span class="kt">double</span> <span class="n">dout</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">out</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dout</span><span class="p">);</span>
 
-  <span class="n">dgemv</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
+  <span class="n">matvecmul</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
 
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
 <p>If we only compute the solution on the host, everything works the same way:</p>
-<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">dgemv</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">matvecmul</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
     <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
       <span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+=</span> <span class="n">v</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
@@ -907,7 +935,7 @@ The compile-time and zero-cost abstractions are significant reasons why develope
 For example, compare <a href="https://godbolt.org/z/ssrnz71hs" target="blank">the assembly in this C example</a> to <a href="https://godbolt.org/z/ra8d6arMf" target="blank"> the assembly in this C++ example.  </a>
 This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU’s GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).</p>
 
-<p>Let’s now compute our <code class="language-plaintext highlighter-rouge">dgemv</code> with the work broken up into isolated units, just as before.</p>
+<p>Let’s now compute our <code class="language-plaintext highlighter-rouge">matvecmul</code> with the work broken up into isolated units, just as before.</p>
 
 <p>We’ll use the following additional type aliases:</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">stdex</span><span class="o">::</span><span class="n">full_extent</span><span class="p">;</span>
@@ -930,7 +958,7 @@ This is one reason that most compiler vendors choose to write their compilers in
   <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="nf">matvecmul_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
   <span class="kt">double</span> <span class="n">tuplespace_data</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">)];</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">tuplespace_data</span><span class="p">);</span>
 
@@ -959,7 +987,7 @@ This is one reason that most compiler vendors choose to write their compilers in
   <span class="n">out</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="kt">void</span> <span class="nf">dgemv_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="nf">matvecmul_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">constexpr</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ts_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
   <span class="kt">double</span> <span class="n">tuplespace_data</span><span class="p">[</span><span class="n">ts_size</span><span class="p">];</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">tuplespace_data</span><span class="p">);</span>
@@ -1043,14 +1071,13 @@ Feel free to skip this section; it is not critical to understanding the concepts
 <p>Alternatively:</p>
 
 <center>
-<img height="300" src="/images/hpc-101-matvec/bqn-dgemv-explain.png" alt="Try BQN explanation of dgemv">
+<img height="300" src="/images/hpc-101-matvec/bqn-matvecmul-explain.png" alt="Try BQN explanation of matvecmul">
 </center>
 
 <h1 id="links-references-additional-reading">Links, References, Additional Reading</h1>
 
 <ul>
-  <li><a href="https://godbolt.org/z/45j4hedq8" target="blank"> C dgemv and dgemv on tuplespace example on godbolt </a></li>
-  <li><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">BQN dgemv example</a></li>
+  <li><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">BQN matvecmul example</a></li>
   <li><a href="https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/" target="blank">Matrix-Vector Product image</a></li>
   <li><a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">UT Austin slides on loop-carried dependencies and parallelism</a></li>
   <li><a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&amp;referer=brief_results" target="blank"><em>How to Write Parallel Programs: A First Course</em></a></li>
@@ -1059,6 +1086,7 @@ Feel free to skip this section; it is not critical to understanding the concepts
   <li><a href="https://youtu.be/KK3JXvSiJG4" target="blank"> Bryce Adelstein Lelbach’s talk on C++ standard parallelism </a></li>
   <li><a href="https://github.com/kokkos/mdspan/blob/single-header/mdspan.hpp" target="blank"> Kokkos <code class="language-plaintext highlighter-rouge">mdspan</code> single header </a></li>
   <li><a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">CUDA C Introduction Slides</a></li>
+  <li><a href="https://github.com/uysalere/cuda-matrix-vector-multiplication" target="blank"> More sophisticated CUDA matrix-vector product implementations </a></li>
 </ul>
 
 <font size="-1">
