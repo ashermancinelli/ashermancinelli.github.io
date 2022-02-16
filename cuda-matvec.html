@@ -102,6 +102,7 @@ If you don’t read the entire post, at least take these points:</p>
   <li>Correctness precedes parallelism and performance</li>
   <li>Identify and understand the underlying algorithms at play</li>
   <li>Speed is not the same as efficiency</li>
+  <li>Use sane defaults, only optimize after profiling and testing</li>
 </ol>
 
 <p><strong><em>NOTE: This post is geared towards those without significant experience in linear algebra, high performance computing, or GPU programming.</em></strong></p>
@@ -881,142 +882,382 @@ This BQN example verifies the output from our CUDA program:
 This way, we can share memory between each thread operating on a given row of the matrix.
 A single thread per row can then perform the sum reduction and assign the value to the index in the output vector.</p>
 
-<h1 id="c-on-the-host-1">C++ on the Host</h1>
+<h1 id="cuda-c-1">CUDA C++</h1>
 
-<p>There are many layers of abstraction commonly used in HPC for running code on a GPU.
-The abstractions used in this post will be limited to those shipped with the most recent stable distribution of the NVIDIA CUDA Toolkit at the time of writing (11.5) along with the abstractions recommended by the lead HPC programming models architect at NVIDIA, Bryce Adelstein Lelbach.
-These abstractions are almost entirely <em>compile-time</em> abstractions, which means they incur no runtime cost over the raw C equivilant.
-In particular, we will use the structure template <code class="language-plaintext highlighter-rouge">mdspan</code>, which is likely going to be a part of standard ISO C++23.
-<code class="language-plaintext highlighter-rouge">mdspan</code> is extremely useful on the host as well, so we’ll use it in our C++ host example.
-<a href="https://youtu.be/KK3JXvSiJG4" target="blank"> See Bryce’s talk on C++ standard parallelism here.  </a></p>
+<h2 id="naive-approach">Naive Approach</h2>
 
-<p>In our C++ examples, we’ll use the following type aliases for matrices and vectors:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;mdspan.hpp&gt; // single-header version from github
-</span><span class="k">namespace</span> <span class="n">stdex</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">experimental</span><span class="p">;</span>
-<span class="k">using</span> <span class="n">mat_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
-    <span class="kt">double</span><span class="p">,</span>
-    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span>
-  <span class="o">&gt;</span><span class="p">;</span>
-<span class="k">using</span> <span class="n">vec_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
-    <span class="kt">double</span><span class="p">,</span>
-    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span>
-  <span class="o">&gt;</span><span class="p">;</span>
-</code></pre></div></div>
+<p>In our previous CUDA C example, we weren’t really using CUDA C <em>perse</em>, but CUDA C++.
+If you read the introductory chapter in <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/#cuda-general-purpose-parallel-computing-architecture" target="blank">the official NVIDIA CUDA Programming guide</a>, you’ll see that CUDA C is really just CUDA mixed with the common language subset between C and C++ on the host.
+We were using CUDA C++ the whole time, we just restricted ourselves to the C subset of C++ for simplicity.</p>
 
-<p>Our setup is then as follows:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">double</span> <span class="n">dm</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">mat_t</span><span class="p">(</span><span class="n">dm</span><span class="p">);</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">iota</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">m</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="o">+</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;cstdio&gt;
+#include &lt;thrust/device_vector.h&gt;
+#include &lt;thrust/host_vector.h&gt;
+#include &lt;thrust/sequence.h&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+</span>
+<span class="cm">/* ┌───────────────────────────┐
+   │Using thrust's pointer type│
+   │     instead of int*       │
+   └───────────────────────────┘ */</span>
+<span class="n">__global__</span> <span class="kt">void</span> <span class="nf">matvecmul</span><span class="p">(</span>
+    <span class="n">thrust</span><span class="o">::</span><span class="n">device_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">mat</span><span class="p">,</span>
+    <span class="n">thrust</span><span class="o">::</span><span class="n">device_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">,</span>
+    <span class="n">thrust</span><span class="o">::</span><span class="n">device_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">outv</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="kt">double</span> <span class="n">dv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span> <span class="p">};</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dv</span><span class="p">);</span>
+  <span class="kt">int</span> <span class="n">rowidx</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">colidx</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
 
-  <span class="kt">double</span> <span class="n">dout</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">out</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dout</span><span class="p">);</span>
+  <span class="k">extern</span> <span class="n">__shared__</span> <span class="kt">int</span> <span class="n">tmp</span><span class="p">[];</span>
 
-  <span class="n">matvecmul</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">colidx</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">rowidx</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">tmp</span><span class="p">[</span><span class="n">colidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="n">colidx</span> <span class="o">+</span> <span class="p">(</span><span class="n">rowidx</span> <span class="o">*</span> <span class="n">n</span><span class="p">)]</span> <span class="o">*</span> <span class="n">vec</span><span class="p">[</span><span class="n">colidx</span><span class="p">];</span>
 
+    <span class="n">__syncthreads</span><span class="p">();</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">colidx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">sum</span> <span class="o">+=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+      <span class="n">outv</span><span class="p">[</span><span class="n">rowidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="cp">#define M 10
+</span>  <span class="cp">#define N 15
+</span>
+  <span class="cm">/* ┌────────────────────────────────┐
+     │ Using thrust's host and device │
+     │    vectors over raw arrays.    │
+     │No longer need to use cudaMemcpy│
+     │        or cudaMalloc!          │
+     └────────────────────────────────┘ */</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">a</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">a</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">b</span><span class="p">(</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="n">matvecmul</span><span class="o">&lt;&lt;&lt;</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">[</span><span class="n">N</span><span class="p">])</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">c</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+
+  <span class="cm">/* ┌────────────────────────────┐
+     │The assignment operator will│
+     │   perform the cudaMemcpy   │
+     └────────────────────────────┘ */</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">host_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">out</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
+
+  <span class="n">puts</span><span class="p">(</span><span class="s">"Output:"</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d "</span><span class="p">,</span> <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>If we only compute the solution on the host, everything works the same way:</p>
-<div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">matvecmul</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
-      <span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+=</span> <span class="n">v</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc thrust-ex.cu <span class="o">&amp;&amp;</span> ./a.out
+<span class="go">Output:
+1015 2590 4165 5740 7315 8890 10465 12040 13615 15190
+</span></code></pre></div></div>
+
+<p>As you can see, the code looks quite similar, except for the lack of memory management.
+This is hiding a few extra details as well.
+In our original CUDA example, we first allocate and assign to memory on the host before copying it to the device.
+In this example, we allocate memory <em>on the device first</em>, and perform assignments <em>on the device</em>.</p>
+
+<p>In this line, we allocate <em>device</em> memory for our matrix, and assign values to it <em>on the device</em>.</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">a</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">a</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">thrust::sequence</code> is almost identical to <code class="language-plaintext highlighter-rouge">std::iota</code> or <code class="language-plaintext highlighter-rouge">for (int i=0; i &lt; N; i++) vec[i] = i;</code>, except that it may execute on the device.
+In this new example, we launch three kernels instead of one: one for each call to <code class="language-plaintext highlighter-rouge">thrust::sequence</code>, and one for our manual kernel launch.
+<a href="https://godbolt.org/z/nKvajeE5P" target="blank">
+You can look at the details of the ptx assembly in Compiler Explorer here.
+</a></p>
+
+<h2 id="more-sophisticated-approach">More Sophisticated Approach</h2>
+
+<p>Remember all that fuss about <em>fundamental algorithms</em> in the earlier sections?
+How our <em>fundamental algorithm</em> here is a transform-reduce?</p>
+
+<p>Well, in our first-pass CUDA implementation, we don’t really use this to our advantage.
+Our kernel contains the following lines:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">if</span> <span class="p">(</span><span class="n">colidx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">sum</span> <span class="o">+=</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+      <span class="n">outv</span><span class="p">[</span><span class="n">rowidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p><a href="https://github.com/NVIDIA/thrust/blob/d461afaefdb0b22d830f8d5e9a7b42aebff7004f/thrust/system/cuda/detail/reduce.h#L489" target="blank">
+Thrust’s <code class="language-plaintext highlighter-rouge">transform_reduce</code> uses a rather complicated multi-pass, tiled approach to reducing a collection of values to a single value, but we only use a single thread in a block to actually reduce a given index in our output vector.
+</a></p>
+
+<p>While we used a raw loop at least once per block, an optimized reduction will perform something like the following:</p>
+
+<center>
+<img src="https://i.stack.imgur.com/HxccQ.png" alt="depiction of a multi-pass sum reduction">
+</center>
+
+<p>Extremely performant reductions are actually quite hard to get right - it’s easy to get <em>some</em> parallelism in a reduction, but it takes significant effort to truly maximize the speed you can get from a GPU.
+<a href="https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf" target="blank">
+This slidedeck from the NVIDIA developer blog details various approaches to optimizing a reduction operation on a GPU.
+</a>
+Thrust’s reduce implementation will even select different strategies and launch parameters based on the sizes of the data it operates on.</p>
+
+<p>The point of this Thrust discussion is not to dissuade you from writing raw CUDA kernels - it’s to dissuage you from doing it too early.
+In the majority of cases, it’s likely that using a library around raw CUDA kernels will result in faster code and less development time.
+Once you have already written your code using <em>known algorithms</em>, once you have tested your code to demonstrate its correctness, once you have profiled your code to demonstrate where the performance bottlenecks are on the target architectures you care about, then it makes sense to write raw CUDA kernels.</p>
+
+<blockquote>
+  <p>Use sane defaults, only optimize after profiling and testing</p>
+</blockquote>
+
+<p>So let’s try again, using Thrust’s parallel algorithms to compute the reductions for each row of the matrix-vector multiplication <a href="https://godbolt.org/z/G7KEfqWcE" target="blank">(godbolt link here)</a>:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;cstdio&gt;
+#include &lt;thrust/iterator/zip_iterator.h&gt;
+#include &lt;thrust/tuple.h&gt;
+#include &lt;thrust/device_vector.h&gt;
+#include &lt;thrust/host_vector.h&gt;
+#include &lt;thrust/sequence.h&gt;
+</span>
+<span class="n">__global__</span>
+<span class="kt">void</span> <span class="nf">broadcast_to_matrix</span><span class="p">(</span><span class="n">thrust</span><span class="o">::</span><span class="n">device_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">mat</span><span class="p">,</span>
+    <span class="n">thrust</span><span class="o">::</span><span class="n">device_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">,</span>
+    <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">col</span> <span class="o">=</span> <span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+  <span class="k">const</span> <span class="k">auto</span> <span class="n">row</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">row</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="n">and</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">mat</span><span class="p">[</span><span class="n">col</span><span class="o">+</span><span class="p">(</span><span class="n">row</span><span class="o">*</span><span class="n">n</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">col</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="cp">#define M 10
+</span>  <span class="cp">#define N 15
+</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">a</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">a</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">b</span><span class="p">(</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">broadcasted_b</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">broadcast_to_matrix</span><span class="o">&lt;&lt;&lt;</span><span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">broadcasted_b</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+
+  <span class="n">thrust</span><span class="o">::</span><span class="n">host_vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">M</span><span class="p">);</span>
+
+  <span class="n">thrust</span><span class="o">::</span><span class="n">zip_iterator</span> <span class="n">iter</span><span class="p">(</span><span class="n">thrust</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">broadcasted_b</span><span class="p">.</span><span class="n">begin</span><span class="p">()));</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">transform_reduce</span><span class="p">(</span><span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">),</span> <span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="n">N</span><span class="p">,</span>
+        <span class="p">[]</span> <span class="n">__device__</span> <span class="p">(</span><span class="k">auto</span> <span class="n">tup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="n">thrust</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="o">*</span> <span class="n">thrust</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">tup</span><span class="p">);</span>
+        <span class="p">},</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="n">thrust</span><span class="o">::</span><span class="n">plus</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">()</span>
+        <span class="p">);</span>
+
+  <span class="n">puts</span><span class="p">(</span><span class="s">"Output:"</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d "</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Notice how we can index our matrix as we would expect to: with multidimensional indexing.
-Notice also how we can call <code class="language-plaintext highlighter-rouge">static_extent</code> on our matrix - this determines the length of our matrix in a given dimension at <em>compile time</em>, which means we perform <em>less work at runtime then in the pure C version</em> while getting nicer indexing and extent calculations.
+<p>Since we’re using some more fancy C++ features, we have to pass some extra flags to the compiler:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc <span class="nt">-std</span><span class="o">=</span>c++17 <span class="nt">--extended-lambda</span> fancy.cu <span class="o">&amp;&amp;</span> ./a.out
+<span class="go">Output:
+1015 2590 4165 5740 7315 8890 10465 12040 13615 15190
+</span></code></pre></div></div>
+
+<p>The first kernel is launched manually, since we’re just broadcasting values from the vector to another vector to match the shape of our matrix.
+We perform this step so we can create a zip iterator from the matrix and the broadcasted vector:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">thrust</span><span class="o">::</span><span class="n">zip_iterator</span> <span class="nf">iter</span><span class="p">(</span><span class="n">thrust</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">broadcasted_b</span><span class="p">.</span><span class="n">begin</span><span class="p">()));</span>
+</code></pre></div></div>
+
+<p>This means we can feed the single iterator into our <code class="language-plaintext highlighter-rouge">transform_reduce</code> operation.
+Elements obtained by the zip iterator are passed into our lambda function, and we simply multiply the two values together, before using the <code class="language-plaintext highlighter-rouge">plus</code> functor to reduce the vector of intermediate values for a given row into a scalar:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">transform_reduce</span><span class="p">(</span><span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">),</span> <span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="n">N</span><span class="p">,</span>
+        <span class="p">[]</span> <span class="n">__device__</span> <span class="p">(</span><span class="k">auto</span> <span class="n">tup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="n">thrust</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="o">*</span> <span class="n">thrust</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">tup</span><span class="p">);</span>
+        <span class="p">},</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="n">thrust</span><span class="o">::</span><span class="n">plus</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">()</span>
+        <span class="p">);</span>
+</code></pre></div></div>
+
+<p>If we want to use threading on the host as well, we can even use an OpenMP directive:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#pragma openmp parallel for
+</span>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">transform_reduce</span><span class="p">(</span><span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">),</span> <span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="n">N</span><span class="p">,</span>
+        <span class="p">[]</span> <span class="n">__device__</span> <span class="p">(</span><span class="k">auto</span> <span class="n">tup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="n">thrust</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span> <span class="o">*</span> <span class="n">thrust</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">tup</span><span class="p">);</span>
+        <span class="p">},</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="n">thrust</span><span class="o">::</span><span class="n">plus</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">()</span>
+        <span class="p">);</span>
+</code></pre></div></div>
+
+<p>We’ll have to tell <code class="language-plaintext highlighter-rouge">nvcc</code> to pass the <code class="language-plaintext highlighter-rouge">-fopenmp</code> flag to the host compiler:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc <span class="nt">-std</span><span class="o">=</span>c++17 <span class="nt">--extended-lambda</span> <span class="nt">-Xcompiler</span> <span class="nt">-fopenmp</span> fancy.cu
+</code></pre></div></div>
+
+<h2 id="the-most-sophisticated-approach">The Most Sophisticated Approach</h2>
+
+<p>We have by now hopefully learned that using builtin libraries that leverage state-of-the-art GPU programming techniques should be preferred for an initial implementation.</p>
+
+<!---
+
+`mdspan` is extremely useful on the host as well, so we'll use it in our C++ host example.
+<a href="https://youtu.be/KK3JXvSiJG4" target="blank"> See Bryce's talk on C++ standard parallelism here.  </a>
+
+In our C++ examples, we'll use the following type aliases for matrices and vectors:
+```cpp
+#include <mdspan.hpp> // single-header version from github
+namespace stdex = std::experimental;
+using mat_t = stdex::mdspan<
+    double,
+    stdex::extents<3, 3>
+  >;
+using vec_t = stdex::mdspan<
+    double,
+    stdex::extents<3>
+  >;
+```
+
+Our setup is then as follows:
+```cpp
+int main() {
+  double dm[9];
+  const auto m = mat_t(dm);
+  std::iota(m.data(), m.data()+9, 0);
+
+  double dv[] = { 2., 2., 2. };
+  const auto v = vec_t(dv);
+
+  double dout[3] = {0};
+  const auto out = vec_t(dout);
+
+  matvecmul(m, v, out);
+
+  return 0;
+}
+```
+
+If we only compute the solution on the host, everything works the same way:
+```cuda
+void matvecmul(mat_t m, vec_t v, vec_t out) {
+  for (int i=0; i < m.static_extent(0); i++)
+    for (int j=0; j < m.static_extent(1); j++)
+      out(i) += v(j) * m(i, j);
+}
+```
+
+Notice how we can index our matrix as we would expect to: with multidimensional indexing.
+Notice also how we can call `static_extent` on our matrix - this determines the length of our matrix in a given dimension at _compile time_, which means we perform _less work at runtime then in the pure C version_ while getting nicer indexing and extent calculations.
 The compile-time and zero-cost abstractions are significant reasons why developers opt for C++ over C.
 For example, compare <a href="https://godbolt.org/z/ssrnz71hs" target="blank">the assembly in this C example</a> to <a href="https://godbolt.org/z/ra8d6arMf" target="blank"> the assembly in this C++ example.  </a>
-This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU’s GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).</p>
+This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU's GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).
 
-<p>Let’s now compute our <code class="language-plaintext highlighter-rouge">matvecmul</code> with the work broken up into isolated units, just as before.</p>
+Let's now compute our `matvecmul` with the work broken up into isolated units, just as before.
 
-<p>We’ll use the following additional type aliases:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">stdex</span><span class="o">::</span><span class="n">full_extent</span><span class="p">;</span>
-<span class="k">using</span> <span class="n">stdex</span><span class="o">::</span><span class="n">submdspan</span><span class="p">;</span>
-<span class="k">using</span> <span class="n">tuplespace_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
-    <span class="kt">double</span><span class="p">,</span>
-    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span>
-  <span class="o">&gt;</span><span class="p">;</span>
-<span class="k">using</span> <span class="n">tuplespace_row_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
-    <span class="kt">double</span><span class="p">,</span>
-    <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="o">&gt;</span>
-  <span class="o">&gt;</span><span class="p">;</span>
-</code></pre></div></div>
+We'll use the following additional type aliases:
+```cpp
+using stdex::full_extent;
+using stdex::submdspan;
+using tuplespace_t = stdex::mdspan<
+    double,
+    stdex::extents<3, 3, 2>
+  >;
+using tuplespace_row_t = stdex::mdspan<
+    double,
+    stdex::extents<3, 2>
+  >;
+```
 
-<p>The setup for the tuplespace and the units of work also look just about the same:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">double</span> <span class="nf">unit_of_work</span><span class="p">(</span><span class="n">tuplespace_row_t</span> <span class="n">tsr</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">double</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tsr</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">sum</span> <span class="o">+=</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-  <span class="k">return</span> <span class="n">sum</span><span class="p">;</span>
-<span class="p">}</span>
+The setup for the tuplespace and the units of work also look just about the same:
+```cpp
+double unit_of_work(tuplespace_row_t tsr) {
+  double sum = 0;
+  for (int i=0; i < tsr.static_extent(0); i++)
+    sum += tsr(i, 0) * tsr(i, 1);
+  return sum;
+}
 
-<span class="kt">void</span> <span class="nf">matvecmul_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">double</span> <span class="n">tuplespace_data</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">)];</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">tuplespace_data</span><span class="p">);</span>
+void matvecmul_on_tuplespace(mat_t m, vec_t v, vec_t out) {
+  double tuplespace_data[2 * m.static_extent(0) * m.static_extent(1)];
+  const auto ts = tuplespace_t(tuplespace_data);
 
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
-      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-    <span class="p">}</span>
+  for (int i=0; i < m.static_extent(0); i++)
+    for (int j=0; j < m.static_extent(1); j++) {
+      ts(i, j, 0) = m(i, j);
+      ts(i, j, 1) = v(i);
+    }
 
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">unit_of_work</span><span class="p">(</span><span class="n">submdspan</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">));</span>
-<span class="p">}</span>
-</code></pre></div></div>
+  for (int i=0; i < m.static_extent(0); i++)
+    out(i) = unit_of_work(submdspan(ts, i, full_extent, full_extent));
+}
+```
 
-<h1 id="cuda-c-1">CUDA C++</h1>
+# CUDA C++
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-<span class="n">__global__</span>
-<span class="kt">void</span> <span class="nf">unit_of_work</span><span class="p">(</span><span class="n">tuplespace_t</span> <span class="n">ts</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// row of tuplespace, and index in output</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">tid</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">tsr</span> <span class="o">=</span> <span class="n">submdspan</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tid</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">,</span> <span class="n">full_extent</span><span class="p">);</span>
-  <span class="kt">double</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">tsr</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="n">sum</span> <span class="o">+=</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">tsr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-  <span class="n">out</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span> <span class="o">=</span> <span class="n">sum</span><span class="p">;</span>
-<span class="p">}</span>
+```cpp
 
-<span class="kt">void</span> <span class="nf">matvecmul_on_tuplespace</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec_t</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">constexpr</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">ts_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-  <span class="kt">double</span> <span class="n">tuplespace_data</span><span class="p">[</span><span class="n">ts_size</span><span class="p">];</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">tuplespace_data</span><span class="p">);</span>
+__global__
+void unit_of_work(tuplespace_t ts, vec_t out) {
+  // row of tuplespace, and index in output
+  const auto tid = threadIdx.x;
+  const auto tsr = submdspan(ts, tid, full_extent, full_extent);
+  double sum = 0;
+  for (int i=0; i < tsr.static_extent(0); i++)
+    sum += tsr(i, 0) * tsr(i, 1);
+  out(tid) = sum;
+}
 
-  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="n">m</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
-      <span class="n">ts</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="n">v</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-    <span class="p">}</span>
+void matvecmul_on_tuplespace(mat_t m, vec_t v, vec_t out) {
+  constexpr std::size_t ts_size = 2 * m.static_extent(0) * m.static_extent(1);
+  double tuplespace_data[ts_size];
+  const auto ts = tuplespace_t(tuplespace_data);
 
-  <span class="c1">// Allocate memory for tuplespace on device, copy to device</span>
-  <span class="kt">double</span> <span class="o">*</span><span class="n">dev_tuplespace_data</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
-  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev_tuplespace_data</span><span class="p">,</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
-  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">dev_tuplespace_data</span><span class="p">,</span> <span class="n">tuplespace_data</span><span class="p">,</span>
-    <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span> <span class="n">cudaMemcpyHostToDevice</span><span class="p">);</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">dev_ts</span> <span class="o">=</span> <span class="n">tuplespace_t</span><span class="p">(</span><span class="n">dev_tuplespace_data</span><span class="p">);</span>
+  for (int i=0; i < m.static_extent(0); i++)
+    for (int j=0; j < m.static_extent(1); j++) {
+      ts(i, j, 0) = m(i, j);
+      ts(i, j, 1) = v(i);
+    }
 
-  <span class="c1">// Allocate memory for output vector on device</span>
-  <span class="kt">double</span> <span class="o">*</span><span class="n">dev_out_data</span> <span class="o">=</span> <span class="nb">nullptr</span><span class="p">;</span>
-  <span class="n">cudaMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dev_out_data</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
-  <span class="k">const</span> <span class="k">auto</span> <span class="n">dev_out</span> <span class="o">=</span> <span class="n">vec_t</span><span class="p">(</span><span class="n">dev_out_data</span><span class="p">);</span>
+  // Allocate memory for tuplespace on device, copy to device
+  double *dev_tuplespace_data = nullptr;
+  cudaMalloc(&dev_tuplespace_data, ts_size * sizeof(double));
+  cudaMemcpy(dev_tuplespace_data, tuplespace_data,
+    ts_size * sizeof(double), cudaMemcpyHostToDevice);
+  const auto dev_ts = tuplespace_t(dev_tuplespace_data);
 
-  <span class="c1">// Perform units of work on m.static_extent(0) GPU threads</span>
-  <span class="n">cu</span><span class="o">::</span><span class="n">unit_of_work</span><span class="o">&lt;&lt;&lt;</span><span class="n">m</span><span class="p">.</span><span class="n">static_extent</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">dev_ts</span><span class="p">,</span> <span class="n">dev_out</span><span class="p">);</span>
+  // Allocate memory for output vector on device
+  double *dev_out_data = nullptr;
+  cudaMalloc(&dev_out_data, m.static_extent(0) * sizeof(double));
+  const auto dev_out = vec_t(dev_out_data);
 
-  <span class="c1">// Copy output vector from device to host</span>
-  <span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">dev_out</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">ts_size</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">),</span> <span class="n">cudaMemcpyDeviceToHost</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>
+  // Perform units of work on m.static_extent(0) GPU threads
+  cu::unit_of_work<<<m.static_extent(0), 1>>>(dev_ts, dev_out);
+
+  // Copy output vector from device to host
+  cudaMemcpy(out.data(), dev_out.data(), ts_size * sizeof(double), cudaMemcpyDeviceToHost);
+}
+```
+--->
 
 <!---
 <center>
@@ -1087,6 +1328,7 @@ Feel free to skip this section; it is not critical to understanding the concepts
   <li><a href="https://github.com/kokkos/mdspan/blob/single-header/mdspan.hpp" target="blank"> Kokkos <code class="language-plaintext highlighter-rouge">mdspan</code> single header </a></li>
   <li><a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">CUDA C Introduction Slides</a></li>
   <li><a href="https://github.com/uysalere/cuda-matrix-vector-multiplication" target="blank"> More sophisticated CUDA matrix-vector product implementations </a></li>
+  <li><a href="https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf" target="blank"> Slides on CUDA reduction operation </a></li>
 </ul>
 
 <font size="-1">
