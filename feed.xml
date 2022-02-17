@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-15T19:42:41-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-17T10:07:55-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
 &lt;/script&gt;
 
 &lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;
@@ -25,14 +25,12 @@ This post takes you from a basic linear algebra example problem to a GPU-acceler
 
 &lt;h1 id=&quot;key-takeaways&quot;&gt;Key Takeaways&lt;/h1&gt;
 
-&lt;p&gt;These are the key takeaways from this post.
-If you don’t read the entire post, at least take these points:&lt;/p&gt;
-
 &lt;ol&gt;
   &lt;li&gt;Correctness precedes parallelism and performance&lt;/li&gt;
   &lt;li&gt;Identify and understand the underlying algorithms at play&lt;/li&gt;
   &lt;li&gt;Speed is not the same as efficiency&lt;/li&gt;
   &lt;li&gt;Use sane defaults, only optimize after profiling and testing&lt;/li&gt;
+  &lt;li&gt;Use the most specialized tool for the job&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;&lt;strong&gt;&lt;em&gt;NOTE: This post is geared towards those without significant experience in linear algebra, high performance computing, or GPU programming.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
@@ -48,6 +46,7 @@ If you don’t read the entire post, at least take these points:&lt;/p&gt;
   &lt;li&gt;C on Host&lt;/li&gt;
   &lt;li&gt;CUDA C&lt;/li&gt;
   &lt;li&gt;CUDA C++&lt;/li&gt;
+  &lt;li&gt;CUBLAS&lt;/li&gt;
   &lt;li&gt;Links, References, Additional Reading&lt;/li&gt;
 &lt;/ol&gt;
 
@@ -449,6 +448,12 @@ Also like C and C++, it is almost certainly more effective for you to write your
 &lt;p&gt;If you’re careful, you might also have noticed that GCC was passed the command line argument &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-x c++&lt;/code&gt;, even though we’re working in plain CUDA C.
 This is because cuda code is &lt;em&gt;by default built on the host as C++&lt;/em&gt;.
 If you use the oldest CUDA compiler available on Compiler Explorer, you’ll see that it still defaults to building the host code under C++14.&lt;/p&gt;
+
+&lt;p&gt;The full NVCC compilation pipeline is depicted below:&lt;/p&gt;
+
+&lt;center&gt;
+&lt;img src=&quot;https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/graphics/cuda-compilation-from-cu-to-executable.png&quot; alt=&quot;The full NVCC compilation pipeline&quot; /&gt;
+&lt;/center&gt;
 
 &lt;h3 id=&quot;using-the-cuda-runtime&quot;&gt;Using the CUDA Runtime&lt;/h3&gt;
 
