@@ -108,15 +108,22 @@ This post takes you from a basic linear algebra example problem to a GPU-acceler
 <h1 id="outline">Outline</h1>
 
 <ol>
-  <li>Mathematical Understanding of Algorithm
-    <ol>
-      <li>Short Example in Python</li>
-    </ol>
-  </li>
-  <li>C on Host</li>
+  <li>Mathematical Understanding of Algorithm</li>
+  <li>Algorithm Analysis</li>
+  <li>Final value is 6</li>
+  <li>C on the Host</li>
   <li>CUDA C</li>
+  <li>Core Concepts
+    1. Host and Device
+    1. Using the CUDA Runtime
+    1. Shared Memory
+    1. CUDA Mat-Vec Multiply</li>
   <li>CUDA C++</li>
-  <li>CUBLAS</li>
+  <li>Naive Approach</li>
+  <li>More Sophisticated Approach</li>
+  <li>The Best Tool for the Job</li>
+  <li>Conclusion</li>
+  <li>BQN Example</li>
   <li>Links, References, Additional Reading</li>
 </ol>
 
@@ -1120,163 +1127,74 @@ Elements obtained by the zip iterator are passed into our lambda function, and w
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc <span class="nt">-std</span><span class="o">=</span>c++17 <span class="nt">--extended-lambda</span> <span class="nt">-Xcompiler</span> <span class="nt">-fopenmp</span> fancy.cu
 </code></pre></div></div>
 
-<h2 id="the-most-sophisticated-approach">The Most Sophisticated Approach</h2>
+<h2 id="the-best-tool-for-the-job">The Best Tool for the Job</h2>
 
-<p>We have by now hopefully learned that using builtin libraries that leverage state-of-the-art GPU programming techniques should be preferred for an initial implementation.</p>
+<p>We have by now hopefully learned that we should use the most specialized tool for the job, and we should write kernels by hand only when we’re sure we can do better than your libraries of choice.
+We can take this principle one step further with a little extra knowledge of our problem.</p>
 
-<!---
+<p>A matrix-vector product is a very common linear algebra operation, and a member of the Basic Linear Algebra Subroutines interface, which CUDA provides a library for (CUBLAS).
+Because this is such a common operation, NVIDIA provides an extremely fast implementation - far more optimized than anything we would write by hand.</p>
 
-`mdspan` is extremely useful on the host as well, so we'll use it in our C++ host example.
-<a href="https://youtu.be/KK3JXvSiJG4" target="blank"> See Bryce's talk on C++ standard parallelism here.  </a>
+<p>This knowledge of our problem leads us to using the most appropriate library, and likely to the fastest solution.</p>
 
-In our C++ examples, we'll use the following type aliases for matrices and vectors:
-```cpp
-#include <mdspan.hpp> // single-header version from github
-namespace stdex = std::experimental;
-using mat_t = stdex::mdspan<
-    double,
-    stdex::extents<3, 3>
-  >;
-using vec_t = stdex::mdspan<
-    double,
-    stdex::extents<3>
-  >;
-```
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;cstdio&gt;
+#include &lt;thrust/device_vector.h&gt;
+#include &lt;thrust/host_vector.h&gt;
+#include &lt;thrust/sequence.h&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+#include &lt;cublas_v2.h&gt;
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="cp">#define M 10
+</span>  <span class="cp">#define N 15
+</span>
+  <span class="n">cublasHandle_t</span> <span class="n">ch</span><span class="p">;</span>
+  <span class="n">cublasCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ch</span><span class="p">);</span>
 
-Our setup is then as follows:
-```cpp
-int main() {
-  double dm[9];
-  const auto m = mat_t(dm);
-  std::iota(m.data(), m.data()+9, 0);
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">a</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">a</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
 
-  double dv[] = { 2., 2., 2. };
-  const auto v = vec_t(dv);
+  <span class="k">const</span> <span class="kt">double</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+  <span class="k">const</span> <span class="kt">double</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
 
-  double dout[3] = {0};
-  const auto out = vec_t(dout);
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">b</span><span class="p">(</span><span class="n">N</span><span class="p">);</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">b</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">b</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
 
-  matvecmul(m, v, out);
+  <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">c</span><span class="p">(</span><span class="n">M</span><span class="p">);</span>
 
-  return 0;
-}
-```
+  <span class="cp">#define PTR(x) thrust::raw_pointer_cast(x.data())
+</span>  <span class="n">cublasDgemv</span><span class="p">(</span>
+      <span class="n">ch</span><span class="p">,</span>
+      <span class="n">CUBLAS_OP_T</span><span class="p">,</span>
+      <span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span>
+      <span class="o">&amp;</span><span class="n">alpha</span><span class="p">,</span>
+      <span class="n">PTR</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">N</span><span class="p">,</span>
+      <span class="n">PTR</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="o">&amp;</span><span class="n">beta</span><span class="p">,</span>
+      <span class="n">PTR</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="mi">1</span>
+      <span class="p">);</span>
+  <span class="cp">#undef PTR
+</span>
+  <span class="n">thrust</span><span class="o">::</span><span class="n">host_vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">hc</span> <span class="o">=</span> <span class="n">c</span><span class="p">;</span>
 
-If we only compute the solution on the host, everything works the same way:
-```cuda
-void matvecmul(mat_t m, vec_t v, vec_t out) {
-  for (int i=0; i < m.static_extent(0); i++)
-    for (int j=0; j < m.static_extent(1); j++)
-      out(i) += v(j) * m(i, j);
-}
-```
+  <span class="n">puts</span><span class="p">(</span><span class="s">"Output:"</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%.1f "</span><span class="p">,</span> <span class="n">hc</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+  <span class="n">puts</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
 
-Notice how we can index our matrix as we would expect to: with multidimensional indexing.
-Notice also how we can call `static_extent` on our matrix - this determines the length of our matrix in a given dimension at _compile time_, which means we perform _less work at runtime then in the pure C version_ while getting nicer indexing and extent calculations.
-The compile-time and zero-cost abstractions are significant reasons why developers opt for C++ over C.
-For example, compare <a href="https://godbolt.org/z/ssrnz71hs" target="blank">the assembly in this C example</a> to <a href="https://godbolt.org/z/ra8d6arMf" target="blank"> the assembly in this C++ example.  </a>
-This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU's GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).
+  <span class="n">cublasDestroy</span><span class="p">(</span><span class="n">ch</span><span class="p">);</span>
 
-Let's now compute our `matvecmul` with the work broken up into isolated units, just as before.
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-We'll use the following additional type aliases:
-```cpp
-using stdex::full_extent;
-using stdex::submdspan;
-using tuplespace_t = stdex::mdspan<
-    double,
-    stdex::extents<3, 3, 2>
-  >;
-using tuplespace_row_t = stdex::mdspan<
-    double,
-    stdex::extents<3, 2>
-  >;
-```
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc cublas.cu <span class="nt">-lcublas</span> <span class="o">&amp;&amp;</span> ./a.out
+<span class="go">Output:
+1015.0 2590.0 4165.0 5740.0 7315.0 8890.0 10465.0 12040.0 13615.0 15190.0
+</span></code></pre></div></div>
 
-The setup for the tuplespace and the units of work also look just about the same:
-```cpp
-double unit_of_work(tuplespace_row_t tsr) {
-  double sum = 0;
-  for (int i=0; i < tsr.static_extent(0); i++)
-    sum += tsr(i, 0) * tsr(i, 1);
-  return sum;
-}
-
-void matvecmul_on_tuplespace(mat_t m, vec_t v, vec_t out) {
-  double tuplespace_data[2 * m.static_extent(0) * m.static_extent(1)];
-  const auto ts = tuplespace_t(tuplespace_data);
-
-  for (int i=0; i < m.static_extent(0); i++)
-    for (int j=0; j < m.static_extent(1); j++) {
-      ts(i, j, 0) = m(i, j);
-      ts(i, j, 1) = v(i);
-    }
-
-  for (int i=0; i < m.static_extent(0); i++)
-    out(i) = unit_of_work(submdspan(ts, i, full_extent, full_extent));
-}
-```
-
-# CUDA C++
-
-```cpp
-
-__global__
-void unit_of_work(tuplespace_t ts, vec_t out) {
-  // row of tuplespace, and index in output
-  const auto tid = threadIdx.x;
-  const auto tsr = submdspan(ts, tid, full_extent, full_extent);
-  double sum = 0;
-  for (int i=0; i < tsr.static_extent(0); i++)
-    sum += tsr(i, 0) * tsr(i, 1);
-  out(tid) = sum;
-}
-
-void matvecmul_on_tuplespace(mat_t m, vec_t v, vec_t out) {
-  constexpr std::size_t ts_size = 2 * m.static_extent(0) * m.static_extent(1);
-  double tuplespace_data[ts_size];
-  const auto ts = tuplespace_t(tuplespace_data);
-
-  for (int i=0; i < m.static_extent(0); i++)
-    for (int j=0; j < m.static_extent(1); j++) {
-      ts(i, j, 0) = m(i, j);
-      ts(i, j, 1) = v(i);
-    }
-
-  // Allocate memory for tuplespace on device, copy to device
-  double *dev_tuplespace_data = nullptr;
-  cudaMalloc(&dev_tuplespace_data, ts_size * sizeof(double));
-  cudaMemcpy(dev_tuplespace_data, tuplespace_data,
-    ts_size * sizeof(double), cudaMemcpyHostToDevice);
-  const auto dev_ts = tuplespace_t(dev_tuplespace_data);
-
-  // Allocate memory for output vector on device
-  double *dev_out_data = nullptr;
-  cudaMalloc(&dev_out_data, m.static_extent(0) * sizeof(double));
-  const auto dev_out = vec_t(dev_out_data);
-
-  // Perform units of work on m.static_extent(0) GPU threads
-  cu::unit_of_work<<<m.static_extent(0), 1>>>(dev_ts, dev_out);
-
-  // Copy output vector from device to host
-  cudaMemcpy(out.data(), dev_out.data(), ts_size * sizeof(double), cudaMemcpyDeviceToHost);
-}
-```
---->
-
-<!---
-<center>
-<div class="mermaid">
-graph TD
-  T(tests) -- > C(correctness)
-  I(initial impl) -- > C
-  C -- > P(perf analysis)
-  P -- > A(algorithm analysis)
-  P -- > CC(code generation)
-  A -- > D(distribution)
-</div>
-</center>
---->
+<h1 id="conclusion">Conclusion</h1>
 
 <h1 id="bqn-example">BQN Example</h1>
 

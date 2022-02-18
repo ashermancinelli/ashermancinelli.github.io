@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-17T10:07:55-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-18T11:37:11-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
 &lt;/script&gt;
 
 &lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;
@@ -38,15 +38,22 @@ This post takes you from a basic linear algebra example problem to a GPU-acceler
 &lt;h1 id=&quot;outline&quot;&gt;Outline&lt;/h1&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;Mathematical Understanding of Algorithm
-    &lt;ol&gt;
-      &lt;li&gt;Short Example in Python&lt;/li&gt;
-    &lt;/ol&gt;
-  &lt;/li&gt;
-  &lt;li&gt;C on Host&lt;/li&gt;
+  &lt;li&gt;Mathematical Understanding of Algorithm&lt;/li&gt;
+  &lt;li&gt;Algorithm Analysis&lt;/li&gt;
+  &lt;li&gt;Final value is 6&lt;/li&gt;
+  &lt;li&gt;C on the Host&lt;/li&gt;
   &lt;li&gt;CUDA C&lt;/li&gt;
+  &lt;li&gt;Core Concepts
+    1. Host and Device
+    1. Using the CUDA Runtime
+    1. Shared Memory
+    1. CUDA Mat-Vec Multiply&lt;/li&gt;
   &lt;li&gt;CUDA C++&lt;/li&gt;
-  &lt;li&gt;CUBLAS&lt;/li&gt;
+  &lt;li&gt;Naive Approach&lt;/li&gt;
+  &lt;li&gt;More Sophisticated Approach&lt;/li&gt;
+  &lt;li&gt;The Best Tool for the Job&lt;/li&gt;
+  &lt;li&gt;Conclusion&lt;/li&gt;
+  &lt;li&gt;BQN Example&lt;/li&gt;
   &lt;li&gt;Links, References, Additional Reading&lt;/li&gt;
 &lt;/ol&gt;
 
@@ -1045,163 +1052,74 @@ Elements obtained by the zip iterator are passed into our lambda function, and w
 &lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;nvcc &lt;span class=&quot;nt&quot;&gt;-std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;c++17 &lt;span class=&quot;nt&quot;&gt;--extended-lambda&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-Xcompiler&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-fopenmp&lt;/span&gt; fancy.cu
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h2 id=&quot;the-most-sophisticated-approach&quot;&gt;The Most Sophisticated Approach&lt;/h2&gt;
+&lt;h2 id=&quot;the-best-tool-for-the-job&quot;&gt;The Best Tool for the Job&lt;/h2&gt;
 
-&lt;p&gt;We have by now hopefully learned that using builtin libraries that leverage state-of-the-art GPU programming techniques should be preferred for an initial implementation.&lt;/p&gt;
+&lt;p&gt;We have by now hopefully learned that we should use the most specialized tool for the job, and we should write kernels by hand only when we’re sure we can do better than your libraries of choice.
+We can take this principle one step further with a little extra knowledge of our problem.&lt;/p&gt;
 
-&lt;!---
+&lt;p&gt;A matrix-vector product is a very common linear algebra operation, and a member of the Basic Linear Algebra Subroutines interface, which CUDA provides a library for (CUBLAS).
+Because this is such a common operation, NVIDIA provides an extremely fast implementation - far more optimized than anything we would write by hand.&lt;/p&gt;
 
-`mdspan` is extremely useful on the host as well, so we'll use it in our C++ host example.
-&lt;a href=&quot;https://youtu.be/KK3JXvSiJG4&quot; target=&quot;blank&quot;&gt; See Bryce's talk on C++ standard parallelism here.  &lt;/a&gt;
+&lt;p&gt;This knowledge of our problem leads us to using the most appropriate library, and likely to the fastest solution.&lt;/p&gt;
 
-In our C++ examples, we'll use the following type aliases for matrices and vectors:
-```cpp
-#include &lt;mdspan.hpp&gt; // single-header version from github
-namespace stdex = std::experimental;
-using mat_t = stdex::mdspan&lt;
-    double,
-    stdex::extents&lt;3, 3&gt;
-  &gt;;
-using vec_t = stdex::mdspan&lt;
-    double,
-    stdex::extents&lt;3&gt;
-  &gt;;
-```
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;cstdio&amp;gt;
+#include &amp;lt;thrust/device_vector.h&amp;gt;
+#include &amp;lt;thrust/host_vector.h&amp;gt;
+#include &amp;lt;thrust/sequence.h&amp;gt;
+#include &amp;lt;cuda.h&amp;gt;
+#include &amp;lt;cuda_runtime.h&amp;gt;
+#include &amp;lt;cublas_v2.h&amp;gt;
+&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;cp&quot;&gt;#define M 10
+&lt;/span&gt;  &lt;span class=&quot;cp&quot;&gt;#define N 15
+&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;cublasHandle_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;cublasCreate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-Our setup is then as follows:
-```cpp
-int main() {
-  double dm[9];
-  const auto m = mat_t(dm);
-  std::iota(m.data(), m.data()+9, 0);
+  &lt;span class=&quot;n&quot;&gt;thrust&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device_vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;thrust&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sequence&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-  double dv[] = { 2., 2., 2. };
-  const auto v = vec_t(dv);
+  &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beta&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-  double dout[3] = {0};
-  const auto out = vec_t(dout);
+  &lt;span class=&quot;n&quot;&gt;thrust&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device_vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;thrust&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sequence&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-  matvecmul(m, v, out);
+  &lt;span class=&quot;n&quot;&gt;thrust&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;device_vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-  return 0;
-}
-```
+  &lt;span class=&quot;cp&quot;&gt;#define PTR(x) thrust::raw_pointer_cast(x.data())
+&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;cublasDgemv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;ch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;CUBLAS_OP_T&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;PTR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;PTR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;beta&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;PTR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;cp&quot;&gt;#undef PTR
+&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;thrust&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;host_vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hc&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-If we only compute the solution on the host, everything works the same way:
-```cuda
-void matvecmul(mat_t m, vec_t v, vec_t out) {
-  for (int i=0; i &lt; m.static_extent(0); i++)
-    for (int j=0; j &lt; m.static_extent(1); j++)
-      out(i) += v(j) * m(i, j);
-}
-```
+  &lt;span class=&quot;n&quot;&gt;puts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Output:&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%.1f &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;puts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-Notice how we can index our matrix as we would expect to: with multidimensional indexing.
-Notice also how we can call `static_extent` on our matrix - this determines the length of our matrix in a given dimension at _compile time_, which means we perform _less work at runtime then in the pure C version_ while getting nicer indexing and extent calculations.
-The compile-time and zero-cost abstractions are significant reasons why developers opt for C++ over C.
-For example, compare &lt;a href=&quot;https://godbolt.org/z/ssrnz71hs&quot; target=&quot;blank&quot;&gt;the assembly in this C example&lt;/a&gt; to &lt;a href=&quot;https://godbolt.org/z/ra8d6arMf&quot; target=&quot;blank&quot;&gt; the assembly in this C++ example.  &lt;/a&gt;
-This is one reason that most compiler vendors choose to write their compilers in C++ over C (eg GNU's GCC, LLVM, Cray CC, IBM XL, Intel compiler suite, etc).
+  &lt;span class=&quot;n&quot;&gt;cublasDestroy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-Let's now compute our `matvecmul` with the work broken up into isolated units, just as before.
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-We'll use the following additional type aliases:
-```cpp
-using stdex::full_extent;
-using stdex::submdspan;
-using tuplespace_t = stdex::mdspan&lt;
-    double,
-    stdex::extents&lt;3, 3, 2&gt;
-  &gt;;
-using tuplespace_row_t = stdex::mdspan&lt;
-    double,
-    stdex::extents&lt;3, 2&gt;
-  &gt;;
-```
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;nvcc cublas.cu &lt;span class=&quot;nt&quot;&gt;-lcublas&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; ./a.out
+&lt;span class=&quot;go&quot;&gt;Output:
+1015.0 2590.0 4165.0 5740.0 7315.0 8890.0 10465.0 12040.0 13615.0 15190.0
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-The setup for the tuplespace and the units of work also look just about the same:
-```cpp
-double unit_of_work(tuplespace_row_t tsr) {
-  double sum = 0;
-  for (int i=0; i &lt; tsr.static_extent(0); i++)
-    sum += tsr(i, 0) * tsr(i, 1);
-  return sum;
-}
-
-void matvecmul_on_tuplespace(mat_t m, vec_t v, vec_t out) {
-  double tuplespace_data[2 * m.static_extent(0) * m.static_extent(1)];
-  const auto ts = tuplespace_t(tuplespace_data);
-
-  for (int i=0; i &lt; m.static_extent(0); i++)
-    for (int j=0; j &lt; m.static_extent(1); j++) {
-      ts(i, j, 0) = m(i, j);
-      ts(i, j, 1) = v(i);
-    }
-
-  for (int i=0; i &lt; m.static_extent(0); i++)
-    out(i) = unit_of_work(submdspan(ts, i, full_extent, full_extent));
-}
-```
-
-# CUDA C++
-
-```cpp
-
-__global__
-void unit_of_work(tuplespace_t ts, vec_t out) {
-  // row of tuplespace, and index in output
-  const auto tid = threadIdx.x;
-  const auto tsr = submdspan(ts, tid, full_extent, full_extent);
-  double sum = 0;
-  for (int i=0; i &lt; tsr.static_extent(0); i++)
-    sum += tsr(i, 0) * tsr(i, 1);
-  out(tid) = sum;
-}
-
-void matvecmul_on_tuplespace(mat_t m, vec_t v, vec_t out) {
-  constexpr std::size_t ts_size = 2 * m.static_extent(0) * m.static_extent(1);
-  double tuplespace_data[ts_size];
-  const auto ts = tuplespace_t(tuplespace_data);
-
-  for (int i=0; i &lt; m.static_extent(0); i++)
-    for (int j=0; j &lt; m.static_extent(1); j++) {
-      ts(i, j, 0) = m(i, j);
-      ts(i, j, 1) = v(i);
-    }
-
-  // Allocate memory for tuplespace on device, copy to device
-  double *dev_tuplespace_data = nullptr;
-  cudaMalloc(&amp;dev_tuplespace_data, ts_size * sizeof(double));
-  cudaMemcpy(dev_tuplespace_data, tuplespace_data,
-    ts_size * sizeof(double), cudaMemcpyHostToDevice);
-  const auto dev_ts = tuplespace_t(dev_tuplespace_data);
-
-  // Allocate memory for output vector on device
-  double *dev_out_data = nullptr;
-  cudaMalloc(&amp;dev_out_data, m.static_extent(0) * sizeof(double));
-  const auto dev_out = vec_t(dev_out_data);
-
-  // Perform units of work on m.static_extent(0) GPU threads
-  cu::unit_of_work&lt;&lt;&lt;m.static_extent(0), 1&gt;&gt;&gt;(dev_ts, dev_out);
-
-  // Copy output vector from device to host
-  cudaMemcpy(out.data(), dev_out.data(), ts_size * sizeof(double), cudaMemcpyDeviceToHost);
-}
-```
----&gt;
-
-&lt;!---
-&lt;center&gt;
-&lt;div class=&quot;mermaid&quot;&gt;
-graph TD
-  T(tests) -- &gt; C(correctness)
-  I(initial impl) -- &gt; C
-  C -- &gt; P(perf analysis)
-  P -- &gt; A(algorithm analysis)
-  P -- &gt; CC(code generation)
-  A -- &gt; D(distribution)
-&lt;/div&gt;
-&lt;/center&gt;
----&gt;
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
 
 &lt;h1 id=&quot;bqn-example&quot;&gt;BQN Example&lt;/h1&gt;
 
