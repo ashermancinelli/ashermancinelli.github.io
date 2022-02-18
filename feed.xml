@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-18T11:37:11-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-02-18T11:47:48-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
 &lt;/script&gt;
 
 &lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;
@@ -40,18 +40,26 @@ This post takes you from a basic linear algebra example problem to a GPU-acceler
 &lt;ol&gt;
   &lt;li&gt;Mathematical Understanding of Algorithm&lt;/li&gt;
   &lt;li&gt;Algorithm Analysis&lt;/li&gt;
-  &lt;li&gt;Final value is 6&lt;/li&gt;
   &lt;li&gt;C on the Host&lt;/li&gt;
-  &lt;li&gt;CUDA C&lt;/li&gt;
-  &lt;li&gt;Core Concepts
-    1. Host and Device
-    1. Using the CUDA Runtime
-    1. Shared Memory
-    1. CUDA Mat-Vec Multiply&lt;/li&gt;
-  &lt;li&gt;CUDA C++&lt;/li&gt;
-  &lt;li&gt;Naive Approach&lt;/li&gt;
-  &lt;li&gt;More Sophisticated Approach&lt;/li&gt;
-  &lt;li&gt;The Best Tool for the Job&lt;/li&gt;
+  &lt;li&gt;CUDA C
+    &lt;ol&gt;
+      &lt;li&gt;Core Concepts
+        &lt;ol&gt;
+          &lt;li&gt;Host and Device&lt;/li&gt;
+          &lt;li&gt;Using the CUDA Runtime&lt;/li&gt;
+          &lt;li&gt;Shared Memory&lt;/li&gt;
+          &lt;li&gt;CUDA Mat-Vec Multiply&lt;/li&gt;
+        &lt;/ol&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;CUDA C++
+    &lt;ol&gt;
+      &lt;li&gt;Naive Approach&lt;/li&gt;
+      &lt;li&gt;More Sophisticated Approach&lt;/li&gt;
+      &lt;li&gt;The Best Tool for the Job&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
   &lt;li&gt;Conclusion&lt;/li&gt;
   &lt;li&gt;BQN Example&lt;/li&gt;
   &lt;li&gt;Links, References, Additional Reading&lt;/li&gt;
