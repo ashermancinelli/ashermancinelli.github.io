@@ -2,9 +2,9 @@
 
 Hey! Today we'll build a mental model for writing code for a GPU, and we'll take a look at a short code snippet.
 
-If you're interested in GPU programming but you've never had a chance to use it or learn about it, this video could be a great place for you to start.
+If you're interested in GPU programming but you haven't had a chance to use it or learn about it, this video could be a good starting point for you.
 
-Let's get started.
+Let's jump in.
 
 ## Device vs host
 
