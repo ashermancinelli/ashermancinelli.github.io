@@ -23,7 +23,7 @@
 
         <section>
           <pre>
-<code data-line-numbers="1-5|9-13|13-18|18-21|21-24|24-33">__global__ void square(int *ar, int n) {
+<code data-line-numbers="1-6|9-13|13-19|19-22|1-6|19-22|22-26|26-35">__global__ void square(int *ar, int n) {
   int tid = threadIdx.x;
   if (tid < n)
     ar[tid] = ar[tid] * ar[tid];
@@ -39,18 +39,15 @@ int main() {
   // Allocate memory on device, copy from host to device
   int* d_ar;
   cudaMalloc(&d_ar, sizeof(int[N]));
-  cudaMemcpy(d_ar, ar, sizeof(int[N]), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_ar, ar, sizeof(int[N]),
+      cudaMemcpyHostToDevice);
 
   // Launch kernel to run on the device
-  square<<<1, 15>>>(d_ar, N);
+  square<<<1, 64>>>(d_ar, N);
 
   // Copy memory back from device
-  cudaMemcpy(ar, d_ar, sizeof(int[N]), cudaMemcpyDeviceToHost);
-
-  // Display values after modification on device
-  for (int i=0; i < N; i++)
-    printf("%d ", ar[i]);
-  puts("");
+  cudaMemcpy(ar, d_ar, sizeof(int[N]),
+      cudaMemcpyDeviceToHost);
 
   // Deallocate memory
   cudaFree(d_ar);
