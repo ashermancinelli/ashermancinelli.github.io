@@ -52,4 +52,6 @@ If we look at this example problem, you'll see all of these elements at play.
 
 ## Outro
 
-I hope you all 
+I hope you all enjoyed this video and stay tuned for the next few videos.
+I have some more introductory CUDA content in the works.
+Peace!
