@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-03-15T10:22:17-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>HPC Software Development</subtitle><entry><title type="html">NAABIBP (Not Another ABI Blog Post)</title><link href="/naabibp" rel="alternate" type="text/html" title="NAABIBP (Not Another ABI Blog Post)" /><published>2022-03-14T00:00:00-06:00</published><updated>2022-03-14T00:00:00-06:00</updated><id>/NAABIBP</id><content type="html" xml:base="/naabibp">&lt;p&gt;Going on the offensive.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-03-15T17:25:13-06:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++</subtitle><entry><title type="html">JAABIBP (Just Another ABI Blog Post)</title><link href="/jaabibp" rel="alternate" type="text/html" title="JAABIBP (Just Another ABI Blog Post)" /><published>2022-03-14T00:00:00-06:00</published><updated>2022-03-14T00:00:00-06:00</updated><id>/JAABIBP</id><content type="html" xml:base="/jaabibp">&lt;p&gt;ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_Alias&lt;/code&gt; proposal.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;&lt;em&gt;NOTE: These thoughts are just taken from other people that know more than me. You should probably just read their articles instead 🙃 See the end of the article for better posts than this one.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;NOTE: This is probably the least educated article about ABI breakage yet. You should really watch &lt;a href=&quot;https://youtu.be/By7b19YIv8Q&quot;&gt;Jason Turner’s youtube video&lt;/a&gt; or read &lt;a href=&quot;https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi&quot;&gt;JeanHeyd Meneide’s blog posts&lt;/a&gt;🙃&lt;/em&gt;&lt;/p&gt;
 
 &lt;font size=&quot;-1&quot;&gt;
   &lt;em&gt;
@@ -9,7 +9,78 @@
   &lt;/em&gt;
 &lt;/font&gt;
 
-&lt;h2 id=&quot;what-is-the-abi&quot;&gt;What is the ABI?&lt;/h2&gt;
+&lt;p&gt;After reading about transparent aliasing in &lt;a href=&quot;https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi&quot;&gt;this blog post from JeanHeyd Meneide&lt;/a&gt;, I had to play around with it in Godbolt and rave about its coolness on the Cursed Bird Site.
+Sean Parent rightly pointed out that this super neat proposal from JeanHeyd acomplishes pretty much the same thing as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inline namespace&lt;/code&gt; in C++.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;center&gt;
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;Isn't this what inline namespaces are for in C++? (prior, they were \_\_strong namespaces). I'm surprised these aren't even mentioned in the proposal. Maybe an abbreviated form of inline namespaces for C could be used. ;-)&lt;/p&gt;&amp;mdash; Sean Parent (@SeanParent) &lt;a href=&quot;https://twitter.com/SeanParent/status/1503471201833738240?ref_src=twsrc%5Etfw&quot;&gt;March 14, 2022&lt;/a&gt;&lt;/blockquote&gt; &lt;script async=&quot;&quot; src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+&lt;/center&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s talk about that.&lt;/p&gt;
+
+&lt;h2 id=&quot;problem-formulation&quot;&gt;Problem Formulation&lt;/h2&gt;
+
+&lt;p&gt;Let’s say you build executable A which dynamically links against library B.&lt;/p&gt;
+
+&lt;p&gt;Library B might look like this:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// B.hpp&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// B.cpp&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;B.hpp&amp;gt;
+&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;while executable A might look like this:&lt;/p&gt;
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;B.hpp&amp;gt;
+#include &amp;lt;iostream&amp;gt;
+&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cout&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Some time has passed since library B was released, and now the authors have decided that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;answer&lt;/code&gt; can be 30% faster if it uses &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;long double&lt;/code&gt; instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;int&lt;/code&gt;s.
+How cool!&lt;/p&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// B.hpp&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// B.cpp&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;B.hpp&amp;gt;
+&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;double&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Wow, so fast! 🚀&lt;/p&gt;
+
+&lt;p&gt;If you rebuild B without rebuilding A however, A will be expecting the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;answer&lt;/code&gt;’s return value to be an int (4 bytes on my system) even though &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;B::answer&lt;/code&gt; now returns a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;long double&lt;/code&gt; (8 bytes on my system).
+When dynamically linking to the original B library, A unsurprisingly prints &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;42&lt;/code&gt;.
+When dynamically linking to the updated B library however, A prints the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-console highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;./A
+&lt;span class=&quot;go&quot;&gt;83575344
+&lt;/span&gt;&lt;span class=&quot;gp&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c&quot;&gt;# 😨 uh oh...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This disagreement between the program and the library at the binary level wreaks all sorts of havoc.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://thephd.dev/binary-banshees-digital-demons-abi-c-c++-help-me-god-please#abi-even-simpler&quot;&gt;This section of JeanHeyd’s post gives a much better illustration.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;comparing-inline-namespace-with-_alias-and-co&quot;&gt;Comparing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inline namespace&lt;/code&gt; with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_Alias&lt;/code&gt; and co&lt;/h2&gt;
 
 &lt;h2 id=&quot;why-do-some-want-to-break-it&quot;&gt;Why do some want to break it?&lt;/h2&gt;
 
@@ -24,12 +95,14 @@ Many people will recommend not passing standard library types around, and not th
 &lt;h2 id=&quot;links&quot;&gt;Links&lt;/h2&gt;
 
 &lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://thephd.dev/binary-banshees-digital-demons-abi-c-c++-help-me-god-please&quot;&gt;Binary Banshees and Digital Demons (JeanHeyd Meneide)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi&quot;&gt;To Save C, We Must Save ABI (JeanHeyd Meneide)&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2028r0.pdf&quot;&gt;Titus Winters paper on ABI&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/&quot;&gt;Ben Craig’s Reddit post on ABI breakage&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/fj9dfg1/&quot;&gt;Johnathan Wakely’s comment about ABI on Reddit&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://cor3ntin.github.io/posts/abi/&quot;&gt;Corentin’s blog post on ABI&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=By7b19YIv8Q&amp;amp;ab_channel=C%E1%90%A9%E1%90%A9WeeklyWithJasonTurner&quot;&gt;C++ Weekly - Ep 270 - Break ABI to Save C++&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content><author><name></name></author><category term="c, c++" /><summary type="html">Going on the offensive.</summary></entry><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
+&lt;/ol&gt;</content><author><name></name></author><category term="c, c++" /><summary type="html">ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 _Alias proposal.</summary></entry><entry><title type="html">CUDA 101: Matrix-Vector Product</title><link href="/cuda-matvec" rel="alternate" type="text/html" title="CUDA 101: Matrix-Vector Product" /><published>2022-02-10T00:00:00-07:00</published><updated>2022-02-10T00:00:00-07:00</updated><id>/CUDA-101-Matvec</id><content type="html" xml:base="/cuda-matvec">&lt;script src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot; type=&quot;text/javascript&quot;&gt;
 &lt;/script&gt;
 
 &lt;script async=&quot;&quot; src=&quot;https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js&quot;&gt;&lt;/script&gt;

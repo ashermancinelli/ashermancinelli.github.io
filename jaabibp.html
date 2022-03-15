@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JAABIBP (Just Another ABI Blog Post) – Asher Mancinelli – Mostly C++</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 _Alias proposal.
+
+">
+    <meta property="og:description" content="ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 _Alias proposal.
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="JAABIBP (Just Another ABI Blog Post)">
+    <meta property="twitter:title" content="JAABIBP (Just Another ABI Blog Post)">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - Mostly C++" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">Mostly C++</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>JAABIBP (Just Another ABI Blog Post)</h1>
+
+  <div class="entry">
+    <p>ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 <code class="language-plaintext highlighter-rouge">_Alias</code> proposal.</p>
+
+<p><em>NOTE: This is probably the least educated article about ABI breakage yet. You should really watch <a href="https://youtu.be/By7b19YIv8Q">Jason Turner’s youtube video</a> or read <a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">JeanHeyd Meneide’s blog posts</a>🙃</em></p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<p>After reading about transparent aliasing in <a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">this blog post from JeanHeyd Meneide</a>, I had to play around with it in Godbolt and rave about its coolness on the Cursed Bird Site.
+Sean Parent rightly pointed out that this super neat proposal from JeanHeyd acomplishes pretty much the same thing as <code class="language-plaintext highlighter-rouge">inline namespace</code> in C++.</p>
+
+<p><br></p>
+
+<center>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">Isn't this what inline namespaces are for in C++? (prior, they were \_\_strong namespaces). I'm surprised these aren't even mentioned in the proposal. Maybe an abbreviated form of inline namespaces for C could be used. ;-)</p>— Sean Parent (@SeanParent) <a href="https://twitter.com/SeanParent/status/1503471201833738240?ref_src=twsrc%5Etfw">March 14, 2022</a>
+</blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+
+<p><br></p>
+
+<p>Let’s talk about that.</p>
+
+<h2 id="problem-formulation">Problem Formulation</h2>
+
+<p>Let’s say you build executable A which dynamically links against library B.</p>
+
+<p>Library B might look like this:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// B.hpp</span>
+<span class="k">namespace</span> <span class="n">B</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">answer</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// B.cpp</span>
+<span class="cp">#include &lt;B.hpp&gt;
+</span><span class="kt">int</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>while executable A might look like this:</p>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;B.hpp&gt;
+#include &lt;iostream&gt;
+</span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><br></p>
+
+<p>Some time has passed since library B was released, and now the authors have decided that <code class="language-plaintext highlighter-rouge">answer</code> can be 30% faster if it uses <code class="language-plaintext highlighter-rouge">long double</code> instead of <code class="language-plaintext highlighter-rouge">int</code>s.
+How cool!</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// B.hpp</span>
+<span class="k">namespace</span> <span class="n">B</span> <span class="p">{</span>
+<span class="kt">long</span> <span class="kt">double</span> <span class="n">answer</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// B.cpp</span>
+<span class="cp">#include &lt;B.hpp&gt;
+</span><span class="kt">long</span> <span class="kt">double</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Wow, so fast! 🚀</p>
+
+<p>If you rebuild B without rebuilding A however, A will be expecting the <code class="language-plaintext highlighter-rouge">answer</code>’s return value to be an int (4 bytes on my system) even though <code class="language-plaintext highlighter-rouge">B::answer</code> now returns a <code class="language-plaintext highlighter-rouge">long double</code> (8 bytes on my system).
+When dynamically linking to the original B library, A unsurprisingly prints <code class="language-plaintext highlighter-rouge">42</code>.
+When dynamically linking to the updated B library however, A prints the following:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>./A
+<span class="go">83575344
+</span><span class="gp">$</span><span class="w"> </span><span class="c"># 😨 uh oh...</span>
+</code></pre></div></div>
+
+<p>This disagreement between the program and the library at the binary level wreaks all sorts of havoc.</p>
+
+<p><a href="https://thephd.dev/binary-banshees-digital-demons-abi-c-c++-help-me-god-please#abi-even-simpler">This section of JeanHeyd’s post gives a much better illustration.</a></p>
+
+<h2 id="comparing-inline-namespace-with-_alias-and-co">Comparing <code class="language-plaintext highlighter-rouge">inline namespace</code> with <code class="language-plaintext highlighter-rouge">_Alias</code> and co</h2>
+
+<h2 id="why-do-some-want-to-break-it">Why do some want to break it?</h2>
+
+<blockquote>
+  <p>Q: Why don’t you just rebuild after an ABI change?
+A1: Are you rebuilding the standard library too?
+Many people will recommend not passing standard library types around, and not throwing exceptions across shared library boundaries. They often forget that at least one very commonly used shared library does exactly that… your C++ standard library.</p>
+
+  <p>On many platforms, there is usually a system C++ standard library. If you want to use that, then you need to deal with standard library types and exceptions going across shared library boundaries. If OS version N+1 breaks ABI in the system C++ standard library, the program you shipped and tested with for OS version N will not work on the upgraded OS until you rebuild.</p>
+</blockquote>
+
+<h2 id="links">Links</h2>
+
+<ol>
+  <li><a href="https://thephd.dev/binary-banshees-digital-demons-abi-c-c++-help-me-god-please">Binary Banshees and Digital Demons (JeanHeyd Meneide)</a></li>
+  <li><a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">To Save C, We Must Save ABI (JeanHeyd Meneide)</a></li>
+  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2028r0.pdf">Titus Winters paper on ABI</a></li>
+  <li><a href="https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/">Ben Craig’s Reddit post on ABI breakage</a></li>
+  <li><a href="https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/fj9dfg1/">Johnathan Wakely’s comment about ABI on Reddit</a></li>
+  <li><a href="https://cor3ntin.github.io/posts/abi/">Corentin’s blog post on ABI</a></li>
+  <li><a href="https://www.youtube.com/watch?v=By7b19YIv8Q&ab_channel=C%E1%90%A9%E1%90%A9WeeklyWithJasonTurner">C++ Weekly - Ep 270 - Break ABI to Save C++</a></li>
+</ol>
+
+  </div>
+
+  <hr>
+
+  <div class="date">
+    Written on Mar 14th, 2022
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
