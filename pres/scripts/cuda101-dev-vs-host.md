@@ -54,7 +54,6 @@ If we look at this example problem, you'll see all of these elements at play.
 1. Now that we've done our work on the GPU, we copy the device memory back into the host memory.
 1. We then clean the memory we allocated on the device and return.
 
-
 ## Outro
 
 I hope you all enjoyed this video and stay tuned for the next few videos.
