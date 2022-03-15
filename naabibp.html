@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NAABIBP (Not Another ABI Blog Post) – Asher Mancinelli – HPC Software Development</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="Going on the offensive.
+
+">
+    <meta property="og:description" content="Going on the offensive.
+
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="NAABIBP (Not Another ABI Blog Post)">
+    <meta property="twitter:title" content="NAABIBP (Not Another ABI Blog Post)">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - HPC Software Development" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">HPC Software Development</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>NAABIBP (Not Another ABI Blog Post)</h1>
+
+  <div class="entry">
+    <p>Going on the offensive.</p>
+
+<p><strong><em>NOTE: These thoughts are just taken from other people that know more than me. You should probably just read their articles instead 🙃 See the end of the article for better posts than this one.</em></strong></p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="what-is-the-abi">What is the ABI?</h2>
+
+<h2 id="why-do-some-want-to-break-it">Why do some want to break it?</h2>
+
+<blockquote>
+  <p>Q: Why don’t you just rebuild after an ABI change?
+A1: Are you rebuilding the standard library too?
+Many people will recommend not passing standard library types around, and not throwing exceptions across shared library boundaries. They often forget that at least one very commonly used shared library does exactly that… your C++ standard library.</p>
+
+  <p>On many platforms, there is usually a system C++ standard library. If you want to use that, then you need to deal with standard library types and exceptions going across shared library boundaries. If OS version N+1 breaks ABI in the system C++ standard library, the program you shipped and tested with for OS version N will not work on the upgraded OS until you rebuild.</p>
+</blockquote>
+
+<h2 id="links">Links</h2>
+
+<ol>
+  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2028r0.pdf">Titus Winters paper on ABI</a></li>
+  <li><a href="https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/">Ben Craig’s Reddit post on ABI breakage</a></li>
+  <li><a href="https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/fj9dfg1/">Johnathan Wakely’s comment about ABI on Reddit</a></li>
+  <li><a href="https://cor3ntin.github.io/posts/abi/">Corentin’s blog post on ABI</a></li>
+  <li><a href="https://www.youtube.com/watch?v=By7b19YIv8Q&ab_channel=C%E1%90%A9%E1%90%A9WeeklyWithJasonTurner">C++ Weekly - Ep 270 - Break ABI to Save C++</a></li>
+</ol>
+
+  </div>
+
+  <hr>
+
+  <div class="date">
+    Written on Mar 14th, 2022
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>
