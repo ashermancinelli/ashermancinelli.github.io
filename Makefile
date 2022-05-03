@@ -1,6 +1,6 @@
 
 PREFIX :=
-JEKYLL := /Users/manc568/.ruby/bin/jekyll #$(shell which jekyll)
+JEKYLL := $(shell command -v jekyll)
 
 ifeq ($(PREFIX),)
 PREFIX := $(shell pwd)/../ashermancinelli.github.io-build

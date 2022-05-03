@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-05-03T14:02:57-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++</subtitle><entry><title type="html">BQN and Reflections on the Joy of Programming</title><link href="/bqn-reflections" rel="alternate" type="text/html" title="BQN and Reflections on the Joy of Programming" /><published>2022-05-02T00:00:00-07:00</published><updated>2022-05-02T00:00:00-07:00</updated><id>/BQN-reflections</id><content type="html" xml:base="/bqn-reflections"><![CDATA[<p>Solve a leetcode problem in BQN and I rant about the joy of programming.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-05-03T16:22:36-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++</subtitle><entry><title type="html">BQN and Reflections on the Joy of Programming</title><link href="/bqn-reflections" rel="alternate" type="text/html" title="BQN and Reflections on the Joy of Programming" /><published>2022-05-02T00:00:00-07:00</published><updated>2022-05-02T00:00:00-07:00</updated><id>/BQN-reflections</id><content type="html" xml:base="/bqn-reflections"><![CDATA[<p>Solve a leetcode problem in BQN and I rant about the joy of programming.</p>
 
 <h2 id="leetcode">Leetcode</h2>
 
@@ -45,6 +45,16 @@ where we’re tasked with setting rows and columns of a matrix that contain zero
 
 <h2 id="on-the-joy-of-programming">On the Joy of Programming</h2>
 
+<p>It’s been a few months since I’ve written BQN or APL, so I feel like I’m looking at the language family with fresh eyes.</p>
+
+<p>I was struck by the resemblance between solving this leetcode problem and creating art:</p>
+
+<ol>
+  <li>I know I’m not the best at either, and many, <em>many</em> people can write more elegant BQN and more elegant poetry than I can (for example)</li>
+  <li>I can thoroughly enjoy both when detached from any performance metrics - the process is far more valuable to me than the end-product</li>
+  <li>both can be deeply social actions - sharing your painting with someone and discussing my solution with the BQN chat room are both social and exciting. Even if someone comes back with a more wonderful painting or more terse solution, I enjoy the social interaction just as much.</li>
+</ol>
+
 <p>I stumbled upon this thread on twitter describing how Kurt Vonnegut responded to a letter from a high school English student asking for life advice.
 In short, his response was to do art and enjoy the process of becoming who you are.</p>
 
@@ -71,6 +81,8 @@ I don’t think this is something to shy away from - if we can’t appreciate th
 <p>There is a unique joy and beauty I find in BQN (and APL more broadly), and that’s what keeps me coming back.</p>
 
 <p>As Kurt Vonnegut pointed out, what else could be a more worthwhile way to spend my time?</p>
+
+<p>Please, give it a try, and fall in love wiht the community while you’re at it.</p>
 
 <!---
 ## C++ Solution
