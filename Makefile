@@ -1,18 +1,19 @@
 
 PREFIX :=
+JEKYLL := $(shell command -v jekyll)
 
 ifeq ($(PREFIX),)
 PREFIX := $(shell pwd)/../ashermancinelli.github.io-build
 endif
 
 all:
-	jekyll build --verbose
+	$(JEKYLL) build --verbose
 
 serve:
-	jekyll serve --verbose
+	$(JEKYLL) serve --verbose
 
 install:
-	jekyll build -d $(PREFIX) --verbose
+	$(JEKYLL) build -d $(PREFIX) --verbose
 	cp ./CNAME $(PREFIX)
 
 deploy: install
