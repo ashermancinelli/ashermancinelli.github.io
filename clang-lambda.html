@@ -12,12 +12,10 @@
     <meta name="description" content="Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
 What about cases that are not formally errors, but should not exist in your codebase?
 This post explores using Clang tools to address this case.
-
 ">
     <meta property="og:description" content="Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.
 What about cases that are not formally errors, but should not exist in your codebase?
 This post explores using Clang tools to address this case.
-
 ">
     
     <meta name="author" content="Asher Mancinelli">
@@ -86,7 +84,7 @@ which would cause memory access errors when running on a GPU device.</p>
 
 <p>For example, let’s say we have the following Vector class:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;RAJA/RAJA.hpp&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;RAJA/RAJA.hpp&gt;</span><span class="cp">
 </span>
 <span class="k">struct</span> <span class="nc">Vector</span> <span class="p">{</span>
   <span class="k">using</span> <span class="k">namespace</span> <span class="n">RAJA</span><span class="p">;</span>
@@ -531,14 +529,14 @@ To do this, add the following to the top-level <code class="language-plaintext h
 </span><span class="gp">$</span><span class="w"> </span><span class="c"># At this point, the file `compile_commands.json` should exist in your CWD</span>
 <span class="gp">$</span><span class="w"> </span><span class="c"># and you should be able to run the driver on our test case:</span>
 <span class="gp">$</span><span class="w"> </span>./src/LambdaChecker ../test/capture-test.cpp
-<span class="go">/path/to/lambda-capture/test/capture.cpp\:17\:8: error: Found lambda capturing pointer-like member variable here.
+<span class="go">/path/to/lambda-capture/test/capture.cpp:17:8: error: Found lambda capturing pointer-like member variable here.
 
 </span><span class="gp">      *i = 1;</span><span class="w">
 </span><span class="go">       ^
-/path/to/lambda-capture/test/capture.cpp\:4\:3: note: Member variable declared here:
+/path/to/lambda-capture/test/capture.cpp:4:3: note: Member variable declared here:
 </span><span class="gp">  int *i;</span><span class="w">
 </span><span class="go">  ^
-/path/to/lambda-capture/test/capture.cpp\:16\:22: remark: Consider creating a local copy of the member variable in local scope
+/path/to/lambda-capture/test/capture.cpp:16:22: remark: Consider creating a local copy of the member variable in local scope
 just outside the lambda capture.
     auto throwaway = [=] () {
 

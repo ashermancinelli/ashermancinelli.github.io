@@ -10,10 +10,8 @@
 
     
     <meta name="description" content="ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 _Alias proposal.
-
 ">
     <meta property="og:description" content="ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 _Alias proposal.
-
 ">
     
     <meta name="author" content="Asher Mancinelli">
@@ -97,15 +95,15 @@ Sean Parent rightly pointed out that this super neat proposal from JeanHeyd acom
 <span class="p">}</span>
 
 <span class="c1">// B.cpp</span>
-<span class="cp">#include &lt;B.hpp&gt;
+<span class="cp">#include</span> <span class="cpf">&lt;B.hpp&gt;</span><span class="cp">
 </span><span class="kt">int</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
 <p>while executable A might look like this:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;B.hpp&gt;
-#include &lt;iostream&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;B.hpp&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
 </span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
@@ -123,7 +121,7 @@ How cool!</p>
 <span class="p">}</span>
 
 <span class="c1">// B.cpp</span>
-<span class="cp">#include &lt;B.hpp&gt;
+<span class="cp">#include</span> <span class="cpf">&lt;B.hpp&gt;</span><span class="cp">
 </span><span class="kt">long</span> <span class="kt">double</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
 <span class="p">}</span>

@@ -11,11 +11,9 @@
     
     <meta name="description" content="GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?
-
 ">
     <meta property="og:description" content="GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?
-
 ">
     
     <meta name="author" content="Asher Mancinelli">
@@ -36,8 +34,7 @@ type - but what if you want both?
     <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - Mostly C++" href="/feed.xml">
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
-  <script>MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"svg":{"fontCache":"global"}}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-</head>
+  </head>
 
   <body>
     <div class="wrapper-masthead">
@@ -92,8 +89,8 @@ to conform with the rest of LLVM’s testing framework (Flang is LLVM’s fortra
 
 <p>Our first test might look like this:</p>
 
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;gtest/gtest.h&gt;
-#include "addone.hpp"
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">"addone.hpp"</span><span class="cp">
 </span>
 <span class="n">TEST</span><span class="p">(</span><span class="n">AddOneTests</span><span class="p">,</span> <span class="n">doAddTo5</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">"addOne(5) != 6!"</span><span class="p">;</span>
@@ -315,10 +312,10 @@ parameterized test, this time using the <code class="language-plaintext highligh
 </code></pre></div></div>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// addone_test.cpp</span>
-<span class="cp">#include "addone.hpp"
-#include &lt;gtest/gtest.h&gt;
-#include &lt;tuple&gt;
-#include &lt;vector&gt;
+<span class="cp">#include</span> <span class="cpf">"addone.hpp"</span><span class="cp">
+#include</span> <span class="cpf">&lt;gtest/gtest.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;tuple&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
 </span>
 <span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span>
 <span class="k">using</span> <span class="n">ParamT</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="o">&gt;&gt;</span><span class="p">;</span>

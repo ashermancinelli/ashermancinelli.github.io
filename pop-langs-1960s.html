@@ -10,10 +10,8 @@
 
     
     <meta name="description" content="We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!
-
 ">
     <meta property="og:description" content="We use the 6 most popular programming languages of the 1960’s to solve a leetcode problem!
-
 ">
     
     <meta name="author" content="Asher Mancinelli">
@@ -658,8 +656,8 @@ Flang is definitely worth keeping an eye on, I think it will become a significan
 <p>I tried using the g77 compiler from GCC 3.4.4 for this example to get a better feel for historical Fortran, but after removing some syntax I didn’t realize came with f90, I realized the 32b build of GCC would probably not be able to target my modern machine.</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>g77 ./src/fortran/lc-peak-element.f
 <span class="go">/tmp/ccYc9ESc.s: Assembler messages:
-/tmp/ccYc9ESc.s\:39\: Error: invalid instruction suffix for `push'
-/tmp/ccYc9ESc.s\:91\: Error: invalid instruction suffix for `push'
+/tmp/ccYc9ESc.s:39: Error: invalid instruction suffix for `push'
+/tmp/ccYc9ESc.s:91: Error: invalid instruction suffix for `push'
 </span></code></pre></div></div>
 
 <p>This at least let me know my code was valid Fortran 77!
