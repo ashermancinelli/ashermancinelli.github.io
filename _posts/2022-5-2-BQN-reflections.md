@@ -55,6 +55,14 @@ Some other solutions from the BQN Matrix chat room:
 
 ## On the Joy of Programming
 
+It's been a few months since I've written BQN or APL, so I feel like I'm looking at the language family with fresh eyes.
+
+I was struck by the resemblance between solving this leetcode problem and creating art:
+
+1. I know I'm not the best at either, and many, *many* people can write more elegant BQN and more elegant poetry than I can (for example)
+1. I can thoroughly enjoy both when detached from any performance metrics - the process is far more valuable to me than the end-product
+1. both can be deeply social actions - sharing your painting with someone and discussing my solution with the BQN chat room are both social and exciting. Even if someone comes back with a more wonderful painting or more terse solution, I enjoy the social interaction just as much.
+
 I stumbled upon this thread on twitter describing how Kurt Vonnegut responded to a letter from a high school English student asking for life advice.
 In short, his response was to do art and enjoy the process of becoming who you are.
 
@@ -81,6 +89,8 @@ The whole process felt like writing a poem, and at the end I'm rewarded by shari
 There is a unique joy and beauty I find in BQN (and APL more broadly), and that's what keeps me coming back.
 
 As Kurt Vonnegut pointed out, what else could be a more worthwhile way to spend my time?
+
+Please, give it a try, and fall in love with the community while you're at it.
 
 <!---
 ## C++ Solution
