@@ -1,4 +1,118 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-05-03T16:50:21-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++</subtitle><entry><title type="html">BQN and Reflections on the Joy of Programming</title><link href="/bqn-reflections" rel="alternate" type="text/html" title="BQN and Reflections on the Joy of Programming" /><published>2022-05-02T00:00:00-07:00</published><updated>2022-05-02T00:00:00-07:00</updated><id>/BQN-reflections</id><content type="html" xml:base="/bqn-reflections"><![CDATA[<p>Solve a leetcode problem in BQN and I rant about the joy of programming.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-05-05T15:23:28-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++</subtitle><entry><title type="html">Authority and Organization</title><link href="/pol-auth-org" rel="alternate" type="text/html" title="Authority and Organization" /><published>2022-05-05T00:00:00-07:00</published><updated>2022-05-05T00:00:00-07:00</updated><id>/Authority-and-Organization</id><content type="html" xml:base="/pol-auth-org"><![CDATA[<p>Reflections on authority, particularly contrasting implicit and explicit authority.</p>
+
+<h2 id="-setting-the-stage">🍽 Setting the Stage</h2>
+
+<p>Let us consider <em>Organization X</em>, a mutual aid collective and with the goal of improving the material conditions of the working class in their context.
+The primary form of organization is through informal and unofficial communication between members, inspired by 19th century Anarchism, particularly Mutualism, Bakuninists, and the First International.</p>
+
+<p>X may reflect organisational beliefs such as:</p>
+
+<blockquote>
+  <p>Instead of relying on the state, society should be organised by individuals entering into voluntary agreements with each other on a basis of equality and reciprocity.</p>
+
+  <ul>
+    <li>Nicolas Walter, <em>About Anarchism</em>[6], p25</li>
+  </ul>
+</blockquote>
+
+<p>As expanded upon in libcom.org’s article on <em>Anarcho-Communism</em>[7], this mix of beliefs may be summarized as <em>the free association of producers and consumers</em>.</p>
+
+<p>The key difference between X and the visions laid out by Bakunin, Malatesta, and their colleagues in the First International is that X <strong><em>does not have capacity for collective decision making</em></strong>.</p>
+
+<p>A key feature of this organization is that many decisions are made in subgroups of X and disseminated ad-hoc to the rest of the members.
+These subgroups are unelected and not subject to application nor accountability.</p>
+
+<h2 id="-through-a-cybernetic-lens">👓 Through a Cybernetic Lens</h2>
+
+<p>In examining the prevalence of implicit authority and decision making through the lens of Stafford Beer’s Viable System Model (VSM), I came away with one key insight:</p>
+
+<blockquote>
+  <p>Absence of explicit decision-making is not the <strong><em>absence of response</em></strong> to environmental stimuli, but the absence of a <strong><em>coordinated</em></strong> and <strong><em>effective</em></strong> response.</p>
+</blockquote>
+
+<center>
+<img src="/images/politics/stafford-beer-vsm.jpeg" alt="Depiction of Stafford Beer's Viable System Model" />
+</center>
+
+<h3 id="-problem-formulation">🔎 Problem Formulation</h3>
+
+<p>For any organization to perpetuate its own existence, it must react to its environment.
+By virtue of X’s continued existence, it is, by definition, responding to its environment in some manner.
+Should there be no collectively agreed-upon actions in response to stimuli, by Ashby’s Law of Requisite Variety[10], a variety of responses equivalent to the stimuli are <em>still produced by the organization</em>.
+Organization X, being relatively large, has a large degree of incoming stimuli and therefor a large degree of response stimuli.
+Where, then, do the variety of responses come from if not from an official stance (whether voted on or handed down from leadership)?</p>
+
+<p>The only source of response variety is the individual facing the variety.</p>
+
+<p>Say a member of X is approached by a representative of organization Y, whose platform has about a 50% overlap with the (implicit) platform of X.
+Members of Y would like to collaborate with members of X on a particular event.
+This introduces environmental variety to the viable system of organization X.
+The system 1 of X is now functionally the individual member approached by the member of Y, as this member is the only one able to respond to stimuli, given that voting and collective decision-making are off the table.
+Because there is no organizational capacity to perform operations of systems 2 and 3, the individual must also take on these functions and respond according to their own perceptions of organization Y.</p>
+
+<p>System 3 coordinates between systems 1 and 2 and directions reactions to the environment.
+In this case, the individual member of X is performing operations of systems 1, 2, and 3 for organization X whether other members of X would support or consent to those actions if they knew about them.
+This introduces a sort of tyranny over all members of X - they are cut off from any decision-making about the direction of X.
+Over time, many of these small interactions accumulate to form the long-term personality and character of X, meaning that individual members of X are performing system 4 and 5 operations as well - all without the consent and support of the majority of the members of X.</p>
+
+<h3 id="-subgroups">🙋 Subgroups</h3>
+
+<p>Another drawback of the decision-making power of the unelected subgroups of X is the disconnect between the entirety of the membership of X and the subgroups, which are able to perform functions of systems 3-5.
+Because the subgroups are unofficial and not accountable to the entirety of the membership of X, they cannot effectively take into account the stimuli being fed into X by the environment.</p>
+
+<p>The members of X act as systems 1 whenever they perform mutual aid or talk with non-members: they intake stimuli from the environment and elicit some response.
+However because the subgroups are making decisions as systems 3 without direct input from the various systems 1 (the members), organization X is <em>provably</em> unable to make informed decisions in response to the environment - they are not accounting for all of the input variety, and therefore are not responding in like variety.</p>
+
+<h3 id="-collective-decision-making">🏫 Collective Decision-Making</h3>
+
+<p>Without a mechanism for X to make decisions about its members behavior and the organization’s platform, total control of the organization is given not to the individuals the comprise organization, but to the circumstances in which members of X are presented with environmental stimuli.
+In those circumstances, without the consent or support of the organization, functions of systems 1 through 5 are all performed - the character of X is left to chance.</p>
+
+<p>Let the reader note that this is not in the spirit of the 19th century political theorists that inspire X - in the free association of producers and consumers, the most common organization of decision making is by direct democracy and occasional representation subject to instant recall:</p>
+
+<blockquote>
+  <p>…[non anarchists] are sure that anarchy means order which arises spontaneously and that anarchists do not want organisation.
+This is the reverse of the truth.
+Anarchists actually want much more organisation, though organisation without authority…
+A moment’s thought will show that when compulsion is replaced by consent there will hav eto be more discussion and planning, not less.
+Everyone who is involved in a decision will be able to take part in making it… every decision will be made afresh.</p>
+
+  <ul>
+    <li>Nicolas Walter, <em>About Anarchism</em>[6], p12</li>
+  </ul>
+</blockquote>
+
+<p>It is intrinsic to the spirit of anarchism that members of an organization partake consensually, something not possible in X the way it is presently structured.
+The history of anarchist organization is rich with examples of communes, collectives, councils, and other structures.
+The common thread is consensual participation and individual representation.</p>
+
+<p>What historical examples can be applied to X?</p>
+
+<h2 id="-differences-between-x-and-successful-predecessors">📖 Differences Between X and Successful Predecessors</h2>
+
+<p>Organizational strategies of some societies in which 19th century Anarchism was most successfully applied are contrasted with that of organization X below.</p>
+
+<h3 id="rojava">Rojava</h3>
+
+<h3 id="spanish-revolution">Spanish Revolution</h3>
+
+<h3 id="paris-commune">Paris Commune</h3>
+
+<h2 id="references-and-links">References and Links</h2>
+
+<ol>
+  <li><a href="https://www.researchgate.net/publication/318993399_The_Ladder_of_Cyber-Subsidiarity_as_a_Mediation_between_the_Autonomous_Citizens_and_the_Commons" target="blank"> The Ladder of Cyber-Subsidiarity as a Mediation between the Autonomous Citizens and the Commons by José María Díaz Nafría </a></li>
+  <li><a href="https://www.researchgate.net/publication/200025911_The_Brain_of_the_Firm" target="blank">Brain of the Firm by Stafford Beer</a></li>
+  <li><a href="https://plato.stanford.edu/entries/anarchism/#PoliAnar" target="blank">Anarchism entry in Stanford Encycolpedia of Philosophy</a></li>
+  <li><a href="https://www.marxists.org/archive/lenin/works/1917/apr/09.htm" target="blank">The Dual Power by Lenin</a></li>
+  <li><a href="https://libcom.org/article/1936-1939-spanish-civil-war-and-revolution" target="blank">libcom.org: The Spanish Civil War and Revolution</a></li>
+  <li><em>About Anarchism</em> by Nicolas Walter</li>
+  <li><a href="https://libcom.org/library/anarcho-communism" target="blank">libcom.org: Anarcho-Communism</a></li>
+  <li><a href="https://isreview.org/issue/108/examing-revolution-rojava/index.html" target="blank">Examing the revolution in Rojava</a></li>
+  <li><a href="http://new-compass.net/articles/rojavas-communes-and-councils" target="blank">Rojava’s Communes and Councils</a></li>
+  <li><a href="https://www.businessballs.com/strategy-innovation/ashbys-law-of-requisite-variety/" target="blank">Ashby’s Law of Requisite Variety</a></li>
+  <li><a href="https://www.marxists.org/archive/marx/works/1872/10/authority.htm" target="blank"><em>On Authority</em> by Karl Marx</a></li>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[Reflections on authority, particularly contrasting implicit and explicit authority.]]></summary></entry><entry><title type="html">BQN and Reflections on the Joy of Programming</title><link href="/bqn-reflections" rel="alternate" type="text/html" title="BQN and Reflections on the Joy of Programming" /><published>2022-05-02T00:00:00-07:00</published><updated>2022-05-02T00:00:00-07:00</updated><id>/BQN-reflections</id><content type="html" xml:base="/bqn-reflections"><![CDATA[<p>Solve a leetcode problem in BQN and I rant about the joy of programming.</p>
 
 <h2 id="leetcode">Leetcode</h2>
 
@@ -2408,147 +2522,4 @@ Godbolt links can be found for these examples in the links below:</p>
     These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
     These views are entirely my own.
   </em>
-</font>]]></content><author><name></name></author><summary type="html"><![CDATA[std::expected and some spectacular extensions are hopefully coming to C++23.]]></summary></entry><entry><title type="html">A Look at std::mdspan</title><link href="/std-mdspan-tensors" rel="alternate" type="text/html" title="A Look at std::mdspan" /><published>2021-12-23T00:00:00-08:00</published><updated>2021-12-23T00:00:00-08:00</updated><id>/std-mdspan-Response</id><content type="html" xml:base="/std-mdspan-tensors"><![CDATA[<p>New library feature coming to C++23</p>
-
-<font size="-1">
-  <em>
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  </em>
-</font>
-
-<h2 id="tensors">Tensors</h2>
-
-<p>A YouTuber by the name of <a href="https://www.youtube.com/c/ContextFree/videos">Context Free</a> posted a few videos about tensors in various programming languages, including C++ (<a href="https://youtu.be/WbpbEilgQBc">first video</a>, <a href="https://youtu.be/ICxxKeE4GuA">second video</a>).
-I loved these videos, but I noticed ContextFree failed to mention <code class="language-plaintext highlighter-rouge">std::mdspan</code>, a new library feature coming to C++23.</p>
-
-<h2 id="stdmdspan"><code class="language-plaintext highlighter-rouge">std::mdspan</code></h2>
-
-<p><code class="language-plaintext highlighter-rouge">std::mdspan</code> (or <code class="language-plaintext highlighter-rouge">std::experimental::mdspan</code> until the proposal is accepted-I’ll be using <code class="language-plaintext highlighter-rouge">stdex::mdspan</code>, as <code class="language-plaintext highlighter-rouge">stdex</code> is a common alias for <code class="language-plaintext highlighter-rouge">std::experimental</code>) is an alias for a more complex type, but at it’s core it is a pointer plus some number of <em>extents</em>.
-<em>Extents</em> are either sizes of a given dimension on an <code class="language-plaintext highlighter-rouge">mdspan</code>, or the sentinal <code class="language-plaintext highlighter-rouge">std::dynamic_extent</code>, which indicates the extent is <em>dynamic</em>, and doesn’t have to be supplied at compile-time.
-These extents and the sentinal <code class="language-plaintext highlighter-rouge">dynamic_extent</code> can be mixed and matched.
-This powerful capability allows users to work with data as if it were a complex matrix structure while the underlying data remain linear.</p>
-
-<p>For example, given raw data, an <code class="language-plaintext highlighter-rouge">mdspan</code> may be constructed and passed to some library that expects a matrix with rank 3:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// https://godbolt.org/z/eWKev9nas</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
-<span class="k">using</span> <span class="n">mat_3d</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
-                 <span class="n">T</span><span class="p">,</span>
-                 <span class="n">std</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span>
-                     <span class="n">std</span><span class="o">::</span><span class="n">dynamic_extent</span>
-                   <span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">dynamic_extent</span>
-                   <span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">dynamic_extent</span>
-                 <span class="o">&gt;</span>
-               <span class="o">&gt;</span><span class="p">;</span>
-
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span> <span class="kt">void</span> <span class="nf">work</span><span class="p">(</span><span class="n">mat_3d</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mat</span><span class="p">);</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">raw</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
-
-  <span class="n">work</span><span class="p">(</span><span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-  <span class="n">work</span><span class="p">(</span><span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">));</span>
-  <span class="n">work</span><span class="p">(</span><span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">));</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Note that we will have to be more careful if we mix-and-match compile-time and run-time extents.</p>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// https://godbolt.org/z/Phr1vh9zs</span>
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span> <span class="k">using</span> <span class="n">mat_3d</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
-  <span class="n">T</span><span class="p">,</span>
-  <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span>
-    <span class="n">stdex</span><span class="o">::</span><span class="n">dynamic_extent</span><span class="p">,</span>
-    <span class="mi">3</span><span class="p">,</span>
-    <span class="n">stdex</span><span class="o">::</span><span class="n">dynamic_extent</span>
-  <span class="o">&gt;</span>
-<span class="o">&gt;</span><span class="p">;</span>
-
-<span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="nc">T</span><span class="p">&gt;</span> <span class="kt">void</span> <span class="nf">work</span><span class="p">(</span><span class="n">mat_3d</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mat</span><span class="p">)</span> <span class="p">{}</span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">raw</span><span class="p">[</span><span class="mi">27</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
-  <span class="n">work</span><span class="p">(</span><span class="n">mat_3d</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">));</span>
-  <span class="n">work</span><span class="p">(</span><span class="n">mat_3d</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-  <span class="c1">// work(mat_3d&lt;int&gt;(raw, 3, 0, 9)) will fail bc extents don't match!</span>
-  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>After supplying a dummy implementation of <code class="language-plaintext highlighter-rouge">work</code> to print the shape, we get</p>
-<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">mat has shape [100, 5, 1]
-mat has shape [4, 5, 5]
-mat has shape [10, 1, 50]
-</span></code></pre></div></div>
-
-<p>In either case, the underlying data is the same, though it’s <em>viewed</em> differently in each of the invocations of <code class="language-plaintext highlighter-rouge">work</code>.
-It’s no coincidence that <em>view</em> seems like a natural name for <code class="language-plaintext highlighter-rouge">mdspan</code> - <code class="language-plaintext highlighter-rouge">mdspan</code> was developed by the authors of the portable execution library Kokkos and inspired by the <code class="language-plaintext highlighter-rouge">Kokkos::View</code> type.</p>
-
-<h2 id="subspans">Subspans</h2>
-
-<p>Just like <code class="language-plaintext highlighter-rouge">std::span</code>, <code class="language-plaintext highlighter-rouge">mdspan</code> has support for taking subspans of a given span.
-This is more complicated with <code class="language-plaintext highlighter-rouge">mdspan</code> however, due to <code class="language-plaintext highlighter-rouge">mdspan</code>’s variadic extents.</p>
-
-<p>There are three ways to take a slice of an <code class="language-plaintext highlighter-rouge">mdspan</code>:</p>
-
-<ol>
-  <li>An integer index into the respective dimension</li>
-  <li>A <code class="language-plaintext highlighter-rouge">std::tuple</code> or <code class="language-plaintext highlighter-rouge">std::pair</code> begin/end pair of indices</li>
-  <li>The special value <code class="language-plaintext highlighter-rouge">std::full_extent</code> indicating all elements of the dimension should be selected in the subspan</li>
-</ol>
-
-<p>For example:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// https://godbolt.org/z/Wrr4dhEs8</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">raw</span><span class="p">[</span><span class="mi">27</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">iota</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw</span><span class="o">+</span><span class="mi">27</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-
-  <span class="c1">// full will have shape [3,3,3]</span>
-  <span class="k">auto</span> <span class="n">full</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
-
-  <span class="c1">// sub will have shape [1,3] and values [18,19,20]</span>
-  <span class="k">auto</span> <span class="n">sub</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">submdspan</span><span class="p">(</span><span class="n">full</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="n">stdex</span><span class="o">::</span><span class="n">full_extent</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Note that using a single value as an extent passed to <code class="language-plaintext highlighter-rouge">submdspan</code> squashes the dimension to 0, while passing a <code class="language-plaintext highlighter-rouge">pair</code> or <code class="language-plaintext highlighter-rouge">tuple</code> will keep the dimension around, even if that dimension is 1.
-<code class="language-plaintext highlighter-rouge">pair</code>/<code class="language-plaintext highlighter-rouge">tuple</code> do not effect rank, while passing an index as an extent does.</p>
-
-<p>I hope this article was enough to get you interested in <code class="language-plaintext highlighter-rouge">mdspan</code> and the future of C++!
-Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s YouTube channel, and the reference implementation of C++23’s <code class="language-plaintext highlighter-rouge">std::mdspan</code>.</p>
-
-<h2> Contact </h2>
-
-<p>You can reach me at any of the links below:</p>
-
-<ul>
-  <li><a target="_blank" href="https://www.youtube.com/c/AsherMancinelli">YouTube</a></li>
-  <li><a target="_blank" href="https://www.linkedin.com/in/asher-mancinelli-bb4a56144/">LinkedIn</a></li>
-  <li><a target="_blank" href="https://github.com/ashermancinelli">GitHub</a></li>
-  <li><a target="_blank" href="mailto:ashermancinelli@gmail.com">Personal Email</a></li>
-</ul>
-
-<font size="-1">
-  <em>
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
-    These views are entirely my own.
-  </em>
-</font>
-
-<h2 id="links">Links</h2>
-
-<ul>
-  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0009r14.html"><code class="language-plaintext highlighter-rouge">mdspan</code> paper, revision 14</a></li>
-  <li>Godbolt links:
-    <ul>
-      <li><a href="https://godbolt.org/z/eWKev9nas">Example 1</a></li>
-      <li><a href="https://godbolt.org/z/Phr1vh9zs">Example 2</a></li>
-      <li><a href="https://godbolt.org/z/Wrr4dhEs8">Example 3</a></li>
-    </ul>
-  </li>
-  <li><a href="https://www.youtube.com/c/ContextFree/videos">ContextFree’s YouTube channel</a></li>
-  <li><a href="https://github.com/kokkos/mdspan">Kokkos mdspan implementation</a></li>
-  <li><a href="https://github.com/kokkos/mdspan/wiki/A-Gentle-Introduction-to-mdspan">Intro to mdspan wiki article</a></li>
-  <li><a href="https://godbolt.org/z/KMT3G9Ese"><code class="language-plaintext highlighter-rouge">std::mdspan</code> on compiler explorer</a></li>
-  <li><a href="https://cppcast.com/too-cute-mdspan/">CppCast episode with Daisy Hollman</a></li>
-</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[New library feature coming to C++23]]></summary></entry></feed>
+</font>]]></content><author><name></name></author><summary type="html"><![CDATA[std::expected and some spectacular extensions are hopefully coming to C++23.]]></summary></entry></feed>
