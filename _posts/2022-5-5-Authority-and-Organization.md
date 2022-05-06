@@ -94,6 +94,10 @@ Organizational strategies of some societies in which 19th century Anarchism was 
 
 ### Rojava
 
+In Rojava, citizens are reprented directly in neighborhood councils, and vote for instantly-recallable representatives to attend city and regional councils to form policy in larger health, defence, economic, and education committees (*The Communes of Rojava*[12] at 1:30).
+
+The smallest unit of democracy is direct, and higher-level policy is formed through representative democracy.
+
 ### Spanish Revolution
 
 ### Paris Commune
@@ -111,3 +115,4 @@ Organizational strategies of some societies in which 19th century Anarchism was 
 1. <a href="http://new-compass.net/articles/rojavas-communes-and-councils" target="blank">Rojava's Communes and Councils</a>
 1. <a href="https://www.businessballs.com/strategy-innovation/ashbys-law-of-requisite-variety/" target="blank">Ashby's Law of Requisite Variety</a>
 1. <a href="https://www.marxists.org/archive/marx/works/1872/10/authority.htm" target="blank">*On Authority* by Karl Marx</a>
+1. <a href="https://www.youtube.com/watch?v=cDnenjIdnnE&ab_channel=NeighborDemocracy" target="blank">The Communes of Rojava: A Model In Societal Self Direction</a>
