@@ -2,7 +2,7 @@
 layout: post
 title: Common Platform on Abortion Rights
 permalink: /common-plat
-pol: true
+cat: pol
 ---
 
 Reflections on the common ground between several organiztions with respect to the class struggle for abortion rights.
@@ -14,6 +14,25 @@ It's my impression that the common ground between all involved organizations is 
 > We must organize our labor to win abortion rights and bodily autonomy.
 
 This involves organized labor in some form (likely a labor union with directly democratic principles) demanding abortion and healthcare rights to their constituency through the withholding of labor and class solidarity.
+
+## Script Draft
+
+*Draft/disorganized thoughts about what I would say at a theoretical rally*
+
+### Identity
+
+Hello everyone, my name is Asher and I'm with Boise Mutual Aid.
+We're a group aiming to support the community based on the principles of autonomy and mutual aid, as our namesake would suggest.
+
+The recent legal developments around abortion oppress all of us uniquely.
+
+The women among us are oppressed by it.
+
+Those with uteruses are uniquely oppressed by it.
+
+People of color, as well as our trans, neurodivergent, and less able-bodied neighbors are all uniquely oppressed by this, all to different degrees and by different means.
+
+I am none of those things, but I'm here to tell you why it still matters to *you*.
 
 ## Demonstration of Common Ground
 

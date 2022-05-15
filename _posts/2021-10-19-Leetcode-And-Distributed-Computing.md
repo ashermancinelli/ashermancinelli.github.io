@@ -2,6 +2,7 @@
 layout: post
 title: One Problem, Four Languages, Two Paradigms
 permalink: /leetcode-distributed-computing
+cat: cs
 ---
 
 Solving a leetcode problem in four programming languages using two acceleration paradigms!

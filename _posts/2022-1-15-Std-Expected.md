@@ -2,6 +2,7 @@
 layout: post
 title: std::expected And Why It's Awesome
 permalink: /std-expected
+cat: cs
 ---
 
 `std::expected` and some spectacular extensions are hopefully coming to C++23.

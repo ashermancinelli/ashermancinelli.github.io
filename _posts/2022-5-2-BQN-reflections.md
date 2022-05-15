@@ -4,6 +4,7 @@ title: BQN and Reflections on the Joy of Programming
 permalink: /bqn-reflections
 category: BQN, c++
 wip: false
+cat: cs
 ---
 
 Solve a leetcode problem in BQN and I rant about the joy of programming.

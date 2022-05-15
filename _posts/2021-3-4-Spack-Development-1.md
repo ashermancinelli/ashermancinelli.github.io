@@ -2,6 +2,7 @@
 layout: post
 title: Spack for Package Development Part 1
 permalink: /spack1
+cat: cs
 ---
 
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.

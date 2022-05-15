@@ -2,6 +2,7 @@
 layout: post
 title: Distributed Compilation with Slurm, Distcc, and Ccache
 permalink: /distributed-compilation
+cat: cs
 ---
 
 First run with projects "clang;clang-tools-extra;flang;llvm" commit cd13f19 10N:

@@ -2,6 +2,7 @@
 layout: post
 title: Clang Tools for Checking Domain-Specific Errors
 permalink: /clang-lambda
+cat: cs
 ---
 
 Compilers are extremely proficient at catching (and even suggesting fixes for) errors in your code.

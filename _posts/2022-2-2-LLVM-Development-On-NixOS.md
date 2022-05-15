@@ -3,6 +3,7 @@ layout: post
 title: LLVM Development on NixOS
 permalink: /llvm-nixos
 category: c++, nixos, llvm
+cat: cs
 ---
 
 I've found NixOS to provide a wonderful development environment after learning a bit of the Nix language - but building and hacking on LLVM on NixOS gave me some trouble.

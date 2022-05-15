@@ -4,6 +4,7 @@ title: BQN & Julia
 permalink: /bqn-julia
 category: bqn
 wip: true
+cat: cs
 ---
 
 BQN and Julia battle to the death!

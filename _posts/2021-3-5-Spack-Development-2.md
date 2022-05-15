@@ -2,6 +2,7 @@
 layout: post
 title: Spack for Package Development Part 2
 permalink: /spack2
+cat: cs
 ---
 
 Second in this series, this post focuses on *getting stared with environments*.

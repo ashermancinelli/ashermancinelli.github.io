@@ -4,6 +4,7 @@ title: Mental Model for Compile-Time Programming
 permalink: /compile-time-programming
 category: c++
 wip: true
+cat: cs
 ---
 
 {% include mermaid.html %}

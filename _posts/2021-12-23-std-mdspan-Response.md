@@ -2,6 +2,7 @@
 layout: post
 title: A Look at std::mdspan
 permalink: /std-mdspan-tensors
+cat: cs
 ---
 
 New library feature coming to C++23

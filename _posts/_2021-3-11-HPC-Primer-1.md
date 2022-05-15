@@ -2,6 +2,7 @@
 layout: post
 title: 'HPC Primer: Distribution Schemes'
 permalink: /hpc-primer-1
+cat: cs
 ---
 
 First lessons in distributed and high-performance computing.

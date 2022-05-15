@@ -2,8 +2,11 @@
 layout: post
 title: Authority and Organization
 permalink: /pol-auth-org
-pol: true
+cat: pol
 ---
+<!--
+pol: true
+-->
 
 Reflections on authority, particularly contrasting implicit and explicit authority.
 

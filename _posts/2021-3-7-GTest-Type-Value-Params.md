@@ -2,6 +2,7 @@
 layout: post
 title: GTest Type and Value Parameterized Tests
 permalink: /gtest-type-val-param
+cat: cs
 ---
 
 GTest exposes clean interfaces for parameterizing your tests by value and by

@@ -2,6 +2,7 @@
 layout: post
 title: Some Polymorphism for your Test Suite
 permalink: /poly-testing
+cat: cs
 ---
 
 Design principles apply to your tests more often then you might think!

@@ -5,25 +5,27 @@ layout: default
 <div class="posts">
   {% assign year = "dummy" %}
   {% for post in site.posts %}
-    {% unless post.wip or post.pol %}
-      {% assign _year = post.date | date: "%Y" %}
-      {% if _year != year %}
-        {% assign year = _year %}
-        <h4><em>{{ year }}</em></h4>
-      {% endif %}
-      <article class="post">
-        <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+    {% if post.cat == "cs" %}
+      {% unless post.wip %}
+        {% assign _year = post.date | date: "%Y" %}
+        {% if _year != year %}
+          {% assign year = _year %}
+          <h4><em>{{ year }}</em></h4>
+        {% endif %}
+        <article class="post">
+          <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
 
-        <div class="entry">
-          {{ post.excerpt }}
-          {% unless post.category == blank %}
-            <em>{{ post.category }}</em>
-          {% endunless %}
-        </div>
+          <div class="entry">
+            {{ post.excerpt }}
+            {% unless post.category == blank %}
+              <em>{{ post.category }}</em>
+            {% endunless %}
+          </div>
 
-        <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-      </article>
-    {% endunless %}
+          <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+        </article>
+      {% endunless %}
+    {% endif %}
   {% endfor %}
 </div>
 
@@ -35,6 +37,7 @@ layout: default
 <div class="posts">
 
   {% for post in site.posts %}
+    {% if post.cat == "cs" %}
     {% if post.wip %}
       <article class="post">
 
@@ -49,6 +52,7 @@ layout: default
 
         <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
       </article>
+    {% endif %}
     {% endif %}
   {% endfor %}
 </div>
