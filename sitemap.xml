@@ -81,6 +81,14 @@
 <lastmod>2022-05-07T00:00:00-07:00</lastmod>
 </url>
 <url>
+<loc>/sl5</loc>
+<lastmod>2022-05-14T00:00:00-07:00</lastmod>
+</url>
+<url>
+<loc>/rel-wbw</loc>
+<lastmod>2022-05-14T00:00:00-07:00</lastmod>
+</url>
+<url>
 <loc>/404/</loc>
 </url>
 <url>
@@ -90,7 +98,10 @@
 <loc>/</loc>
 </url>
 <url>
-<loc>/politics/</loc>
+<loc>/pol/</loc>
+</url>
+<url>
+<loc>/rel/</loc>
 </url>
 <url>
 <loc>/pres/intro/</loc>
