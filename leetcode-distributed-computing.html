@@ -64,7 +64,7 @@
 
 <font size="-1">
   <em>
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
     These views are entirely my own.
   </em>
 </font>
@@ -458,7 +458,7 @@ False
   <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span>
     <span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">ar</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">ar</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">max</span><span class="p">);</span>
   <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
-<span class="err">}</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <p>You can see pretty much everything about our solution is the same so far.
@@ -592,7 +592,7 @@ These allow you to pass arguments to the CUDA runtime to let it know how you’d
   <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span><span class="o">+</span><span class="p">(</span><span class="mi">81</span><span class="o">*</span><span class="mi">3</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">thrust</span><span class="o">::</span><span class="n">maximum</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
   <span class="n">device_free</span><span class="p">(</span><span class="n">d_ar</span><span class="p">);</span>
   <span class="k">return</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
-<span class="err">}</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <p>I have the following <code class="language-plaintext highlighter-rouge">using</code> statements to make the code a little more readable hopefully.</p>
@@ -930,7 +930,7 @@ We then perform our max reduce to get our answer and we return!</p>
 
 <font size="-1">
   <em>
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
     These views are entirely my own.
   </em>
 </font>

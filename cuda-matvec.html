@@ -87,7 +87,7 @@ This post takes you from a basic linear algebra example problem to a GPU-acceler
 
 <font size="-1">
   <em>
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
     These views are entirely my own.
   </em>
 </font>
@@ -563,7 +563,7 @@ In this example, we introduce three aspects of the CUDA programming model:
     <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">*</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">];</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define N 10
 </span>
   <span class="c1">// Allocate static memory on host</span>
@@ -735,7 +735,7 @@ In the following example, we make use of CUDA shared memory, as indicated by the
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define N 10
 </span>
   <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
@@ -833,7 +833,7 @@ There are many other CUDA primitives for atomic, and synchronization operations,
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define M 10
 </span>  <span class="cp">#define N 15
 </span>
@@ -946,7 +946,7 @@ We were using CUDA C++ the whole time, we just restricted ourselves to the C sub
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define M 10
 </span>  <span class="cp">#define N 15
 </span>
@@ -1060,7 +1060,7 @@ Once you have already written your code using <em>known algorithms</em>, once yo
     <span class="n">mat</span><span class="p">[</span><span class="n">col</span><span class="o">+</span><span class="p">(</span><span class="n">row</span><span class="o">*</span><span class="n">n</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">col</span><span class="p">];</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define M 10
 </span>  <span class="cp">#define N 15
 </span>
@@ -1263,7 +1263,7 @@ Feel free to skip this section; it is not critical to understanding the concepts
 
 <font size="-1">
   <em>
-    These views do not in any way represent those of Pacific Northwest National Laboratory, the US Department of Energy, Battelle, or any other organization or institution that I, Asher Mancinelli, am professionally associated with.
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
     These views are entirely my own.
   </em>
 </font>
