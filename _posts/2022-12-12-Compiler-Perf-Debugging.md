@@ -8,7 +8,7 @@ cat: cs
 ---
 
 Overview of how I debug performance regressions when developing a compiler.
-I don't claim this is the best way to do it, email me if you've got better ideas😉
+I don't claim this is the best way to do it, email me or tweet at me if you've got better ideas😉
 
 {% include disclaimer.html %}
 
@@ -20,7 +20,7 @@ How do you go about debugging such an issue?
 
 As you might expect, narrowing down the issue to be minimal and reproducible is the first task.
 Ideally, we narrow the performance regression down to a single translation unit, though sometimes this isn't enough.
-For this post, we'll assume that the bulk of the performance regression you see in your application is coming from one translation unit, and that you know which patch is causing the regression.
+For this post, we'll assume that the bulk of the performance regression you see in your application is coming from one translation unit, and that you know which patch is causing the regression (if you don't know which patch is causing the regression... well you can bisect the recent patches too😁).
 
 ## Bisecting the Object Files
 
@@ -57,20 +57,22 @@ Again, if we don't see the perf regression, we swap the macro guards and try aga
 We then have compiler B build a quarter of the original TU and have compiler A build the other 3/4ths, and see if we observe the regression, etc etc.
 Ideally, at the end of this process we know exactly which function(s) are causing the regression.
 
-<!--
 ## What Next?
 
-After we've narrowed the regression down to a single function (🤞) things can get tricky, and very much depends on the nature of the changes that caused the regression.
+After we've narrowed the regression down to a function or two (🤞) things can get tricky, and very much depends on the nature of the changes that caused the regression.
 
 At this point I think it's best to ask some questions:
 
 - Was the patch in question related to a specific pass?
   - Can the effects of that pass be seen in the function(s) we found to be causing the regression?
-- Do you notice any obvious differences between the IR the compilers generate?
-  - 
+  - Is the regression observed when the pass is disabled?
+- Do you notice any obvious differences between the IR the compilers generate for the identified functions?
+  - Can you use those differences to work backwards to the code that generated that IR?
+- If you enable lots of debugging output (like dumping all the `opt` pass remarks) and build with compilers A and B and then diff the output, are there any glaring differences? Maybe an earlier change allowed another pass (uninvolved in the patch) to perform some transformations it otherwise would not, or maybe vice-versa.
 
 ## Why Might This Not Work?
 
 Sometimes the effects only occur in a short function that is always inlined, in which case you might not find a specific TU or set of functions at the root of the regression; for this reason, you might want to crank the inlining pass down as low as it goes to help you narrow down the issue.
-It's often best to use the fewest optimizations possible while still observing the behavior.
+It's often best to use the fewest optimizations possible when debugging this sort of thing (so long as you still observe the behavior).
+<!--
 -->
