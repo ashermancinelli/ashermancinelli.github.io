@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Debugging Performance in Compilers – Asher Mancinelli – Mostly C++ and Compilers</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="Overview of how I debug performance regressions when developing a compiler.
+I don’t claim this is the best way to do it, email me if you’ve got better ideas😉
+">
+    <meta property="og:description" content="Overview of how I debug performance regressions when developing a compiler.
+I don’t claim this is the best way to do it, email me if you’ve got better ideas😉
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Debugging Performance in Compilers">
+    <meta property="twitter:title" content="Debugging Performance in Compilers">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - Mostly C++ and Compilers" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">Mostly C++ and Compilers</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Debugging Performance in Compilers</h1>
+
+  <div class="entry">
+    <p>Overview of how I debug performance regressions when developing a compiler.
+I don’t claim this is the best way to do it, email me if you’ve got better ideas😉</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="starting-point">Starting Point</h2>
+
+<p>Compilers are very complicated and the results can be surprising.
+Sometimes performance issues only show up in large scale real-world applications.
+How do you go about debugging such an issue?</p>
+
+<p>As you might expect, narrowing down the issue to be minimal and reproducible is the first task.
+Ideally, we narrow the performance regression down to a single translation unit, though sometimes this isn’t enough.
+For this post, we’ll assume that the bulk of the performance regression you see in your application is coming from one translation unit, and that you know which patch is causing the regression.</p>
+
+<h2 id="bisecting-the-object-files">Bisecting the Object Files</h2>
+
+<p>Assume we have two compilers: compiler A which doesn’t have the “bad” changes (the “good” compiler), and compiler B which does (the “bad” compiler).
+We’ll start by building the application with both compilers, building half of the object files with compiler A and half with compiler B.
+Say we have 100 object files that are linked into the application; we’d build the first 50 with compiler A and the second 50 with compiler B.</p>
+
+<p>If the perf regression isn’t observed after you re-link all the object files into the application, then we know the bulk of the issue is in the object files that were just built with compiler A.
+We can then rebuild all the object files in the second 50 with compiler A and build object files 26-50 or 1-25 with compiler B.
+In this way, we bisect all the translation units until we find the single TU with the largest impact on performance.</p>
+
+<p>This can be really tedious and manual, but it’s not too hard to script😉.</p>
+
+<h2 id="bisecting-the-source-file">Bisecting the Source File</h2>
+
+<p>Now that we’ve narrowed our regression down to a single TU, our work gets a little more complicated.
+We can use the same bisection process as before, but this time we’ll have to do it on a single file.
+To acomplish this, we’ll have to figure out which parts of the source file depend on each other so we can break it into two new source files, one to be built with compiler A and one to be built with compiler B (all other TUs being built with the “good” compiler).</p>
+
+<p>Depending on the situation you may create two source files, each with half of the content of the original, or maybe you’ll use the same source file but use macro guards so each compiler only builds half of the source, eg:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* includes, declarations, and global defs up here */</span>
+
+<span class="cp">#ifdef COMPILERA
+</span><span class="c1">// stuff built with the good compiler...</span>
+<span class="cp">#else </span><span class="cm">/* COMPILERB */</span><span class="cp">
+</span><span class="c1">// stuff built with the bad compiler...</span>
+<span class="cp">#endif
+</span></code></pre></div></div>
+
+<p>You may then add <code class="language-plaintext highlighter-rouge">-DCOMPILERA</code> to the invokation of compiler A so each compiler only builds half of the TU in question.
+Again, if we don’t see the perf regression, we swap the macro guards and try again.
+We then have compiler B build a quarter of the original TU and have compiler A build the other 3/4ths, and see if we observe the regression, etc etc.
+Ideally, at the end of this process we know exactly which function(s) are causing the regression.</p>
+
+<!--
+## What Next?
+
+After we've narrowed the regression down to a single function (🤞) things can get tricky, and very much depends on the nature of the changes that caused the regression.
+
+At this point I think it's best to ask some questions:
+
+- Was the patch in question related to a specific pass?
+  - Can the effects of that pass be seen in the function(s) we found to be causing the regression?
+- Do you notice any obvious differences between the IR the compilers generate?
+  - 
+
+## Why Might This Not Work?
+
+Sometimes the effects only occur in a short function that is always inlined, in which case you might not find a specific TU or set of functions at the root of the regression; for this reason, you might want to crank the inlining pass down as low as it goes to help you narrow down the issue.
+It's often best to use the fewest optimizations possible while still observing the behavior.
+-->
+
+  </div>
+
+  <hr>
+
+  <div class="date">
+    Written on Dec 12th, 2022
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>

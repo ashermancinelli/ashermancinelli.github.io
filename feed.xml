@@ -1,4 +1,107 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-10-06T16:13:10-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++</subtitle><entry><title type="html">Provable Optimizations in Coq</title><link href="/prov-opt-coq" rel="alternate" type="text/html" title="Provable Optimizations in Coq" /><published>2022-10-06T00:00:00-07:00</published><updated>2022-10-06T00:00:00-07:00</updated><id>/Provable-Optimizations</id><content type="html" xml:base="/prov-opt-coq"><![CDATA[<p>Proving that optimization passes are correct with the formal verification
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-12-14T14:42:33-08:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++ and Compilers</subtitle><entry><title type="html">Debugging Performance in Compilers</title><link href="/comp-debug-perf" rel="alternate" type="text/html" title="Debugging Performance in Compilers" /><published>2022-12-12T00:00:00-08:00</published><updated>2022-12-12T00:00:00-08:00</updated><id>/Compiler-Perf-Debugging</id><content type="html" xml:base="/comp-debug-perf"><![CDATA[<p>Overview of how I debug performance regressions when developing a compiler.
+I don’t claim this is the best way to do it, email me if you’ve got better ideas😉</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="starting-point">Starting Point</h2>
+
+<p>Compilers are very complicated and the results can be surprising.
+Sometimes performance issues only show up in large scale real-world applications.
+How do you go about debugging such an issue?</p>
+
+<p>As you might expect, narrowing down the issue to be minimal and reproducible is the first task.
+Ideally, we narrow the performance regression down to a single translation unit, though sometimes this isn’t enough.
+For this post, we’ll assume that the bulk of the performance regression you see in your application is coming from one translation unit, and that you know which patch is causing the regression.</p>
+
+<h2 id="bisecting-the-object-files">Bisecting the Object Files</h2>
+
+<p>Assume we have two compilers: compiler A which doesn’t have the “bad” changes (the “good” compiler), and compiler B which does (the “bad” compiler).
+We’ll start by building the application with both compilers, building half of the object files with compiler A and half with compiler B.
+Say we have 100 object files that are linked into the application; we’d build the first 50 with compiler A and the second 50 with compiler B.</p>
+
+<p>If the perf regression isn’t observed after you re-link all the object files into the application, then we know the bulk of the issue is in the object files that were just built with compiler A.
+We can then rebuild all the object files in the second 50 with compiler A and build object files 26-50 or 1-25 with compiler B.
+In this way, we bisect all the translation units until we find the single TU with the largest impact on performance.</p>
+
+<p>This can be really tedious and manual, but it’s not too hard to script😉.</p>
+
+<h2 id="bisecting-the-source-file">Bisecting the Source File</h2>
+
+<p>Now that we’ve narrowed our regression down to a single TU, our work gets a little more complicated.
+We can use the same bisection process as before, but this time we’ll have to do it on a single file.
+To acomplish this, we’ll have to figure out which parts of the source file depend on each other so we can break it into two new source files, one to be built with compiler A and one to be built with compiler B (all other TUs being built with the “good” compiler).</p>
+
+<p>Depending on the situation you may create two source files, each with half of the content of the original, or maybe you’ll use the same source file but use macro guards so each compiler only builds half of the source, eg:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* includes, declarations, and global defs up here */</span>
+
+<span class="cp">#ifdef COMPILERA
+</span><span class="c1">// stuff built with the good compiler...</span>
+<span class="cp">#else </span><span class="cm">/* COMPILERB */</span><span class="cp">
+</span><span class="c1">// stuff built with the bad compiler...</span>
+<span class="cp">#endif
+</span></code></pre></div></div>
+
+<p>You may then add <code class="language-plaintext highlighter-rouge">-DCOMPILERA</code> to the invokation of compiler A so each compiler only builds half of the TU in question.
+Again, if we don’t see the perf regression, we swap the macro guards and try again.
+We then have compiler B build a quarter of the original TU and have compiler A build the other 3/4ths, and see if we observe the regression, etc etc.
+Ideally, at the end of this process we know exactly which function(s) are causing the regression.</p>
+
+<!--
+## What Next?
+
+After we've narrowed the regression down to a single function (🤞) things can get tricky, and very much depends on the nature of the changes that caused the regression.
+
+At this point I think it's best to ask some questions:
+
+- Was the patch in question related to a specific pass?
+  - Can the effects of that pass be seen in the function(s) we found to be causing the regression?
+- Do you notice any obvious differences between the IR the compilers generate?
+  - 
+
+## Why Might This Not Work?
+
+Sometimes the effects only occur in a short function that is always inlined, in which case you might not find a specific TU or set of functions at the root of the regression; for this reason, you might want to crank the inlining pass down as low as it goes to help you narrow down the issue.
+It's often best to use the fewest optimizations possible while still observing the behavior.
+-->]]></content><author><name></name></author><category term="c++, llvm, compilers" /><summary type="html"><![CDATA[Overview of how I debug performance regressions when developing a compiler. I don’t claim this is the best way to do it, email me if you’ve got better ideas😉]]></summary></entry><entry><title type="html">TBAA in LLVM IR</title><link href="/llvm-tbaa" rel="alternate" type="text/html" title="TBAA in LLVM IR" /><published>2022-12-02T00:00:00-08:00</published><updated>2022-12-02T00:00:00-08:00</updated><id>/LLVM-TBAA</id><content type="html" xml:base="/llvm-tbaa"><![CDATA[<p>Overview of type-based alias analysis in LLMV IR.</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="llvm-alias-analysis">LLVM Alias Analysis</h2>
+
+<p>Alias analysis answers the question “do these two addresses alias each other?” with three possible responses.
+Two addresses either <code class="language-plaintext highlighter-rouge">MayAlias</code>, <code class="language-plaintext highlighter-rouge">MustAlias</code>, or they do <code class="language-plaintext highlighter-rouge">NotAlias</code> (which is how they are spelled in the LLVM alias analysis api).</p>
+
+<p>Alias analyses can take into account lots of factors (control flow, field analysis (when analyzing structures), etc), but we’re only talking about <em>type-based</em> alias analysis (TBAA).</p>
+
+<p>TBAA leverages the rules in the type system of the given programming language to prove something about the aliasing relationship between two addresses.</p>
+
+<h2 id="llvm-tbaa-metadata">LLVM TBAA Metadata</h2>
+
+<div class="language-llvm highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
+
+<h2 id="what-is-tbaa">What is TBAA</h2>
+
+<h2 id="links">Links</h2>
+
+<ul>
+  <li><a target="blank" href="https://llvm.org/docs/LangRef.html#tbaa-metadata">LLVM TBAA metadata docs</a></li>
+  <li><a target="blank" href="https://releases.llvm.org/8.0.0/docs/AliasAnalysis.html">LLVM alias analysis docs</a></li>
+  <li><a href="https://www.cs.cornell.edu/courses/cs6120/2020fa/lesson/9/" target="blank">Cornell alias analysis slides</a></li>
+  <li><a target="blank" href="https://www.researchgate.net/publication/234027199_A_Formally-Verified_Alias_Analysis">Formally Verified Alias Analysis</a></li>
+  <li><a href="https://stefansf.de/c-quiz/" target="blank">Type-Based Alias Analysis in C by Stephan</a></li>
+  <li><a href="https://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html" target="blank">LLMV blog: What Every C Programmer Should Know by Chris Lattner</a></li>
+</ul>]]></content><author><name></name></author><category term="c++, llvm, compilers" /><summary type="html"><![CDATA[Overview of type-based alias analysis in LLMV IR.]]></summary></entry><entry><title type="html">Provable Optimizations in Coq</title><link href="/prov-opt-coq" rel="alternate" type="text/html" title="Provable Optimizations in Coq" /><published>2022-10-06T00:00:00-07:00</published><updated>2022-10-06T00:00:00-07:00</updated><id>/Provable-Optimizations</id><content type="html" xml:base="/prov-opt-coq"><![CDATA[<p>Proving that optimization passes are correct with the formal verification
 assistant Coq.</p>
 
 <font size="-1">
@@ -1712,216 +1815,4 @@ Feel free to skip this section; it is not critical to understanding the concepts
     These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
     These views are entirely my own.
   </em>
-</font>]]></content><author><name></name></author><category term="c, c++, cuda, GPU, HPC" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Mental Model for Compile-Time Programming</title><link href="/compile-time-programming" rel="alternate" type="text/html" title="Mental Model for Compile-Time Programming" /><published>2022-02-06T00:00:00-08:00</published><updated>2022-02-06T00:00:00-08:00</updated><id>/Compile-Time-Programming</id><content type="html" xml:base="/compile-time-programming"><![CDATA[<script async="" src="https://unpkg.com/mermaid@8.2.3/dist/mermaid.min.js"></script>
-
-<!---
-
-  To use:
-  <div class="mermaid">
-    graph LR
-      ...
-  </div>
-
-  --->
-
-<p>My mental model for compile-time programming.</p>
-
-<font size="-1">
-  <em>
-    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
-    These views are entirely my own.
-  </em>
-</font>
-
-<h1 id="compile-time-programming">Compile-Time Programming</h1>
-
-<p>The most powerful and compelling features of modern C++ revolve around compile-time programming in my opinion.</p>
-
-<p>Consider the following code snippet (<a href="https://godbolt.org/z/axj4f4Tz9">godbolt</a>):</p>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="n">enable_bar</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-
-<span class="kt">int</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="n">bar</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">enable_bar</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">bar</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Let the following graph depict the program above, where blue boxes represent runtime code and arrows depict dependencies.
-This graph is a simplified depiction of the dependencies between elements in the abstract syntax tree of the program.</p>
-
-<center>
-<div class="mermaid">
-graph LR
-    A(Return Value) --&gt; B(bar)
-    B --&gt; C(foo)
-    B --&gt; D(enable_bar)
-    C --&gt; E(value)
-</div>
-</center>
-
-<p>At the end of the day, the program <em>really</em> only depends on <code class="language-plaintext highlighter-rouge">enable_bar</code> and <code class="language-plaintext highlighter-rouge">value</code>, and we know the values of both of these at compile-time.
-There are no runtime dependencies of this program, yet the compiler will still emit runtime instructions (even with <code class="language-plaintext highlighter-rouge">-O3</code>) because it doesn’t know for a fact that the dependencies can be resolved at compile time.</p>
-
-<p>Consider this altered version of the code snippet above (<a href="https://godbolt.org/z/s1Ycahn56">godbolt</a>):</p>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="n">enable_bar</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-
-<span class="k">consteval</span> <span class="kt">int</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="n">bar</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">enable_bar</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">constexpr</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">bar</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>The graphical depiction of this program may now look like this, with the addition that green boxes represent compile-time code:</p>
-
-<center>
-<div class="mermaid">
-graph LR
-    ret(Return Value) --&gt; B(bar)
-    B --&gt; F(foo)
-    B --&gt; E(enable_bar)
-    F --&gt; V(value)
-
-    style V fill:#66ff99,stroke:#00cc66
-    style F fill:#66ff99,stroke:#00cc66
-</div>
-</center>
-
-<p>The dependency-tree representation of the program now contains several nodes that <em>do not require any runtime instructions</em> because we’ve used the <code class="language-plaintext highlighter-rouge">consteval</code> and <code class="language-plaintext highlighter-rouge">constexpr</code> specifiers to inform the compiler that we know everything we need to know in order to call those functions/use those variables at compile-time.</p>
-
-<p>We can take this further:</p>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">constexpr</span> <span class="kt">bool</span> <span class="n">enable_bar</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
-
-<span class="k">consteval</span> <span class="kt">int</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">consteval</span> <span class="kt">int</span> <span class="n">bar</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="k">constexpr</span> <span class="p">(</span><span class="n">enable_bar</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">constexpr</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">42</span><span class="p">;</span>
-  <span class="k">return</span> <span class="n">bar</span><span class="p">(</span><span class="n">foo</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>The graph now looks like this:</p>
-
-<center>
-<div class="mermaid">
-graph LR
-    ret(Return Value) --&gt; B(bar)
-    B --&gt; F(foo)
-    B --&gt; E(enable_bar)
-    F --&gt; V(value)
-
-    style V fill:#66ff99,stroke:#00cc66
-    style F fill:#66ff99,stroke:#00cc66
-    style ret fill:#66ff99,stroke:#00cc66
-    style B fill:#66ff99,stroke:#00cc66
-    style E fill:#66ff99,stroke:#00cc66
-</div>
-</center>
-
-<p>Because we’ve informed the compiler that our code can all be called at compile-time, the instructions emitted by the compiler are now very few; there are only <em>three instructions and one label</em> emitted by the compiler:</p>
-
-<pre><code class="language-assembly">main:
- mov $0x2c,%eax
- retq 
- nopw %cs:0x0(%rax,%rax,1)
-</code></pre>
-
-<p>Of course, the assembly emitted by Compiler Explorer is cleaned up and the true assembly is not three instructions long, but hopefully you get the point.</p>
-
-<p>When you do introduce a runtime dependency into your codebase, it’s helpful to keep this in mind; shift <em>as much</em> of the computation in your program as is (reasonably) possible to compile-time code, and you can potentially remove a <em>huge</em> number of instructions that would otherwise be executed every time you run your program.</p>
-
-<p><br /></p>
-
-<p>Compile-time programming is one of the most compelling reasons to adopt the newest possible C++ standard you are able to.
-You’ll notice that in our code snippets, we used the <code class="language-plaintext highlighter-rouge">consteval</code> specifier on our functions <code class="language-plaintext highlighter-rouge">bar</code> and <code class="language-plaintext highlighter-rouge">foo</code>.
-This means the result of the function <em>must</em> be a compile-time constant; or, the node in the syntax tree <em>must</em> be green.</p>
-
-<p>In C++ standards older than C++20, <code class="language-plaintext highlighter-rouge">consteval</code> was not available, and <code class="language-plaintext highlighter-rouge">constexpr</code> was the only option (besides preprocessor code).
-Before C++17, <code class="language-plaintext highlighter-rouge">constexpr</code> was weaker, and could not perform as much work.</p>
-
-<p><code class="language-plaintext highlighter-rouge">constexpr</code> only tells the compiler that <em>it is possible</em> to evaluate the value of the function or variable at compile time, but the compiler is not <em>mandated</em> to do so.
-Assuming we only have <code class="language-plaintext highlighter-rouge">constexpr</code> available to us, our graph could only really look like the following, where orange boxes represent <em>potentially</em> compile-time code:</p>
-
-<center>
-<div class="mermaid">
-graph LR
-    R(Return Value) --&gt; B(bar)
-    B --&gt; F(foo)
-    B --&gt; E(enable_bar)
-    F --&gt; V(value)
-
-    style V fill:#66ff99,stroke:#00cc66
-    style E fill:#66ff99,stroke:#00cc66
-
-    style F fill:#ff9933,stroke:#cc660
-    style R fill:#ff9933,stroke:#cc660
-    style B fill:#ff9933,stroke:#cc660
-</div>
-</center>
-
-<p>Imagine one of your coworkers isn’t as privy to compile-time constructs in C++, and adds a potentially runtime-dependent value into this graph.
-The majority of your code may fall back to runtime code simply because one potentially-runtime value was introduced!</p>
-
-<center>
-<div class="mermaid">
-graph LR
-    R(Return Value) --&gt; B(bar)
-    B --&gt; F(foo)
-    B --&gt; E(enable_bar)
-    F --&gt; V(value)
-    F --&gt; Ba(baz)
-
-    style V fill:#66ff99,stroke:#00cc66
-    style E fill:#66ff99,stroke:#00cc66
-</div>
-</center>
-
-<h1 id="links">Links</h1>
-
-<ul>
-  <li><a href="https://isocpp.org/blog/2013/01/when-does-a-constexpr-function-get-evaluated-at-compile-time-stackoverflow">ISO C++ post: <em>When does a constexpr function get evaluated at compile time?</em></a></li>
-</ul>
-
-<font size="-1">
-  <em>
-    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
-    These views are entirely my own.
-  </em>
-</font>]]></content><author><name></name></author><category term="c++" /><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">NixOS ❤ Spack</title><link href="/nixos-spack" rel="alternate" type="text/html" title="NixOS ❤ Spack" /><published>2022-02-03T00:00:00-08:00</published><updated>2022-02-03T00:00:00-08:00</updated><id>/NixOS-Spack</id><content type="html" xml:base="/nixos-spack"><![CDATA[<p>description</p>
-
-<font size="-1">
-  <em>
-    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
-    These views are entirely my own.
-  </em>
-</font>]]></content><author><name></name></author><category term="spack, nixos" /><summary type="html"><![CDATA[description]]></summary></entry></feed>
+</font>]]></content><author><name></name></author><category term="c, c++, cuda, GPU, HPC" /><summary type="html"><![CDATA[]]></summary></entry></feed>

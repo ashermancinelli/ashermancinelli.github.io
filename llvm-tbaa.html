@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>NixOS ❤ Spack – Asher Mancinelli – Mostly C++ and Compilers</title>
+    <title>TBAA in LLVM IR – Asher Mancinelli – Mostly C++ and Compilers</title>
 
         <meta charset="utf-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -9,16 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     
-    <meta name="description" content="description
+    <meta name="description" content="Overview of type-based alias analysis in LLMV IR.
 ">
-    <meta property="og:description" content="description
+    <meta property="og:description" content="Overview of type-based alias analysis in LLMV IR.
 ">
     
     <meta name="author" content="Asher Mancinelli">
 
     
-    <meta property="og:title" content="NixOS ❤ Spack">
-    <meta property="twitter:title" content="NixOS ❤ Spack">
+    <meta property="og:title" content="TBAA in LLVM IR">
+    <meta property="twitter:title" content="TBAA in LLVM IR">
     
 
     <link rel="icon" href="/images/chip.png">
@@ -55,10 +55,10 @@
 
     <div id="main" role="main" class="container">
       <article class="post">
-  <h1>NixOS ❤ Spack</h1>
+  <h1>TBAA in LLVM IR</h1>
 
   <div class="entry">
-    <p>description</p>
+    <p>Overview of type-based alias analysis in LLMV IR.</p>
 
 <font size="-1">
   <em>
@@ -67,13 +67,38 @@
   </em>
 </font>
 
+<h2 id="llvm-alias-analysis">LLVM Alias Analysis</h2>
+
+<p>Alias analysis answers the question “do these two addresses alias each other?” with three possible responses.
+Two addresses either <code class="language-plaintext highlighter-rouge">MayAlias</code>, <code class="language-plaintext highlighter-rouge">MustAlias</code>, or they do <code class="language-plaintext highlighter-rouge">NotAlias</code> (which is how they are spelled in the LLVM alias analysis api).</p>
+
+<p>Alias analyses can take into account lots of factors (control flow, field analysis (when analyzing structures), etc), but we’re only talking about <em>type-based</em> alias analysis (TBAA).</p>
+
+<p>TBAA leverages the rules in the type system of the given programming language to prove something about the aliasing relationship between two addresses.</p>
+
+<h2 id="llvm-tbaa-metadata">LLVM TBAA Metadata</h2>
+
+<div class="language-llvm highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
+
+<h2 id="what-is-tbaa">What is TBAA</h2>
+
+<h2 id="links">Links</h2>
+
+<ul>
+  <li><a target="blank" href="https://llvm.org/docs/LangRef.html#tbaa-metadata">LLVM TBAA metadata docs</a></li>
+  <li><a target="blank" href="https://releases.llvm.org/8.0.0/docs/AliasAnalysis.html">LLVM alias analysis docs</a></li>
+  <li><a href="https://www.cs.cornell.edu/courses/cs6120/2020fa/lesson/9/" target="blank">Cornell alias analysis slides</a></li>
+  <li><a target="blank" href="https://www.researchgate.net/publication/234027199_A_Formally-Verified_Alias_Analysis">Formally Verified Alias Analysis</a></li>
+  <li><a href="https://stefansf.de/c-quiz/" target="blank">Type-Based Alias Analysis in C by Stephan</a></li>
+  <li><a href="https://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html" target="blank">LLMV blog: What Every C Programmer Should Know by Chris Lattner</a></li>
+</ul>
 
   </div>
 
   <hr>
 
   <div class="date">
-    Written on Feb 3rd, 2022
+    Written on Dec 2nd, 2022
   </div>
 
   
