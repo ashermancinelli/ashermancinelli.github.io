@@ -92,7 +92,7 @@ which would cause memory access errors when running on a GPU device.</p>
   <span class="n">Vector</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">sz</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">data</span><span class="cm">/*=pointer to data on device*/</span><span class="p">)</span>
     <span class="o">:</span> <span class="n">sz</span><span class="p">(</span><span class="n">sz</span><span class="p">),</span> <span class="n">data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="p">{}</span>
     
-  <span class="kt">void</span> <span class="n">times_constant</span><span class="p">(</span><span class="kt">int</span> <span class="n">factor</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="nf">times_constant</span><span class="p">(</span><span class="kt">int</span> <span class="n">factor</span><span class="p">)</span> <span class="p">{</span>
   
     <span class="n">forall</span><span class="o">&lt;</span><span class="n">cuda_exec</span><span class="o">&lt;</span><span class="mi">128</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">RangeSegment</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sz</span><span class="p">),</span>
       <span class="p">[</span><span class="o">=</span><span class="p">]</span> <span class="p">(</span><span class="n">Index_type</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
@@ -103,7 +103,7 @@ which would cause memory access errors when running on a GPU device.</p>
       <span class="p">});</span>
       
   <span class="p">}</span>
-<span class="nl">private:</span>
+<span class="k">private</span><span class="o">:</span>
   <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">sz</span><span class="p">;</span>
   <span class="kt">int</span><span class="o">*</span> <span class="n">data</span><span class="p">;</span>
 <span class="p">};</span>
@@ -209,7 +209,7 @@ The first simple searches the AST for a lambda function and checks if it capture
   <span class="k">explicit</span> <span class="n">FindLambdaCaptureThis</span><span class="p">(</span><span class="n">ASTContext</span> <span class="o">*</span><span class="n">Context</span><span class="p">)</span>
     <span class="o">:</span> <span class="n">Context</span><span class="p">(</span><span class="n">Context</span><span class="p">),</span> <span class="n">MemberVisitor</span><span class="p">(</span><span class="n">Context</span><span class="p">)</span> <span class="p">{}</span>
 
-  <span class="kt">bool</span> <span class="n">VisitLambdaExpr</span><span class="p">(</span><span class="n">LambdaExpr</span> <span class="o">*</span><span class="n">Expr</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">bool</span> <span class="nf">VisitLambdaExpr</span><span class="p">(</span><span class="n">LambdaExpr</span> <span class="o">*</span><span class="n">Expr</span><span class="p">)</span> <span class="p">{</span>
     <span class="kt">bool</span> <span class="n">FoundThis</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">Expr</span><span class="o">-&gt;</span><span class="n">capture_begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">Expr</span><span class="o">-&gt;</span><span class="n">capture_end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">if</span> <span class="p">(</span><span class="n">it</span><span class="o">-&gt;</span><span class="n">capturesThis</span><span class="p">())</span> <span class="p">{</span>
@@ -234,7 +234,7 @@ The first simple searches the AST for a lambda function and checks if it capture
     <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
   <span class="p">}</span>
 
-<span class="nl">private:</span>
+<span class="k">private</span><span class="o">:</span>
   <span class="n">ASTContext</span> <span class="o">*</span><span class="n">Context</span><span class="p">;</span>
   <span class="n">FindLambdaCapturedFields</span> <span class="n">MemberVisitor</span><span class="p">;</span> <span class="c1">// we'll come back to this</span>
 <span class="p">};</span>
@@ -293,7 +293,7 @@ of the diagnostics we are able to emit. We’ll expand on this later.</p>
   <span class="k">explicit</span> <span class="n">FindLambdaCapturedFields</span><span class="p">(</span><span class="n">ASTContext</span> <span class="o">*</span><span class="n">Context</span><span class="p">)</span>
     <span class="o">:</span> <span class="n">Context</span><span class="p">(</span><span class="n">Context</span><span class="p">)</span> <span class="p">{}</span>
 
-  <span class="kt">bool</span> <span class="n">VisitMemberExpr</span><span class="p">(</span><span class="n">MemberExpr</span> <span class="o">*</span><span class="n">Expr</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">bool</span> <span class="nf">VisitMemberExpr</span><span class="p">(</span><span class="n">MemberExpr</span> <span class="o">*</span><span class="n">Expr</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">auto</span> <span class="n">MemberType</span> <span class="o">=</span> <span class="n">Expr</span><span class="o">-&gt;</span><span class="n">getType</span><span class="p">();</span>
 
     <span class="cm">/* Problematic use of member variable! Time to generate diagnostic
@@ -392,13 +392,13 @@ connect our AST consumer classes up to a compiler instance:</p>
 <span class="nl">public:</span>
   <span class="k">explicit</span> <span class="n">LambdaCaptureCheckerConsumer</span><span class="p">(</span><span class="n">ASTContext</span> <span class="o">*</span><span class="n">Context</span><span class="p">)</span>
     <span class="o">:</span> <span class="n">Visitor</span><span class="p">(</span><span class="n">Context</span><span class="p">)</span> <span class="p">{}</span>
-  <span class="k">explicit</span> <span class="n">LambdaCaptureCheckerConsumer</span><span class="p">(</span><span class="n">CompilerInstance</span><span class="o">&amp;</span> <span class="n">CI</span><span class="p">)</span>
+  <span class="k">explicit</span> <span class="nf">LambdaCaptureCheckerConsumer</span><span class="p">(</span><span class="n">CompilerInstance</span><span class="o">&amp;</span> <span class="n">CI</span><span class="p">)</span>
     <span class="o">:</span> <span class="n">Visitor</span><span class="p">(</span><span class="o">&amp;</span><span class="n">CI</span><span class="p">.</span><span class="n">getASTContext</span><span class="p">())</span> <span class="p">{}</span>
 
-  <span class="k">virtual</span> <span class="kt">void</span> <span class="n">HandleTranslationUnit</span><span class="p">(</span><span class="n">clang</span><span class="o">::</span><span class="n">ASTContext</span> <span class="o">&amp;</span><span class="n">Context</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">HandleTranslationUnit</span><span class="p">(</span><span class="n">clang</span><span class="o">::</span><span class="n">ASTContext</span> <span class="o">&amp;</span><span class="n">Context</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">Visitor</span><span class="p">.</span><span class="n">TraverseDecl</span><span class="p">(</span><span class="n">Context</span><span class="p">.</span><span class="n">getTranslationUnitDecl</span><span class="p">());</span>
   <span class="p">}</span>
-<span class="nl">private:</span>
+<span class="k">private</span><span class="o">:</span>
   <span class="n">FindLambdaCaptureThis</span> <span class="n">Visitor</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div></div>
@@ -481,7 +481,7 @@ lambda-checker
   <span class="p">}</span>
 
   <span class="cm">/* Raw arrays should not be used either. */</span>
-  <span class="kt">void</span> <span class="n">methodUsingBadCaptureArray</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="nf">methodUsingBadCaptureArray</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">auto</span> <span class="n">throwaway</span> <span class="o">=</span> <span class="p">[</span><span class="o">=</span><span class="p">]</span> <span class="p">()</span> <span class="p">{</span>
       <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">};</span>
@@ -490,7 +490,7 @@ lambda-checker
   <span class="cm">/* The preferred method to mitigate the issue outlined above is to create a
    * local copy of the pointer and modify the underlying data through the copy.
    */</span>
-  <span class="kt">void</span> <span class="n">methodUsingGoodCapture</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="nf">methodUsingGoodCapture</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">int</span><span class="o">*</span> <span class="n">localCopy</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
     <span class="k">auto</span> <span class="n">throwaway</span> <span class="o">=</span> <span class="p">[</span><span class="o">=</span><span class="p">]</span> <span class="p">()</span> <span class="p">{</span>
       <span class="o">*</span><span class="n">localCopy</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
@@ -499,14 +499,14 @@ lambda-checker
 
   <span class="cm">/* Methods which capture `this` variables which are not pointers should not
    * cause an issue. */</span>
-  <span class="kt">void</span> <span class="n">methodNotCapturingPointer</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="nf">methodNotCapturingPointer</span><span class="p">()</span> <span class="p">{</span>
     <span class="k">auto</span> <span class="n">throwaway</span> <span class="o">=</span> <span class="p">[</span><span class="o">=</span><span class="p">]</span> <span class="p">()</span> <span class="p">{</span>
       <span class="n">k</span><span class="o">++</span><span class="p">;</span>
     <span class="p">};</span>
   <span class="p">}</span>
 <span class="p">};</span>
 
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
 </code></pre></div></div>
 
 <p>I added this as a CMake target such that the compile commands database would be generated for

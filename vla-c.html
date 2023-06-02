@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Understanding VLA – Asher Mancinelli – Mostly C++ and Compilers</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="Scattered notes from learning about the implementation of VLA.
+">
+    <meta property="og:description" content="Scattered notes from learning about the implementation of VLA.
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Understanding VLA">
+    <meta property="twitter:title" content="Understanding VLA">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - Mostly C++ and Compilers" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">Mostly C++ and Compilers</p>
+          </div>
+
+          <nav>
+            <a href="/">Blog</a>
+            <a href="/about">About</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Understanding VLA</h1>
+
+  <div class="entry">
+    <p>Scattered notes from learning about the implementation of VLA.</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="what-is-vla">What is VLA?</h2>
+
+<p>GCC docs:</p>
+<blockquote>
+  <p>These arrays are declared like any other automatic arrays, but with a length that is not a constant expression. The storage is allocated at the point of declaration and deallocated when the block scope containing the declaration exits.</p>
+</blockquote>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// ./vla &lt;size&gt;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="kt">int</span> <span class="n">array</span><span class="p">[</span><span class="n">len</span><span class="p">];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Declaring the array decrements the stack pointer enough to provide memory for the array:
+<!--
+gcc _includes/vla/inspect-stack.c && LEN=10 IDX=4 ./a.out
+--></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+</span>
+<span class="cp">#define SAVESTACK(X) register uint64_t X; asm( "mov %%rsp, %0" : "=rm" ( X ));
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"LEN"</span><span class="p">));</span>
+  <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"IDX"</span><span class="p">));</span>
+
+  <span class="n">SAVESTACK</span><span class="p">(</span><span class="n">sp0</span><span class="p">);</span>
+
+  <span class="kt">int</span> <span class="n">vla</span><span class="p">[</span><span class="n">len</span><span class="p">];</span>
+
+  <span class="n">SAVESTACK</span><span class="p">(</span><span class="n">sp1</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">vla</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"before: %ld</span><span class="se">\n</span><span class="s">after: %ld</span><span class="se">\n</span><span class="s">diff: %ld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">,</span> <span class="n">sp0</span><span class="o">-</span><span class="n">sp1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">vla</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">uname</span> <span class="nt">-a</span>
+Linux carbon 5.15.0-71-generic <span class="c">#78-Ubuntu SMP Tue Apr 18 09:00:29 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux</span>
+<span class="nv">$ </span>gcc inspect-stack-vla.c <span class="o">&amp;&amp;</span> <span class="nv">LEN</span><span class="o">=</span>10 <span class="nv">IDX</span><span class="o">=</span>4 ./a.out
+before: 140726923074768
+after: 140726923074720
+diff: 48
+</code></pre></div></div>
+
+<h2 id="alloca"><code class="language-plaintext highlighter-rouge">alloca</code></h2>
+
+<p>Instead of declaring a VLA array, we can create a pointer to memory allocated by <code class="language-plaintext highlighter-rouge">alloca</code> to produce the same effect:
+<!--
+gcc _includes/vla/inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
+--></p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;alloca.h&gt;</span><span class="cp">
+</span>
+<span class="cp">#define SAVESTACK(X) register uint64_t X; asm( "mov %%rsp, %0" : "=rm" ( X ));
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"LEN"</span><span class="p">));</span>
+  <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"IDX"</span><span class="p">));</span>
+
+  <span class="n">SAVESTACK</span><span class="p">(</span><span class="n">sp0</span><span class="p">);</span>
+
+  <span class="c1">// int vla[len];</span>
+  <span class="kt">int</span><span class="o">*</span> <span class="n">vla</span> <span class="o">=</span> <span class="n">alloca</span><span class="p">(</span><span class="n">len</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+
+  <span class="n">SAVESTACK</span><span class="p">(</span><span class="n">sp1</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="n">vla</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"before: %ld</span><span class="se">\n</span><span class="s">after: %ld</span><span class="se">\n</span><span class="s">diff: %ld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">,</span> <span class="n">sp0</span><span class="o">-</span><span class="n">sp1</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">vla</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc inspect-stack-alloca.c <span class="o">&amp;&amp;</span> <span class="nv">LEN</span><span class="o">=</span>10 <span class="nv">IDX</span><span class="o">=</span>4 ./a.out
+before: 140726525735728
+after: 140726525735680
+diff: 48
+</code></pre></div></div>
+
+<p>Compare the GCC docs for <code class="language-plaintext highlighter-rouge">alloca</code> with that of variable length arrays and notice the similarities:</p>
+
+<blockquote>
+  <p>The function alloca supports a kind of half-dynamic allocation in which blocks are allocated dynamically but freed automatically.</p>
+
+  <p>Allocating a block with alloca is an explicit action; you can allocate as many blocks as you wish, and compute the size at run time. But all the blocks are freed when you exit the function that alloca was called from, just as if they were automatic variables declared in that function. There is no way to free the space explicitly.</p>
+</blockquote>
+
+<h2 id="llvm-ir">LLVM IR</h2>
+
+<p>Docs explanation of alloca:</p>
+
+<blockquote>
+  <p>The ‘alloca’ instruction allocates memory on the stack frame of the currently executing function, to be automatically released when this function returns to its caller</p>
+</blockquote>
+
+<!--
+clang -S -emit-llvm -o - _includes/vla/simple.c
+-->
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="cm">/* Contrived example that uses VLA */</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"LEN"</span><span class="p">));</span>
+  <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"IDX"</span><span class="p">));</span>
+  <span class="kt">int</span> <span class="n">vla</span><span class="p">[</span><span class="n">len</span><span class="p">];</span>
+  <span class="k">return</span> <span class="n">vla</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+<div class="language-llvm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vg">@.str</span> <span class="p">=</span> <span class="k">private</span> <span class="k">unnamed_addr</span> <span class="k">constant</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]</span> <span class="s">c"LEN\00"</span><span class="p">,</span> <span class="k">align</span> <span class="m">1</span>
+<span class="vg">@.str.1</span> <span class="p">=</span> <span class="k">private</span> <span class="k">unnamed_addr</span> <span class="k">constant</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]</span> <span class="s">c"IDX\00"</span><span class="p">,</span> <span class="k">align</span> <span class="m">1</span>
+
+<span class="k">define</span> <span class="k">dso_local</span> <span class="kt">i32</span> <span class="vg">@main</span><span class="p">(</span><span class="kt">i32</span> <span class="k">noundef</span> <span class="nv">%0</span><span class="p">,</span> <span class="kt">i8</span><span class="p">**</span> <span class="k">noundef</span> <span class="nv">%1</span><span class="p">)</span> <span class="vg">#0</span> <span class="p">{</span>
+  <span class="nv">%3</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%4</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%5</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i8</span><span class="p">**,</span> <span class="k">align</span> <span class="m">8</span>
+  <span class="nv">%6</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%7</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%8</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i8</span><span class="p">*,</span> <span class="k">align</span> <span class="m">8</span>
+  <span class="nv">%9</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i64</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
+  <span class="k">store</span> <span class="kt">i32</span> <span class="m">0</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%3</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%0</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%4</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="k">store</span> <span class="kt">i8</span><span class="p">**</span> <span class="nv">%1</span><span class="p">,</span> <span class="kt">i8</span><span class="p">***</span> <span class="nv">%5</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
+  <span class="nv">%10</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i8</span><span class="p">*</span> <span class="vg">@getenv</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="k">getelementptr</span> <span class="k">inbounds</span> <span class="p">([</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">],</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]*</span> <span class="vg">@.str</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">))</span> <span class="vg">#4</span>
+  <span class="nv">%11</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i32</span> <span class="vg">@atoi</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="nv">%10</span><span class="p">)</span> <span class="vg">#5</span>
+  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%11</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%6</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%12</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i8</span><span class="p">*</span> <span class="vg">@getenv</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="k">getelementptr</span> <span class="k">inbounds</span> <span class="p">([</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">],</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]*</span> <span class="vg">@.str.1</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">))</span> <span class="vg">#4</span>
+  <span class="nv">%13</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i32</span> <span class="vg">@atoi</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="nv">%12</span><span class="p">)</span> <span class="vg">#5</span>
+  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%13</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%7</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%14</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%6</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%15</span> <span class="p">=</span> <span class="k">zext</span> <span class="kt">i32</span> <span class="nv">%14</span> <span class="k">to</span> <span class="kt">i64</span>
+  <span class="nv">%16</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i8</span><span class="p">*</span> <span class="vg">@llvm.stacksave</span><span class="p">()</span>
+                 <span class="err">^^^^^^^^^^^^^^^^^</span> <span class="err">Save</span> <span class="err">the</span> <span class="err">stack</span> <span class="err">frame</span> <span class="err">pointer</span>
+
+  <span class="k">store</span> <span class="kt">i8</span><span class="p">*</span> <span class="nv">%16</span><span class="p">,</span> <span class="kt">i8</span><span class="p">**</span> <span class="nv">%8</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
+  <span class="nv">%17</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i64</span> <span class="nv">%15</span><span class="p">,</span> <span class="k">align</span> <span class="m">16</span>
+        <span class="err">^^^^^^^^^^</span> <span class="err">Dynamically</span> <span class="err">allocate</span> <span class="err">more</span> <span class="err">memory</span> <span class="err">on</span> <span class="err">the</span> <span class="err">stack</span> <span class="err">by</span> <span class="err">decrementing</span>
+                   <span class="err">the</span> <span class="err">stack</span> <span class="err">pointer</span><span class="p">,</span> <span class="err">giving</span> <span class="err">sufficient</span> <span class="err">space</span> <span class="err">for</span> <span class="err">the</span> <span class="err">array</span>
+
+  <span class="k">store</span> <span class="kt">i64</span> <span class="nv">%15</span><span class="p">,</span> <span class="kt">i64</span><span class="p">*</span> <span class="nv">%9</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
+  <span class="nv">%18</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%7</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%19</span> <span class="p">=</span> <span class="k">sext</span> <span class="kt">i32</span> <span class="nv">%18</span> <span class="k">to</span> <span class="kt">i64</span>
+  <span class="nv">%20</span> <span class="p">=</span> <span class="k">getelementptr</span> <span class="k">inbounds</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%17</span><span class="p">,</span> <span class="kt">i64</span> <span class="nv">%19</span>
+  <span class="nv">%21</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%20</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%21</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%3</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="nv">%22</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i8</span><span class="p">*,</span> <span class="kt">i8</span><span class="p">**</span> <span class="nv">%8</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
+  <span class="k">call</span> <span class="kt">void</span> <span class="vg">@llvm.stackrestore</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="nv">%22</span><span class="p">)</span>
+  <span class="nv">%23</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%3</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
+  <span class="k">ret</span> <span class="kt">i32</span> <span class="nv">%23</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="conclusion--links">Conclusion &amp; Links</h2>
+
+<ol>
+  <li><a href="https://gcc.gnu.org/onlinedocs/gcc/Variable-Length.html">GCC VLA docs</a></li>
+  <li><a href="https://www.gnu.org/software/libc/manual/html_node/Alloca-Example.html">GCC <code class="language-plaintext highlighter-rouge">alloca</code> docs</a></li>
+  <li><a href="https://llvm.org/docs/LangRef.html#alloca-instruction">LLVM IR docs for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
+  <li><a href="https://llvm.org/doxygen/Instructions_8cpp_source.html">LLVM source for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
+  <li><a href="https://en.cppreference.com/w/c/language/array">cppreference docs on VLA</a></li>
+</ol>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+
+  </div>
+
+  <hr>
+
+  <div class="date">
+    Written on Jun 1st, 2023
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+</div>
+    
+    
+
+  </body>
+</html>

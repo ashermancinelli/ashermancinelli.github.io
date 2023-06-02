@@ -308,7 +308,7 @@ For example, <a href="https://thrust.github.io/doc/group__transformed__reduction
 
 <p>In Python, a given unit of work might look like this:</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="nb">reduce</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">functools</span> <span class="kn">import</span> <span class="nb">reduce</span>
 <span class="n">tuplespace_row0</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
     <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
@@ -316,9 +316,9 @@ For example, <a href="https://thrust.github.io/doc/group__transformed__reduction
     <span class="p">]</span>
 
 <span class="k">def</span> <span class="nf">work</span><span class="p">(</span><span class="n">tupl</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">reduce</span><span class="p">(</span>
+    <span class="k">return</span> <span class="nf">reduce</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span>        <span class="c1"># use + to reduce
-</span>            <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="c1"># use * to transform
+</span>            <span class="nf">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="c1"># use * to transform
 </span>                <span class="n">tupl</span>                   <span class="c1"># input tuple
 </span>                <span class="p">)</span>
             <span class="p">)</span>
@@ -326,7 +326,7 @@ For example, <a href="https://thrust.github.io/doc/group__transformed__reduction
 <span class="c1"># Input to map is mat_row
 # Input to reduce is [0, 2, 4]
 # Final value is 6
-</span><span class="k">print</span><span class="p">(</span><span class="n">work</span><span class="p">(</span><span class="n">tuplespace_row0</span><span class="p">))</span> <span class="c1"># yields 6
+</span><span class="nf">print</span><span class="p">(</span><span class="nf">work</span><span class="p">(</span><span class="n">tuplespace_row0</span><span class="p">))</span> <span class="c1"># yields 6
 </span></code></pre></div></div>
 
 <p>The following formula is a more formal definition of a single unit of work in our example:</p>
@@ -563,7 +563,7 @@ In this example, we introduce three aspects of the CUDA programming model:
     <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">*</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">];</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define N 10
 </span>
   <span class="c1">// Allocate static memory on host</span>
@@ -735,7 +735,7 @@ In the following example, we make use of CUDA shared memory, as indicated by the
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define N 10
 </span>
   <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
@@ -833,7 +833,7 @@ There are many other CUDA primitives for atomic, and synchronization operations,
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define M 10
 </span>  <span class="cp">#define N 15
 </span>
@@ -946,7 +946,7 @@ We were using CUDA C++ the whole time, we just restricted ourselves to the C sub
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define M 10
 </span>  <span class="cp">#define N 15
 </span>
@@ -1060,7 +1060,7 @@ Once you have already written your code using <em>known algorithms</em>, once yo
     <span class="n">mat</span><span class="p">[</span><span class="n">col</span><span class="o">+</span><span class="p">(</span><span class="n">row</span><span class="o">*</span><span class="n">n</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">col</span><span class="p">];</span>
 <span class="p">}</span>
 
-<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="cp">#define M 10
 </span>  <span class="cp">#define N 15
 </span>

@@ -98,22 +98,22 @@ Each of these packages has many configuration and installation options, and you 
 <p>Our <code class="language-plaintext highlighter-rouge">FloodSimulation</code> package may have a <code class="language-plaintext highlighter-rouge">package.py</code> file that looks like this:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-<span class="kn">from</span> <span class="nn">spack</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="n">spack</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="n">os</span>
 
 <span class="k">class</span> <span class="nc">FloodSimulation</span><span class="p">(</span><span class="n">CMakePackage</span><span class="p">):</span>
-    <span class="n">homepage</span> <span class="o">=</span> <span class="s">"https://github.com/your-username/flood-simulation"</span>
-    <span class="n">git</span> <span class="o">=</span> <span class="s">"https://github.com/your-username/flood-simulation.git"</span>
-    <span class="n">version</span><span class="p">(</span><span class="s">'1.0.0'</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s">'v1.0.0'</span><span class="p">)</span>
-    <span class="n">depends_on</span><span class="p">(</span><span class="s">'petsc'</span><span class="p">)</span>
-    <span class="n">depends_on</span><span class="p">(</span><span class="s">'hiop'</span><span class="p">)</span>
-    <span class="n">depends_on</span><span class="p">(</span><span class="s">'cuda@10.1:'</span><span class="p">,</span> <span class="n">when</span><span class="o">=</span><span class="s">'+cuda'</span><span class="p">)</span>
-    <span class="n">depends_on</span><span class="p">(</span><span class="s">'magma'</span><span class="p">,</span> <span class="n">when</span><span class="o">=</span><span class="s">'+cuda'</span><span class="p">)</span>
+    <span class="n">homepage</span> <span class="o">=</span> <span class="sh">"</span><span class="s">https://github.com/your-username/flood-simulation</span><span class="sh">"</span>
+    <span class="n">git</span> <span class="o">=</span> <span class="sh">"</span><span class="s">https://github.com/your-username/flood-simulation.git</span><span class="sh">"</span>
+    <span class="nf">version</span><span class="p">(</span><span class="sh">'</span><span class="s">1.0.0</span><span class="sh">'</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="sh">'</span><span class="s">v1.0.0</span><span class="sh">'</span><span class="p">)</span>
+    <span class="nf">depends_on</span><span class="p">(</span><span class="sh">'</span><span class="s">petsc</span><span class="sh">'</span><span class="p">)</span>
+    <span class="nf">depends_on</span><span class="p">(</span><span class="sh">'</span><span class="s">hiop</span><span class="sh">'</span><span class="p">)</span>
+    <span class="nf">depends_on</span><span class="p">(</span><span class="sh">'</span><span class="s">cuda@10.1:</span><span class="sh">'</span><span class="p">,</span> <span class="n">when</span><span class="o">=</span><span class="sh">'</span><span class="s">+cuda</span><span class="sh">'</span><span class="p">)</span>
+    <span class="nf">depends_on</span><span class="p">(</span><span class="sh">'</span><span class="s">magma</span><span class="sh">'</span><span class="p">,</span> <span class="n">when</span><span class="o">=</span><span class="sh">'</span><span class="s">+cuda</span><span class="sh">'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">cmake_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">cmake_args</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="s">'+cuda'</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">.</span><span class="n">spec</span><span class="p">:</span>
-            <span class="n">args</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">'-DFLOODSIMULATION_ENABLE_CUDA=ON'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="sh">'</span><span class="s">+cuda</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">spec</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">'</span><span class="s">-DFLOODSIMULATION_ENABLE_CUDA=ON</span><span class="sh">'</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">args</span>
 
 </code></pre></div></div>
@@ -126,18 +126,18 @@ In this case, you might have an environment file like this:</p>
 <span class="na">spack</span><span class="pi">:</span>
   <span class="na">specs</span><span class="pi">:</span>
   <span class="pi">-</span> <span class="s">floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop</span>
-  <span class="na">view</span><span class="pi">:</span> <span class="no">true</span>
+  <span class="na">view</span><span class="pi">:</span> <span class="kc">true</span>
   <span class="na">packages</span><span class="pi">:</span>
     <span class="na">magma</span><span class="pi">:</span>
       <span class="na">externals</span><span class="pi">:</span>
       <span class="pi">-</span> <span class="na">spec</span><span class="pi">:</span> <span class="s">magma@2.5.4</span>
         <span class="na">prefix</span><span class="pi">:</span> <span class="s">/path/to/magma</span>
-      <span class="na">buildable</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">buildable</span><span class="pi">:</span> <span class="kc">false</span>
     <span class="na">cuda</span><span class="pi">:</span>
       <span class="na">externals</span><span class="pi">:</span>
       <span class="pi">-</span> <span class="na">spec</span><span class="pi">:</span> <span class="s">cuda@10.2.89</span>
         <span class="na">prefix</span><span class="pi">:</span> <span class="s">/path/to/cuda</span>
-      <span class="na">buildable</span><span class="pi">:</span> <span class="no">false</span>
+      <span class="na">buildable</span><span class="pi">:</span> <span class="kc">false</span>
 
 </code></pre></div></div>
 
@@ -231,7 +231,7 @@ floodsimulationrepo
 
 <p>If you didn’t notice earlier, our environment file contains the line:</p>
 
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">view</span><span class="pi">:</span> <span class="no">true</span>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">view</span><span class="pi">:</span> <span class="kc">true</span>
 </code></pre></div></div>
 
 <p>This means that when you activate your spack environment (<code class="language-plaintext highlighter-rouge">spack env activate &lt;environment name&gt;</code>), spack will use a “view” by defaul.
