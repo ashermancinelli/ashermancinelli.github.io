@@ -7,23 +7,24 @@ PREFIX := $(shell pwd)/../ashermancinelli.github.io-build
 endif
 
 all:
-	$(JEKYLL) build --verbose
+	$(JEKYLL) build --verbose --trace
 
 serve:
 	$(JEKYLL) serve --verbose
 
 install:
-	$(JEKYLL) build -d $(PREFIX) --verbose
+	$(JEKYLL) build -d $(PREFIX) --verbose --trace
 	cp ./CNAME $(PREFIX)
 
 deploy: install
 	cd $(PREFIX) && \
 		if [ ! -d .git ]; then \
+			git init \
 			git remote add \
 				origin git@github.com:ashermancinelli/ashermancinelli.github.io; \
 		fi
 	cd $(PREFIX) && \
-		if [ ! $(git branch | cut -f2 -d' ') = "gh-pages" ]; then \
+		if [ ! $$(git branch | cut -f2 -d' ') = "gh-pages" ]; then \
 			echo 'must be on branch gh-pages'; \
 			exit 1; \
 		fi
