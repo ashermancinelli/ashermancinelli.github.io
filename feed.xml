@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-02T14:55:06-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++ and Compilers</subtitle><entry><title type="html">Understanding VLA</title><link href="/vla-c" rel="alternate" type="text/html" title="Understanding VLA" /><published>2023-06-01T00:00:00-07:00</published><updated>2023-06-01T00:00:00-07:00</updated><id>/C-VLA-Implementation</id><content type="html" xml:base="/vla-c"><![CDATA[<p>Scattered notes from learning about the implementation of VLA.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-04T16:07:28-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++ and Compilers</subtitle><entry><title type="html">Understanding VLA</title><link href="/vla-c" rel="alternate" type="text/html" title="Understanding VLA" /><published>2023-06-01T00:00:00-07:00</published><updated>2023-06-01T00:00:00-07:00</updated><id>/C-VLA-Implementation</id><content type="html" xml:base="/vla-c"><![CDATA[<p>Scattered notes from learning about the implementation of VLA.</p>
 
 <font size="-1">
   <em>
@@ -8,6 +8,41 @@
 </font>
 
 <h2 id="what-is-vla">What is VLA?</h2>
+
+<p>Variable-length arrays are dynamic, stack-allocated arrays.
+The compiler needs to increase the stack size in the current stack frame to allocate enough space for the array.
+Assuming negative stack-growth like on x86, the compiler will decrease the stack pointer sufficiently to store the array.</p>
+
+<p>This is almost identical to <code class="language-plaintext highlighter-rouge">alloca</code>.
+Both <code class="language-plaintext highlighter-rouge">alloca</code> and VLAs are essentially primitives to modify the stack pointer.</p>
+
+<p>Eg:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1">// Subtracts N from current stack pointer returns sp </span>
+  <span class="kt">int</span> <span class="o">*</span><span class="n">curr_sp</span> <span class="o">=</span> <span class="n">alloca</span><span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+
+  <span class="c1">// equivilant to</span>
+  <span class="kt">int</span> <span class="n">curr_sp</span><span class="p">[</span><span class="n">N</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p><a href="https://stackoverflow.com/questions/3488821/is-alloca-completely-replaceable">One key difference between the two:</a></p>
+<blockquote>
+  <p>The memory alloca() returns is valid as long as the current function persists. The lifetime of the memory occupied by a VLA is valid as long as the VLA’s identifier remains in scope. You can <code class="language-plaintext highlighter-rouge">alloca</code> memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates.</p>
+</blockquote>
+
+<h2 id="memory-layout">Memory Layout</h2>
+
+<p>Because the stack grows down on most platforms, the stack pointer after an <code class="language-plaintext highlighter-rouge">alloca</code> or VLA allocation but arrays are addressed sequentially upwards, the address of the first element of a VLA array (or the pointer returned by <code class="language-plaintext highlighter-rouge">alloca</code>) will be the value of the stack pointer <em>after</em> it’s modified.</p>
+
+<center>
+  <img style="background-color:#240057;" src="/images/vla/vla-stack-pointer-viz.drawio.png" />
+</center>
+
+<p>Element 0 of the array or <code class="language-plaintext highlighter-rouge">alloca</code>-allocated memory is therefore immediately above the stack pointer after allocation, and is addressed by increasing sequentially until the end of the array.
+Accessing past the array will then run into previously declared stack variables.</p>
+
+<p>When the function returns, the stack space will be available for subsequent function calls to use automatically, so there is no need to explicitly free memory allocated by VLA/<code class="language-plaintext highlighter-rouge">alloca</code>.</p>
+
+<h2 id="examples">Examples</h2>
 
 <p>GCC docs:</p>
 <blockquote>
@@ -31,11 +66,12 @@ gcc _includes/vla/inspect-stack.c && LEN=10 IDX=4 ./a.out
 #include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 #include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
 </span>
-<span class="cp">#define SAVESTACK(X) register uint64_t X; asm( "mov %%rsp, %0" : "=rm" ( X ));
+<span class="cp">#define SAVESTACK(X) asm( "mov %%rsp, %0" : "=rm" ( X ));
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
   <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"LEN"</span><span class="p">));</span>
   <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"IDX"</span><span class="p">));</span>
+  <span class="k">register</span> <span class="kt">uint64_t</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">;</span>
 
   <span class="n">SAVESTACK</span><span class="p">(</span><span class="n">sp0</span><span class="p">);</span>
 
@@ -46,7 +82,7 @@ gcc _includes/vla/inspect-stack.c && LEN=10 IDX=4 ./a.out
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
     <span class="n">vla</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
 
-  <span class="n">printf</span><span class="p">(</span><span class="s">"before: %ld</span><span class="se">\n</span><span class="s">after: %ld</span><span class="se">\n</span><span class="s">diff: %ld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">,</span> <span class="n">sp0</span><span class="o">-</span><span class="n">sp1</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"&amp;vla[0]: %ld</span><span class="se">\n</span><span class="s">before: %ld</span><span class="se">\n</span><span class="s">after: %ld</span><span class="se">\n</span><span class="s">diff: %ld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">vla</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">,</span> <span class="n">sp0</span><span class="o">-</span><span class="n">sp1</span><span class="p">);</span>
   <span class="k">return</span> <span class="n">vla</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
 <span class="p">}</span>
 
@@ -54,10 +90,13 @@ gcc _includes/vla/inspect-stack.c && LEN=10 IDX=4 ./a.out
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">uname</span> <span class="nt">-a</span>
 Linux carbon 5.15.0-71-generic <span class="c">#78-Ubuntu SMP Tue Apr 18 09:00:29 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux</span>
 <span class="nv">$ </span>gcc inspect-stack-vla.c <span class="o">&amp;&amp;</span> <span class="nv">LEN</span><span class="o">=</span>10 <span class="nv">IDX</span><span class="o">=</span>4 ./a.out
-before: 140726923074768
-after: 140726923074720
+&amp;vla[0]: 140737151458112
+before: 140737151458160
+after: 140737151458112
 diff: 48
 </code></pre></div></div>
+
+<p>Notice that the address stored in the stack pointer after declaring the VLA array is the same as the address of the first element of the VLA array as depicted in the diagram above.</p>
 
 <h2 id="alloca"><code class="language-plaintext highlighter-rouge">alloca</code></h2>
 
@@ -70,11 +109,12 @@ gcc _includes/vla/inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
 #include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
 #include</span> <span class="cpf">&lt;alloca.h&gt;</span><span class="cp">
 </span>
-<span class="cp">#define SAVESTACK(X) register uint64_t X; asm( "mov %%rsp, %0" : "=rm" ( X ));
+<span class="cp">#define SAVESTACK(X) asm( "mov %%rsp, %0" : "=rm" ( X ));
 </span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
   <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"LEN"</span><span class="p">));</span>
   <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"IDX"</span><span class="p">));</span>
+  <span class="k">register</span> <span class="kt">uint64_t</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">;</span>
 
   <span class="n">SAVESTACK</span><span class="p">(</span><span class="n">sp0</span><span class="p">);</span>
 
@@ -86,14 +126,15 @@ gcc _includes/vla/inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
     <span class="n">vla</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
 
-  <span class="n">printf</span><span class="p">(</span><span class="s">"before: %ld</span><span class="se">\n</span><span class="s">after: %ld</span><span class="se">\n</span><span class="s">diff: %ld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">,</span> <span class="n">sp0</span><span class="o">-</span><span class="n">sp1</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"&amp;vla[0]: %ld</span><span class="se">\n</span><span class="s">before: %ld</span><span class="se">\n</span><span class="s">after: %ld</span><span class="se">\n</span><span class="s">diff: %ld</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">vla</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sp0</span><span class="p">,</span> <span class="n">sp1</span><span class="p">,</span> <span class="n">sp0</span><span class="o">-</span><span class="n">sp1</span><span class="p">);</span>
   <span class="k">return</span> <span class="n">vla</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
 <span class="p">}</span>
 
 </code></pre></div></div>
 <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gcc inspect-stack-alloca.c <span class="o">&amp;&amp;</span> <span class="nv">LEN</span><span class="o">=</span>10 <span class="nv">IDX</span><span class="o">=</span>4 ./a.out
-before: 140726525735728
-after: 140726525735680
+&amp;vla[0]: 140728646054592
+before: 140728646054640
+after: 140728646054592
 diff: 48
 </code></pre></div></div>
 
@@ -150,8 +191,8 @@ clang -S -emit-llvm -o - _includes/vla/simple.c
   <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%13</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%7</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
   <span class="nv">%14</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%6</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
   <span class="nv">%15</span> <span class="p">=</span> <span class="k">zext</span> <span class="kt">i32</span> <span class="nv">%14</span> <span class="k">to</span> <span class="kt">i64</span>
+
   <span class="nv">%16</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i8</span><span class="p">*</span> <span class="vg">@llvm.stacksave</span><span class="p">()</span>
-                 <span class="err">^^^^^^^^^^^^^^^^^</span> <span class="err">Save</span> <span class="err">the</span> <span class="err">stack</span> <span class="err">frame</span> <span class="err">pointer</span>
 
   <span class="k">store</span> <span class="kt">i8</span><span class="p">*</span> <span class="nv">%16</span><span class="p">,</span> <span class="kt">i8</span><span class="p">**</span> <span class="nv">%8</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
   <span class="nv">%17</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i64</span> <span class="nv">%15</span><span class="p">,</span> <span class="k">align</span> <span class="m">16</span>
@@ -179,6 +220,7 @@ clang -S -emit-llvm -o - _includes/vla/simple.c
   <li><a href="https://llvm.org/docs/LangRef.html#alloca-instruction">LLVM IR docs for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
   <li><a href="https://llvm.org/doxygen/Instructions_8cpp_source.html">LLVM source for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
   <li><a href="https://en.cppreference.com/w/c/language/array">cppreference docs on VLA</a></li>
+  <li><a href="https://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html">Buffer overflow and stack frame visualization</a></li>
 </ol>
 
 <font size="-1">
