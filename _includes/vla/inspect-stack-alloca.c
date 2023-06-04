@@ -3,11 +3,12 @@
 #include <stdint.h>
 #include <alloca.h>
 
-#define SAVESTACK(X) register uint64_t X; asm( "mov %%rsp, %0" : "=rm" ( X ));
+#define SAVESTACK(X) asm( "mov %%rsp, %0" : "=rm" ( X ));
 
 int main(int argc, char** argv) {
   int len = atoi(getenv("LEN"));
   int idx = atoi(getenv("IDX"));
+  register uint64_t sp0, sp1;
 
   SAVESTACK(sp0);
 
@@ -19,6 +20,6 @@ int main(int argc, char** argv) {
   for (int i=0; i < len; i++)
     vla[i] = i;
 
-  printf("before: %ld\nafter: %ld\ndiff: %ld\n", sp0, sp1, sp0-sp1);
+  printf("&vla[0]: %ld\nbefore: %ld\nafter: %ld\ndiff: %ld\n", (uint64_t)&vla[0], sp0, sp1, sp0-sp1);
   return vla[idx];
 }
