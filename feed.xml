@@ -1,4 +1,86 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-04T16:07:28-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>Mostly C++ and Compilers</subtitle><entry><title type="html">Understanding VLA</title><link href="/vla-c" rel="alternate" type="text/html" title="Understanding VLA" /><published>2023-06-01T00:00:00-07:00</published><updated>2023-06-01T00:00:00-07:00</updated><id>/C-VLA-Implementation</id><content type="html" xml:base="/vla-c"><![CDATA[<p>Scattered notes from learning about the implementation of VLA.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-11T17:41:38-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">Hunt for the Best Espresso in Portland</title><link href="/espresso-pdx" rel="alternate" type="text/html" title="Hunt for the Best Espresso in Portland" /><published>2023-06-11T00:00:00-07:00</published><updated>2023-06-11T00:00:00-07:00</updated><id>/Best-Espresso-In-Portland</id><content type="html" xml:base="/espresso-pdx"><![CDATA[<p>Finding the best espresso in one of the homes of 3rd-wave coffee.</p>
+
+<h2 id="the-plan">The Plan</h2>
+
+<p>In the spring and summer of 2023 I started a list of coffee shops to evaluate.
+By the end of the summer I hope to have established a rough ranking of the best shops,
+along with some honorable mentions for great shops to work from.</p>
+
+<p>Here are some of the early contenders:</p>
+
+<center>
+  <img src="/images/coffee/courier.png" />
+</center>
+
+<p>The second shop to get a 10/10 on my arbitrary rating system blew me away.
+I’m not usually a huge fan of fruity espresso, but the double-fermented Las Frutas roasted in-house was the best espresso I’ve had to date.
+The columbian beans were sealed in water bags for 72 hours before another 30 hour wet-tank soak were incredible.
+The roaster and barista recomended Sterling Coffee Roasters for my next espresso, so I’m hopeful that Sterling will rate pretty highly as well.</p>
+
+<center>
+  <img src="/images/coffee/ovation.png" />
+</center>
+
+<p>Ovation Coffee and Tea was the first shop to be awarded a perfect 10/10.
+The location in PSU’s campus right off the North-South streetcar line has plenty of space to work and REALLY cute porcelein cups.</p>
+
+<h2 id="behind-the-museum">Behind the Museum</h2>
+
+<p>The Behind the Museum cafe’s beautiful floor-to-ceiling windows and Japanese pottery along the walls make for an
+especially nice work environment, especially when it’s raining -
+the rain rolling off those massive windows immediately puts you at ease.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Finding the best espresso in one of the homes of 3rd-wave coffee.]]></summary></entry><entry><title type="html">Bisection Debugging Techniques</title><link href="/bisect-debugging-2" rel="alternate" type="text/html" title="Bisection Debugging Techniques" /><published>2023-06-07T00:00:00-07:00</published><updated>2023-06-07T00:00:00-07:00</updated><id>/Bisect-Debugging-2</id><content type="html" xml:base="/bisect-debugging-2"><![CDATA[<p>Notes on bisecting bugs in large programs</p>
+
+<h2 id="start-high-in-the-callstack">Start High in the Callstack</h2>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">d</span><span class="p">();</span>
+  <span class="n">e</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">c</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">f</span><span class="p">();</span>
+  <span class="n">g</span><span class="p">();</span>
+  <span class="n">h</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">b</span><span class="p">();</span>
+  <span class="n">c</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="bisect-on-the-call-number">Bisect on the call number</h2>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">int</span> <span class="n">ncalls</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">ncalls</span><span class="o">++</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">ncalls</span> <span class="o">&lt;</span> <span class="n">min</span> <span class="o">||</span> <span class="n">ncalls</span> <span class="o">&gt;</span> <span class="n">max</span><span class="p">)</span>
+  <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// bail out early</span>
+</code></pre></div></div>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="conclusion--links">Conclusion &amp; Links</h2>
+
+<ol>
+  <li><a href="https://gcc.gnu.org/onlinedocs/gcc/Variable-Length.html">GCC VLA docs</a></li>
+  <li><a href="https://www.gnu.org/software/libc/manual/html_node/Alloca-Example.html">GCC <code class="language-plaintext highlighter-rouge">alloca</code> docs</a></li>
+  <li><a href="https://llvm.org/docs/LangRef.html#alloca-instruction">LLVM IR docs for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
+  <li><a href="https://llvm.org/doxygen/Instructions_8cpp_source.html">LLVM source for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
+  <li><a href="https://en.cppreference.com/w/c/language/array">cppreference docs on VLA</a></li>
+  <li><a href="https://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html">Buffer overflow and stack frame visualization</a></li>
+</ol>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>]]></content><author><name></name></author><category term="c" /><category term="c++" /><summary type="html"><![CDATA[Notes on bisecting bugs in large programs]]></summary></entry><entry><title type="html">Understanding VLA</title><link href="/vla-c" rel="alternate" type="text/html" title="Understanding VLA" /><published>2023-06-01T00:00:00-07:00</published><updated>2023-06-01T00:00:00-07:00</updated><id>/C-VLA-Implementation</id><content type="html" xml:base="/vla-c"><![CDATA[<p>Scattered notes from learning about the implementation of VLA.</p>
 
 <font size="-1">
   <em>
@@ -649,216 +731,4 @@ The common thread is consensual participation and individual representation.</p>
   <li><a href="https://www.businessballs.com/strategy-innovation/ashbys-law-of-requisite-variety/" target="blank">Ashby’s Law of Requisite Variety</a></li>
   <li><a href="https://www.marxists.org/archive/marx/works/1872/10/authority.htm" target="blank"><em>On Authority</em> by Karl Marx</a></li>
   <li><a href="https://www.youtube.com/watch?v=cDnenjIdnnE&amp;ab_channel=NeighborDemocracy" target="blank">The Communes of Rojava: A Model In Societal Self Direction</a></li>
-</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">BQN and Reflections on the Joy of Programming</title><link href="/bqn-reflections" rel="alternate" type="text/html" title="BQN and Reflections on the Joy of Programming" /><published>2022-05-02T00:00:00-07:00</published><updated>2022-05-02T00:00:00-07:00</updated><id>/BQN-reflections</id><content type="html" xml:base="/bqn-reflections"><![CDATA[<p>Solve a leetcode problem in BQN and I rant about the joy of programming.</p>
-
-<h2 id="leetcode">Leetcode</h2>
-
-<p><a href="https://leetcode.com/problems/set-matrix-zeroes" target="blank">
-  The Leetcode problem is “Set Matrix Zeroes”
-</a>
-where we’re tasked with setting rows and columns of a matrix that contain zero to be all zeroes.</p>
-
-<h2 id="bqn-solution">BQN Solution</h2>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i←⟨
-     3‿4⥊⟨0,1,3,0,3,4,5,2,1,3,1,5⟩
-     3‿3⥊⟨1,1,1,1,0,1,1,1,1⟩
-   ⟩
-
-   Z ← {
-     bm←0=𝕩
-     a←∨` ∨`⌾⌽ bm
-     b←(∨`˘) ((∨`˘)⌾(⌽˘)) bm
-     𝕩×a¬∘∨b
-   }
-   
-   ⟨"#1","#2"⟩∾i≍Z¨i
-┌─                       
-╵ "#1"        "#2"       
-  ┌─          ┌─         
-  ╵ 0 1 3 0   ╵ 1 1 1    
-    3 4 5 2     1 0 1    
-    1 3 1 5     1 1 1    
-            ┘         ┘  
-  ┌─          ┌─         
-  ╵ 0 0 0 0   ╵ 1 0 1    
-    0 4 5 0     0 0 0    
-    0 3 1 0     1 0 1    
-            ┘         ┘  
-                        ┘
-</code></pre></div></div>
-
-<p>Some other solutions from the BQN Matrix chat room:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   ⊢×0≠∧˝˘∧⌜∧˝           # Marshall &amp; Dzaima (tacit!)
-   (≠⥊∧´)˘{𝕩×(𝔽⌾⍉∧𝔽)0≠𝕩} # Dzaima &amp; Rampoina
-   {𝕩×(∧˝˘∧≢⥊∧˝)0≠𝕩}     # Dzaima
-</code></pre></div></div>
-
-<h2 id="on-the-joy-of-programming">On the Joy of Programming</h2>
-
-<p>It’s been a few months since I’ve written BQN or APL, so I feel like I’m looking at the language family with fresh eyes.</p>
-
-<p>I was struck by the resemblance between solving this leetcode problem and creating art:</p>
-
-<ol>
-  <li>I know I’m not the best at either, and many, <em>many</em> people can write more elegant BQN and more elegant poetry than I can (for example)</li>
-  <li>I can thoroughly enjoy both when detached from any performance metrics - the process is far more valuable to me than the end-product</li>
-  <li>both can be deeply social actions - sharing your painting with someone and discussing my solution with the BQN chat room are both social and exciting. Even if someone comes back with a more wonderful painting or more terse solution, I enjoy the social interaction just as much.</li>
-</ol>
-
-<p>I stumbled upon this thread on twitter describing how Kurt Vonnegut responded to a letter from a high school English student asking for life advice.
-In short, his response was to do art and enjoy the process of becoming who you are.</p>
-
-<center>
-  <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Tear it up into teeny-weeny pieces, and discard them into widely separated trash receptacles. You will find that you have already been gloriously rewarded for your poem. You have experienced becoming, learned a lot more about what’s inside you, and you have made your soul grow.</p>&mdash; Gabe Hudson (@gabehudson) <a href="https://twitter.com/gabehudson/status/1521139749322477569?ref_src=twsrc%5Etfw">May 2, 2022</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-</center>
-
-<p>Creating art seems to be central to the importance of life as far as I can tell.</p>
-
-<p><a href="https://www.arraycast.com/episodes/episode26-stevan-apter" target="blank">
-  The most recent episode of ArrayCast with Stevan Apter dipped into this as well when the panelists discussed the aesthetic of writing APL.
-</a>
-In some ways they were a little reserved about saying they enjoy APL at least in part due to the aesthetic of the language.
-I don’t think this is something to shy away from - if we can’t appreciate the beauty of what we do, why are we doing it at all?</p>
-
-<p>I loved working through this rather simple problem.</p>
-
-<p>I loved the process of visualizing the inputs, of thinking through possible solutions while going about my day.</p>
-
-<p>I loved taking my solution to the BQN forum for more gifted and practiced BQN-ers to find far simpler and more elegant solutions than mine.</p>
-
-<p>The whole process felt like writing a poem, and at the end I’m rewarded by sharing this poem with others, seeing what they come up with, and comparing their thoughts with mine.</p>
-
-<p>There is a unique joy and beauty I find in BQN (and APL more broadly), and that’s what keeps me coming back.</p>
-
-<p>As Kurt Vonnegut pointed out, what else could be a more worthwhile way to spend my time?</p>
-
-<p>Please, give it a try, and fall in love with the community while you’re at it.</p>
-
-<!---
-## C++ Solution
-
-I'll also include my C++ solution for kicks and giggles:
-
-```cpp
-void setZeroes(vector<vector<int>>& m) {
-  const auto rs = m.size(), cs = m[0].size();
-  vector<int> rows, cols;
-  for (int i=0; i<rs; i++)
-    for (int j=0; j<cs; j++)
-      if (0 == m[i][j]) {
-        rows.push_back(i);
-        cols.push_back(j);
-      }
-  for (const auto r : rows)
-    std::fill(m[r].begin(), m[r].end(), 0);
-  for (const auto c : cols)
-    for (auto& r : m)
-      r[c] = 0;
-}
-```
--->]]></content><author><name></name></author><category term="BQN, c++" /><summary type="html"><![CDATA[Solve a leetcode problem in BQN and I rant about the joy of programming.]]></summary></entry><entry><title type="html">JAABIBP (Just Another ABI Blog Post)</title><link href="/jaabibp" rel="alternate" type="text/html" title="JAABIBP (Just Another ABI Blog Post)" /><published>2022-03-14T00:00:00-07:00</published><updated>2022-03-14T00:00:00-07:00</updated><id>/JAABIBP</id><content type="html" xml:base="/jaabibp"><![CDATA[<p>ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 <code class="language-plaintext highlighter-rouge">_Alias</code> proposal.</p>
-
-<p><em>NOTE: This is probably the least educated article about ABI breakage yet. You should really watch <a href="https://youtu.be/By7b19YIv8Q">Jason Turner’s youtube video</a> or read <a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">JeanHeyd Meneide’s blog posts</a>🙃</em></p>
-
-<font size="-1">
-  <em>
-    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
-    These views are entirely my own.
-  </em>
-</font>
-
-<p>After reading about transparent aliasing in <a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">this blog post from JeanHeyd Meneide</a>, I had to play around with it in Godbolt and rave about its coolness on the Cursed Bird Site.
-Sean Parent rightly pointed out that this super neat proposal from JeanHeyd acomplishes pretty much the same thing as <code class="language-plaintext highlighter-rouge">inline namespace</code> in C++.</p>
-
-<p><br /></p>
-
-<center>
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Isn't this what inline namespaces are for in C++? (prior, they were \_\_strong namespaces). I'm surprised these aren't even mentioned in the proposal. Maybe an abbreviated form of inline namespaces for C could be used. ;-)</p>&mdash; Sean Parent (@SeanParent) <a href="https://twitter.com/SeanParent/status/1503471201833738240?ref_src=twsrc%5Etfw">March 14, 2022</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-</center>
-
-<p><br /></p>
-
-<p>Let’s talk about that.</p>
-
-<h2 id="problem-formulation">Problem Formulation</h2>
-
-<p>Let’s say you build executable A which dynamically links against library B.</p>
-
-<p>Library B might look like this:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// B.hpp</span>
-<span class="k">namespace</span> <span class="n">B</span> <span class="p">{</span>
-<span class="kt">int</span> <span class="n">answer</span><span class="p">();</span>
-<span class="p">}</span>
-
-<span class="c1">// B.cpp</span>
-<span class="cp">#include</span> <span class="cpf">&lt;B.hpp&gt;</span><span class="cp">
-</span><span class="kt">int</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>while executable A might look like this:</p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;B.hpp&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
-  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p><br /></p>
-
-<p>Some time has passed since library B was released, and now the authors have decided that <code class="language-plaintext highlighter-rouge">answer</code> can be 30% faster if it uses <code class="language-plaintext highlighter-rouge">long double</code> instead of <code class="language-plaintext highlighter-rouge">int</code>s.
-How cool!</p>
-
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// B.hpp</span>
-<span class="k">namespace</span> <span class="n">B</span> <span class="p">{</span>
-<span class="kt">long</span> <span class="kt">double</span> <span class="n">answer</span><span class="p">();</span>
-<span class="p">}</span>
-
-<span class="c1">// B.cpp</span>
-<span class="cp">#include</span> <span class="cpf">&lt;B.hpp&gt;</span><span class="cp">
-</span><span class="kt">long</span> <span class="kt">double</span> <span class="n">B</span><span class="o">::</span><span class="n">answer</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Wow, so fast! 🚀</p>
-
-<p>If you rebuild B without rebuilding A however, A will be expecting the <code class="language-plaintext highlighter-rouge">answer</code>’s return value to be an int (4 bytes on my system) even though <code class="language-plaintext highlighter-rouge">B::answer</code> now returns a <code class="language-plaintext highlighter-rouge">long double</code> (8 bytes on my system).
-When dynamically linking to the original B library, A unsurprisingly prints <code class="language-plaintext highlighter-rouge">42</code>.
-When dynamically linking to the updated B library however, A prints the following:</p>
-
-<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>./A
-<span class="go">83575344
-</span><span class="gp">$</span><span class="w"> </span><span class="c"># 😨 uh oh...</span>
-</code></pre></div></div>
-
-<p>This disagreement between the program and the library at the binary level wreaks all sorts of havoc.</p>
-
-<p><a href="https://thephd.dev/binary-banshees-digital-demons-abi-c-c++-help-me-god-please#abi-even-simpler">This section of JeanHeyd’s post gives a much better illustration.</a></p>
-
-<h2 id="comparing-inline-namespace-with-_alias-and-co">Comparing <code class="language-plaintext highlighter-rouge">inline namespace</code> with <code class="language-plaintext highlighter-rouge">_Alias</code> and co</h2>
-
-<h2 id="why-do-some-want-to-break-it">Why do some want to break it?</h2>
-
-<blockquote>
-  <p>Q: Why don’t you just rebuild after an ABI change?
-A1: Are you rebuilding the standard library too?
-Many people will recommend not passing standard library types around, and not throwing exceptions across shared library boundaries. They often forget that at least one very commonly used shared library does exactly that… your C++ standard library.</p>
-
-  <p>On many platforms, there is usually a system C++ standard library. If you want to use that, then you need to deal with standard library types and exceptions going across shared library boundaries. If OS version N+1 breaks ABI in the system C++ standard library, the program you shipped and tested with for OS version N will not work on the upgraded OS until you rebuild.</p>
-</blockquote>
-
-<h2 id="links">Links</h2>
-
-<ol>
-  <li><a href="https://thephd.dev/binary-banshees-digital-demons-abi-c-c++-help-me-god-please">Binary Banshees and Digital Demons (JeanHeyd Meneide)</a></li>
-  <li><a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">To Save C, We Must Save ABI (JeanHeyd Meneide)</a></li>
-  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p2028r0.pdf">Titus Winters paper on ABI</a></li>
-  <li><a href="https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/">Ben Craig’s Reddit post on ABI breakage</a></li>
-  <li><a href="https://www.reddit.com/r/cpp/comments/fc2qqv/abi_breaks_not_just_about_rebuilding/fj9dfg1/">Johnathan Wakely’s comment about ABI on Reddit</a></li>
-  <li><a href="https://cor3ntin.github.io/posts/abi/">Corentin’s blog post on ABI</a></li>
-  <li><a href="https://www.youtube.com/watch?v=By7b19YIv8Q&amp;ab_channel=C%E1%90%A9%E1%90%A9WeeklyWithJasonTurner">C++ Weekly - Ep 270 - Break ABI to Save C++</a></li>
-</ol>]]></content><author><name></name></author><category term="c, c++" /><summary type="html"><![CDATA[ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 _Alias proposal.]]></summary></entry></feed>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry></feed>
