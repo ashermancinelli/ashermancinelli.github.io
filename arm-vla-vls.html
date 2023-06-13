@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Bisection Debugging Techniques – Asher Mancinelli – C++, Compilers, Coffee</title>
+    <title>Dummy's Guide to VLA/VLS Arm Development – Asher Mancinelli – C++, Compilers, Coffee</title>
 
         <meta charset="utf-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -9,16 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     
-    <meta name="description" content="Notes on bisecting bugs in large programs
+    <meta name="description" content="description
 ">
-    <meta property="og:description" content="Notes on bisecting bugs in large programs
+    <meta property="og:description" content="description
 ">
     
     <meta name="author" content="Asher Mancinelli">
 
     
-    <meta property="og:title" content="Bisection Debugging Techniques">
-    <meta property="twitter:title" content="Bisection Debugging Techniques">
+    <meta property="og:title" content="Dummy's Guide to VLA/VLS Arm Development">
+    <meta property="twitter:title" content="Dummy's Guide to VLA/VLS Arm Development">
     
 
     <link rel="icon" href="/images/chip.png">
@@ -56,37 +56,10 @@
 
     <div id="main" role="main" class="container">
       <article class="post">
-  <h1>Bisection Debugging Techniques</h1>
+  <h1>Dummy's Guide to VLA/VLS Arm Development</h1>
 
   <div class="entry">
-    <p>Notes on bisecting bugs in large programs</p>
-
-<h2 id="start-high-in-the-callstack">Start High in the Callstack</h2>
-
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">b</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">d</span><span class="p">();</span>
-  <span class="n">e</span><span class="p">();</span>
-<span class="p">}</span>
-
-<span class="kt">void</span> <span class="nf">c</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">f</span><span class="p">();</span>
-  <span class="n">g</span><span class="p">();</span>
-  <span class="n">h</span><span class="p">();</span>
-<span class="p">}</span>
-
-<span class="kt">void</span> <span class="nf">a</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">b</span><span class="p">();</span>
-  <span class="n">c</span><span class="p">();</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h2 id="bisect-on-the-call-number">Bisect on the call number</h2>
-
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">int</span> <span class="n">ncalls</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">ncalls</span><span class="o">++</span><span class="p">;</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">ncalls</span> <span class="o">&lt;</span> <span class="n">min</span> <span class="o">||</span> <span class="n">ncalls</span> <span class="o">&gt;</span> <span class="n">max</span><span class="p">)</span>
-  <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// bail out early</span>
-</code></pre></div></div>
+    <p>description</p>
 
 <font size="-1">
   <em>
@@ -95,15 +68,13 @@
   </em>
 </font>
 
+<h2 id="title">title</h2>
+
 <h2 id="conclusion--links">Conclusion &amp; Links</h2>
 
 <ol>
   <li><a href="https://gcc.gnu.org/onlinedocs/gcc/Variable-Length.html">GCC VLA docs</a></li>
   <li><a href="https://www.gnu.org/software/libc/manual/html_node/Alloca-Example.html">GCC <code class="language-plaintext highlighter-rouge">alloca</code> docs</a></li>
-  <li><a href="https://llvm.org/docs/LangRef.html#alloca-instruction">LLVM IR docs for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
-  <li><a href="https://llvm.org/doxygen/Instructions_8cpp_source.html">LLVM source for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
-  <li><a href="https://en.cppreference.com/w/c/language/array">cppreference docs on VLA</a></li>
-  <li><a href="https://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html">Buffer overflow and stack frame visualization</a></li>
 </ol>
 
 <font size="-1">
@@ -119,7 +90,7 @@
   <hr>
 
   <div class="date">
-    Written on Jun 7th, 2023
+    Written on Jun 12th, 2023
   </div>
 
   
