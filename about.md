@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-Hello! I care about making tech fun and accessible.
+Hey there! I care about making tech fun and accessible.
 
 I work on HPC compilers at NVIDIA.
 
@@ -20,7 +20,7 @@ I work on HPC compilers at NVIDIA.
 
 * [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)
  
-* [ashermancinelli@gmail.com](mailto:ashermancinelli@gmail.com)
+* [Personal Email](mailto:ashermancinelli@gmail.com)
  
 * [GitHub](github.com/ashermancinelli)
 
