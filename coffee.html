@@ -1,0 +1,31 @@
+---
+layout: default
+---
+
+<hr>
+<h1> Coffee </h1>
+<h3>
+  Coffee and Espresso (still under development)
+</h3>
+<hr>
+
+<div class="posts">
+
+  {% for post in site.posts %}
+    {% if post.cat == "coffee" %}
+      <article class="post">
+
+        <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+
+        <div class="entry">
+          {{ post.excerpt }}
+          {% unless post.category == blank %}
+            <em>{{ post.category }}</em>
+          {% endunless %}
+        </div>
+
+        <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+      </article>
+    {% endif %}
+  {% endfor %}
+</div>
