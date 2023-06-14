@@ -104,15 +104,22 @@ Compare the GCC docs for `alloca` with that of variable length arrays and notice
 >
 > Allocating a block with alloca is an explicit action; you can allocate as many blocks as you wish, and compute the size at run time. But all the blocks are freed when you exit the function that alloca was called from, just as if they were automatic variables declared in that function. There is no way to free the space explicitly. 
 
+## Why Might This Be a Bad Idea?
+
+The dynamic nature of VLAs means the offset of stack variables declared after the VLA into the stack frame of the function is **also dynamic** - which means the function will need extra instructions to calculate the address of these variables whenever they are referenced in the body of the function.
+
+This *may* be a worthwhile tradeoff, but know that use of VLAs means your code may need a few extra instructions every time you use stack variables.
+
+<!--
 ## LLVM IR
 
 Docs explanation of alloca:
 
 > The ‘alloca’ instruction allocates memory on the stack frame of the currently executing function, to be automatically released when this function returns to its caller
 
-<!--
+< !--
 clang -S -emit-llvm -o - _includes/vla/simple.c
--->
+-- >
 ```c
 {% include vla/simple.c %}
 ```
@@ -159,6 +166,7 @@ define dso_local i32 @main(i32 noundef %0, i8** noundef %1) #0 {
   ret i32 %23
 }
 ```
+-->
 
 ## Conclusion & Links
 
