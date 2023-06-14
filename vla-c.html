@@ -207,71 +207,79 @@ diff: 48
   <p>Allocating a block with alloca is an explicit action; you can allocate as many blocks as you wish, and compute the size at run time. But all the blocks are freed when you exit the function that alloca was called from, just as if they were automatic variables declared in that function. There is no way to free the space explicitly.</p>
 </blockquote>
 
-<h2 id="llvm-ir">LLVM IR</h2>
+<h2 id="why-might-this-be-a-bad-idea">Why Might This Be a Bad Idea?</h2>
 
-<p>Docs explanation of alloca:</p>
+<p>The dynamic nature of VLAs means the offset of stack variables declared after the VLA into the stack frame of the function is <strong>also dynamic</strong> - which means the function will need extra instructions to calculate the address of these variables whenever they are referenced in the body of the function.</p>
 
-<blockquote>
-  <p>The ‘alloca’ instruction allocates memory on the stack frame of the currently executing function, to be automatically released when this function returns to its caller</p>
-</blockquote>
+<p>This <em>may</em> be a worthwhile tradeoff, but know that use of VLAs means your code may need a few extra instructions every time you use stack variables.</p>
 
 <!--
+## LLVM IR
+
+Docs explanation of alloca:
+
+> The ‘alloca’ instruction allocates memory on the stack frame of the currently executing function, to be automatically released when this function returns to its caller
+
+< !--
 clang -S -emit-llvm -o - _includes/vla/simple.c
+-- >
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+/* Contrived example that uses VLA */
+int main(int argc, char** argv) {
+  int len = atoi(getenv("LEN"));
+  int idx = atoi(getenv("IDX"));
+  int vla[len];
+  return vla[idx];
+}
+
+```
+```llvm
+@.str = private unnamed_addr constant [4 x i8] c"LEN\00", align 1
+@.str.1 = private unnamed_addr constant [4 x i8] c"IDX\00", align 1
+
+define dso_local i32 @main(i32 noundef %0, i8** noundef %1) #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  %5 = alloca i8**, align 8
+  %6 = alloca i32, align 4
+  %7 = alloca i32, align 4
+  %8 = alloca i8*, align 8
+  %9 = alloca i64, align 8
+  store i32 0, i32* %3, align 4
+  store i32 %0, i32* %4, align 4
+  store i8** %1, i8*** %5, align 8
+  %10 = call i8* @getenv(i8* noundef getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0)) #4
+  %11 = call i32 @atoi(i8* noundef %10) #5
+  store i32 %11, i32* %6, align 4
+  %12 = call i8* @getenv(i8* noundef getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i64 0, i64 0)) #4
+  %13 = call i32 @atoi(i8* noundef %12) #5
+  store i32 %13, i32* %7, align 4
+  %14 = load i32, i32* %6, align 4
+  %15 = zext i32 %14 to i64
+
+  %16 = call i8* @llvm.stacksave()
+
+  store i8* %16, i8** %8, align 8
+  %17 = alloca i32, i64 %15, align 16
+        ^^^^^^^^^^ Dynamically allocate more memory on the stack by decrementing
+                   the stack pointer, giving sufficient space for the array
+
+  store i64 %15, i64* %9, align 8
+  %18 = load i32, i32* %7, align 4
+  %19 = sext i32 %18 to i64
+  %20 = getelementptr inbounds i32, i32* %17, i64 %19
+  %21 = load i32, i32* %20, align 4
+  store i32 %21, i32* %3, align 4
+  %22 = load i8*, i8** %8, align 8
+  call void @llvm.stackrestore(i8* %22)
+  %23 = load i32, i32* %3, align 4
+  ret i32 %23
+}
+```
 -->
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span>
-<span class="cm">/* Contrived example that uses VLA */</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"LEN"</span><span class="p">));</span>
-  <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">getenv</span><span class="p">(</span><span class="s">"IDX"</span><span class="p">));</span>
-  <span class="kt">int</span> <span class="n">vla</span><span class="p">[</span><span class="n">len</span><span class="p">];</span>
-  <span class="k">return</span> <span class="n">vla</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
-<span class="p">}</span>
-
-</code></pre></div></div>
-<div class="language-llvm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vg">@.str</span> <span class="p">=</span> <span class="k">private</span> <span class="k">unnamed_addr</span> <span class="k">constant</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]</span> <span class="s">c"LEN\00"</span><span class="p">,</span> <span class="k">align</span> <span class="m">1</span>
-<span class="vg">@.str.1</span> <span class="p">=</span> <span class="k">private</span> <span class="k">unnamed_addr</span> <span class="k">constant</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]</span> <span class="s">c"IDX\00"</span><span class="p">,</span> <span class="k">align</span> <span class="m">1</span>
-
-<span class="k">define</span> <span class="k">dso_local</span> <span class="kt">i32</span> <span class="vg">@main</span><span class="p">(</span><span class="kt">i32</span> <span class="k">noundef</span> <span class="nv">%0</span><span class="p">,</span> <span class="kt">i8</span><span class="p">**</span> <span class="k">noundef</span> <span class="nv">%1</span><span class="p">)</span> <span class="vg">#0</span> <span class="p">{</span>
-  <span class="nv">%3</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%4</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%5</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i8</span><span class="p">**,</span> <span class="k">align</span> <span class="m">8</span>
-  <span class="nv">%6</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%7</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%8</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i8</span><span class="p">*,</span> <span class="k">align</span> <span class="m">8</span>
-  <span class="nv">%9</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i64</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
-  <span class="k">store</span> <span class="kt">i32</span> <span class="m">0</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%3</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%0</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%4</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="k">store</span> <span class="kt">i8</span><span class="p">**</span> <span class="nv">%1</span><span class="p">,</span> <span class="kt">i8</span><span class="p">***</span> <span class="nv">%5</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
-  <span class="nv">%10</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i8</span><span class="p">*</span> <span class="vg">@getenv</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="k">getelementptr</span> <span class="k">inbounds</span> <span class="p">([</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">],</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]*</span> <span class="vg">@.str</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">))</span> <span class="vg">#4</span>
-  <span class="nv">%11</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i32</span> <span class="vg">@atoi</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="nv">%10</span><span class="p">)</span> <span class="vg">#5</span>
-  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%11</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%6</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%12</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i8</span><span class="p">*</span> <span class="vg">@getenv</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="k">getelementptr</span> <span class="k">inbounds</span> <span class="p">([</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">],</span> <span class="p">[</span><span class="m">4</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]*</span> <span class="vg">@.str.1</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">,</span> <span class="kt">i64</span> <span class="m">0</span><span class="p">))</span> <span class="vg">#4</span>
-  <span class="nv">%13</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i32</span> <span class="vg">@atoi</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="k">noundef</span> <span class="nv">%12</span><span class="p">)</span> <span class="vg">#5</span>
-  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%13</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%7</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%14</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%6</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%15</span> <span class="p">=</span> <span class="k">zext</span> <span class="kt">i32</span> <span class="nv">%14</span> <span class="k">to</span> <span class="kt">i64</span>
-
-  <span class="nv">%16</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i8</span><span class="p">*</span> <span class="vg">@llvm.stacksave</span><span class="p">()</span>
-
-  <span class="k">store</span> <span class="kt">i8</span><span class="p">*</span> <span class="nv">%16</span><span class="p">,</span> <span class="kt">i8</span><span class="p">**</span> <span class="nv">%8</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
-  <span class="nv">%17</span> <span class="p">=</span> <span class="k">alloca</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i64</span> <span class="nv">%15</span><span class="p">,</span> <span class="k">align</span> <span class="m">16</span>
-        <span class="err">^^^^^^^^^^</span> <span class="err">Dynamically</span> <span class="err">allocate</span> <span class="err">more</span> <span class="err">memory</span> <span class="err">on</span> <span class="err">the</span> <span class="err">stack</span> <span class="err">by</span> <span class="err">decrementing</span>
-                   <span class="err">the</span> <span class="err">stack</span> <span class="err">pointer</span><span class="p">,</span> <span class="err">giving</span> <span class="err">sufficient</span> <span class="err">space</span> <span class="err">for</span> <span class="err">the</span> <span class="err">array</span>
-
-  <span class="k">store</span> <span class="kt">i64</span> <span class="nv">%15</span><span class="p">,</span> <span class="kt">i64</span><span class="p">*</span> <span class="nv">%9</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
-  <span class="nv">%18</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%7</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%19</span> <span class="p">=</span> <span class="k">sext</span> <span class="kt">i32</span> <span class="nv">%18</span> <span class="k">to</span> <span class="kt">i64</span>
-  <span class="nv">%20</span> <span class="p">=</span> <span class="k">getelementptr</span> <span class="k">inbounds</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%17</span><span class="p">,</span> <span class="kt">i64</span> <span class="nv">%19</span>
-  <span class="nv">%21</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%20</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="k">store</span> <span class="kt">i32</span> <span class="nv">%21</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%3</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="nv">%22</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i8</span><span class="p">*,</span> <span class="kt">i8</span><span class="p">**</span> <span class="nv">%8</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
-  <span class="k">call</span> <span class="kt">void</span> <span class="vg">@llvm.stackrestore</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="nv">%22</span><span class="p">)</span>
-  <span class="nv">%23</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span><span class="p">,</span> <span class="kt">i32</span><span class="p">*</span> <span class="nv">%3</span><span class="p">,</span> <span class="k">align</span> <span class="m">4</span>
-  <span class="k">ret</span> <span class="kt">i32</span> <span class="nv">%23</span>
-<span class="p">}</span>
-</code></pre></div></div>
 
 <h2 id="conclusion--links">Conclusion &amp; Links</h2>
 
