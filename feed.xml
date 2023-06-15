@@ -1,6 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-15T14:09:03-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">PDX Espresso Research</title><link href="/pdx-espresso-research" rel="alternate" type="text/html" title="PDX Espresso Research" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/PDX-Espresso-Research</id><content type="html" xml:base="/pdx-espresso-research"><![CDATA[<p>All the Portland espresso recomendations I could find online, and the shops that keep coming up.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-15T14:16:41-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">PDX Espresso Research</title><link href="/pdx-espresso-research" rel="alternate" type="text/html" title="PDX Espresso Research" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/PDX-Espresso-Research</id><content type="html" xml:base="/pdx-espresso-research"><![CDATA[<p>All the Portland espresso recomendations I could find online, and the shops that keep coming up.</p>
 
 <hr />
+
+<h1 id="my-takeaways">My Takeaways</h1>
+
+<p>The most common names in these blogs are probably:</p>
+
+<ol>
+  <li>Coava</li>
+  <li>Proud Mary</li>
+  <li>Case Study</li>
+  <li>Heart</li>
+  <li>Stumptown</li>
+</ol>
+
+<p>If you visit any given cafe in Portland, chances are high their beans come from either Heart, Coava or Proud Mary, and for good reason.
+All three of them are local and put out some <em>solid</em> roasts… but I still recommend finding some smaller shops that still roast in-house.</p>
+
+<p>In my opinion, the most underrated cafes and roasters are probably:</p>
+
+<ol>
+  <li>Deadstock</li>
+  <li>Courier</li>
+</ol>
+
+<p>and the most overrated are:</p>
+
+<ol>
+  <li>Stumptown</li>
+  <li>Case Study</li>
+  <li>Never Coffee (unless you really like lattes)</li>
+  <li>PUSH X PULL</li>
+</ol>
+
+<h1 id="lists-from-other-blogs">Lists From Other Blogs</h1>
+
+<p><em>As of Jun 15 2023</em></p>
 
 <h2 id="pdx-monthly"><a href="https://www.pdxmonthly.com/eat-and-drink/best-coffee-shops-cafes-portland">PDX Monthly</a></h2>
 
@@ -89,18 +124,20 @@ Not much is new here.</p>
 
 <h2 id="foursquare"><a href="https://foursquare.com/top-places/portland/best-places-espresso">FourSquare</a></h2>
 
-<p>Barista
-Coava
-Stumptown
-Case Study
-Heart
-Courier
-Spella
-Sterling
-Water Avenue
-Good Coffee
-Common Grounds
-Nossa Familia</p>
+<ol>
+  <li>Barista</li>
+  <li>Coava</li>
+  <li>Stumptown</li>
+  <li>Case Study</li>
+  <li>Heart</li>
+  <li>Courier</li>
+  <li>Spella</li>
+  <li>Sterling</li>
+  <li>Water Avenue</li>
+  <li>Good Coffee</li>
+  <li>Common Grounds</li>
+  <li>Nossa Familia</li>
+</ol>
 
 <h2 id="hopculture"><a href="https://www.hopculture.com/best-coffee-portland-oregon/">HopCulture</a></h2>
 
