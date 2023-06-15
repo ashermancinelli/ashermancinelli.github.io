@@ -9,6 +9,35 @@ All the Portland espresso recomendations I could find online, and the shops that
 
 ---
 
+# My Takeaways
+
+The most common names in these blogs are probably:
+
+1. Coava
+1. Proud Mary
+1. Case Study
+1. Heart
+1. Stumptown
+
+If you visit any given cafe in Portland, chances are high their beans come from either Heart, Coava or Proud Mary, and for good reason.
+All three of them are local and put out some *solid* roasts... but I still recommend finding some smaller shops that still roast in-house.
+
+In my opinion, the most underrated cafes and roasters are probably:
+
+1. Deadstock
+1. Courier
+
+and the most overrated are:
+
+1. Stumptown
+1. Case Study
+1. Never Coffee (unless you really like lattes)
+1. PUSH X PULL
+
+# Lists From Other Blogs
+
+*As of Jun 15 2023*
+
 ## [PDX Monthly](https://www.pdxmonthly.com/eat-and-drink/best-coffee-shops-cafes-portland)
 
 Perhaps the most solid collection of Portland roasters and cafes, I found several shops I'd never heard of while it doesn't miss the usual suspects.
@@ -88,18 +117,18 @@ Not much is new here.
 
 ## [FourSquare](https://foursquare.com/top-places/portland/best-places-espresso)
 
-Barista
-Coava
-Stumptown
-Case Study
-Heart
-Courier
-Spella
-Sterling
-Water Avenue
-Good Coffee
-Common Grounds
-Nossa Familia
+1. Barista
+1. Coava
+1. Stumptown
+1. Case Study
+1. Heart
+1. Courier
+1. Spella
+1. Sterling
+1. Water Avenue
+1. Good Coffee
+1. Common Grounds
+1. Nossa Familia
 
 ## [HopCulture](https://www.hopculture.com/best-coffee-portland-oregon/)
 
