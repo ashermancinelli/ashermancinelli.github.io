@@ -1,4 +1,211 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-15T13:34:43-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">DEADSTOCK Coffee - 9.5/10</title><link href="/deadstock" rel="alternate" type="text/html" title="DEADSTOCK Coffee - 9.5/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Deadstock</id><content type="html" xml:base="/deadstock"><![CDATA[<p><strong><em>“Coffee should be dope”</em></strong></p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-15T14:09:03-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">PDX Espresso Research</title><link href="/pdx-espresso-research" rel="alternate" type="text/html" title="PDX Espresso Research" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/PDX-Espresso-Research</id><content type="html" xml:base="/pdx-espresso-research"><![CDATA[<p>All the Portland espresso recomendations I could find online, and the shops that keep coming up.</p>
+
+<hr />
+
+<h2 id="pdx-monthly"><a href="https://www.pdxmonthly.com/eat-and-drink/best-coffee-shops-cafes-portland">PDX Monthly</a></h2>
+
+<p>Perhaps the most solid collection of Portland roasters and cafes, I found several shops I’d never heard of while it doesn’t miss the usual suspects.</p>
+
+<ol>
+  <li>Abba</li>
+  <li>Albina Press</li>
+  <li>Carnelian Coffee</li>
+  <li>Case Study</li>
+  <li>Cathedral Coffee</li>
+  <li>Courier Coffee</li>
+  <li>Deadstock</li>
+  <li>Either/Or</li>
+  <li>Electrica</li>
+  <li>The Fresh Pot</li>
+  <li>Futura Coffee Roasters</li>
+  <li>Good Coffee</li>
+  <li>Guilder</li>
+  <li>Heart</li>
+  <li>In J/Super Joy</li>
+  <li>J Vein Caffe</li>
+  <li>Kalesa</li>
+  <li>Keeper Coffee</li>
+  <li>Less and More</li>
+  <li>Never Coffee</li>
+  <li>Portland Cà Phê</li>
+  <li>Prince Coffee</li>
+  <li>PUSH X PULL</li>
+  <li>Roseline</li>
+  <li>Soro Soro</li>
+  <li>Sterling Coffee</li>
+  <li>Tōv Coffee</li>
+  <li>Upper Left Roasters</li>
+</ol>
+
+<h2 id="oregon-obsessed"><a href="https://oregonobsessed.com/best-coffee-shops-in-portland/">Oregon Obsessed</a></h2>
+
+<p>I’ve tried (and liked) almost all of <em>Oregon Obsessed</em>’s recomendations, though a few are overrated in my opinion:</p>
+
+<ol>
+  <li>Coava</li>
+  <li>Good Coffee</li>
+  <li>Stumptown</li>
+  <li>Case Study</li>
+  <li>Nossa Familia</li>
+  <li>Proud Mary</li>
+  <li>Deadstock</li>
+  <li>Never Coffee</li>
+  <li>Ovation</li>
+  <li>Portland Coffee Roasters</li>
+</ol>
+
+<h2 id="daily-hive"><a href="https://dailyhive.com/portland/best-coffee-shops-portland">Daily Hive</a></h2>
+
+<p>Good to see <em>Coava</em> consistently topping these lists - hadn’t heard of Pájaro either.</p>
+
+<ol>
+  <li>Coava</li>
+  <li>Pájaro</li>
+  <li>PUSH X PULL</li>
+  <li>Heart Coffee</li>
+  <li>Stumptown</li>
+  <li>Upper Left</li>
+  <li>Deadstock</li>
+  <li>Good Coffee</li>
+</ol>
+
+<h2 id="coffee-affection"><a href="https://coffeeaffection.com/best-coffee-shops-in-portland/">Coffee Affection</a></h2>
+
+<p>Pretty much just hits the usual suspects.
+Not much is new here.</p>
+
+<ol>
+  <li>Coava</li>
+  <li>Good Coffee</li>
+  <li>Stumptown</li>
+  <li>Case Study</li>
+  <li>Nossa Familia</li>
+  <li>Proud Mary</li>
+  <li>Deadstock</li>
+  <li>Never Coffee</li>
+  <li>Ovation</li>
+  <li>Portland Coffee Roasters</li>
+</ol>
+
+<h2 id="foursquare"><a href="https://foursquare.com/top-places/portland/best-places-espresso">FourSquare</a></h2>
+
+<p>Barista
+Coava
+Stumptown
+Case Study
+Heart
+Courier
+Spella
+Sterling
+Water Avenue
+Good Coffee
+Common Grounds
+Nossa Familia</p>
+
+<h2 id="hopculture"><a href="https://www.hopculture.com/best-coffee-portland-oregon/">HopCulture</a></h2>
+
+<p>I hadn’t seen Kiosko before:</p>
+
+<ol>
+  <li>Proud Mary</li>
+  <li>Kiosko</li>
+  <li>Heart</li>
+  <li>Stumptown</li>
+  <li>Never Coffee Lab</li>
+  <li>Good Coffee</li>
+  <li>Coava</li>
+</ol>
+
+<h2 id="boam"><a href="https://boam.com/best-espresso-shops-in-portland-or/">Boam</a></h2>
+
+<p><em>Fairlane</em> is the only name on this list new to me.
+Pretty solid list.</p>
+
+<ol>
+  <li>Good Coffee</li>
+  <li>Nossa Familia</li>
+  <li>PUSH X PULL</li>
+  <li>Sunny Day Coffee</li>
+  <li>Ole Latte Coffee</li>
+  <li>Ovation Coffee &amp; Tea</li>
+  <li>Fairlane Coffee</li>
+  <li>Sisters Coffee Company in The Pearl</li>
+  <li>Coava</li>
+  <li>Grendel’s Coffee House</li>
+</ol>
+
+<h2 id="respresso-subreddit"><a href="https://www.reddit.com/r/espresso/comments/12jbj4m/best_espresso_in_portland_or/">R/Espresso Subreddit</a></h2>
+
+<p>As of the time of writing, many subreddits are protesting a recent change to reddit’s 3rd party API access rules, so I can’t view the listright now.</p>
+
+<h2 id="bean-box"><a href="https://beanbox.com/blog/best-coffee-in-portland">Bean Box</a></h2>
+
+<ol>
+  <li>Roseline Coffee</li>
+  <li>Water Avenue Coffee Company</li>
+  <li>Coava</li>
+  <li>Good Coffee</li>
+  <li>Ovation</li>
+  <li>Proud Mary</li>
+  <li>Prince</li>
+  <li>Either/Or</li>
+  <li>Heart Cofffee Roasters</li>
+  <li>Nossa Familia Coffee</li>
+  <li>Stumptown</li>
+</ol>
+
+<h2 id="trip-advisor"><a href="https://www.tripadvisor.com/Restaurants-g52024-c8-Portland_Oregon.html">Trip Advisor</a></h2>
+
+<p>This list is focused on <em>cafes</em> and not really <em>coffee</em>… there were some names on this list I hadn’t seen before, so I’ll keep it around… but I wouldn’t put much weight on these names (hence why it comes last in my research page).</p>
+
+<ol>
+  <li>Chery’s on 12th</li>
+  <li>St Honore</li>
+  <li>Tin Shed Garden Cafe</li>
+  <li>Jam on Hawthorne</li>
+  <li>Island Cafe</li>
+  <li>Ken’s Artisan Bakery</li>
+  <li>Stumptown</li>
+  <li>The Waffle Window</li>
+  <li>Case Study</li>
+  <li>Cadillac Cafe</li>
+  <li>Milo’s City Cafe</li>
+  <li>Broder</li>
+  <li>Lovejoy</li>
+  <li>Gravy</li>
+  <li>Dragonfly Coffee House</li>
+  <li>Zell’s</li>
+  <li>Bleu Door Bakery</li>
+  <li>Petunia’s Pies &amp; Pastries</li>
+  <li>Cameo Cafe</li>
+  <li>Public Domain Coffee</li>
+  <li>Stepping Stone Cafe</li>
+  <li>The Daily Feast PDX</li>
+  <li>Barista</li>
+  <li>Dulin’s Cafe</li>
+  <li>Heart Coffee</li>
+  <li>Babica Hen Cafe</li>
+  <li>Prasad</li>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[All the Portland espresso recomendations I could find online, and the shops that keep coming up.]]></summary></entry><entry><title type="html">Abba - 7/10</title><link href="/abba-roasters" rel="alternate" type="text/html" title="Abba - 7/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Abba</id><content type="html" xml:base="/abba-roasters"><![CDATA[<p>Enjoyable, but not my first recomendation.</p>
+
+<hr />
+
+<p>The Etheopian and Indonesian in-house medium roast (the <em>Collective Blend</em>) was subtle and tasty - I wasn’t smacked across the face with fruit or punched in the nose with dark-chocolately bitterness.
+The notes on the package mentioned dark cherry and pear; I can see where they got <em>pear</em> but <em>grapefruit</em> is the predominant flavor that came to mind.</p>
+
+<p>It was enjoyable! I would have it again, but I’m not rushing back or sending out recomendations to all my friends.</p>
+
+<p>The <em>sea-salt iced matcha latte</em> the person in front of me ordered looked beautiful, and I heard several people mention how much they liked it - if you’re a matcha latte kinda person, this might be a fun stop.</p>
+
+<hr />
+
+<h3>
+    <center>
+    <a href="https://www.abbacoffeeroasters.com" target="blank">
+    Abba Coffee Roasters homepage
+    </a>
+    </center>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Enjoyable, but not my first recomendation.]]></summary></entry><entry><title type="html">DEADSTOCK Coffee - 9.5/10</title><link href="/deadstock" rel="alternate" type="text/html" title="DEADSTOCK Coffee - 9.5/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Deadstock</id><content type="html" xml:base="/deadstock"><![CDATA[<p><strong><em>“Coffee should be dope”</em></strong></p>
 
 <hr />
 
@@ -19,26 +226,7 @@ Definitely worth stopping by.</p>
     Deadstock Coffee homepage
     </a>
     </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[“Coffee should be dope”]]></summary></entry><entry><title type="html">Abba - 7/10</title><link href="/abba-roasters" rel="alternate" type="text/html" title="Abba - 7/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Abba</id><content type="html" xml:base="/abba-roasters"><![CDATA[<p>Enjoyable, but not my first recomendation.</p>
-
-<hr />
-
-<p>The Etheopian and Indonesian in-house medium roast (the <em>Collective Blend</em>) was subtle and tasty - I wasn’t smacked across the face with fruit or punched in the nose with dark-chocolately bitterness.
-The notes on the package mentioned dark cherry and pear; I can see where they got <em>pear</em> but <em>grapefruit</em> is the predominant flavor that came to mind.</p>
-
-<p>It was enjoyable! I would have it again, but I’m not rushing back or sending out recomendations to all my friends.</p>
-
-<p>The <em>sea-salt iced matcha latte</em> the person in front of me ordered looked beautiful, and I heard several people mention how much they liked it - if you’re a matcha latte kinda person, this might be a fun stop.</p>
-
-<hr />
-
-<h3>
-    <center>
-    <a href="https://www.abbacoffeeroasters.com" target="blank">
-    Abba Coffee Roasters homepage
-    </a>
-    </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Enjoyable, but not my first recomendation.]]></summary></entry><entry><title type="html">Never Coffee - 5/10</title><link href="/never-coffee" rel="alternate" type="text/html" title="Never Coffee - 5/10" /><published>2023-06-13T00:00:00-07:00</published><updated>2023-06-13T00:00:00-07:00</updated><id>/Never-Coffee</id><content type="html" xml:base="/never-coffee"><![CDATA[<p>Not my favorite, but it might be yours.</p>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[“Coffee should be dope”]]></summary></entry><entry><title type="html">Never Coffee - 5/10</title><link href="/never-coffee" rel="alternate" type="text/html" title="Never Coffee - 5/10" /><published>2023-06-13T00:00:00-07:00</published><updated>2023-06-13T00:00:00-07:00</updated><id>/Never-Coffee</id><content type="html" xml:base="/never-coffee"><![CDATA[<p>Not my favorite, but it might be yours.</p>
 
 <p>The Never Coffee cafe on SW 12th and Alder is one of the nicest cafe environments I’ve found so far, with a modern feel and pastel color palette. 
 They got a low score from me simply because their espresso was not my favorite - it felt a little bland, not overly fruity or dark and rich, somewhere in the middle with less flavor than I was hoping for.</p>
@@ -487,16 +675,4 @@ Two addresses either <code class="language-plaintext highlighter-rouge">MayAlias
   <li><a target="blank" href="https://www.researchgate.net/publication/234027199_A_Formally-Verified_Alias_Analysis">Formally Verified Alias Analysis</a></li>
   <li><a href="https://stefansf.de/c-quiz/" target="blank">Type-Based Alias Analysis in C by Stephan</a></li>
   <li><a href="https://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html" target="blank">LLMV blog: What Every C Programmer Should Know by Chris Lattner</a></li>
-</ul>]]></content><author><name></name></author><category term="c++, llvm, compilers" /><summary type="html"><![CDATA[Overview of type-based alias analysis in LLMV IR.]]></summary></entry><entry><title type="html">Provable Optimizations in Coq</title><link href="/prov-opt-coq" rel="alternate" type="text/html" title="Provable Optimizations in Coq" /><published>2022-10-06T00:00:00-07:00</published><updated>2022-10-06T00:00:00-07:00</updated><id>/Provable-Optimizations</id><content type="html" xml:base="/prov-opt-coq"><![CDATA[<p>Proving that optimization passes are correct with the formal verification
-assistant Coq.</p>
-
-<font size="-1">
-  <em>
-    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
-    These views are entirely my own.
-  </em>
-</font>
-
-<h1 id="what-is-coq">What is Coq?</h1>
-
-<p>It’s a programming language to help the programmer prove things.</p>]]></content><author><name></name></author><category term="c++, metaprogramming" /><summary type="html"><![CDATA[Proving that optimization passes are correct with the formal verification assistant Coq.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="c++, llvm, compilers" /><summary type="html"><![CDATA[Overview of type-based alias analysis in LLMV IR.]]></summary></entry></feed>
