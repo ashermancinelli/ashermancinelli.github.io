@@ -1,11 +1,11 @@
 ---
 layout: post
-title: PDX Espresso Research
+title: Portland Espresso Research Master List
 permalink: /pdx-espresso-research
 cat: coffee
 ---
 
-All the Portland espresso recomendations I could find online, and the shops that keep coming up.
+All the Portland espresso recomendations I could find online, and the shops that come up again and again.
 
 ---
 
@@ -22,12 +22,13 @@ The most common names in these blogs are probably:
 If you visit any given cafe in Portland, chances are high their beans come from either Heart, Coava or Proud Mary, and for good reason.
 All three of them are local and put out some *solid* roasts... but I still recommend finding some smaller shops that still roast in-house.
 
-In my opinion, the most underrated cafes and roasters are probably:
+In my opinion, the most *underrated* cafes and roasters are:
 
+1. Sterling
 1. Deadstock
 1. Courier
 
-and the most overrated are:
+and the most *overrated* are:
 
 1. Stumptown
 1. Case Study
