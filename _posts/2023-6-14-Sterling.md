@@ -38,9 +38,10 @@ This espresso was not intense in the usual way, but not too mild either.
 It was full of flavor with delicious notes of citrus, cream, a balance of bitterness to round out the flavor profile, yet not too intense to be someone's first espresso.
 
 This espresso, along with their drip brew, the knowledgable baristas, and a cozy cafe seating area nestled into NW Portland with indoor trees and fast wifi brings this to the top of my list.
+The barista who served me happened to recommend *Barista* for one of my next espresso destinations which I haven't had the opportunity to try yet - I look forward to posting a review given that the current champion of my list thinks I should give it a try.
 
 As I work out an espresso tour of Portland, I *have* to pencil Sterling in as the final destination.
-I would want any espresso afficionado visiting the city to finish their time here with a Sterling espresso.
+I would want any espresso afficionados visiting the city to finish their time here with a Sterling espresso.
 
 ---
 
