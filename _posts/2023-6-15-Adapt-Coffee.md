@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Adapt Cafe - 9/10
+title: Adapt Cafe - 9.5/10
 permalink: /adapt-cafe
 cat: coffee
 ---
