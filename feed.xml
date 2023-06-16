@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-16T13:32:59-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">Rose City Coffee - 7/10</title><link href="/rose-city" rel="alternate" type="text/html" title="Rose City Coffee - 7/10" /><published>2023-06-15T00:00:00-07:00</published><updated>2023-06-15T00:00:00-07:00</updated><id>/Rose-City-Coffee</id><content type="html" xml:base="/rose-city"><![CDATA[<p>Do you like blonde roasts or need a beautiful space to get some work done?</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-16T14:49:35-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">Rose City Coffee - 7/10</title><link href="/rose-city" rel="alternate" type="text/html" title="Rose City Coffee - 7/10" /><published>2023-06-15T00:00:00-07:00</published><updated>2023-06-15T00:00:00-07:00</updated><id>/Rose-City-Coffee</id><content type="html" xml:base="/rose-city"><![CDATA[<p>Do you like blonde roasts or need a beautiful space to get some work done?</p>
 
 <hr />
 
@@ -92,7 +92,34 @@ I think they would get a lot of business in a more central location, though I do
         Morgon Coffee Roasters homepage
         </a>
     </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Pleasant, mild, unique, imported roasts from Sweden - try some beans you’ll likely not find anywhere else!]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Pleasant, mild, unique, imported roasts from Sweden - try some beans you’ll likely not find anywhere else!]]></summary></entry><entry><title type="html">Nossa Familia Coffee - 9/10</title><link href="/nossa" rel="alternate" type="text/html" title="Nossa Familia Coffee - 9/10" /><published>2023-06-15T00:00:00-07:00</published><updated>2023-06-15T00:00:00-07:00</updated><id>/Nossa-Familia-Coffee</id><content type="html" xml:base="/nossa"><![CDATA[<p>Delicious, well-balanced, predominantly Brazilian roasts and espresso.</p>
+
+<hr />
+
+<p>I’ve had espresso from Nossa before at their northern location in the Pearl where I had one of their in-house roasts, but when I stopped by for this review they had a roast from Keia &amp; Martyn’s Coffee roasters (also based out of Portland).
+This black-owned roaster was featured in the SE Nossa cafe I visited for the month of June (I’ll just have to revisit when they have their own roasts on espresso😉).</p>
+
+<p>The Colombian Yeny Capiz roast from Keia &amp; Martyn’s <em>radical</em> line had flavor comps of molasses, sweet red tea, citrus, and candied hazelnut, though I didn’t get much of the citrus.
+My coffee tasted balanced, nutty, and a bit sweet; the molasses and candied hazelnut came through pretty clearly to me.</p>
+
+<p>Augusto Carneiro started Nossa to bring his family’s coffee to Portland from Brazil, and the shop continues to pride itself on the farmer-roaster relationships they have with all of their growers, which now come from Guatemala, Nicaragua, Peru, Ethiopia as well.</p>
+
+<p>My coffee was solid: well-rounded, tasty, not overpowering.
+It didn’t show up Courier or Sterling, but it was also clearly in the top echelon of coffees I’ve had in the city.</p>
+
+<hr />
+
+<h3>
+    <center>
+        <a href="https://www.nossacoffee.com/" target="blank">
+        Nossa Familia Coffee homepage
+        </a>
+        <hr />
+        <a href="https://keiaandmartynscoffee.com/" target="blank">
+        Keia &amp; Martyn's Coffee Roasters homepage
+        </a>
+    </center>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Delicious, well-balanced, predominantly Brazilian roasts and espresso.]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
 
 <hr />
 
@@ -473,34 +500,4 @@ The seating area is home to beautiful woodworking projects from <em>Bamboo Revol
     These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
     These views are entirely my own.
   </em>
-</font>]]></content><author><name></name></author><summary type="html"><![CDATA[description]]></summary></entry><entry><title type="html">Hunt for the Best Espresso in Portland</title><link href="/espresso-pdx" rel="alternate" type="text/html" title="Hunt for the Best Espresso in Portland" /><published>2023-06-11T00:00:00-07:00</published><updated>2023-06-11T00:00:00-07:00</updated><id>/Best-Espresso-In-Portland</id><content type="html" xml:base="/espresso-pdx"><![CDATA[<p>Finding the best espresso in one of the homes of 3rd-wave coffee.</p>
-
-<h2 id="the-plan">The Plan</h2>
-
-<p>In the spring and summer of 2023 I started a list of coffee shops to evaluate.
-By the end of the summer I hope to have established a rough ranking of the best shops,
-along with some honorable mentions for great shops to work from.</p>
-
-<p>Here are some of the early contenders:</p>
-
-<center>
-  <img src="/images/coffee/courier.png" />
-</center>
-
-<p>The second shop to get a 10/10 on my arbitrary rating system blew me away.
-I’m not usually a huge fan of fruity espresso, but the double-fermented Las Frutas roasted in-house was the best espresso I’ve had to date.
-The columbian beans were sealed in water bags for 72 hours before another 30 hour wet-tank soak were incredible.
-The roaster and barista recomended Sterling Coffee Roasters for my next espresso, so I’m hopeful that Sterling will rate pretty highly as well.</p>
-
-<center>
-  <img src="/images/coffee/ovation.png" />
-</center>
-
-<p>Ovation Coffee and Tea was the first shop to be awarded a perfect 10/10.
-The location in PSU’s campus right off the North-South streetcar line has plenty of space to work and REALLY cute porcelein cups.</p>
-
-<h2 id="behind-the-museum">Behind the Museum</h2>
-
-<p>The Behind the Museum cafe’s beautiful floor-to-ceiling windows and Japanese pottery along the walls make for an
-especially nice work environment, especially when it’s raining -
-the rain rolling off those massive windows immediately puts you at ease.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Finding the best espresso in one of the homes of 3rd-wave coffee.]]></summary></entry></feed>
+</font>]]></content><author><name></name></author><summary type="html"><![CDATA[description]]></summary></entry></feed>
