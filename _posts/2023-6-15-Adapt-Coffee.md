@@ -1,4 +1,5 @@
 ---
+where: Portland, OR
 layout: post
 title: Adapt Cafe - 9.5/10
 permalink: /adapt-cafe

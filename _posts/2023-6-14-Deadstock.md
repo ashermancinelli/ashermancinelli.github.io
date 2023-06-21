@@ -1,4 +1,5 @@
 ---
+where: Portland, OR
 layout: post
 title: DEADSTOCK Coffee - 9.5/10
 permalink: /deadstock

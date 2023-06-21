@@ -1,4 +1,5 @@
 ---
+where: Portland, OR
 layout: post
 title: Nossa Familia Coffee - 9/10
 permalink: /nossa

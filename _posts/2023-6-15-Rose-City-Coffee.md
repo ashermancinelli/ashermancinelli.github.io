@@ -2,6 +2,7 @@
 layout: post
 title: Rose City Coffee - 7/10
 permalink: /rose-city
+where: Portland, OR
 cat: coffee
 ---
 

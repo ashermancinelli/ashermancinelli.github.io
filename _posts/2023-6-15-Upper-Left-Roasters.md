@@ -3,6 +3,7 @@ layout: post
 title: Upper Left Roasters - 9.5/10
 permalink: /upperleft
 cat: coffee
+where: Portland, OR
 ---
 
 Unique energy, passionate about espresso.

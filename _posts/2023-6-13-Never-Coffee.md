@@ -1,4 +1,5 @@
 ---
+where: Portland, OR
 layout: post
 title: Never Coffee - 5/10
 permalink: /never-coffee

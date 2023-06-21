@@ -1,4 +1,5 @@
 ---
+where: Portland, OR
 layout: post
 title: Sterling - 10/10
 permalink: /sterling

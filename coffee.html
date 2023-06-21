@@ -11,14 +11,21 @@ layout: default
   Since the Spring of 2022, I've been trying all the best espresso I can find around town.
   I started this blog to put together an espresso tour of Portland, which I may or may not ever finish.
 <hr>
+</center>
 
 <div class="posts">
 
   {% for post in site.posts %}
-    {% if post.cat == "coffee" %}
+    {% if post.cat == "coffee" and (post.wip == blank or post.wip == false) %}
       <article class="post">
 
         <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+        <em>
+        {% if post.where != blank %}
+          {{ post.where }};
+        {% endif %}
+        {{ post.date | date: "%m/%d/%y" }}
+        </em>
 
         <div class="entry">
           {{ post.excerpt }}
@@ -32,4 +39,3 @@ layout: default
     {% endif %}
   {% endfor %}
 </div>
-</center>
