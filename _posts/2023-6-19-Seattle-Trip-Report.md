@@ -85,6 +85,7 @@ This was a really nice espresso! If you're in the West Queen Anne area you might
 
 This smaller German coffeehouse with aged brick walls was a nice environment and okayish coffee, but wasn't overly impressive to me.
 Unfortunately, they didn't seem all that busy either - I could see myself coming back if I needed a place to work or if I knew there would be a more busy or upbeat energy, but this was not my favorite place.
+I had the Jackson Street Blues roast from Fulcrum Coffee Roasters.
 
 ## Good Weather Bike & Coffee: 7.5/10
 

@@ -14,9 +14,18 @@ This place is something special. *Please* don't leave Portland without trying th
 In my second visit, I had another Etheopian roast, the *Sidama Setamo*, an Etheopian washed-process SO Heirloom roast with bergamot and wild cherries as flavor comps.
 The barista compared the roast to Fruit Loops, which felt far closer to my experience than the listed comps; I also got notes of green apple.
 
-I'm determined to try every roast this place puts on espresso.
-If I ever move from Portland, I'm going to kick myself for not having as much of this espresso as I can.
+I'm determined to try every roast this place puts on espresso;
+if I ever move out of Portland I'm going to kick myself for not having as much of this espresso as I can.
 This may be consistently the best espresso I'll ever have.
+
+I got to sit with Eric (the owner) for a minute today and ask a few questions about Sterling.
+He started the operation in 2005 (under a different name I believe) and now has a team working at the roaster while he spends most of his time at the cafe interacting with customers and tasting roasts.
+
+He spoke really highly of Keeper cafe (which I had never heard of) as well as Barista (which I tried later that day) as well as Courier, which is currently somewhere in my top 5 cafes & roasters in Portland.
+He also referred to Vivace in Seattle as the Mecca of the 90s and 2000s coffee culture, but lamented the lack of innovation he's seen in Seattle's coffee scene in the years since; he used to take new employees up to thier roaster to learn the trade.
+Same with Slate roasters, who have since closed their doors.
+
+I hope to set up a more formal interview with Eric sometime to tell Sterling's story.
 
 ---
 *6/14/23 (original review):*
