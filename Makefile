@@ -1,6 +1,7 @@
 
 PREFIX :=
 JEKYLL := /usr/local/bin/jekyll #$(shell command -v jekyll)
+RBVER := 3.3.4
 
 ifeq ($(PREFIX),)
 PREFIX := $(shell pwd)/../ashermancinelli.github.io-build
@@ -11,6 +12,17 @@ all:
 
 serve:
 	$(JEKYLL) serve --verbose
+
+dep:
+	for prog in bundler rbenv; do \
+		type -p $$prog || false Needs program $$prog; \
+	done
+	rbenv versions | grep -q "$(RBVER)" || rbenv install $(RBVER)
+	rbenv global $(RBVER)
+	eval "$$(rbenv init)"
+	: This should be the rbenv install location
+	gem env home
+	bundler install
 
 install:
 	$(JEKYLL) build -d $(PREFIX) --verbose --trace
