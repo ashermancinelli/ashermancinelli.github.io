@@ -31,14 +31,15 @@ install:
 deploy: install
 	cd $(PREFIX) && \
 		if [ ! -d .git ]; then \
-			git init \
+			git init; \
 			git remote add \
 				origin git@github.com:ashermancinelli/ashermancinelli.github.io; \
 		fi
 	cd $(PREFIX) && \
 		if [ ! $$(git branch | cut -f2 -d' ') = "gh-pages" ]; then \
 			echo 'must be on branch gh-pages'; \
-			exit 1; \
+			git fetch --all; \
+			git checkout -f gh-pages; \
 		fi
 	cd $(PREFIX) && \
 		rm -rf pres && \
