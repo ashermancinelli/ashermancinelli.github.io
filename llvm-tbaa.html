@@ -71,7 +71,7 @@
 <h2 id="llvm-alias-analysis">LLVM Alias Analysis</h2>
 
 <p>Alias analysis answers the question “do these two addresses alias each other?” with three possible responses.
-Two addresses either <code class="language-plaintext highlighter-rouge">MayAlias</code>, <code class="language-plaintext highlighter-rouge">MustAlias</code>, or they do <code class="language-plaintext highlighter-rouge">NotAlias</code> (which is how they are spelled in the LLVM alias analysis api).</p>
+Two addresses either <code class="language-bash highlighter-rouge">MayAlias</code>, <code class="language-bash highlighter-rouge">MustAlias</code>, or they do <code class="language-bash highlighter-rouge">NotAlias</code> (which is how they are spelled in the LLVM alias analysis api).</p>
 
 <p>Alias analyses can take into account lots of factors (control flow, field analysis (when analyzing structures), etc), but we’re only talking about <em>type-based</em> alias analysis (TBAA).</p>
 

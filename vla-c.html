@@ -74,8 +74,8 @@
 The compiler needs to increase the stack size in the current stack frame to allocate enough space for the array.
 Assuming negative stack-growth like on x86, the compiler will decrease the stack pointer sufficiently to store the array.</p>
 
-<p>This is almost identical to <code class="language-plaintext highlighter-rouge">alloca</code>.
-Both <code class="language-plaintext highlighter-rouge">alloca</code> and VLAs are essentially primitives to modify the stack pointer.</p>
+<p>This is almost identical to <code class="language-bash highlighter-rouge">alloca</code>.
+Both <code class="language-bash highlighter-rouge">alloca</code> and VLAs are essentially primitives to modify the stack pointer.</p>
 
 <p>Eg:</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1">// Subtracts N from current stack pointer returns sp </span>
@@ -87,21 +87,21 @@ Both <code class="language-plaintext highlighter-rouge">alloca</code> and VLAs a
 
 <p><a href="https://stackoverflow.com/questions/3488821/is-alloca-completely-replaceable">One key difference between the two:</a></p>
 <blockquote>
-  <p>The memory alloca() returns is valid as long as the current function persists. The lifetime of the memory occupied by a VLA is valid as long as the VLA’s identifier remains in scope. You can <code class="language-plaintext highlighter-rouge">alloca</code> memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates.</p>
+  <p>The memory alloca() returns is valid as long as the current function persists. The lifetime of the memory occupied by a VLA is valid as long as the VLA’s identifier remains in scope. You can <code class="language-bash highlighter-rouge">alloca</code> memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates.</p>
 </blockquote>
 
 <h2 id="memory-layout">Memory Layout</h2>
 
-<p>Because the stack grows down on most platforms, the stack pointer after an <code class="language-plaintext highlighter-rouge">alloca</code> or VLA allocation but arrays are addressed sequentially upwards, the address of the first element of a VLA array (or the pointer returned by <code class="language-plaintext highlighter-rouge">alloca</code>) will be the value of the stack pointer <em>after</em> it’s modified.</p>
+<p>Because the stack grows down on most platforms, the stack pointer after an <code class="language-bash highlighter-rouge">alloca</code> or VLA allocation but arrays are addressed sequentially upwards, the address of the first element of a VLA array (or the pointer returned by <code class="language-bash highlighter-rouge">alloca</code>) will be the value of the stack pointer <em>after</em> it’s modified.</p>
 
 <center>
   <img style="background-color:#240057;" src="/images/vla/vla-stack-pointer-viz.drawio.png">
 </center>
 
-<p>Element 0 of the array or <code class="language-plaintext highlighter-rouge">alloca</code>-allocated memory is therefore immediately above the stack pointer after allocation, and is addressed by increasing sequentially until the end of the array.
+<p>Element 0 of the array or <code class="language-bash highlighter-rouge">alloca</code>-allocated memory is therefore immediately above the stack pointer after allocation, and is addressed by increasing sequentially until the end of the array.
 Accessing past the array will then run into previously declared stack variables.</p>
 
-<p>When the function returns, the stack space will be available for subsequent function calls to use automatically, so there is no need to explicitly free memory allocated by VLA/<code class="language-plaintext highlighter-rouge">alloca</code>.</p>
+<p>When the function returns, the stack space will be available for subsequent function calls to use automatically, so there is no need to explicitly free memory allocated by VLA/<code class="language-bash highlighter-rouge">alloca</code>.</p>
 
 <h2 id="examples">Examples</h2>
 
@@ -159,9 +159,9 @@ diff: 48
 
 <p>Notice that the address stored in the stack pointer after declaring the VLA array is the same as the address of the first element of the VLA array as depicted in the diagram above.</p>
 
-<h2 id="alloca"><code class="language-plaintext highlighter-rouge">alloca</code></h2>
+<h2 id="alloca"><code class="language-bash highlighter-rouge">alloca</code></h2>
 
-<p>Instead of declaring a VLA array, we can create a pointer to memory allocated by <code class="language-plaintext highlighter-rouge">alloca</code> to produce the same effect:
+<p>Instead of declaring a VLA array, we can create a pointer to memory allocated by <code class="language-bash highlighter-rouge">alloca</code> to produce the same effect:
 <!--
 gcc _includes/vla/inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
 --></p>
@@ -199,7 +199,7 @@ after: 140728646054592
 diff: 48
 </code></pre></div></div>
 
-<p>Compare the GCC docs for <code class="language-plaintext highlighter-rouge">alloca</code> with that of variable length arrays and notice the similarities:</p>
+<p>Compare the GCC docs for <code class="language-bash highlighter-rouge">alloca</code> with that of variable length arrays and notice the similarities:</p>
 
 <blockquote>
   <p>The function alloca supports a kind of half-dynamic allocation in which blocks are allocated dynamically but freed automatically.</p>
@@ -285,9 +285,9 @@ define dso_local i32 @main(i32 noundef %0, i8** noundef %1) #0 {
 
 <ol>
   <li><a href="https://gcc.gnu.org/onlinedocs/gcc/Variable-Length.html">GCC VLA docs</a></li>
-  <li><a href="https://www.gnu.org/software/libc/manual/html_node/Alloca-Example.html">GCC <code class="language-plaintext highlighter-rouge">alloca</code> docs</a></li>
-  <li><a href="https://llvm.org/docs/LangRef.html#alloca-instruction">LLVM IR docs for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
-  <li><a href="https://llvm.org/doxygen/Instructions_8cpp_source.html">LLVM source for <code class="language-plaintext highlighter-rouge">alloca</code> instruction</a></li>
+  <li><a href="https://www.gnu.org/software/libc/manual/html_node/Alloca-Example.html">GCC <code class="language-bash highlighter-rouge">alloca</code> docs</a></li>
+  <li><a href="https://llvm.org/docs/LangRef.html#alloca-instruction">LLVM IR docs for <code class="language-bash highlighter-rouge">alloca</code> instruction</a></li>
+  <li><a href="https://llvm.org/doxygen/Instructions_8cpp_source.html">LLVM source for <code class="language-bash highlighter-rouge">alloca</code> instruction</a></li>
   <li><a href="https://en.cppreference.com/w/c/language/array">cppreference docs on VLA</a></li>
   <li><a href="https://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html">Buffer overflow and stack frame visualization</a></li>
 </ol>

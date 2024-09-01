@@ -71,16 +71,16 @@
 <h2 id="tensors">Tensors</h2>
 
 <p>A YouTuber by the name of <a href="https://www.youtube.com/c/ContextFree/videos">Context Free</a> posted a few videos about tensors in various programming languages, including C++ (<a href="https://youtu.be/WbpbEilgQBc">first video</a>, <a href="https://youtu.be/ICxxKeE4GuA">second video</a>).
-I loved these videos, but I noticed ContextFree failed to mention <code class="language-plaintext highlighter-rouge">std::mdspan</code>, a new library feature coming to C++23.</p>
+I loved these videos, but I noticed ContextFree failed to mention <code class="language-bash highlighter-rouge">std::mdspan</code>, a new library feature coming to C++23.</p>
 
-<h2 id="stdmdspan"><code class="language-plaintext highlighter-rouge">std::mdspan</code></h2>
+<h2 id="stdmdspan"><code class="language-bash highlighter-rouge">std::mdspan</code></h2>
 
-<p><code class="language-plaintext highlighter-rouge">std::mdspan</code> (or <code class="language-plaintext highlighter-rouge">std::experimental::mdspan</code> until the proposal is accepted-I’ll be using <code class="language-plaintext highlighter-rouge">stdex::mdspan</code>, as <code class="language-plaintext highlighter-rouge">stdex</code> is a common alias for <code class="language-plaintext highlighter-rouge">std::experimental</code>) is an alias for a more complex type, but at it’s core it is a pointer plus some number of <em>extents</em>.
-<em>Extents</em> are either sizes of a given dimension on an <code class="language-plaintext highlighter-rouge">mdspan</code>, or the sentinal <code class="language-plaintext highlighter-rouge">std::dynamic_extent</code>, which indicates the extent is <em>dynamic</em>, and doesn’t have to be supplied at compile-time.
-These extents and the sentinal <code class="language-plaintext highlighter-rouge">dynamic_extent</code> can be mixed and matched.
+<p><code class="language-bash highlighter-rouge">std::mdspan</code> (or <code class="language-bash highlighter-rouge">std::experimental::mdspan</code> until the proposal is accepted-I’ll be using <code class="language-bash highlighter-rouge">stdex::mdspan</code>, as <code class="language-bash highlighter-rouge">stdex</code> is a common alias for <code class="language-bash highlighter-rouge">std::experimental</code>) is an alias for a more complex type, but at it’s core it is a pointer plus some number of <em>extents</em>.
+<em>Extents</em> are either sizes of a given dimension on an <code class="language-bash highlighter-rouge">mdspan</code>, or the sentinal <code class="language-bash highlighter-rouge">std::dynamic_extent</code>, which indicates the extent is <em>dynamic</em>, and doesn’t have to be supplied at compile-time.
+These extents and the sentinal <code class="language-bash highlighter-rouge">dynamic_extent</code> can be mixed and matched.
 This powerful capability allows users to work with data as if it were a complex matrix structure while the underlying data remain linear.</p>
 
-<p>For example, given raw data, an <code class="language-plaintext highlighter-rouge">mdspan</code> may be constructed and passed to some library that expects a matrix with rank 3:</p>
+<p>For example, given raw data, an <code class="language-bash highlighter-rouge">mdspan</code> may be constructed and passed to some library that expects a matrix with rank 3:</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// https://godbolt.org/z/eWKev9nas</span>
 <span class="k">template</span><span class="o">&lt;</span><span class="n">T</span><span class="p">&gt;</span>
 <span class="k">using</span> <span class="n">mat_3d</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span>
@@ -126,26 +126,26 @@ This powerful capability allows users to work with data as if it were a complex 
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>After supplying a dummy implementation of <code class="language-plaintext highlighter-rouge">work</code> to print the shape, we get</p>
+<p>After supplying a dummy implementation of <code class="language-bash highlighter-rouge">work</code> to print the shape, we get</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">mat has shape [100, 5, 1]
 mat has shape [4, 5, 5]
 mat has shape [10, 1, 50]
 </span></code></pre></div></div>
 
-<p>In either case, the underlying data is the same, though it’s <em>viewed</em> differently in each of the invocations of <code class="language-plaintext highlighter-rouge">work</code>.
-It’s no coincidence that <em>view</em> seems like a natural name for <code class="language-plaintext highlighter-rouge">mdspan</code> - <code class="language-plaintext highlighter-rouge">mdspan</code> was developed by the authors of the portable execution library Kokkos and inspired by the <code class="language-plaintext highlighter-rouge">Kokkos::View</code> type.</p>
+<p>In either case, the underlying data is the same, though it’s <em>viewed</em> differently in each of the invocations of <code class="language-bash highlighter-rouge">work</code>.
+It’s no coincidence that <em>view</em> seems like a natural name for <code class="language-bash highlighter-rouge">mdspan</code> - <code class="language-bash highlighter-rouge">mdspan</code> was developed by the authors of the portable execution library Kokkos and inspired by the <code class="language-bash highlighter-rouge">Kokkos::View</code> type.</p>
 
 <h2 id="subspans">Subspans</h2>
 
-<p>Just like <code class="language-plaintext highlighter-rouge">std::span</code>, <code class="language-plaintext highlighter-rouge">mdspan</code> has support for taking subspans of a given span.
-This is more complicated with <code class="language-plaintext highlighter-rouge">mdspan</code> however, due to <code class="language-plaintext highlighter-rouge">mdspan</code>’s variadic extents.</p>
+<p>Just like <code class="language-bash highlighter-rouge">std::span</code>, <code class="language-bash highlighter-rouge">mdspan</code> has support for taking subspans of a given span.
+This is more complicated with <code class="language-bash highlighter-rouge">mdspan</code> however, due to <code class="language-bash highlighter-rouge">mdspan</code>’s variadic extents.</p>
 
-<p>There are three ways to take a slice of an <code class="language-plaintext highlighter-rouge">mdspan</code>:</p>
+<p>There are three ways to take a slice of an <code class="language-bash highlighter-rouge">mdspan</code>:</p>
 
 <ol>
   <li>An integer index into the respective dimension</li>
-  <li>A <code class="language-plaintext highlighter-rouge">std::tuple</code> or <code class="language-plaintext highlighter-rouge">std::pair</code> begin/end pair of indices</li>
-  <li>The special value <code class="language-plaintext highlighter-rouge">std::full_extent</code> indicating all elements of the dimension should be selected in the subspan</li>
+  <li>A <code class="language-bash highlighter-rouge">std::tuple</code> or <code class="language-bash highlighter-rouge">std::pair</code> begin/end pair of indices</li>
+  <li>The special value <code class="language-bash highlighter-rouge">std::full_extent</code> indicating all elements of the dimension should be selected in the subspan</li>
 </ol>
 
 <p>For example:</p>
@@ -162,11 +162,11 @@ This is more complicated with <code class="language-plaintext highlighter-rouge"
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Note that using a single value as an extent passed to <code class="language-plaintext highlighter-rouge">submdspan</code> squashes the dimension to 0, while passing a <code class="language-plaintext highlighter-rouge">pair</code> or <code class="language-plaintext highlighter-rouge">tuple</code> will keep the dimension around, even if that dimension is 1.
-<code class="language-plaintext highlighter-rouge">pair</code>/<code class="language-plaintext highlighter-rouge">tuple</code> do not effect rank, while passing an index as an extent does.</p>
+<p>Note that using a single value as an extent passed to <code class="language-bash highlighter-rouge">submdspan</code> squashes the dimension to 0, while passing a <code class="language-bash highlighter-rouge">pair</code> or <code class="language-bash highlighter-rouge">tuple</code> will keep the dimension around, even if that dimension is 1.
+<code class="language-bash highlighter-rouge">pair</code>/<code class="language-bash highlighter-rouge">tuple</code> do not effect rank, while passing an index as an extent does.</p>
 
-<p>I hope this article was enough to get you interested in <code class="language-plaintext highlighter-rouge">mdspan</code> and the future of C++!
-Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s YouTube channel, and the reference implementation of C++23’s <code class="language-plaintext highlighter-rouge">std::mdspan</code>.</p>
+<p>I hope this article was enough to get you interested in <code class="language-bash highlighter-rouge">mdspan</code> and the future of C++!
+Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s YouTube channel, and the reference implementation of C++23’s <code class="language-bash highlighter-rouge">std::mdspan</code>.</p>
 
 <h2> Contact </h2>
 
@@ -189,7 +189,7 @@ Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s
 <h2 id="links">Links</h2>
 
 <ul>
-  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0009r14.html"><code class="language-plaintext highlighter-rouge">mdspan</code> paper, revision 14</a></li>
+  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0009r14.html"><code class="language-bash highlighter-rouge">mdspan</code> paper, revision 14</a></li>
   <li>Godbolt links:
     <ul>
       <li><a href="https://godbolt.org/z/eWKev9nas">Example 1</a></li>
@@ -200,7 +200,7 @@ Make sure to check out Daisy Hollman’s appearance on CppCast, Context Free’s
   <li><a href="https://www.youtube.com/c/ContextFree/videos">ContextFree’s YouTube channel</a></li>
   <li><a href="https://github.com/kokkos/mdspan">Kokkos mdspan implementation</a></li>
   <li><a href="https://github.com/kokkos/mdspan/wiki/A-Gentle-Introduction-to-mdspan">Intro to mdspan wiki article</a></li>
-  <li><a href="https://godbolt.org/z/KMT3G9Ese"><code class="language-plaintext highlighter-rouge">std::mdspan</code> on compiler explorer</a></li>
+  <li><a href="https://godbolt.org/z/KMT3G9Ese"><code class="language-bash highlighter-rouge">std::mdspan</code> on compiler explorer</a></li>
   <li><a href="https://cppcast.com/too-cute-mdspan/">CppCast episode with Daisy Hollman</a></li>
 </ul>
 

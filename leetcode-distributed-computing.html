@@ -97,7 +97,7 @@ Each row, column, and subbox of the grid must have the digits 1-9.</p>
 <h2 id="bqn"><a href="#content">BQN</a></h2>
 
 <p>This is what our sudoku boards will look like:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># two 8s in the first block
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># two 8s in the first block</span>
 bad ← ⟨8, 3, 0, 0, 7, 0, 0, 0, 0
        6, 0, 0, 1, 9, 5, 0, 0, 0
        0, 9, 8, 0, 0, 0, 0, 6, 0
@@ -108,7 +108,7 @@ bad ← ⟨8, 3, 0, 0, 7, 0, 0, 0, 0
        0, 0, 0, 4, 1, 9, 0, 0, 5
        0, 0, 0, 0, 8, 0, 0, 7, 9⟩
 
-# valid sudoku
+<span class="c"># valid sudoku</span>
 good ← ⟨5, 3, 0, 0, 7, 0, 0, 0, 0
         6, 0, 0, 1, 9, 5, 0, 0, 0
         0, 9, 8, 0, 0, 0, 0, 6, 0
@@ -123,28 +123,28 @@ good ← ⟨5, 3, 0, 0, 7, 0, 0, 0, 0
 
 <p>And here is our full solution.
 This solution will be the basis for all of our later solutions.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F ← {𝕊𝕩:
-  Fl ← 0⊸≠⊸/                       # Filter 0s out
-  Dup ← (∨´∾´)¬∘∊¨                 # Are there any duplicates?
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F ← <span class="o">{</span>𝕊𝕩:
+  Fl ← 0⊸≠⊸/                       <span class="c"># Filter 0s out</span>
+  Dup ← <span class="o">(</span>∨´∾´<span class="o">)</span>¬∘∊¨                 <span class="c"># Are there any duplicates?</span>
 
-  rs ← Dup Fl¨(9/↕9)⊔𝕩             # Check rows
-  cs ← Dup Fl¨(81⥊↕9)⊔𝕩            # Check columns
+  rs ← Dup Fl¨<span class="o">(</span>9/↕9<span class="o">)</span>⊔𝕩             <span class="c"># Check rows</span>
+  cs ← Dup Fl¨<span class="o">(</span>81⥊↕9<span class="o">)</span>⊔𝕩            <span class="c"># Check columns</span>
 
   bi ← 27⥊3/↕3
-  bs ← Dup Fl¨(bi∾(3+bi)∾(6+bi))⊔𝕩 # Check blocks
+  bs ← Dup Fl¨<span class="o">(</span>bi∾<span class="o">(</span>3+bi<span class="o">)</span>∾<span class="o">(</span>6+bi<span class="o">))</span>⊔𝕩 <span class="c"># Check blocks</span>
 
-  (bs ∨ rs ∨ cs)⊑"true"‿"false"
-}
+  <span class="o">(</span>bs ∨ rs ∨ cs<span class="o">)</span>⊑<span class="s2">"true"</span>‿<span class="s2">"false"</span>
+<span class="o">}</span>
 </code></pre></div></div>
 
 <p>This first line is a function to filter out any 0s:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Fl ← 0⊸≠⊸/
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Fl ← 0⊸≠⊸/
    Fl ⟨5, 3, 0, 0, 7, 0, 0, 0, 0⟩
 ⟨ 5 3 7 ⟩
 </code></pre></div></div>
 
 <p>Here we have another utility function to return an integer indicating whether any duplicates were found in any sublists:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Dup ← (∨´∾´)¬∘∊¨
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Dup ← <span class="o">(</span>∨´∾´<span class="o">)</span>¬∘∊¨
    Dup ⟨⟨5, 3, 7⟩, ⟨1, 2, 3⟩⟩
 0
    Dup ⟨⟨5, 3, 7⟩, ⟨1, 2, 2⟩⟩
@@ -152,19 +152,19 @@ This solution will be the basis for all of our later solutions.</p>
 </code></pre></div></div>
 
 <p>Next we check for duplicates in all the filtered rows and columns:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   rs ← Dup Fl¨(9/↕9)⊔𝕩
-   cs ← Dup Fl¨(81⥊↕9)⊔𝕩
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   rs ← Dup Fl¨<span class="o">(</span>9/↕9<span class="o">)</span>⊔𝕩
+   cs ← Dup Fl¨<span class="o">(</span>81⥊↕9<span class="o">)</span>⊔𝕩
 </code></pre></div></div>
 
 <p>These ranges are used to create indices for grouping the values in X.
 I’ll show a trimmed down version of their output here to give you an idea:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿3⥊(3/↕3) # For the rows
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿3⥊<span class="o">(</span>3/↕3<span class="o">)</span> <span class="c"># For the rows</span>
 ┌─       
 ╵ 0 0 0  
   1 1 1  
   2 2 2  
         ┘
-   3‿3⥊(9⥊↕3) # For the columns
+   3‿3⥊<span class="o">(</span>9⥊↕3<span class="o">)</span> <span class="c"># For the columns</span>
 ┌─       
 ╵ 0 1 2  
   0 1 2  
@@ -173,7 +173,7 @@ I’ll show a trimmed down version of their output here to give you an idea:</p>
 </code></pre></div></div>
 
 <p>Next I do something similar to get the indices for the boxes.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   bi ← 27⥊3/↕3
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   bi ← 27⥊3/↕3
    3‿9⥊bi
 ┌─                   
 ╵ 0 0 0 1 1 1 2 2 2  
@@ -183,7 +183,7 @@ I’ll show a trimmed down version of their output here to give you an idea:</p>
 </code></pre></div></div>
 
 <p>This creats indices for the first three boxes, and you can probably imagine how to extend this to get the indices for all the boxes. I just add three to the previous indices, and then add six, and then append them all together. Here’s the second layer:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿9⥊bi+3
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿9⥊bi+3
 ┌─                   
 ╵ 3 3 3 4 4 4 5 5 5  
   3 3 3 4 4 4 5 5 5  
@@ -192,7 +192,7 @@ I’ll show a trimmed down version of their output here to give you an idea:</p>
 </code></pre></div></div>
 
 <p>And the final layer:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿9⥊bi+6
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿9⥊bi+6
 ┌─                   
 ╵ 6 6 6 7 7 7 8 8 8  
   6 6 6 7 7 7 8 8 8  
@@ -201,7 +201,7 @@ I’ll show a trimmed down version of their output here to give you an idea:</p>
 </code></pre></div></div>
 
 <p>And all three layers of indices stacked on top of each other:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   9‿9⥊(bi∾(3+bi)∾(6+bi))
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   9‿9⥊<span class="o">(</span>bi∾<span class="o">(</span>3+bi<span class="o">)</span>∾<span class="o">(</span>6+bi<span class="o">))</span>
 ┌─                   
 ╵ 0 0 0 1 1 1 2 2 2  
   0 0 0 1 1 1 2 2 2  
@@ -216,11 +216,11 @@ I’ll show a trimmed down version of their output here to give you an idea:</p>
 </code></pre></div></div>
 
 <p>Using these indices, I group all the elements of the input, and then check all of them for duplicates:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   bs ← Dup Fl¨(bi∾(3+bi)∾(6+bi))⊔𝕩 # Check blocks
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   bs ← Dup Fl¨<span class="o">(</span>bi∾<span class="o">(</span>3+bi<span class="o">)</span>∾<span class="o">(</span>6+bi<span class="o">))</span>⊔𝕩 <span class="c"># Check blocks</span>
 </code></pre></div></div>
 
 <p>And in the end I check if there were duplicates in the blocks, in the rows, or in the columns, and use that to index into our strings that indicate whether our sudoku board is valid or not.</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   (bs ∨ rs ∨ cs)⊑"true"‿"false"
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="o">(</span>bs ∨ rs ∨ cs<span class="o">)</span>⊑<span class="s2">"true"</span>‿<span class="s2">"false"</span>
 </code></pre></div></div>
 
 <h2 id="approach"><a href="#content">Approach</a></h2>
@@ -322,7 +322,7 @@ False
 
 <p>Now we’ll look at another python example, but this time one that uses MPI to distribute the calculations.</p>
 
-<p>MPI provides a lot of infrastructure for distributed computing: using the <code class="language-plaintext highlighter-rouge">mpirun</code> command spawns N processes, each of which knows how many processes were spawned, what its unique process ID is, and some other relevant information.
+<p>MPI provides a lot of infrastructure for distributed computing: using the <code class="language-bash highlighter-rouge">mpirun</code> command spawns N processes, each of which knows how many processes were spawned, what its unique process ID is, and some other relevant information.
 These processes may be spawned on multiple machines even, and MPI gives us the tools to communicate between these processes.
 We’ll take advantage of this infrastructure to perform our calculations on multiple processes.</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
@@ -372,7 +372,7 @@ We’ll take advantage of this infrastructure to perform our calculations on mul
 <p>Say we’re given 5 processes and we have 81 cells to check (because that’s the size of our sudoku board).
 The calculation would look something like this:</p>
 
-<p><code class="language-plaintext highlighter-rouge">chunk</code> is then the smallest amount of work for each process such that all the work that needs to be done is performed.
+<p><code class="language-bash highlighter-rouge">chunk</code> is then the smallest amount of work for each process such that all the work that needs to be done is performed.
 This is a common calculation that needs to be done in parallel computing.
 Note that our final process may exit early if the work is not evenly divisible by the chunk size.</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="o">&gt;&gt;</span> work <span class="o">=</span> 81
@@ -403,8 +403,8 @@ Note that our final process may exit early if the work is not evenly divisible b
 </code></pre></div></div>
 
 <p>This next bit is more interesting.
-We create a global array with the size we need to hold our final sum matrix, and we use the MPI function <code class="language-plaintext highlighter-rouge">Reduce</code>.
-This function will perform the operation <code class="language-plaintext highlighter-rouge">op</code>, in this case <code class="language-plaintext highlighter-rouge">MPI.SUM</code>, to join the arrays <code class="language-plaintext highlighter-rouge">ar</code> and <code class="language-plaintext highlighter-rouge">gar</code> together on rank 0 specified by the <code class="language-plaintext highlighter-rouge">root</code> argument.
+We create a global array with the size we need to hold our final sum matrix, and we use the MPI function <code class="language-bash highlighter-rouge">Reduce</code>.
+This function will perform the operation <code class="language-bash highlighter-rouge">op</code>, in this case <code class="language-bash highlighter-rouge">MPI.SUM</code>, to join the arrays <code class="language-bash highlighter-rouge">ar</code> and <code class="language-bash highlighter-rouge">gar</code> together on rank 0 specified by the <code class="language-bash highlighter-rouge">root</code> argument.
 This means that our final summed matrix for all components of the solution is on the MPI process with rank 0.
 We can then check if we have any cells with values greater than one, and return that value if we’re on rank 0.
 Otherwise, we can just return false since no other rank has the final array.</p>
@@ -463,9 +463,9 @@ False
 </code></pre></div></div>
 
 <p>You can see pretty much everything about our solution is the same so far.
-You may notice the <code class="language-plaintext highlighter-rouge">idx2</code> and <code class="language-plaintext highlighter-rouge">idx3</code> functions - these just calculate the linear index from subscripts so we can almost use 2d and 3d subscripts while keeping our arrays totally linear.</p>
+You may notice the <code class="language-bash highlighter-rouge">idx2</code> and <code class="language-bash highlighter-rouge">idx3</code> functions - these just calculate the linear index from subscripts so we can almost use 2d and 3d subscripts while keeping our arrays totally linear.</p>
 
-<p>Here’s our <code class="language-plaintext highlighter-rouge">idx2</code> function for example. I’ll be using these functions for the rest of my solutoins since they make the code much more readable.</p>
+<p>Here’s our <code class="language-bash highlighter-rouge">idx2</code> function for example. I’ll be using these functions for the rest of my solutoins since they make the code much more readable.</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">idx2</span><span class="p">(</span><span class="kt">int</span> <span class="n">r</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span> <span class="o">+</span> <span class="n">c</span><span class="p">;</span>
 <span class="p">};</span>
@@ -596,7 +596,7 @@ These allow you to pass arguments to the CUDA runtime to let it know how you’d
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>I have the following <code class="language-plaintext highlighter-rouge">using</code> statements to make the code a little more readable hopefully.</p>
+<p>I have the following <code class="language-bash highlighter-rouge">using</code> statements to make the code a little more readable hopefully.</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">device_malloc</span><span class="p">;</span>
 <span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">device_free</span><span class="p">;</span>
 <span class="k">using</span> <span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="p">;</span>
@@ -605,7 +605,7 @@ These allow you to pass arguments to the CUDA runtime to let it know how you’d
 </code></pre></div></div>
 
 <p>Along with the previous code that should look pretty familiar at this point, I define two other CUDA kernels.
-The first is this short <code class="language-plaintext highlighter-rouge">setrc</code> kernel, which sets rows and columns based on the kernel launch parameters I pass.
+The first is this short <code class="language-bash highlighter-rouge">setrc</code> kernel, which sets rows and columns based on the kernel launch parameters I pass.
 This is a shortcut for a cartesian product of the rows and columns that runs on the GPU.</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__global__</span> <span class="kt">void</span> <span class="nf">setrc</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">rows</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">cols</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">const</span> <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
@@ -614,7 +614,7 @@ This is a shortcut for a cartesian product of the rows and columns that runs on 
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>The other kernel is this <code class="language-plaintext highlighter-rouge">setar</code> function, which is the same core kernel that’s been at the heart of all of our solutions so far.</p>
+<p>The other kernel is this <code class="language-bash highlighter-rouge">setar</code> function, which is the same core kernel that’s been at the heart of all of our solutions so far.</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__global__</span> <span class="kt">void</span> <span class="nf">setar</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">ar</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">board</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">row</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
   <span class="k">const</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">board</span><span class="p">[</span><span class="n">idx2</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)];</span>
@@ -637,7 +637,7 @@ We allocate our final array and pass it to our cuda kernel, along with the sudok
   <span class="p">);</span>
 </code></pre></div></div>
 
-<p>We then syncronize with our GPU to make sure the kernel finishes before reducing to find the maximum value with <code class="language-plaintext highlighter-rouge">thrust::reduce</code>, freeing our device memory, and returning whether all values fell below two.</p>
+<p>We then syncronize with our GPU to make sure the kernel finishes before reducing to find the maximum value with <code class="language-bash highlighter-rouge">thrust::reduce</code>, freeing our device memory, and returning whether all values fell below two.</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">cudaDeviceSynchronize</span><span class="p">();</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">m</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">d_ar</span><span class="p">,</span> <span class="n">d_ar</span><span class="o">+</span><span class="p">(</span><span class="mi">81</span><span class="o">*</span><span class="mi">3</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">thrust</span><span class="o">::</span><span class="n">maximum</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
   <span class="n">device_free</span><span class="p">(</span><span class="n">d_ar</span><span class="p">);</span>
@@ -676,12 +676,12 @@ It’s still pretty much the same solution as our non-distributed CUDA solution 
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>The <code class="language-plaintext highlighter-rouge">setar</code> kernel is a bit different from our non distributed CUDA solution since we’re only operating on a subset of our sudoku board.
+<p>The <code class="language-bash highlighter-rouge">setar</code> kernel is a bit different from our non distributed CUDA solution since we’re only operating on a subset of our sudoku board.
 We set the values in our final sum matrix for the row, column and block submatrices just like before.
-This time however, we’re given this <code class="language-plaintext highlighter-rouge">offset</code> parameter.
+This time however, we’re given this <code class="language-bash highlighter-rouge">offset</code> parameter.
 This is because we’re not just running CUDA kernels, we’re running CUDA kernels on multiple processes and potentially multiple machines, so we’re only performing a subset of the full set of operations.
 This offset parameter tells us where we should start relative to the entire set of operations.
-We’re also not using the builtin <code class="language-plaintext highlighter-rouge">threadIdx.y</code> value since we’re launching our kernel in a 1D grid with precalculated row and column indices instead of a 2D grid.</p>
+We’re also not using the builtin <code class="language-bash highlighter-rouge">threadIdx.y</code> value since we’re launching our kernel in a 1D grid with precalculated row and column indices instead of a 2D grid.</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">__global__</span> <span class="kt">void</span> <span class="nf">setar</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">ar</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">board</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">rows</span><span class="p">,</span>
                       <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span><span class="n">cols</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">offset</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">const</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>

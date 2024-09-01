@@ -59,7 +59,7 @@
   <h1>JAABIBP (Just Another ABI Blog Post)</h1>
 
   <div class="entry">
-    <p>ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 <code class="language-plaintext highlighter-rouge">_Alias</code> proposal.</p>
+    <p>ABI breakage is a hot topic. Let’s look at some ways C++ handles it, and how that compares to the WG14 <code class="language-bash highlighter-rouge">_Alias</code> proposal.</p>
 
 <p><em>NOTE: This is probably the least educated article about ABI breakage yet. You should really watch <a href="https://youtu.be/By7b19YIv8Q">Jason Turner’s youtube video</a> or read <a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">JeanHeyd Meneide’s blog posts</a>🙃</em></p>
 
@@ -71,7 +71,7 @@
 </font>
 
 <p>After reading about transparent aliasing in <a href="https://thephd.dev/to-save-c-we-must-save-abi-fixing-c-function-abi">this blog post from JeanHeyd Meneide</a>, I had to play around with it in Godbolt and rave about its coolness on the Cursed Bird Site.
-Sean Parent rightly pointed out that this super neat proposal from JeanHeyd acomplishes pretty much the same thing as <code class="language-plaintext highlighter-rouge">inline namespace</code> in C++.</p>
+Sean Parent rightly pointed out that this super neat proposal from JeanHeyd acomplishes pretty much the same thing as <code class="language-bash highlighter-rouge">inline namespace</code> in C++.</p>
 
 <p><br></p>
 
@@ -113,7 +113,7 @@ Sean Parent rightly pointed out that this super neat proposal from JeanHeyd acom
 
 <p><br></p>
 
-<p>Some time has passed since library B was released, and now the authors have decided that <code class="language-plaintext highlighter-rouge">answer</code> can be 30% faster if it uses <code class="language-plaintext highlighter-rouge">long double</code> instead of <code class="language-plaintext highlighter-rouge">int</code>s.
+<p>Some time has passed since library B was released, and now the authors have decided that <code class="language-bash highlighter-rouge">answer</code> can be 30% faster if it uses <code class="language-bash highlighter-rouge">long double</code> instead of <code class="language-bash highlighter-rouge">int</code>s.
 How cool!</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// B.hpp</span>
@@ -130,8 +130,8 @@ How cool!</p>
 
 <p>Wow, so fast! 🚀</p>
 
-<p>If you rebuild B without rebuilding A however, A will be expecting the <code class="language-plaintext highlighter-rouge">answer</code>’s return value to be an int (4 bytes on my system) even though <code class="language-plaintext highlighter-rouge">B::answer</code> now returns a <code class="language-plaintext highlighter-rouge">long double</code> (8 bytes on my system).
-When dynamically linking to the original B library, A unsurprisingly prints <code class="language-plaintext highlighter-rouge">42</code>.
+<p>If you rebuild B without rebuilding A however, A will be expecting the <code class="language-bash highlighter-rouge">answer</code>’s return value to be an int (4 bytes on my system) even though <code class="language-bash highlighter-rouge">B::answer</code> now returns a <code class="language-bash highlighter-rouge">long double</code> (8 bytes on my system).
+When dynamically linking to the original B library, A unsurprisingly prints <code class="language-bash highlighter-rouge">42</code>.
 When dynamically linking to the updated B library however, A prints the following:</p>
 
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>./A
@@ -143,7 +143,7 @@ When dynamically linking to the updated B library however, A prints the followin
 
 <p><a href="https://thephd.dev/binary-banshees-digital-demons-abi-c-c++-help-me-god-please#abi-even-simpler">This section of JeanHeyd’s post gives a much better illustration.</a></p>
 
-<h2 id="comparing-inline-namespace-with-_alias-and-co">Comparing <code class="language-plaintext highlighter-rouge">inline namespace</code> with <code class="language-plaintext highlighter-rouge">_Alias</code> and co</h2>
+<h2 id="comparing-inline-namespace-with-_alias-and-co">Comparing <code class="language-bash highlighter-rouge">inline namespace</code> with <code class="language-bash highlighter-rouge">_Alias</code> and co</h2>
 
 <h2 id="why-do-some-want-to-break-it">Why do some want to break it?</h2>
 

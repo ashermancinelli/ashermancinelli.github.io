@@ -59,7 +59,7 @@
   <h1>std::expected And Why It's Awesome</h1>
 
   <div class="entry">
-    <p><code class="language-plaintext highlighter-rouge">std::expected</code> and some spectacular extensions are hopefully coming to C++23.</p>
+    <p><code class="language-bash highlighter-rouge">std::expected</code> and some spectacular extensions are hopefully coming to C++23.</p>
 
 <font size="-1">
   <em>
@@ -127,28 +127,28 @@ got error 'got some failure'
 You always check your error conditions, your code never throws exceptions, and the range of possible failures is very clear.
 I don’t mind this pattern in C, but in C++ we have some goodies that are far nicer to use in my opinion (especially in C++23).</p>
 
-<h2 id="why-stdexpected-is-awesome">Why <code class="language-plaintext highlighter-rouge">std::expected</code> is Awesome</h2>
+<h2 id="why-stdexpected-is-awesome">Why <code class="language-bash highlighter-rouge">std::expected</code> is Awesome</h2>
 
-<p>I’ll be using <a href="https://github.com/kokkos/mdspan"><code class="language-plaintext highlighter-rouge">mdspan</code> from the Kokkos implementation</a> and <a href="https://github.com/TartanLlama/expected"><code class="language-plaintext highlighter-rouge">expected</code> from Sy Brand’s implementation</a> for this section.</p>
+<p>I’ll be using <a href="https://github.com/kokkos/mdspan"><code class="language-bash highlighter-rouge">mdspan</code> from the Kokkos implementation</a> and <a href="https://github.com/TartanLlama/expected"><code class="language-bash highlighter-rouge">expected</code> from Sy Brand’s implementation</a> for this section.</p>
 
-<p>In the last year, 3 papers have come through the ISO C++ mailing lists for <code class="language-plaintext highlighter-rouge">std::expected</code>, and <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">the most recent paper from Jeff Garland</a> proposes some of Sy Brand’s wonderful extensions to <code class="language-plaintext highlighter-rouge">std::expected</code> which allow you to chain together monadic operations on expected values:</p>
+<p>In the last year, 3 papers have come through the ISO C++ mailing lists for <code class="language-bash highlighter-rouge">std::expected</code>, and <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">the most recent paper from Jeff Garland</a> proposes some of Sy Brand’s wonderful extensions to <code class="language-bash highlighter-rouge">std::expected</code> which allow you to chain together monadic operations on expected values:</p>
 
 <ol>
-  <li><code class="language-plaintext highlighter-rouge">and_then</code></li>
-  <li><code class="language-plaintext highlighter-rouge">or_else</code></li>
-  <li><code class="language-plaintext highlighter-rouge">transform</code></li>
+  <li><code class="language-bash highlighter-rouge">and_then</code></li>
+  <li><code class="language-bash highlighter-rouge">or_else</code></li>
+  <li><code class="language-bash highlighter-rouge">transform</code></li>
 </ol>
 
 <p>I think these extensions are <em>extremely</em> elegant, and I think some folks that are more used to the C-style error handling could be won over.
-Using <code class="language-plaintext highlighter-rouge">std::expected</code> means your errors have <em>value semantics</em>, which is something I like about the C-stlye error handling.
+Using <code class="language-bash highlighter-rouge">std::expected</code> means your errors have <em>value semantics</em>, which is something I like about the C-stlye error handling.
 Chaining together these operations makes the programmer’s intent so much clearer.</p>
 
-<p>Let’s look at another example using matrices, but this time using <code class="language-plaintext highlighter-rouge">expected</code> and <code class="language-plaintext highlighter-rouge">mdspan</code>.</p>
+<p>Let’s look at another example using matrices, but this time using <code class="language-bash highlighter-rouge">expected</code> and <code class="language-bash highlighter-rouge">mdspan</code>.</p>
 
 <h3 id="expected-example">
-<code class="language-plaintext highlighter-rouge">expected</code> Example</h3>
+<code class="language-bash highlighter-rouge">expected</code> Example</h3>
 
-<p>I’ll get some <code class="language-plaintext highlighter-rouge">using</code> statements out of the way:</p>
+<p>I’ll get some <code class="language-bash highlighter-rouge">using</code> statements out of the way:</p>
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">namespace</span> <span class="n">stdex</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">experimental</span><span class="p">;</span>
 <span class="k">using</span> <span class="n">mat_t</span> <span class="o">=</span> <span class="n">stdex</span><span class="o">::</span><span class="n">mdspan</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span> 
     <span class="n">stdex</span><span class="o">::</span><span class="n">extents</span><span class="o">&lt;</span>
@@ -181,7 +181,7 @@ The intent of the programmer is very clear in my opinion, even without seeing th
 </code></pre></div></div>
 
 <p>This leads to some nice and/or interesting patterns.
-Say we want to check that the matrix passed to <code class="language-plaintext highlighter-rouge">set_diag</code> is square;
+Say we want to check that the matrix passed to <code class="language-bash highlighter-rouge">set_diag</code> is square;
 we could perform our check and return an error message if the check fails, much like we could throw an exception:</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">set_diag</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">mat</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
@@ -261,7 +261,7 @@ we could perform our check and return an error message if the check fails, much 
 
 <h4 id="2-binding-args-to-a-function-that-takes-multiple-arguments">2. Binding Args to a Function that Takes Multiple Arguments</h4>
 
-<p>Using <code class="language-plaintext highlighter-rouge">std::bind</code> on a function taking more arguments would also acomplish this:</p>
+<p>Using <code class="language-bash highlighter-rouge">std::bind</code> on a function taking more arguments would also acomplish this:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="nf">set_row</span><span class="p">(</span><span class="n">mat_t</span> <span class="n">mat</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">row</span><span class="p">,</span> <span class="kt">double</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">mat</span><span class="p">.</span><span class="n">extent</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
@@ -316,16 +316,16 @@ we could perform our check and return an error message if the check fails, much 
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>Hopefully you’ve been won over by the elegance of <code class="language-plaintext highlighter-rouge">expected</code> and <code class="language-plaintext highlighter-rouge">mdspan</code>.
+<p>Hopefully you’ve been won over by the elegance of <code class="language-bash highlighter-rouge">expected</code> and <code class="language-bash highlighter-rouge">mdspan</code>.
 Godbolt links can be found for these examples in the links below:</p>
 
 <ol>
   <li><a href="https://youtu.be/uj9ozuzZy6g">YouTube version of this content</a></li>
   <li><a href="https://godbolt.org/z/jPqdYPEv9">C-style example</a></li>
-  <li><a href="https://godbolt.org/z/hWYj34EcW">Full <code class="language-plaintext highlighter-rouge">expected</code>+<code class="language-plaintext highlighter-rouge">mdspan</code> example</a></li>
-  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">Jeff Garland’s 12/2022 <code class="language-plaintext highlighter-rouge">expected</code> paper</a></li>
-  <li><a href="https://github.com/TartanLlama">Sy Brand’s <code class="language-plaintext highlighter-rouge">tl::expected</code></a></li>
-  <li><a href="https://github.com/kokkos/mdspan">Kokkos <code class="language-plaintext highlighter-rouge">mdspan</code> impl</a></li>
+  <li><a href="https://godbolt.org/z/hWYj34EcW">Full <code class="language-bash highlighter-rouge">expected</code>+<code class="language-bash highlighter-rouge">mdspan</code> example</a></li>
+  <li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">Jeff Garland’s 12/2022 <code class="language-bash highlighter-rouge">expected</code> paper</a></li>
+  <li><a href="https://github.com/TartanLlama">Sy Brand’s <code class="language-bash highlighter-rouge">tl::expected</code></a></li>
+  <li><a href="https://github.com/kokkos/mdspan">Kokkos <code class="language-bash highlighter-rouge">mdspan</code> impl</a></li>
 </ol>
 
 <font size="-1">

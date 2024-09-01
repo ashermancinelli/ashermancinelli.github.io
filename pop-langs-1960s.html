@@ -95,27 +95,27 @@ See the youtube video version of this content linked here.
 
 <h4 id="example-1">Example 1:</h4>
 
-<p><strong>Input</strong>: <code class="language-plaintext highlighter-rouge">nums = [1,2,3,1]</code></p>
+<p><strong>Input</strong>: <code class="language-bash highlighter-rouge">nums <span class="o">=</span> <span class="o">[</span>1,2,3,1]</code></p>
 
-<p><strong>Output</strong>: <code class="language-plaintext highlighter-rouge">2</code></p>
+<p><strong>Output</strong>: <code class="language-bash highlighter-rouge">2</code></p>
 
-<p><strong>Explanation</strong>: <code class="language-plaintext highlighter-rouge">3</code> is a peak element and your function should return the index number <code class="language-plaintext highlighter-rouge">2</code>.</p>
+<p><strong>Explanation</strong>: <code class="language-bash highlighter-rouge">3</code> is a peak element and your function should return the index number <code class="language-bash highlighter-rouge">2</code>.</p>
 
 <h4 id="example-2">Example 2:</h4>
 
-<p><strong>Input</strong>: <code class="language-plaintext highlighter-rouge">nums = [1,2,1,3,5,6,4]</code></p>
+<p><strong>Input</strong>: <code class="language-bash highlighter-rouge">nums <span class="o">=</span> <span class="o">[</span>1,2,1,3,5,6,4]</code></p>
 
-<p><strong>Output</strong>: <code class="language-plaintext highlighter-rouge">1</code> or <code class="language-plaintext highlighter-rouge">5</code></p>
+<p><strong>Output</strong>: <code class="language-bash highlighter-rouge">1</code> or <code class="language-bash highlighter-rouge">5</code></p>
 
-<p><strong>Explanation</strong>: Your function can return either index number <code class="language-plaintext highlighter-rouge">1</code> where the peak element is <code class="language-plaintext highlighter-rouge">2</code>, or index number <code class="language-plaintext highlighter-rouge">5</code> where the peak element is <code class="language-plaintext highlighter-rouge">6</code>.</p>
+<p><strong>Explanation</strong>: Your function can return either index number <code class="language-bash highlighter-rouge">1</code> where the peak element is <code class="language-bash highlighter-rouge">2</code>, or index number <code class="language-bash highlighter-rouge">5</code> where the peak element is <code class="language-bash highlighter-rouge">6</code>.</p>
 
 <h4 id="constraints">Constraints:</h4>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">1 &lt;= nums.length &lt;= 1000</code></li>
-  <li><code class="language-plaintext highlighter-rouge">-231 &lt;= nums[i] &lt;= 231 - 1</code></li>
+  <li><code class="language-bash highlighter-rouge">1 &lt;<span class="o">=</span> nums.length &lt;<span class="o">=</span> 1000</code></li>
+  <li><code class="language-bash highlighter-rouge"><span class="nt">-231</span> &lt;<span class="o">=</span> nums[i] &lt;<span class="o">=</span> 231 - 1</code></li>
   <li>
-<code class="language-plaintext highlighter-rouge">nums[i] != nums[i + 1]</code> for all valid <code class="language-plaintext highlighter-rouge">i</code>.</li>
+<code class="language-bash highlighter-rouge">nums[i] <span class="o">!=</span> nums[i + 1]</code> for all valid <code class="language-bash highlighter-rouge">i</code>.</li>
 </ul>
 
 <h2 id="content">Content</h2>
@@ -156,8 +156,8 @@ I used <a href="http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.
 
 <p><em>NOTE: These solutions use base 1 indices</em></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     ∇ Z←F L
-[1]    Z←((L&gt;¯1↓0,L)∧(L&gt;1↓L,0))⍳1
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     ∇ Z←F L
+<span class="o">[</span>1]    Z←<span class="o">((</span>L&gt;¯1↓0,L<span class="o">)</span>∧<span class="o">(</span>L&gt;1↓L,0<span class="o">))</span>⍳1
      ∇
      F 1 2 3 1
 3
@@ -174,25 +174,25 @@ I used <a href="http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.
 <p>And two more solutions from Adám:</p>
 
 <h4 id="second-solution">Second Solution</h4>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     ∇ Z←F L;A;B
-[1]    A←L&gt;1↓L,0
-[2]    B←L&gt;¯1↓0,L
-[3]    Z←(A∧B)⍳1
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     ∇ Z←F L<span class="p">;</span>A<span class="p">;</span>B
+<span class="o">[</span>1]    A←L&gt;1↓L,0
+<span class="o">[</span>2]    B←L&gt;¯1↓0,L
+<span class="o">[</span>3]    Z←<span class="o">(</span>A∧B<span class="o">)</span>⍳1
      ∇
 </code></pre></div></div>
 
 <h4 id="third-solution">Third Solution</h4>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     ∇ Z←F L
-[1]    Z←(L&gt;⌈⌿¯1 1⌽(2,⍴L)⍴L)⍳1
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     ∇ Z←F L
+<span class="o">[</span>1]    Z←<span class="o">(</span>L&gt;⌈⌿¯1 1⌽<span class="o">(</span>2,⍴L<span class="o">)</span>⍴L<span class="o">)</span>⍳1
      ∇
 </code></pre></div></div>
 
 <p>I also solved it in BQN just for fun:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i0 ← 1‿2‿3‿1
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i0 ← 1‿2‿3‿1
    i1 ← 1‿2‿1‿3‿5‿6‿4
    i2 ← 2‿1‿2‿3‿1
-   F ← ((¯∞⊸«˜&lt;⊢)∧(⊢&gt;¯∞⊸»))⊐(1˙)
+   F ← <span class="o">((</span>¯∞⊸«˜&lt;⊢<span class="o">)</span>∧<span class="o">(</span>⊢&gt;¯∞⊸»<span class="o">))</span>⊐<span class="o">(</span>1˙<span class="o">)</span>
    F ¨ i0‿i1‿i2
 ┌─
 · ┌·    ┌·    ┌·
@@ -298,7 +298,7 @@ Although I had to write my own, it did come easily.</p>
               <span class="p">(</span><span class="nf">iota</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">input</span><span class="p">))))))</span>
 </code></pre></div></div>
 
-<p>For an input <code class="language-plaintext highlighter-rouge">(1 2 3 1)</code>, we’ll find the max of shifting left and right.
+<p>For an input <code class="language-bash highlighter-rouge"><span class="o">(</span>1 2 3 1<span class="o">)</span></code>, we’ll find the max of shifting left and right.
 If a number is greater than the max of the left and right, we know it’s greater than both the left and the right value.</p>
 <div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="k">define</span> <span class="nv">input</span> <span class="o">'</span><span class="p">(</span><span class="nf">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">1</span><span class="p">))</span>
 
@@ -321,7 +321,7 @@ If a number is greater than the max of the left and right, we know it’s greate
 <span class="c1">;Value: (#f #f #t #f)</span>
 </code></pre></div></div>
 
-<p>Then we can just take the index if the previous map gave us a <code class="language-plaintext highlighter-rouge">#t</code> true value, or -1 otherwise.
+<p>Then we can just take the index if the previous map gave us a <code class="language-bash highlighter-rouge"><span class="c">#t</span></code> true value, or -1 otherwise.
 We then take the max of these values to find the peak element.</p>
 <div class="language-scheme highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">1</span> <span class="p">]</span><span class="nv">=&gt;</span> <span class="p">(</span><span class="nb">map</span>
         <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nf">a</span> <span class="nv">b</span><span class="p">)</span>
@@ -517,7 +517,7 @@ I can only imagine what it feels like to maintain a 500k line COBOL codebase.</p
 
 <p>I used the GNUCobol compiler for this example.
 You’ll notice that everything is indented - COBOL, like several of the other languages I’m covering here, was originally used on a punchcard <a href="#ref_os_wac">as explained in this article from opensource.com</a>.
-Each puncard represented <em>a single line of code</em>, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers, which you’ll see here as an asterisk <code class="language-plaintext highlighter-rouge">*</code> for comments, and a dash <code class="language-plaintext highlighter-rouge">-</code> for line continuation.</p>
+Each puncard represented <em>a single line of code</em>, and the first six and final eight columns of each card were reserved for sequence numbers and identifiers, which you’ll see here as an asterisk <code class="language-bash highlighter-rouge"><span class="k">*</span></code> for comments, and a dash <code class="language-bash highlighter-rouge">-</code> for line continuation.</p>
 
 <pre><code class="language-cobol">       ID DIVISION.
        PROGRAM-ID. ARRAYTEST.
@@ -594,13 +594,13 @@ Each puncard represented <em>a single line of code</em>, and the first six and f
 </code></pre>
 
 <p>Running gives:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./src/cobol/lc-peak-element-cobol
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>./src/cobol/lc-peak-element-cobol
 +003
 +006
 </code></pre></div></div>
 
 <p>I certainly felt the weight of this when I tried to write this function:
-Every time I had to change a condition that wrapped a line, I would join the lines together and figure out where the new line break should be, and make sure to get the <code class="language-plaintext highlighter-rouge">-</code> character in the 7th column.
+Every time I had to change a condition that wrapped a line, I would join the lines together and figure out where the new line break should be, and make sure to get the <code class="language-bash highlighter-rouge">-</code> character in the 7th column.
 I’m sure there are some more modern conventions around COBOL considering <em>5 billion lines of new COBOL code are written every year</em>[<a href="#ref_os_wac">ref</a>], but I’m pretty content not to write any COBOL for a while.</p>
 <pre><code class="language-cobol">       SOLVE.
            MOVE -99999 TO VALS(1).
@@ -730,7 +730,7 @@ After removing any compilation errors with g77, I just built the example with gf
         </span><span class="k">end</span><span class="w"> </span><span class="k">do</span><span class="w">
 </span></code></pre></div></div>
 
-<p>and I don’t get to use the <code class="language-plaintext highlighter-rouge">intent</code> keyword, both of which were big drawbacks, but this really wasn’t too bad.</p>
+<p>and I don’t get to use the <code class="language-bash highlighter-rouge">intent</code> keyword, both of which were big drawbacks, but this really wasn’t too bad.</p>
 
 <p>Looking to the future of Fortran, GCC’s GFortran is very actively maintained, <a href="https://developer.nvidia.com/hpc-sdk">the newest NVIDIA HPC SDK has fantastic Fortran support</a>, <a href="https://www.olcf.ornl.gov/frontier/">the new US Dept. of Energy Exascale supercomputer <em>Frontier</em></a> will use AMD GPUs which have <a href="https://github.com/ROCmSoftwarePlatform/hipfort">hipfort, a Fortran interface to AMD GPU libraries</a>, and <a href="https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html">Intel’s GPU platform and Fortran compiler are widely used as well</a>.
 Fortran has a wonderfully rich history, and it’s certainly a part of our future.</p>

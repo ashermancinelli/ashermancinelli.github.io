@@ -145,7 +145,7 @@ This post takes you from a basic linear algebra example problem to a GPU-acceler
 <img src="/images/hpc-101-matvec/matvec.png" alt="Matvec dot product, credit this post: https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/">
 </center>
 
-<p>Let <code class="language-plaintext highlighter-rouge">p</code> be the result of the dot product of matrix <code class="language-plaintext highlighter-rouge">Mat</code> and vector <code class="language-plaintext highlighter-rouge">v</code>.
+<p>Let <code class="language-bash highlighter-rouge">p</code> be the result of the dot product of matrix <code class="language-bash highlighter-rouge">Mat</code> and vector <code class="language-bash highlighter-rouge">v</code>.
 The dot product is calculated like so:</p>
 
 <center>
@@ -196,7 +196,7 @@ The dot product is calculated like so:</p>
   --->
 </center>
 
-<p>Notice how values of <code class="language-plaintext highlighter-rouge">v</code> are broadcast to match the shape of <code class="language-plaintext highlighter-rouge">Mat</code>:</p>
+<p>Notice how values of <code class="language-bash highlighter-rouge">v</code> are broadcast to match the shape of <code class="language-bash highlighter-rouge">Mat</code>:</p>
 
 <center>
 \$\$
@@ -211,7 +211,7 @@ The dot product is calculated like so:</p>
 \$\$
 </center>
 
-<p>We can broadcast values of <code class="language-plaintext highlighter-rouge">v</code> into columns of a matrix with the same shape as the matrix <code class="language-plaintext highlighter-rouge">Mat</code>, and then pair the <code class="language-plaintext highlighter-rouge">Mat</code> and <code class="language-plaintext highlighter-rouge">v</code> element-wise, creating a matrix of tuples (or a 3d matrix if you prefer):</p>
+<p>We can broadcast values of <code class="language-bash highlighter-rouge">v</code> into columns of a matrix with the same shape as the matrix <code class="language-bash highlighter-rouge">Mat</code>, and then pair the <code class="language-bash highlighter-rouge">Mat</code> and <code class="language-bash highlighter-rouge">v</code> element-wise, creating a matrix of tuples (or a 3d matrix if you prefer):</p>
 
 <center>
 \$\$
@@ -266,7 +266,7 @@ We then may form a vector with units of work yielding indices of the output vect
 
 <h1 id="algorithm-analysis">Algorithm Analysis</h1>
 
-<p>The first question we must ask ourselves when parallelizing code is this: <em>are any iterations of the algorithm dependent on values calculated in other iterations? Is iteration <code class="language-plaintext highlighter-rouge">N</code> dependent on calculations in iteration <code class="language-plaintext highlighter-rouge">N-1</code>?</em>
+<p>The first question we must ask ourselves when parallelizing code is this: <em>are any iterations of the algorithm dependent on values calculated in other iterations? Is iteration <code class="language-bash highlighter-rouge">N</code> dependent on calculations in iteration <code class="language-bash highlighter-rouge">N-1</code>?</em>
 In other words, <em>are the loop bodies entirely</em> <strong><em>independent</em></strong> <em>of each other?</em></p>
 
 <p>If so, our algorithm is <em>loop independent</em> and <em>trivially parallelizable</em>.
@@ -446,7 +446,7 @@ We can then pull out a function that performs a <em>single unit of work</em> as 
 \$\$
 </center>
 
-<p>Our new <code class="language-plaintext highlighter-rouge">matvecmul</code> function can now just iterate over all the rows and dispatch the actual work to the <code class="language-plaintext highlighter-rouge">unit_of_work</code> function.
+<p>Our new <code class="language-bash highlighter-rouge">matvecmul</code> function can now just iterate over all the rows and dispatch the actual work to the <code class="language-bash highlighter-rouge">unit_of_work</code> function.
 We can even use OpenMP to parallelize our loop:</p>
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">matvecmul_on_tuplespace</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">mat</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">vec</span><span class="p">,</span> <span class="kt">int</span><span class="o">*</span> <span class="n">out</span><span class="p">,</span> <span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// dispatch calculations to unit_of_work for each row of mat</span>
@@ -516,21 +516,21 @@ If you don’t tell the GPU to perform any work, then your CUDA C code is really
 <span class="go">Hello!
 </span></code></pre></div></div>
 
-<p>If you invoke <code class="language-plaintext highlighter-rouge">nvcc</code> with the <code class="language-plaintext highlighter-rouge">-v</code> flag for extra verbosity, you can see that <code class="language-plaintext highlighter-rouge">nvcc</code> actually uses a <em>host</em> compiler to build the parts of your program that don’t involve running code or manipulating memory on the GPU.
-<code class="language-plaintext highlighter-rouge">nvcc</code> uses multiple passes, where it compiles the CUDA code and generates host-only source for the host compiler to compile.
+<p>If you invoke <code class="language-bash highlighter-rouge">nvcc</code> with the <code class="language-bash highlighter-rouge"><span class="nt">-v</span></code> flag for extra verbosity, you can see that <code class="language-bash highlighter-rouge">nvcc</code> actually uses a <em>host</em> compiler to build the parts of your program that don’t involve running code or manipulating memory on the GPU.
+<code class="language-bash highlighter-rouge">nvcc</code> uses multiple passes, where it compiles the CUDA code and generates host-only source for the host compiler to compile.
 <a href="https://godbolt.org/z/axTn1ex5x" target="blank">
 See this Compiler Explorer link and look at the compilation output window in the bottom right pane to see all the output.
 </a>
-Notice that GCC is invoked, along with the program <code class="language-plaintext highlighter-rouge">ptxas</code>.
+Notice that GCC is invoked, along with the program <code class="language-bash highlighter-rouge">ptxas</code>.
 PTX is an assembly target, so your CUDA programs will emit ptx code which can be run on your GPU’s special purpose processing units.
 <a href="https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html#nvcc-examples" target="blank">
 The command line flags for code generation can be complicated.
 Refer to the official CUDA programming guide when needed.
 </a>
-Just as you can use <code class="language-plaintext highlighter-rouge">asm volitile("" : : : "");</code> in C and C++ to write inline assembly, you can also write inline ptx assembly in your programs.
+Just as you can use <code class="language-bash highlighter-rouge">asm volitile<span class="o">(</span><span class="s2">""</span> : : : <span class="s2">""</span><span class="o">)</span><span class="p">;</span></code> in C and C++ to write inline assembly, you can also write inline ptx assembly in your programs.
 Also like C and C++, it is almost certainly more effective for you to write your code in a higher level language like CUDA C++, and write PTX after profiling and testing, when you are sure you need it.</p>
 
-<p>If you’re careful, you might also have noticed that GCC was passed the command line argument <code class="language-plaintext highlighter-rouge">-x c++</code>, even though we’re working in plain CUDA C.
+<p>If you’re careful, you might also have noticed that GCC was passed the command line argument <code class="language-bash highlighter-rouge"><span class="nt">-x</span> c++</code>, even though we’re working in plain CUDA C.
 This is because cuda code is <em>by default built on the host as C++</em>.
 If you use the oldest CUDA compiler available on Compiler Explorer, you’ll see that it still defaults to building the host code under C++14.</p>
 
@@ -547,7 +547,7 @@ In this example, we introduce three aspects of the CUDA programming model:
 </a></p>
 
 <ul>
-  <li>The special keyword <code class="language-plaintext highlighter-rouge">__global__</code>
+  <li>The special keyword <code class="language-bash highlighter-rouge">__global__</code>
 </li>
   <li>Device memory management</li>
   <li>Kernel launches</li>
@@ -598,7 +598,7 @@ In this example, we introduce three aspects of the CUDA programming model:
 <span class="go">0 1 4 9 16 25 36 49 64 81
 </span></code></pre></div></div>
 
-<p><code class="language-plaintext highlighter-rouge">__global__</code> indicates that the code <em>runs on the device</em> and is <em>called from the host</em>.
+<p><code class="language-bash highlighter-rouge">__global__</code> indicates that the code <em>runs on the device</em> and is <em>called from the host</em>.
 Keep in mind that we have two <em>memory spaces</em> and two <em>execution spaces</em>.</p>
 
 <p>The following table enumerates common operations in C along with their CUDA counterpart:</p>
@@ -624,29 +624,29 @@ Keep in mind that we have two <em>memory spaces</em> and two <em>execution space
 <tbody>
   <tr>
     <td class="tg-0pky">Dynamically allocate memory</td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">malloc</code></span></td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">cudaMalloc</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-bash highlighter-rouge">malloc</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-bash highlighter-rouge">cudaMalloc</code></span></td>
     <td class="tg-0pky">
 </td>
   </tr>
   <tr>
     <td class="tg-0pky">Copy memory from one location to another</td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">memcpy</code></span></td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">cudaMemcpy</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-bash highlighter-rouge">memcpy</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-bash highlighter-rouge">cudaMemcpy</code></span></td>
     <td class="tg-0pky">
 </td>
   </tr>
   <tr>
     <td class="tg-0pky">Deallocate memory</td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">free</code></span></td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">cudaFree</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-bash highlighter-rouge">free</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-bash highlighter-rouge">cudaFree</code></span></td>
     <td class="tg-0pky">
 </td>
   </tr>
   <tr>
     <td class="tg-0pky">Call function</td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-plaintext highlighter-rouge">func()</code></span></td>
-    <td class="tg-0pky"><span style="color:#905;background-color:#DDD"><code class="language-plaintext highlighter-rouge">func&lt;&lt;&lt;gridSize, blockSize, sharedMemSize, cudaStream&gt;&gt;&gt;()</code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#ddd"><code class="language-bash highlighter-rouge">func<span class="o">()</span></code></span></td>
+    <td class="tg-0pky"><span style="color:#905;background-color:#DDD"><code class="language-bash highlighter-rouge">func<span class="o">&lt;&lt;&lt;</span>gridSize, blockSize, sharedMemSize, cudaStream&gt;&gt;&gt;<span class="o">()</span></code></span></td>
     <td class="tg-0pky">Triple angle-brackets indicate you are running in the <span style="font-style:italic"><em>device execution space</em></span>
 </td>
   </tr>
@@ -661,7 +661,7 @@ The possible kernel launch parameters are enumerated at this link.
 </a></p>
 
 <p>The kernel launch parameters determine how many streaming multiprocessors (SMs) will execute code on the GPU.
-The first two parameters are objects of type <code class="language-plaintext highlighter-rouge">dim3</code>, and they can be up to three-dimensional vectors.
+The first two parameters are objects of type <code class="language-bash highlighter-rouge">dim3</code>, and they can be up to three-dimensional vectors.
 The first kernel launch parameter is the <em>grid size</em>, and the second is the <em>block size</em>.</p>
 
 <p>Grids consist of blocks.</p>
@@ -689,7 +689,7 @@ The image below might have been launched with these kernel launch parameters:</p
 <img src="http://www.microway.com/wp-content/uploads/CUDA-GridBlockThread-Structure.png" alt="CUDA Grid and Block Depiction">
 </center>
 
-<p>You might also notice that we guard our operation with this <code class="language-plaintext highlighter-rouge">if</code> statement.</p>
+<p>You might also notice that we guard our operation with this <code class="language-bash highlighter-rouge"><span class="k">if</span></code> statement.</p>
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">if</span> <span class="p">(</span><span class="n">tid</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span>
     <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">*</span> <span class="n">ar</span><span class="p">[</span><span class="n">tid</span><span class="p">];</span>
 </code></pre></div></div>
@@ -705,7 +705,7 @@ For additional reading on the hardware implementation of the CUDA programming mo
 The third kernel launch parameter determines how many bytes will be allocated <em>for each block</em> that is launched.</p>
 
 <p><a href="https://godbolt.org/z/nrbdK9nKj" target="blank">
-In the following example, we make use of CUDA shared memory, as indicated by the <code class="language-plaintext highlighter-rouge">__shared__</code> keyword annotating the array in our kernel, as well as our use of the third kernel launch parameter:
+In the following example, we make use of CUDA shared memory, as indicated by the <code class="language-bash highlighter-rouge">__shared__</code> keyword annotating the array in our kernel, as well as our use of the third kernel launch parameter:
 </a></p>
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp">
 #include</span> <span class="cpf">&lt;cuda.h&gt;</span><span class="cp">
@@ -784,7 +784,7 @@ In the following example, we make use of CUDA shared memory, as indicated by the
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">extern</span> <span class="k">__shared__</span> <span class="kt">int</span> <span class="n">tmp</span><span class="p">[];</span>
 </code></pre></div></div>
 
-<p>It is <code class="language-plaintext highlighter-rouge">external</code> because we are not allocating the memory in our kernel; it’s allocated by the cuda runtime when we pass the third parameter to the kernel launch parameters:</p>
+<p>It is <code class="language-bash highlighter-rouge">external</code> because we are not allocating the memory in our kernel; it’s allocated by the cuda runtime when we pass the third parameter to the kernel launch parameters:</p>
 
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mulsum</span><span class="o">&lt;&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="o">*</span><span class="n">N</span><span class="o">&gt;&gt;&gt;</span><span class="p">(</span><span class="n">d_a</span><span class="p">,</span> <span class="n">d_b</span><span class="p">,</span> <span class="n">d_out</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
                <span class="err">▲</span>
@@ -797,16 +797,16 @@ In the following example, we make use of CUDA shared memory, as indicated by the
 
 <p>There can only be one segment of shared memory in a kernel launch, so the shared memory segment will be interpreted as whatever type we declare our shared memory with.
 In this case, it’s an array of ints.
-Although there is strictly one <em>segment</em> of shared memory in a kernel launch, you can still declare multiple variables as <code class="language-plaintext highlighter-rouge">__shared__</code>, so long as they all fit in the allocated shared memroy.</p>
+Although there is strictly one <em>segment</em> of shared memory in a kernel launch, you can still declare multiple variables as <code class="language-bash highlighter-rouge">__shared__</code>, so long as they all fit in the allocated shared memroy.</p>
 
-<p>We also introduced another CUDA extension to the host language: <code class="language-plaintext highlighter-rouge">__syncthreads()</code>.
-<code class="language-plaintext highlighter-rouge">__syncthreads()</code> is a <em>fence</em> or <em>barrier</em>, a point which no thread <em>in that block</em> can cross until all threads have reached it.
-<code class="language-plaintext highlighter-rouge">__syncthreads()</code>
-There are many other CUDA primitives for atomic, and synchronization operations, such as <code class="language-plaintext highlighter-rouge">atomicAdd</code>.</p>
+<p>We also introduced another CUDA extension to the host language: <code class="language-bash highlighter-rouge">__syncthreads<span class="o">()</span></code>.
+<code class="language-bash highlighter-rouge">__syncthreads<span class="o">()</span></code> is a <em>fence</em> or <em>barrier</em>, a point which no thread <em>in that block</em> can cross until all threads have reached it.
+<code class="language-bash highlighter-rouge">__syncthreads<span class="o">()</span></code>
+There are many other CUDA primitives for atomic, and synchronization operations, such as <code class="language-bash highlighter-rouge">atomicAdd</code>.</p>
 
 <h3 id="cuda-mat-vec-multiply">CUDA Mat-Vec Multiply</h3>
 
-<p>We again return to our <code class="language-plaintext highlighter-rouge">matvecmul</code> example, this time armed with some knowledge about the CUDA runtime and some software and hardware abstractions.</p>
+<p>We again return to our <code class="language-bash highlighter-rouge">matvecmul</code> example, this time armed with some knowledge about the CUDA runtime and some software and hardware abstractions.</p>
 
 <div class="language-cuda highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp">
 #include</span> <span class="cpf">&lt;cuda.h&gt;</span><span class="cp">
@@ -891,7 +891,7 @@ Output:
 <p><a href="https://mlochbaum.github.io/BQN/try.html#code=TXVsIOKGkCAry53iiJjDl+KOiTHigL/iiJ4KCm3ihpAxMOKAvzE14qWK4oaVMjAwCnbihpDihpUxNQoKbSBNdWwgdg==" target="blank">
 This BQN example verifies the output from our CUDA program:
 </a></p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Mul ← +˝∘×⎉1‿∞
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   Mul ← +˝∘×⎉1‿∞
    m←10‿15⥊↕200
    v←↕15
    m Mul v
@@ -996,8 +996,8 @@ In this example, we allocate memory <em>on the device first</em>, and perform as
   <span class="n">thrust</span><span class="o">::</span><span class="n">sequence</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">a</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p><code class="language-plaintext highlighter-rouge">thrust::sequence</code> is almost identical to <code class="language-plaintext highlighter-rouge">std::iota</code> or <code class="language-plaintext highlighter-rouge">for (int i=0; i &lt; N; i++) vec[i] = i;</code>, except that it may execute on the device.
-In this new example, we launch three kernels instead of one: one for each call to <code class="language-plaintext highlighter-rouge">thrust::sequence</code>, and one for our manual kernel launch.
+<p><code class="language-bash highlighter-rouge">thrust::sequence</code> is almost identical to <code class="language-bash highlighter-rouge">std::iota</code> or <code class="language-bash highlighter-rouge"><span class="k">for</span> <span class="o">(</span>int <span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i &lt; N<span class="p">;</span> i++<span class="o">)</span> vec[i] <span class="o">=</span> i<span class="p">;</span></code>, except that it may execute on the device.
+In this new example, we launch three kernels instead of one: one for each call to <code class="language-bash highlighter-rouge">thrust::sequence</code>, and one for our manual kernel launch.
 <a href="https://godbolt.org/z/nKvajeE5P" target="blank">
 You can look at the details of the ptx assembly in Compiler Explorer here.
 </a></p>
@@ -1018,7 +1018,7 @@ Our kernel contains the following lines:</p>
 </code></pre></div></div>
 
 <p><a href="https://github.com/NVIDIA/thrust/blob/d461afaefdb0b22d830f8d5e9a7b42aebff7004f/thrust/system/cuda/detail/reduce.h#L489" target="blank">
-Thrust’s <code class="language-plaintext highlighter-rouge">transform_reduce</code> uses a rather complicated multi-pass, tiled approach to reducing a collection of values to a single value, but we only use a single thread in a block to actually reduce a given index in our output vector.
+Thrust’s <code class="language-bash highlighter-rouge">transform_reduce</code> uses a rather complicated multi-pass, tiled approach to reducing a collection of values to a single value, but we only use a single thread in a block to actually reduce a given index in our output vector.
 </a></p>
 
 <p>While we used a raw loop at least once per block, an optimized reduction will perform something like the following:</p>
@@ -1107,8 +1107,8 @@ We perform this step so we can create a zip iterator from the matrix and the bro
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">thrust</span><span class="o">::</span><span class="n">zip_iterator</span> <span class="nf">iter</span><span class="p">(</span><span class="n">thrust</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">broadcasted_b</span><span class="p">.</span><span class="n">begin</span><span class="p">()));</span>
 </code></pre></div></div>
 
-<p>This means we can feed the single iterator into our <code class="language-plaintext highlighter-rouge">transform_reduce</code> operation.
-Elements obtained by the zip iterator are passed into our lambda function, and we simply multiply the two values together, before using the <code class="language-plaintext highlighter-rouge">plus</code> functor to reduce the vector of intermediate values for a given row into a scalar:</p>
+<p>This means we can feed the single iterator into our <code class="language-bash highlighter-rouge">transform_reduce</code> operation.
+Elements obtained by the zip iterator are passed into our lambda function, and we simply multiply the two values together, before using the <code class="language-bash highlighter-rouge">plus</code> functor to reduce the vector of intermediate values for a given row into a scalar:</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
     <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">thrust</span><span class="o">::</span><span class="n">transform_reduce</span><span class="p">(</span><span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">),</span> <span class="n">iter</span><span class="o">+</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="n">N</span><span class="p">,</span>
         <span class="p">[]</span> <span class="n">__device__</span> <span class="p">(</span><span class="k">auto</span> <span class="n">tup</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span>
@@ -1131,7 +1131,7 @@ Elements obtained by the zip iterator are passed into our lambda function, and w
         <span class="p">);</span>
 </code></pre></div></div>
 
-<p>We’ll have to tell <code class="language-plaintext highlighter-rouge">nvcc</code> to pass the <code class="language-plaintext highlighter-rouge">-fopenmp</code> flag to the host compiler:</p>
+<p>We’ll have to tell <code class="language-bash highlighter-rouge">nvcc</code> to pass the <code class="language-bash highlighter-rouge"><span class="nt">-fopenmp</span></code> flag to the host compiler:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>nvcc <span class="nt">-std</span><span class="o">=</span>c++17 <span class="nt">--extended-lambda</span> <span class="nt">-Xcompiler</span> <span class="nt">-fopenmp</span> fancy.cu
 </code></pre></div></div>
 
@@ -1211,14 +1211,14 @@ Feel free to skip this section; it is not critical to understanding the concepts
 
 <p><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">Here’s a permalink to the BQN snippet.</a></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   # Same matrix as in our C example
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="c"># Same matrix as in our C example</span>
    mat ← 3‿3⥊↕10
 ┌─       
 ╵ 0 1 2  
   3 4 5  
   6 7 8  
         ┘
-   # Same vector as in our C example
+   <span class="c"># Same vector as in our C example</span>
    vec ← 3⥊2
 ⟨ 2 2 2 ⟩
 
@@ -1228,7 +1228,7 @@ Feel free to skip this section; it is not critical to understanding the concepts
 
 <p>The core algorithm is seen in the final expression:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+˝⎉1 mat×vec
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+˝⎉1 mat×vec
 ▲    ▲
 │    │     ┌───────────────────────────┐
 │    └─────┤Multiply rows of mat by vec│
@@ -1256,7 +1256,7 @@ Feel free to skip this section; it is not critical to understanding the concepts
   <li><a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">Thrust parallel algorithms library</a></li>
   <li><a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a></li>
   <li><a href="https://youtu.be/KK3JXvSiJG4" target="blank"> Bryce Adelstein Lelbach’s talk on C++ standard parallelism </a></li>
-  <li><a href="https://github.com/kokkos/mdspan/blob/single-header/mdspan.hpp" target="blank"> Kokkos <code class="language-plaintext highlighter-rouge">mdspan</code> single header </a></li>
+  <li><a href="https://github.com/kokkos/mdspan/blob/single-header/mdspan.hpp" target="blank"> Kokkos <code class="language-bash highlighter-rouge">mdspan</code> single header </a></li>
   <li><a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">CUDA C Introduction Slides</a></li>
   <li><a href="https://github.com/uysalere/cuda-matrix-vector-multiplication" target="blank"> More sophisticated CUDA matrix-vector product implementations </a></li>
   <li><a href="https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf" target="blank"> Slides on CUDA reduction operation </a></li>

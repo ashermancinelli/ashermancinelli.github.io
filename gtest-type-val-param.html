@@ -153,7 +153,7 @@ Instead of something like this:</p>
 
 <h2 id="type-parameterized-tests">Type Parameterized Tests</h2>
 
-<p>Our interface <code class="language-plaintext highlighter-rouge">addOne</code> takes a template parameter - what if we want to test this
+<p>Our interface <code class="language-bash highlighter-rouge">addOne</code> takes a template parameter - what if we want to test this
 on multiple types?</p>
 
 <p>First, we’ll want our fixture to take template parameters and we’ll have to
@@ -164,8 +164,8 @@ declare the fixture as templated in GTest:</p>
 <span class="n">TYPED_TEST_SUITE_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>And keep the first iteration of our test, but this time using the <code class="language-plaintext highlighter-rouge">TypeParam</code>
-type exposed by the GTest <code class="language-plaintext highlighter-rouge">TYPED_TEST_SUITE</code> api:</p>
+<p>And keep the first iteration of our test, but this time using the <code class="language-bash highlighter-rouge">TypeParam</code>
+type exposed by the GTest <code class="language-bash highlighter-rouge">TYPED_TEST_SUITE</code> api:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TYPED_TEST_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">addOne</span><span class="o">&lt;</span><span class="n">TypeParam</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">"addOne(5) != 6!"</span><span class="p">;</span>
@@ -241,7 +241,7 @@ over values and types so we have to do some work ourselves.</p>
 
 <p>This structure assumes you may want to add test inputs later on that may be
 different depending on the type.
-If this is not the case and you know your <code class="language-plaintext highlighter-rouge">make_tuple</code> calls are <code class="language-plaintext highlighter-rouge">static_cast</code>-able
+If this is not the case and you know your <code class="language-bash highlighter-rouge">make_tuple</code> calls are <code class="language-bash highlighter-rouge">static_cast</code>-able
 into your parameter type, you may do the following to reduce code duplication:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define ADDONE_TESTPARAMS                                                      \
@@ -258,13 +258,13 @@ into your parameter type, you may do the following to reduce code duplication:</
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>You may notice we set <code class="language-plaintext highlighter-rouge">params</code> to <code class="language-plaintext highlighter-rouge">std::get&lt; ParamT&lt;T&gt; &gt;(allParams)</code> - this is how
+<p>You may notice we set <code class="language-bash highlighter-rouge">params</code> to <code class="language-bash highlighter-rouge">std::get&lt; ParamT&lt;T&gt; <span class="o">&gt;(</span>allParams<span class="o">)</span></code> - this is how
 we accomplish type <em>and</em> value parameterized tests.
-We use the infrastructure of a type parameterized test, and leverage <code class="language-plaintext highlighter-rouge">std::tuple</code>
+We use the infrastructure of a type parameterized test, and leverage <code class="language-bash highlighter-rouge">std::tuple</code>
 to do the value parameterization.</p>
 
 <p>For the actual test code, we again reuse most of the test from our first type-
-parameterized test, this time using the <code class="language-plaintext highlighter-rouge">params</code> field of our test fixture:</p>
+parameterized test, this time using the <code class="language-bash highlighter-rouge">params</code> field of our test fixture:</p>
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TYPED_TEST_P</span><span class="p">(</span><span class="n">AddOneTestsFixture</span><span class="p">,</span> <span class="n">doAddOne</span><span class="p">)</span> <span class="p">{</span>
 
   <span class="c1">// Iterate over the parameters configred by our fixture</span>

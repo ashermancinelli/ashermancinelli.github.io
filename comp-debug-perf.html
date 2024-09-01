@@ -110,7 +110,7 @@ To acomplish this, we’ll have to figure out which parts of the source file dep
 <span class="cp">#endif
 </span></code></pre></div></div>
 
-<p>You may then add <code class="language-plaintext highlighter-rouge">-DCOMPILERA</code> to the invokation of compiler A so each compiler only builds half of the TU in question.
+<p>You may then add <code class="language-bash highlighter-rouge"><span class="nt">-DCOMPILERA</span></code> to the invokation of compiler A so each compiler only builds half of the TU in question.
 Again, if we don’t see the perf regression, we swap the macro guards and try again.
 We then have compiler B build a quarter of the original TU and have compiler A build the other 3/4ths, and see if we observe the regression, etc etc.
 Ideally, at the end of this process we know exactly which function(s) are causing the regression.</p>
@@ -133,7 +133,7 @@ Ideally, at the end of this process we know exactly which function(s) are causin
       <li>Can you use those differences to work backwards to the code that generated that IR?</li>
     </ul>
   </li>
-  <li>If you enable lots of debugging output (like dumping all the <code class="language-plaintext highlighter-rouge">opt</code> pass remarks) and build with compilers A and B and then diff the output, are there any glaring differences? Maybe an earlier change allowed another pass (uninvolved in the patch) to perform some transformations it otherwise would not, or maybe vice-versa.</li>
+  <li>If you enable lots of debugging output (like dumping all the <code class="language-bash highlighter-rouge">opt</code> pass remarks) and build with compilers A and B and then diff the output, are there any glaring differences? Maybe an earlier change allowed another pass (uninvolved in the patch) to perform some transformations it otherwise would not, or maybe vice-versa.</li>
 </ul>
 
 <h2 id="why-might-this-not-work">Why Might This Not Work?</h2>

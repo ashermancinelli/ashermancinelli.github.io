@@ -77,21 +77,21 @@
 <p>In our first call, Raz and I went through a couple BQN primitives to get him started with the language.
 These are my notes from getting him set up:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿3⥊↕10 # set up a matrix
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   3‿3⥊↕10 <span class="c"># set up a matrix</span>
 ┌─
 ╵ 0 1 2
   3 4 5
   6 7 8
         ┘
-   ⌽3‿3⥊↕10 # reverse it
+   ⌽3‿3⥊↕10 <span class="c"># reverse it</span>
 ┌─
 ╵ 6 7 8
   3 4 5
   0 1 2
         ┘
 
-   # transpose it and marvel at the
-   # relationship between the ⌽ and ⍉ glyphs
+   <span class="c"># transpose it and marvel at the</span>
+   <span class="c"># relationship between the ⌽ and ⍉ glyphs</span>
    ⍉3‿3⥊↕10 
 ┌─
 ╵ 0 3 6
@@ -110,21 +110,21 @@ These are my notes from getting him set up:</p>
 
 <p>Try to get a good feel for ¨, ⌜, and ´ as these are oft-used modifiers.</p>
 
-<p>Note also that the following glyphs are special: <code class="language-plaintext highlighter-rouge">𝕤𝕩𝕨𝕣𝕗𝕘</code>.
+<p>Note also that the following glyphs are special: <code class="language-bash highlighter-rouge">𝕤𝕩𝕨𝕣𝕗𝕘</code>.
 These have special meaning inside function and modifier blocks.
 For example:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   _Hi_←{(𝕨𝔽𝕩)+(𝕨𝔾𝕩)}
-(2-modifier block)
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   _Hi_←<span class="o">{(</span>𝕨𝔽𝕩<span class="o">)</span>+<span class="o">(</span>𝕨𝔾𝕩<span class="o">)}</span>
+<span class="o">(</span>2-modifier block<span class="o">)</span>
    5 + _Hi_ × 3
 23
 </code></pre></div></div>
 
-<p>Within the <code class="language-plaintext highlighter-rouge">_Hi_</code> block:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>𝕤←{(𝕨+𝕩)+(𝕨×𝕩)}
+<p>Within the <code class="language-bash highlighter-rouge">_Hi_</code> block:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>𝕤←<span class="o">{(</span>𝕨+𝕩<span class="o">)</span>+<span class="o">(</span>𝕨×𝕩<span class="o">)}</span>
 𝕨←5
 𝕩←3
-𝕣←{(𝕨𝔽𝕩)+(𝕨𝔾𝕩)}
+𝕣←<span class="o">{(</span>𝕨𝔽𝕩<span class="o">)</span>+<span class="o">(</span>𝕨𝔾𝕩<span class="o">)}</span>
 𝔽←+
 𝔾←×
 </code></pre></div></div>
@@ -165,13 +165,13 @@ For example:</p>
 I would rather have an adjacent difference view I could pipe to.</p>
 
 <p>I then moved on to BQN:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i←⟨
-     3‿6‿9‿1 # Real test case, answer is 3
-     1       # Len 1, ans 0
-     @       # Len 0, ans 0
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i←⟨
+     3‿6‿9‿1 <span class="c"># Real test case, answer is 3</span>
+     1       <span class="c"># Len 1, ans 0</span>
+     @       <span class="c"># Len 0, ans 0</span>
    ⟩
-   F1←(2&gt;≠)◶{⊑∨|-˝⍉2↕∧𝕩}‿0
-   F3←(2&gt;≠)◶(⊑∘∨(|-˝∘⍉∘(2⊸↕∘∧)))‿0 # Tacit version
+   F1←<span class="o">(</span>2&gt;≠<span class="o">)</span>◶<span class="o">{</span>⊑∨|-˝⍉2↕∧𝕩<span class="o">}</span>‿0
+   F3←<span class="o">(</span>2&gt;≠<span class="o">)</span>◶<span class="o">(</span>⊑∘∨<span class="o">(</span>|-˝∘⍉∘<span class="o">(</span>2⊸↕∘∧<span class="o">)))</span>‿0 <span class="c"># Tacit version</span>
    F1¨i
 ⟨ 3 0 0 ⟩
    F2¨i

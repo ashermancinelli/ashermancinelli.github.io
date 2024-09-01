@@ -1,7 +1,7 @@
 
 PREFIX :=
-JEKYLL := /usr/local/bin/jekyll #$(shell command -v jekyll)
-RBVER := 3.3.4
+JEKYLL := $(shell type -p jekyll)
+RBVER  := 3.3.4
 
 ifeq ($(PREFIX),)
 PREFIX := $(shell pwd)/../ashermancinelli.github.io-build

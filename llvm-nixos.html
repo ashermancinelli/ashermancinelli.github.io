@@ -77,10 +77,10 @@ Hopefully reading this post will save you the trouble!</p>
 
 <p>I’m no Nix language expert by any stretch of the imagination, nor am I an expert in dynamic linking or managing an operating system.</p>
 
-<p>I started with the <code class="language-plaintext highlighter-rouge">nix-shell</code> example provided in <a href="https://nixos.wiki/wiki/LLVM">the nix documentation here</a> and made additions as I found the need.</p>
+<p>I started with the <code class="language-bash highlighter-rouge">nix-shell</code> example provided in <a href="https://nixos.wiki/wiki/LLVM">the nix documentation here</a> and made additions as I found the need.</p>
 
-<p>I had to pass the library directories of both GCC and GLIBC using both the <code class="language-plaintext highlighter-rouge">-B</code> and <code class="language-plaintext highlighter-rouge">-L</code> flags, because some required object files (like <code class="language-plaintext highlighter-rouge">crt1.o</code>) must be found at link time, and clang/gcc don’t search <code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH</code> for these files.
-<code class="language-plaintext highlighter-rouge">-B</code> will tell the compilers to look in the provided paths for these files.</p>
+<p>I had to pass the library directories of both GCC and GLIBC using both the <code class="language-bash highlighter-rouge"><span class="nt">-B</span></code> and <code class="language-bash highlighter-rouge"><span class="nt">-L</span></code> flags, because some required object files (like <code class="language-bash highlighter-rouge">crt1.o</code>) must be found at link time, and clang/gcc don’t search <code class="language-bash highlighter-rouge">LD_LIBRARY_PATH</code> for these files.
+<code class="language-bash highlighter-rouge"><span class="nt">-B</span></code> will tell the compilers to look in the provided paths for these files.</p>
 
 <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">libcFlags</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">"-L </span><span class="si">${</span><span class="nv">stdenv</span><span class="o">.</span><span class="nv">cc</span><span class="o">.</span><span class="nv">libc</span><span class="si">}</span><span class="s2">/lib"</span>
@@ -99,7 +99,7 @@ Hopefully reading this post will save you the trouble!</p>
   <span class="p">];</span>
 </code></pre></div></div>
 
-<p>The official documentation uses <code class="language-plaintext highlighter-rouge">LLVM_ENABLE_PROJECTS</code> to enable runtimes, which is deprecated, so I first removed that in favor of a manual two-stage build for libc++ and libc++abi.</p>
+<p>The official documentation uses <code class="language-bash highlighter-rouge">LLVM_ENABLE_PROJECTS</code> to enable runtimes, which is deprecated, so I first removed that in favor of a manual two-stage build for libc++ and libc++abi.</p>
 
 <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c"># For building clang itself, we're just using the compiler wrapper and we</span>
   <span class="c"># don't need to inject any flags of our own.</span>
@@ -126,10 +126,10 @@ Hopefully reading this post will save you the trouble!</p>
 <span class="gp">$</span><span class="w"> </span>make <span class="nt">-C</span> build <span class="nt">-j</span> <span class="sb">`</span><span class="nb">nproc</span><span class="sb">`</span>
 </code></pre></div></div>
 
-<p>I didn’t use <code class="language-plaintext highlighter-rouge">LLVM_ENABLE_RUNTIMES</code> since I had trouble passing the CMake arguments to the runtime builds through the top-level build.
-The purpose of <code class="language-plaintext highlighter-rouge">LLVM_ENABLE_RUNTIMES</code> is to build an LLVM project using the just-built clang/LLVM, however compile and link arguments are not passed to the runtime builds using the default <code class="language-plaintext highlighter-rouge">CMAKE_CXX_FLAGS</code> as I expected (or at least I was unable to get this to work).</p>
+<p>I didn’t use <code class="language-bash highlighter-rouge">LLVM_ENABLE_RUNTIMES</code> since I had trouble passing the CMake arguments to the runtime builds through the top-level build.
+The purpose of <code class="language-bash highlighter-rouge">LLVM_ENABLE_RUNTIMES</code> is to build an LLVM project using the just-built clang/LLVM, however compile and link arguments are not passed to the runtime builds using the default <code class="language-bash highlighter-rouge">CMAKE_CXX_FLAGS</code> as I expected (or at least I was unable to get this to work).</p>
 
-<p>Instead, I configured a seperate set of cmake arguments for the runtimes, and manually passed the just-built clang compiler as <code class="language-plaintext highlighter-rouge">CXX</code> to the runtime builds like so:</p>
+<p>Instead, I configured a seperate set of cmake arguments for the runtimes, and manually passed the just-built clang compiler as <code class="language-bash highlighter-rouge">CXX</code> to the runtime builds like so:</p>
 
 <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">cmakeRuntimeFlags</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">concatStringsSep</span> <span class="s2">" "</span> <span class="p">[</span>
     <span class="s2">"-DCMAKE_CXX_FLAGS=</span><span class="se">\"</span><span class="si">${</span><span class="nv">flags</span><span class="si">}</span><span class="se">\"</span><span class="s2">"</span>
@@ -153,9 +153,9 @@ The purpose of <code class="language-plaintext highlighter-rouge">LLVM_ENABLE_RU
 
 <p>A huge issue with testing arose due to the way NixOS handles it’s dynamic loader.</p>
 
-<p>When you use software in NixOS, it’s usually found somewhere in the <code class="language-plaintext highlighter-rouge">/run/current-system/sw/</code> prefix, while most software expects to be run from <code class="language-plaintext highlighter-rouge">/usr</code> or <code class="language-plaintext highlighter-rouge">/usr/local</code>, or it expects to be able to find key libraries under those prefixes (eg <code class="language-plaintext highlighter-rouge">libc.so</code>).</p>
+<p>When you use software in NixOS, it’s usually found somewhere in the <code class="language-bash highlighter-rouge">/run/current-system/sw/</code> prefix, while most software expects to be run from <code class="language-bash highlighter-rouge">/usr</code> or <code class="language-bash highlighter-rouge">/usr/local</code>, or it expects to be able to find key libraries under those prefixes (eg <code class="language-bash highlighter-rouge">libc.so</code>).</p>
 
-<p>Instead, each software component has it’s own prefix under <code class="language-plaintext highlighter-rouge">/nix/store</code>, for example:</p>
+<p>Instead, each software component has it’s own prefix under <code class="language-bash highlighter-rouge">/nix/store</code>, for example:</p>
 
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>which perl
 <span class="go">/run/current-system/sw/bin/perl
@@ -167,7 +167,7 @@ The purpose of <code class="language-plaintext highlighter-rouge">LLVM_ENABLE_RU
 <p>Each compiler must then know the correct locations of the standard libraries and software components, such as the dynamic loader, the standard C library, etc.
 To acomplish this, Nix-provided compilers ship with <em>wrappers</em> that inject the required flags.</p>
 
-<p>If I inspect my GNU compilers, we see that I’m not using <code class="language-plaintext highlighter-rouge">g++</code> directly:</p>
+<p>If I inspect my GNU compilers, we see that I’m not using <code class="language-bash highlighter-rouge">g++</code> directly:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>which g++
 <span class="go">/nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++
 </span><span class="gp">$</span><span class="w"> </span>file <span class="si">$(</span>which g++<span class="si">)</span>
@@ -181,12 +181,12 @@ To acomplish this, Nix-provided compilers ship with <em>wrappers</em> that injec
 <span class="go">[[ "/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0/bin/g++" = *++ ]] &amp;&amp; isCxx=1 || isCxx=0
 </span></code></pre></div></div>
 
-<p>On my current system, the true compiler is found under <code class="language-plaintext highlighter-rouge">/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0</code>.</p>
+<p>On my current system, the true compiler is found under <code class="language-bash highlighter-rouge">/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0</code>.</p>
 
-<p>This becomes an issue with testing LLVM because the tests run executables built with the just-built <code class="language-plaintext highlighter-rouge">clang++</code>, not with the wrapped compiler!
-That’s why we have to inject so many flags in our <code class="language-plaintext highlighter-rouge">shell.nix</code>.</p>
+<p>This becomes an issue with testing LLVM because the tests run executables built with the just-built <code class="language-bash highlighter-rouge">clang++</code>, not with the wrapped compiler!
+That’s why we have to inject so many flags in our <code class="language-bash highlighter-rouge">shell.nix</code>.</p>
 
-<p>When I initially ran <code class="language-plaintext highlighter-rouge">make check-cxx</code> to run the tests for libc++, I found errors like this:</p>
+<p>When I initially ran <code class="language-bash highlighter-rouge">make check-cxx</code> to run the tests for libc++, I found errors like this:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">FileNotFoundError: [Errno 2]
     No such file or directory:
     '/home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe'
@@ -212,9 +212,9 @@ interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, with debug_info, 
 
 <h2 id="dynamic-linker">Dynamic Linker</h2>
 
-<p>If we return to the output of running <code class="language-plaintext highlighter-rouge">file</code> on our mysterious executable, we see it thinks its dynamic linker is <code class="language-plaintext highlighter-rouge">/lib64/ld-linux-x86-64.so.2</code>:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked,
-interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, with debug_info, not stripped
+<p>If we return to the output of running <code class="language-bash highlighter-rouge">file</code> on our mysterious executable, we see it thinks its dynamic linker is <code class="language-bash highlighter-rouge">/lib64/ld-linux-x86-64.so.2</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ELF 64-bit LSB executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked,
+interpreter /lib64/ld-linux-x86-64.so.2, <span class="k">for </span>GNU/Linux 2.6.32, with debug_info, not stripped
 </code></pre></div></div>
 
 <p>However, if we look for that file, it doesn’t exist:</p>
@@ -224,7 +224,7 @@ interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, with debug_info, 
   (No such file or directory)
 </span></code></pre></div></div>
 
-<p>The <code class="language-plaintext highlighter-rouge">patchelf</code> utility from the NixOS developers will tell us where the dynamic linker is for a given executable:</p>
+<p>The <code class="language-bash highlighter-rouge">patchelf</code> utility from the NixOS developers will tell us where the dynamic linker is for a given executable:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>patchelf <span class="nt">--print-interpreter</span> /path/to/llvm-test.exe
 <span class="go">/lib64/ld-linux-x86-64.so.2
 </span></code></pre></div></div>
@@ -238,12 +238,12 @@ What dynamic linker do other programs on this system use?</p>
 <p>That’s right, everything on NixOS is built in its own prefix.
 If we had used a compiler wrapper, the flags to tell the executable which linker to use would have been injected.</p>
 
-<p>I found that the linker flag <code class="language-plaintext highlighter-rouge">--dynamic-linker</code> will set the dynamic linker path for a given executable, and it’s used here in GCC’s compiler wrapper:</p>
+<p>I found that the linker flag <code class="language-bash highlighter-rouge"><span class="nt">--dynamic-linker</span></code> will set the dynamic linker path for a given executable, and it’s used here in GCC’s compiler wrapper:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span><span class="nb">grep</span> <span class="s1">'dynamic-link'</span> <span class="si">$(</span>which g++<span class="si">)</span>
 <span class="gp">        extraBefore+=("-Wl,-dynamic-linker=$</span>NIX_DYNAMIC_LINKER_x86_64_unknown_linux_gnu<span class="s2">")
 </span></code></pre></div></div>
 
-<p>I can’t quite figure out how <code class="language-plaintext highlighter-rouge">NIX_DYNAMIC_LINKER_x86_64_unknown_linux_gnu</code> is set other than that it’s set by the script in <code class="language-plaintext highlighter-rouge">$gcc_wrapper_prefix/nix-support/add-flags.sh</code>, but I did find the file <code class="language-plaintext highlighter-rouge">dynamic-linker</code> under that same prefix:</p>
+<p>I can’t quite figure out how <code class="language-bash highlighter-rouge">NIX_DYNAMIC_LINKER_x86_64_unknown_linux_gnu</code> is set other than that it’s set by the script in <code class="language-bash highlighter-rouge"><span class="nv">$gcc_wrapper_prefix</span>/nix-support/add-flags.sh</code>, but I did find the file <code class="language-bash highlighter-rouge">dynamic-linker</code> under that same prefix:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>file <span class="si">$(</span>which g++<span class="si">)</span>
 <span class="go">/run/current-system/sw/bin/g++: symbolic link to
   /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++
@@ -255,12 +255,12 @@ add-hardening.sh  dynamic-linker  libc-ldflags      orig-cc         propagated-b
 cc-cflags         libc-cflags     libcxx-cxxflags   orig-libc       setup-hook
 </span></code></pre></div></div>
 
-<p>So the file <code class="language-plaintext highlighter-rouge">$gcc_wrapper_prefix/nix-support/dynamic-linker</code> contains the path to the dynamic linker the compiler is using:</p>
+<p>So the file <code class="language-bash highlighter-rouge"><span class="nv">$gcc_wrapper_prefix</span>/nix-support/dynamic-linker</code> contains the path to the dynamic linker the compiler is using:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span><span class="nb">cat</span> /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/nix-support/dynamic-linker
 <span class="go">/nix/store/vjq3q7dq8vmc13c3py97v27qwizvq7fd-glibc-2.33-59/lib/ld-linux-x86-64.so.2
 </span></code></pre></div></div>
 
-<p>I’ll then use this in my <code class="language-plaintext highlighter-rouge">shell.nix</code> to get the path to the dynamic linker, and then pass that to clang for building the LLVM runtimes so the correct dynamic linker is used for executables built by clang:</p>
+<p>I’ll then use this in my <code class="language-bash highlighter-rouge">shell.nix</code> to get the path to the dynamic linker, and then pass that to clang for building the LLVM runtimes so the correct dynamic linker is used for executables built by clang:</p>
 <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">dynLinker</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">fileContents</span> <span class="s2">"</span><span class="si">${</span><span class="nv">stdenv</span><span class="o">.</span><span class="nv">cc</span><span class="si">}</span><span class="s2">/nix-support/dynamic-linker"</span><span class="p">;</span>
   <span class="nv">flags</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">concatStringsSep</span> <span class="s2">" "</span> <span class="p">([</span>
     <span class="s2">"-Wno-unused-command-line-argument"</span>
@@ -269,10 +269,10 @@ cc-cflags         libc-cflags     libcxx-cxxflags   orig-libc       setup-hook
   <span class="p">]</span> <span class="o">++</span> <span class="nv">gccFlags</span> <span class="o">++</span> <span class="nv">libcFlags</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>I’ve also added <code class="language-plaintext highlighter-rouge">-Wno-unused-command-line-argument</code> to the compile flags so we’re not spammed with warnings every time a link directory or file directory I pass to the compiler invokation is ignored.</p>
+<p>I’ve also added <code class="language-bash highlighter-rouge"><span class="nt">-Wno-unused-command-line-argument</span></code> to the compile flags so we’re not spammed with warnings every time a link directory or file directory I pass to the compiler invokation is ignored.</p>
 
 <p>We can now finally run our tests.
-Sometimes required binaries are still not found by lit, so I use the <code class="language-plaintext highlighter-rouge">cxx-test-depends</code> target to build test dependencies and then I run lit manually:</p>
+Sometimes required binaries are still not found by lit, so I use the <code class="language-bash highlighter-rouge">cxx-test-depends</code> target to build test dependencies and then I run lit manually:</p>
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>make cxx-test-depends <span class="nt">-C</span> build-rt
 <span class="gp">$</span><span class="w"> </span>./build/bin/llvm-lit ./libcxx
 </code></pre></div></div>

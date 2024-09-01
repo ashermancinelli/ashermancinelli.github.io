@@ -89,14 +89,14 @@
 
 <p>One of the most useful features of Spack is it’s support for <a href="https://spack.readthedocs.io/en/latest/environments.html">environments</a>.
 An environment is a file describing a package or set of packages you wish to install, along with all of the spack configuration options you wish to use (see documentation linked above for more information).
-In the previous post, we used an example package <code class="language-plaintext highlighter-rouge">FloodSimulation</code> and a corresponding repository - we’ll continue with this example here.</p>
+In the previous post, we used an example package <code class="language-bash highlighter-rouge">FloodSimulation</code> and a corresponding repository - we’ll continue with this example here.</p>
 
 <p>When managing a complex and mutable set of dependencies, reproducibility is <em>extremely</em> important.
 Spack environments allow the development team to document <strong><em>every single option</em></strong> they used to install a particular package or set of packages.
-For example, let’s say <code class="language-plaintext highlighter-rouge">FloodSimulation</code> has a few more dependencies: <a href="https://github.com/LLNL/hiop">HiOp</a>, <a href="https://icl.cs.utk.edu/projectsfiles/magma/doxygen/index.html">MAGMA</a>, CUDA &gt; 10.1, and <a href="https://gitlab.com/petsc/petsc">PETSc</a>.
+For example, let’s say <code class="language-bash highlighter-rouge">FloodSimulation</code> has a few more dependencies: <a href="https://github.com/LLNL/hiop">HiOp</a>, <a href="https://icl.cs.utk.edu/projectsfiles/magma/doxygen/index.html">MAGMA</a>, CUDA &gt; 10.1, and <a href="https://gitlab.com/petsc/petsc">PETSc</a>.
 Each of these packages has many configuration and installation options, and you may even want to use versions of these packages installed by your system administrator.</p>
 
-<p>Our <code class="language-plaintext highlighter-rouge">FloodSimulation</code> package may have a <code class="language-plaintext highlighter-rouge">package.py</code> file that looks like this:</p>
+<p>Our <code class="language-bash highlighter-rouge">FloodSimulation</code> package may have a <code class="language-bash highlighter-rouge">package.py</code> file that looks like this:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 <span class="kn">from</span> <span class="n">spack</span> <span class="kn">import</span> <span class="o">*</span>
@@ -144,19 +144,19 @@ In this case, you might have an environment file like this:</p>
 
 <p>Constructing your spack environment from this file is easy as:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-$ spack env create my-environment ./example-env.yaml
-$ spack install
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$ </span>spack <span class="nb">env </span>create my-environment ./example-env.yaml
+<span class="nv">$ </span>spack <span class="nb">install</span>
 
-$ # To locate your new installation:
-$ spack location -i floodsimulation
+<span class="nv">$ </span><span class="c"># To locate your new installation:</span>
+<span class="nv">$ </span>spack location <span class="nt">-i</span> floodsimulation
 
 </code></pre></div></div>
 
 <p>This way, if another developer needs to reproduce your development environment, you may distribute the environment file to perfectly recreate your installation.
 I reccommend tracking your environments in version control along with the rest of your private spack repository with the following example directory layout:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 floodsimulationrepo
 ├── environments
 │   └── example-env.yaml
@@ -184,13 +184,13 @@ floodsimulationrepo
 <p>With a complex codebase, onboarding often requires significant resources for new developers.
 Gettings started with a new codebase can be challanging, especially when building the software stack in the first place can take up to several days.
 I have found distributing a spack environment which is known to instantiate your software stack on a particular development machine to be a mostly frictionless method of getting new developers started on a codebase.
-With the example environment file above, we specify instructions to instatiate the <code class="language-plaintext highlighter-rouge">FloodSimulation</code> software stack on a particular machine with a couple pre-installed packages.
+With the example environment file above, we specify instructions to instatiate the <code class="language-bash highlighter-rouge">FloodSimulation</code> software stack on a particular machine with a couple pre-installed packages.
 If you are developing on many platforms and you need developers up and running on all platforms with a short turnaround time, distributing spack environments will likely be a suitable solution.</p>
 
-<p>Extending the example above, the following directory structure is a suitable way to maintain spack environments to instatiate the <code class="language-plaintext highlighter-rouge">FloodSimulation</code> stack on multiple platforms.
+<p>Extending the example above, the following directory structure is a suitable way to maintain spack environments to instatiate the <code class="language-bash highlighter-rouge">FloodSimulation</code> stack on multiple platforms.
 Let’s assume you want developers up and running on two clusters, Jupiter and Saturn, as well as OSX for local development:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 floodsimulationrepo
 ├── environments
 │   ├── jupiter
@@ -235,14 +235,14 @@ floodsimulationrepo
 <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="na">view</span><span class="pi">:</span> <span class="kc">true</span>
 </code></pre></div></div>
 
-<p>This means that when you activate your spack environment (<code class="language-plaintext highlighter-rouge">spack env activate &lt;environment name&gt;</code>), spack will use a “view” by defaul.
+<p>This means that when you activate your spack environment (<code class="language-bash highlighter-rouge">spack <span class="nb">env </span>activate &lt;environment name&gt;</code>), spack will use a “view” by defaul.
 A view is a single installation prefix into which all packages installed via the environment are symbolically linked.</p>
 
 <p>By default, spack views are installed to:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$SPACK_ROOT/var/spack/environments/&lt;environment name&gt;/.spack-env/
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$SPACK_ROOT</span>/var/spack/environments/&lt;environment name&gt;/.spack-env/
 </code></pre></div></div>
 <p>and the environment file is installed to</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$SPACK_ROOT/var/spack/environments/&lt;environment name&gt;/spack.yaml
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$SPACK_ROOT</span>/var/spack/environments/&lt;environment name&gt;/spack.yaml
 </code></pre></div></div>
 
 <p>If our new developer activates her spack environment like so:</p>
@@ -254,7 +254,7 @@ A view is a single installation prefix into which all packages installed via the
 
 </span></code></pre></div></div>
 
-<p>she will have access to all of her newly installed libraries in a single installation prefix, automatically added to her <code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH</code> and <code class="language-plaintext highlighter-rouge">DYLD_LIBRARY_PATH</code>.</p>
+<p>she will have access to all of her newly installed libraries in a single installation prefix, automatically added to her <code class="language-bash highlighter-rouge">LD_LIBRARY_PATH</code> and <code class="language-bash highlighter-rouge">DYLD_LIBRARY_PATH</code>.</p>
 
 <p><a href="https://spack.readthedocs.io/en/latest/command_index.html?highlight=view#spack-view">The Spack command reference on views</a> contains further information on this topic.</p>
 
@@ -263,7 +263,7 @@ A view is a single installation prefix into which all packages installed via the
 <p>Now that we have a feel for creating, using, and distributing spack environments, how do we develop with them?</p>
 
 <p>As we saw in the aside on views above, activating a spack environment with the view option enabled (which is the default) adds the view to the user’s path, library path, etc.
-Assuming <code class="language-plaintext highlighter-rouge">FloodSimulation</code> is a CMake project (as we specified in the example spack package above) and we have written clean enough CMake to find external libraries, the workflow for building <code class="language-plaintext highlighter-rouge">FloodSimulation</code> should be relatively straightforward:</p>
+Assuming <code class="language-bash highlighter-rouge">FloodSimulation</code> is a CMake project (as we specified in the example spack package above) and we have written clean enough CMake to find external libraries, the workflow for building <code class="language-bash highlighter-rouge">FloodSimulation</code> should be relatively straightforward:</p>
 
 <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">
 </span><span class="gp">$</span><span class="w"> </span>git clone https://github.com/your-username/flood-simulation.git
@@ -288,7 +288,7 @@ Assuming <code class="language-plaintext highlighter-rouge">FloodSimulation</cod
 <span class="go">
 </span></code></pre></div></div>
 
-<p>From here, developers may continue the edit-build-test cycle for <code class="language-plaintext highlighter-rouge">FloodSimulation</code>, knowing they are using the correct set of dependencies.</p>
+<p>From here, developers may continue the edit-build-test cycle for <code class="language-bash highlighter-rouge">FloodSimulation</code>, knowing they are using the correct set of dependencies.</p>
 
 <p>Read on for discussion on additional uses for environments you should consider incorporating into your workflow.</p>
 

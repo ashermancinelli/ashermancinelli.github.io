@@ -70,21 +70,21 @@ where we’re tasked with setting rows and columns of a matrix that contain zero
 
 <h2 id="bqn-solution">BQN Solution</h2>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i←⟨
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   i←⟨
      3‿4⥊⟨0,1,3,0,3,4,5,2,1,3,1,5⟩
      3‿3⥊⟨1,1,1,1,0,1,1,1,1⟩
    ⟩
 
-   Z ← {
-     bm←0=𝕩
-     a←∨` ∨`⌾⌽ bm
-     b←(∨`˘) ((∨`˘)⌾(⌽˘)) bm
+   Z ← <span class="o">{</span>
+     bm←0<span class="o">=</span>𝕩
+     a←∨<span class="sb">`</span> ∨<span class="sb">`</span>⌾⌽ bm
+     b←<span class="o">(</span>∨<span class="sb">`</span>˘<span class="o">)</span> <span class="o">((</span>∨<span class="sb">`</span>˘<span class="o">)</span>⌾<span class="o">(</span>⌽˘<span class="o">))</span> bm
      𝕩×a¬∘∨b
-   }
+   <span class="o">}</span>
    
-   ⟨"#1","#2"⟩∾i≍Z¨i
+   ⟨<span class="s2">"#1"</span>,<span class="s2">"#2"</span>⟩∾i≍Z¨i
 ┌─                       
-╵ "#1"        "#2"       
+╵ <span class="s2">"#1"</span>        <span class="s2">"#2"</span>       
   ┌─          ┌─         
   ╵ 0 1 3 0   ╵ 1 1 1    
     3 4 5 2     1 0 1    
@@ -99,9 +99,9 @@ where we’re tasked with setting rows and columns of a matrix that contain zero
 </code></pre></div></div>
 
 <p>Some other solutions from the BQN Matrix chat room:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   ⊢×0≠∧˝˘∧⌜∧˝           # Marshall &amp; Dzaima (tacit!)
-   (≠⥊∧´)˘{𝕩×(𝔽⌾⍉∧𝔽)0≠𝕩} # Dzaima &amp; Rampoina
-   {𝕩×(∧˝˘∧≢⥊∧˝)0≠𝕩}     # Dzaima
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   ⊢×0≠∧˝˘∧⌜∧˝           <span class="c"># Marshall &amp; Dzaima (tacit!)</span>
+   <span class="o">(</span>≠⥊∧´<span class="o">)</span>˘<span class="o">{</span>𝕩×<span class="o">(</span>𝔽⌾⍉∧𝔽<span class="o">)</span>0≠𝕩<span class="o">}</span> <span class="c"># Dzaima &amp; Rampoina</span>
+   <span class="o">{</span>𝕩×<span class="o">(</span>∧˝˘∧≢⥊∧˝<span class="o">)</span>0≠𝕩<span class="o">}</span>     <span class="c"># Dzaima</span>
 </code></pre></div></div>
 
 <h2 id="on-the-joy-of-programming">On the Joy of Programming</h2>

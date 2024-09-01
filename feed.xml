@@ -1,25 +1,83 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-07-27T07:09:07-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">Barista - 9/10</title><link href="/barista" rel="alternate" type="text/html" title="Barista - 9/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Barista</id><content type="html" xml:base="/barista"><![CDATA[<p>Solid option in NW Portland with a variety of local roasts, not just their own.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-09-01T16:29:05-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">Linux Perf Notes</title><link href="/perf" rel="alternate" type="text/html" title="Linux Perf Notes" /><published>2024-08-31T00:00:00-07:00</published><updated>2024-08-31T00:00:00-07:00</updated><id>/Linux-Perf-Notes</id><content type="html" xml:base="/perf"><![CDATA[<p>How do I use perf again?</p>
 
-<hr />
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
 
-<p>I had the spirit lifter blend from Puff roasters, which was unfortunately out of stock in the consumer-sized bags, so I was unable to see the actual roast level, flavor comps, etc.
-It tasted like a medium roast with some very mild sweetness, almost like a vanilla tea; very clear, very light body.</p>
+<h2 id="rtfm">RTFM</h2>
 
-<p>They had two other roasts on espresso; this is a thoughtful cafe with interesting roasts.
-I plan on returning to rate all three roasts they have available, and I’ll keep my eyes on what new roasts they bring into the shop.</p>
+<ul>
+  <li><a href="https://www.brendangregg.com/perf.html">Brendan Gregg perf one-liners. Reread these every time. What you want is probably here.</a></li>
+  <li><a href="https://www.man7.org/linux/man-pages/man1/perf.1.html">man perf</a></li>
+  <li><a href="https://www.man7.org/linux/man-pages/man1/perf-list.1.html">man perf-list</a></li>
+  <li><a href="https://www.man7.org/linux/man-pages/man1/perf-diff.1.html">man perf-diff</a></li>
+</ul>
 
-<p>Although they roast their own coffee, they also bring in beans from other local roasters.
-Sourcing and serving the best local beans is their mission statement, as listed on their website.</p>
+<h2 id="what-is-my-app-doing">What is my app doing?</h2>
 
-<hr />
+<p>This script watches most of the events I care about and generates all the reports in one place.</p>
 
-<h3>
-    <center>
-    <a href="https://baristapdx.com/" target="blank">
-    Barista homepage
-    </a>
-    </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Solid option in NW Portland with a variety of local roasts, not just their own.]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">set</span> <span class="nt">-x</span>
+
+<span class="nv">events</span><span class="o">=</span><span class="s2">"cycles:u,instructions,user_time,cache-misses,branch-misses,task-clock"</span>
+<span class="nv">freq</span><span class="o">=</span>99 <span class="c"># sampling frequency</span>
+<span class="nv">app</span><span class="o">=</span><span class="nv">$PWD</span>/a.out
+<span class="nv">config</span><span class="o">=</span><span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span>
+<span class="nv">name</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span> | <span class="nb">sed</span> <span class="nt">-e</span> <span class="s1">'s/ /_/g'</span><span class="si">)</span>
+
+<span class="nb">ulimit</span> <span class="nt">-Ss</span> unlimited
+<span class="nb">test</span> <span class="nt">-d</span> <span class="nv">$name</span> <span class="o">||</span> <span class="nb">mkdir</span> <span class="nv">$name</span>
+<span class="nb">pushd</span> <span class="nv">$name</span>
+
+perf record <span class="se">\</span>
+    <span class="nt">--output</span> perf.data <span class="se">\</span>
+    <span class="nt">--call-graph</span> fp <span class="se">\</span>
+    <span class="nt">-F</span> <span class="nv">$freq</span> <span class="nt">-e</span> <span class="s2">"</span><span class="nv">$events</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">--</span> taskset 0x2 <span class="nv">$app</span> <span class="o">&gt;</span>/dev/null
+
+perf report <span class="se">\</span>
+    <span class="nt">--stdio</span> <span class="nt">-G</span> <span class="se">\</span>
+    <span class="nt">--inline</span> <span class="nt">--itrace</span><span class="o">=</span>i <span class="se">\</span>
+    <span class="o">&gt;</span> perf.report
+
+perf <span class="nb">stat </span>record <span class="se">\</span>
+    <span class="nt">-o</span> perf-stat.data <span class="se">\</span>
+    <span class="nt">-e</span> <span class="s2">"</span><span class="nv">$events</span><span class="s2">"</span> <span class="se">\</span>
+    <span class="nt">--</span> taskset 0x2 <span class="nv">$app</span> <span class="o">&gt;</span>/dev/null
+
+<span class="c"># --stdio much preferred to --stdio2</span>
+perf annotate <span class="nt">-i</span> perf.data <span class="nt">--stdio</span> <span class="o">&gt;</span> perf.annotate
+
+<span class="nb">popd</span>
+</code></pre></div></div>
+
+<p>I usually like to create separate directories for all the data on a per-flag basis because I’m usually trying lots of different flags when investigating a performance change.
+This way, each time I want to try another combination of flags, my history is preserved in its own directory and I don’t have to wait to look at any reports:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># whatever directory was created by the above script</span>
+<span class="nv">d</span><span class="o">=</span><span class="s2">"flags"</span>
+perf report <span class="nt">-i</span> <span class="nv">$d</span>/perf.data
+perf <span class="nb">stat </span>report <span class="nv">$d</span>/perf-stat.data
+<span class="nv">$PAGER</span> <span class="nv">$d</span>/perf.annotate
+<span class="nv">$PAGER</span> <span class="nv">$d</span>/perf.report
+</code></pre></div></div>
+
+<p>NOTE: make sure you build with <code class="language-bash highlighter-rouge"><span class="nt">-fno-omit-frame-pointer</span></code> so perf can give you reasonable traces.
+Debug info works <em>okayyy</em> but you’ll end up with <em>massive</em> data dumps that take forever to load into perf-report and other tools.</p>
+
+<h2 id="why-is-my-app-slower-when-i-x">Why is my app slower when I X?</h2>
+
+<p>NOTE: perf-diff is worse when name mangling is different (e.g. with Fortran apps) because perf can’t match the events up.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make <span class="nv">FLAGS</span><span class="o">=</span><span class="s2">"-O0"</span>
+perf record ...
+make <span class="nv">FLAGS</span><span class="o">=</span><span class="s2">"-O3"</span>
+perf record ...
+perf diff
+</code></pre></div></div>]]></content><author><name></name></author><category term="linux, c++, perfanalysis" /><summary type="html"><![CDATA[How do I use perf again?]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
 
 <hr />
 
@@ -88,7 +146,28 @@ I would want any espresso afficionados visiting the city to finish their time he
     Sterling Coffee homepage
     </a>
     </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[This place is something special. Please don’t leave Portland without trying their espresso.]]></summary></entry><entry><title type="html">Superjoy Coffee Lab &amp;amp; Roasters - 10/10</title><link href="/superjoy" rel="alternate" type="text/html" title="Superjoy Coffee Lab &amp;amp; Roasters - 10/10" /><published>2023-06-21T00:00:00-07:00</published><updated>2023-06-21T00:00:00-07:00</updated><id>/Superjoy</id><content type="html" xml:base="/superjoy"><![CDATA[<p>There’s too much to say. You should really just go try their espresso.</p>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[This place is something special. Please don’t leave Portland without trying their espresso.]]></summary></entry><entry><title type="html">Barista - 9/10</title><link href="/barista" rel="alternate" type="text/html" title="Barista - 9/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Barista</id><content type="html" xml:base="/barista"><![CDATA[<p>Solid option in NW Portland with a variety of local roasts, not just their own.</p>
+
+<hr />
+
+<p>I had the spirit lifter blend from Puff roasters, which was unfortunately out of stock in the consumer-sized bags, so I was unable to see the actual roast level, flavor comps, etc.
+It tasted like a medium roast with some very mild sweetness, almost like a vanilla tea; very clear, very light body.</p>
+
+<p>They had two other roasts on espresso; this is a thoughtful cafe with interesting roasts.
+I plan on returning to rate all three roasts they have available, and I’ll keep my eyes on what new roasts they bring into the shop.</p>
+
+<p>Although they roast their own coffee, they also bring in beans from other local roasters.
+Sourcing and serving the best local beans is their mission statement, as listed on their website.</p>
+
+<hr />
+
+<h3>
+    <center>
+    <a href="https://baristapdx.com/" target="blank">
+    Barista homepage
+    </a>
+    </center>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Solid option in NW Portland with a variety of local roasts, not just their own.]]></summary></entry><entry><title type="html">Superjoy Coffee Lab &amp;amp; Roasters - 10/10</title><link href="/superjoy" rel="alternate" type="text/html" title="Superjoy Coffee Lab &amp;amp; Roasters - 10/10" /><published>2023-06-21T00:00:00-07:00</published><updated>2023-06-21T00:00:00-07:00</updated><id>/Superjoy</id><content type="html" xml:base="/superjoy"><![CDATA[<p>There’s too much to say. You should really just go try their espresso.</p>
 
 <hr />
 
@@ -255,7 +334,35 @@ Very unfortunate.</p>
 
 <hr />
 
-<p>Thanks to my friend Emma that stuck with me and my annoying coffee flavor charts and endless cafes :)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[All the shops and roasters I tried while visiting my friend in Seattle!]]></summary></entry><entry><title type="html">Rose City Coffee - 7/10</title><link href="/rose-city" rel="alternate" type="text/html" title="Rose City Coffee - 7/10" /><published>2023-06-15T00:00:00-07:00</published><updated>2023-06-15T00:00:00-07:00</updated><id>/Rose-City-Coffee</id><content type="html" xml:base="/rose-city"><![CDATA[<p>Do you like blonde roasts or need a beautiful space to get some work done?</p>
+<p>Thanks to my friend Emma that stuck with me and my annoying coffee flavor charts and endless cafes :)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[All the shops and roasters I tried while visiting my friend in Seattle!]]></summary></entry><entry><title type="html">Upper Left Roasters - 9.5/10</title><link href="/upperleft" rel="alternate" type="text/html" title="Upper Left Roasters - 9.5/10" /><published>2023-06-15T00:00:00-07:00</published><updated>2023-06-15T00:00:00-07:00</updated><id>/Upper-Left-Roasters</id><content type="html" xml:base="/upperleft"><![CDATA[<p>Unique energy, passionate about espresso.</p>
+
+<hr />
+
+<p>Named for it’s location relative to the Ladd’s Edition neighborhood in SE Portland, this roaster and cafe front has <em>several</em> roasts available for espresso at any given time (and one or two more specifically for drip and pour-over).</p>
+
+<p>The flavor comps for the roast I tried were absolutely spot-on: I got strong notes of sweetness and white chocolate from the <em>90h Tabi</em>.
+These Tabi beans from Tolima, Colombia underwent a 90-hour submerged fermentation process.
+I hadn’t heard of the Tabi variety before: it’s a hybrid of bourbon, typica, and timor varietials.
+<strong>
+    Upper Left is <em>clearly</em> passionate about espresso, but has something for everyone: more than half of the patrons were sporting iced lattes on the Friday afternoon I stopped in.
+</strong></p>
+
+<p>The venue is very unique as well: the roasting machine is separated from the cafe by only a bar seating area; you can sit right next to the roasting machine if you like.
+The white walls, light wooden furnishing, and ample indoor and outdoor seating made for a wonderful environment.</p>
+
+<p>Speaking of the outdoor seating, there was a DJ playing lowkey club mixes over industrial-sized speakers in the outdoor seating area which happened to be almost entirely full; the neighborhood clearly takes full advantage of having this cafe so accessible.</p>
+
+<p>Upper Left is a must-try.</p>
+
+<hr />
+
+<h3>
+    <center>
+        <a href="https://upperleftroasters.com/" target="blank">
+        Upper Left Roasters homepage
+        </a>
+    </center>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Unique energy, passionate about espresso.]]></summary></entry><entry><title type="html">Rose City Coffee - 7/10</title><link href="/rose-city" rel="alternate" type="text/html" title="Rose City Coffee - 7/10" /><published>2023-06-15T00:00:00-07:00</published><updated>2023-06-15T00:00:00-07:00</updated><id>/Rose-City-Coffee</id><content type="html" xml:base="/rose-city"><![CDATA[<p>Do you like blonde roasts or need a beautiful space to get some work done?</p>
 
 <hr />
 
@@ -376,279 +483,63 @@ I think they would get a lot of business in a more central location, though I do
         Morgon Coffee Roasters homepage
         </a>
     </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Pleasant, mild, unique, imported roasts from Sweden - try some beans you’ll likely not find anywhere else!]]></summary></entry><entry><title type="html">Upper Left Roasters - 9.5/10</title><link href="/upperleft" rel="alternate" type="text/html" title="Upper Left Roasters - 9.5/10" /><published>2023-06-15T00:00:00-07:00</published><updated>2023-06-15T00:00:00-07:00</updated><id>/Upper-Left-Roasters</id><content type="html" xml:base="/upperleft"><![CDATA[<p>Unique energy, passionate about espresso.</p>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Pleasant, mild, unique, imported roasts from Sweden - try some beans you’ll likely not find anywhere else!]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
+
+<hr />
+<p><em>6/21/23 update:</em></p>
+
+<p>In my second visit, I had another Etheopian roast, the <em>Sidama Setamo</em>, an Etheopian washed-process SO Heirloom roast with bergamot and wild cherries as flavor comps.
+The barista compared the roast to Fruit Loops, which felt far closer to my experience than the listed comps; I also got notes of green apple.</p>
+
+<p>I’m determined to try every roast this place puts on espresso.
+If I ever move from Portland, I’m going to kick myself for not having as much of this espresso as I can.
+This may be consistently the best espresso I’ll ever have.</p>
+
+<hr />
+<p><em>6/14/23 (original review):</em></p>
+
+<p>Prior to trying Sterling’s espresso, the #1 on my list was from Courier Coffee.
+When I told the barista at Courier how much I enjoyed their espresso, he made sure to recommend Sterling for my next stop.</p>
+
+<blockquote>
+  <p>Oh, you like espresso? Yeah, you should definitely check out Sterling</p>
+</blockquote>
+
+<p>He backed that comment up with a few more remarks about how special their espresso is, and it went to the top of my list of places to try next.
+It did not dissapoint.</p>
 
 <hr />
 
-<p>Named for it’s location relative to the Ladd’s Edition neighborhood in SE Portland, this roaster and cafe front has <em>several</em> roasts available for espresso at any given time (and one or two more specifically for drip and pour-over).</p>
+<p>The barista was excited to welcome me in and tell me all about the roast they had ready for espresso, which happened to be the <em>Nigusse Lemma</em>, a natural-process small-batch Ethiopian roast with Etheopian Heriloom varietals.
+I got the same feelings I get trying a new whiskey at the Scotch Lounge on the East side of town - she talked through the roasting process at their East-side roastery and the origins of the beans.</p>
 
-<p>The flavor comps for the roast I tried were absolutely spot-on: I got strong notes of sweetness and white chocolate from the <em>90h Tabi</em>.
-These Tabi beans from Tolima, Colombia underwent a 90-hour submerged fermentation process.
-I hadn’t heard of the Tabi variety before: it’s a hybrid of bourbon, typica, and timor varietials.
-<strong>
-    Upper Left is <em>clearly</em> passionate about espresso, but has something for everyone: more than half of the patrons were sporting iced lattes on the Friday afternoon I stopped in.
-</strong></p>
+<p>After pulling the shot, she put together a board with a small glass of sparkling water as a pallate clenser (as is usual in espresso-focused cafes).</p>
 
-<p>The venue is very unique as well: the roasting machine is separated from the cafe by only a bar seating area; you can sit right next to the roasting machine if you like.
-The white walls, light wooden furnishing, and ample indoor and outdoor seating made for a wonderful environment.</p>
+<p>Adding to the Scotch Lounge feelings, the espresso was served in a glencairn-style whiskey serving glass along with a third glass with a drip brew so as to try the roast from another perspective.</p>
 
-<p>Speaking of the outdoor seating, there was a DJ playing lowkey club mixes over industrial-sized speakers in the outdoor seating area which happened to be almost entirely full; the neighborhood clearly takes full advantage of having this cafe so accessible.</p>
-
-<p>Upper Left is a must-try.</p>
+<p>Both coffees were smooth and creamy - I jotted down <em>notes of strawberries and cream</em> before I even saw <em>“Raspberry &amp; Vanilla Cream”</em> listed as flavor comps on the bag of coffee they used for my espresso.</p>
 
 <hr />
 
-<h3>
-    <center>
-        <a href="https://upperleftroasters.com/" target="blank">
-        Upper Left Roasters homepage
-        </a>
-    </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Unique energy, passionate about espresso.]]></summary></entry><entry><title type="html">Portland Espresso Research Master List</title><link href="/pdx-espresso-research" rel="alternate" type="text/html" title="Portland Espresso Research Master List" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/PDX-Espresso-Research</id><content type="html" xml:base="/pdx-espresso-research"><![CDATA[<p>All the Portland espresso recomendations I could find online, and the shops that come up again and again.</p>
+<p>This espresso struck me as <strong><em>perfectly balanced</em></strong> - without hesitation, I wanted to share it with every one of my friends still not won over by espresso.
+In my experience, when people try espresso and decide they hate it, 95% of the time it’s due to the intensity of the flavors, especially with sour and bitter notes.
+When I try an intense espresso, something that punches you in the mouth with sourness or fruit or bitterness or chocolate or nuttiness, I can enjoy the intensity (if it’s done well!) - but that seems to be the attribute of espresso that puts people off of it.</p>
 
-<hr />
+<p>This espresso was not intense in the usual way, but not too mild either.
+It was full of flavor with delicious notes of citrus, cream, a balance of bitterness to round out the flavor profile, yet not too intense to be someone’s first espresso.</p>
 
-<h1 id="my-takeaways">My Takeaways</h1>
+<p>This espresso, along with their drip brew, the knowledgable baristas, and a cozy cafe seating area nestled into NW Portland with indoor trees and fast wifi brings this to the top of my list.
+The barista who served me happened to recommend <em>Barista</em> for one of my next espresso destinations which I haven’t had the opportunity to try yet - I look forward to posting a review given that the current champion of my list thinks I should give it a try.</p>
 
-<p>The most common names in these blogs are probably:</p>
-
-<ol>
-  <li>Coava</li>
-  <li>Proud Mary</li>
-  <li>Case Study</li>
-  <li>Heart</li>
-  <li>Stumptown</li>
-</ol>
-
-<p>If you visit any given cafe in Portland, chances are high their beans come from either Heart, Coava or Proud Mary, and for good reason.
-All three of them are local and put out some <em>solid</em> roasts… but I still recommend finding some smaller shops that still roast in-house.</p>
-
-<p>In my opinion, the most <em>underrated</em> cafes and roasters are:</p>
-
-<ol>
-  <li>Sterling</li>
-  <li>Deadstock</li>
-  <li>Courier</li>
-</ol>
-
-<p>and the most <em>overrated</em> are:</p>
-
-<ol>
-  <li>Stumptown</li>
-  <li>Case Study</li>
-  <li>Never Coffee (unless you really like lattes)</li>
-  <li>PUSH X PULL</li>
-</ol>
-
-<h1 id="lists-from-other-blogs">Lists From Other Blogs</h1>
-
-<p><em>As of Jun 15 2023</em></p>
-
-<h2 id="pdx-monthly"><a href="https://www.pdxmonthly.com/eat-and-drink/best-coffee-shops-cafes-portland">PDX Monthly</a></h2>
-
-<p>Perhaps the most solid collection of Portland roasters and cafes, I found several shops I’d never heard of while it doesn’t miss the usual suspects.</p>
-
-<ol>
-  <li>Abba</li>
-  <li>Albina Press</li>
-  <li>Carnelian Coffee</li>
-  <li>Case Study</li>
-  <li>Cathedral Coffee</li>
-  <li>Courier Coffee</li>
-  <li>Deadstock</li>
-  <li>Either/Or</li>
-  <li>Electrica</li>
-  <li>The Fresh Pot</li>
-  <li>Futura Coffee Roasters</li>
-  <li>Good Coffee</li>
-  <li>Guilder</li>
-  <li>Heart</li>
-  <li>In J/Super Joy</li>
-  <li>J Vein Caffe</li>
-  <li>Kalesa</li>
-  <li>Keeper Coffee</li>
-  <li>Less and More</li>
-  <li>Never Coffee</li>
-  <li>Portland Cà Phê</li>
-  <li>Prince Coffee</li>
-  <li>PUSH X PULL</li>
-  <li>Roseline</li>
-  <li>Soro Soro</li>
-  <li>Sterling Coffee</li>
-  <li>Tōv Coffee</li>
-  <li>Upper Left Roasters</li>
-</ol>
-
-<h2 id="oregon-obsessed"><a href="https://oregonobsessed.com/best-coffee-shops-in-portland/">Oregon Obsessed</a></h2>
-
-<p>I’ve tried (and liked) almost all of <em>Oregon Obsessed</em>’s recomendations, though a few are overrated in my opinion:</p>
-
-<ol>
-  <li>Coava</li>
-  <li>Good Coffee</li>
-  <li>Stumptown</li>
-  <li>Case Study</li>
-  <li>Nossa Familia</li>
-  <li>Proud Mary</li>
-  <li>Deadstock</li>
-  <li>Never Coffee</li>
-  <li>Ovation</li>
-  <li>Portland Coffee Roasters</li>
-</ol>
-
-<h2 id="daily-hive"><a href="https://dailyhive.com/portland/best-coffee-shops-portland">Daily Hive</a></h2>
-
-<p>Good to see <em>Coava</em> consistently topping these lists - hadn’t heard of Pájaro either.</p>
-
-<ol>
-  <li>Coava</li>
-  <li>Pájaro</li>
-  <li>PUSH X PULL</li>
-  <li>Heart Coffee</li>
-  <li>Stumptown</li>
-  <li>Upper Left</li>
-  <li>Deadstock</li>
-  <li>Good Coffee</li>
-</ol>
-
-<h2 id="coffee-affection"><a href="https://coffeeaffection.com/best-coffee-shops-in-portland/">Coffee Affection</a></h2>
-
-<p>Pretty much just hits the usual suspects.
-Not much is new here.</p>
-
-<ol>
-  <li>Coava</li>
-  <li>Good Coffee</li>
-  <li>Stumptown</li>
-  <li>Case Study</li>
-  <li>Nossa Familia</li>
-  <li>Proud Mary</li>
-  <li>Deadstock</li>
-  <li>Never Coffee</li>
-  <li>Ovation</li>
-  <li>Portland Coffee Roasters</li>
-</ol>
-
-<h2 id="foursquare"><a href="https://foursquare.com/top-places/portland/best-places-espresso">FourSquare</a></h2>
-
-<ol>
-  <li>Barista</li>
-  <li>Coava</li>
-  <li>Stumptown</li>
-  <li>Case Study</li>
-  <li>Heart</li>
-  <li>Courier</li>
-  <li>Spella</li>
-  <li>Sterling</li>
-  <li>Water Avenue</li>
-  <li>Good Coffee</li>
-  <li>Common Grounds</li>
-  <li>Nossa Familia</li>
-</ol>
-
-<h2 id="hopculture"><a href="https://www.hopculture.com/best-coffee-portland-oregon/">HopCulture</a></h2>
-
-<p>I hadn’t seen Kiosko before:</p>
-
-<ol>
-  <li>Proud Mary</li>
-  <li>Kiosko</li>
-  <li>Heart</li>
-  <li>Stumptown</li>
-  <li>Never Coffee Lab</li>
-  <li>Good Coffee</li>
-  <li>Coava</li>
-</ol>
-
-<h2 id="boam"><a href="https://boam.com/best-espresso-shops-in-portland-or/">Boam</a></h2>
-
-<p><em>Fairlane</em> is the only name on this list new to me.
-Pretty solid list.</p>
-
-<ol>
-  <li>Good Coffee</li>
-  <li>Nossa Familia</li>
-  <li>PUSH X PULL</li>
-  <li>Sunny Day Coffee</li>
-  <li>Ole Latte Coffee</li>
-  <li>Ovation Coffee &amp; Tea</li>
-  <li>Fairlane Coffee</li>
-  <li>Sisters Coffee Company in The Pearl</li>
-  <li>Coava</li>
-  <li>Grendel’s Coffee House</li>
-</ol>
-
-<h2 id="respresso-subreddit"><a href="https://www.reddit.com/r/espresso/comments/12jbj4m/best_espresso_in_portland_or/">R/Espresso Subreddit</a></h2>
-
-<p>As of the time of writing, many subreddits are protesting a recent change to reddit’s 3rd party API access rules, so I can’t view the listright now.</p>
-
-<h2 id="bean-box"><a href="https://beanbox.com/blog/best-coffee-in-portland">Bean Box</a></h2>
-
-<ol>
-  <li>Roseline Coffee</li>
-  <li>Water Avenue Coffee Company</li>
-  <li>Coava</li>
-  <li>Good Coffee</li>
-  <li>Ovation</li>
-  <li>Proud Mary</li>
-  <li>Prince</li>
-  <li>Either/Or</li>
-  <li>Heart Cofffee Roasters</li>
-  <li>Nossa Familia Coffee</li>
-  <li>Stumptown</li>
-</ol>
-
-<h2 id="trip-advisor"><a href="https://www.tripadvisor.com/Restaurants-g52024-c8-Portland_Oregon.html">Trip Advisor</a></h2>
-
-<p>This list is focused on <em>cafes</em> and not really <em>coffee</em>… there were some names on this list I hadn’t seen before, so I’ll keep it around… but I wouldn’t put much weight on these names (hence why it comes last in my research page).</p>
-
-<ol>
-  <li>Chery’s on 12th</li>
-  <li>St Honore</li>
-  <li>Tin Shed Garden Cafe</li>
-  <li>Jam on Hawthorne</li>
-  <li>Island Cafe</li>
-  <li>Ken’s Artisan Bakery</li>
-  <li>Stumptown</li>
-  <li>The Waffle Window</li>
-  <li>Case Study</li>
-  <li>Cadillac Cafe</li>
-  <li>Milo’s City Cafe</li>
-  <li>Broder</li>
-  <li>Lovejoy</li>
-  <li>Gravy</li>
-  <li>Dragonfly Coffee House</li>
-  <li>Zell’s</li>
-  <li>Bleu Door Bakery</li>
-  <li>Petunia’s Pies &amp; Pastries</li>
-  <li>Cameo Cafe</li>
-  <li>Public Domain Coffee</li>
-  <li>Stepping Stone Cafe</li>
-  <li>The Daily Feast PDX</li>
-  <li>Barista</li>
-  <li>Dulin’s Cafe</li>
-  <li>Heart Coffee</li>
-  <li>Babica Hen Cafe</li>
-  <li>Prasad</li>
-</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[All the Portland espresso recomendations I could find online, and the shops that come up again and again.]]></summary></entry><entry><title type="html">DEADSTOCK Coffee - 9.5/10</title><link href="/deadstock" rel="alternate" type="text/html" title="DEADSTOCK Coffee - 9.5/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Deadstock</id><content type="html" xml:base="/deadstock"><![CDATA[<p><strong><em>“Coffee should be dope”</em></strong></p>
-
-<hr />
-
-<p>Nestled in central Chinatown, this cafe front for a roastery has their own streetwear line and feels like a trap-house recording studio.
-Self-termed <strong><em>Portland’s Hype Barista</em></strong>, Nike Jordan 1s are hung up everywhere and trap plays over the speakers all day.</p>
-
-<p>The <em>BREEZY Don Enrique</em> Colombian single-origin medium roast was <em>seriously</em> good.
-As soon as I finish making this espresso tour, I plan on coming back here to buy a bag or two of the BREEZY - it was one of the best-smelling roasts I’ve come across in the last year.</p>
-
-<p>I haven’t seen DEADSTOCK mentioned on many blogs, which feels like an injustice.
-Definitely worth stopping by.</p>
+<p>As I work out an espresso tour of Portland, I <em>have</em> to pencil Sterling in as the final destination.
+I would want any espresso afficionados visiting the city to finish their time here with a Sterling espresso.</p>
 
 <hr />
 
 <h3>
     <center>
-    <a href="https://deadstockcoffee.com" target="blank">
-    Deadstock Coffee homepage
+    <a href="https://www.sterling.coffee/" target="blank">
+    Sterling Coffee homepage
     </a>
     </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[“Coffee should be dope”]]></summary></entry></feed>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[This place is something special. Please don’t leave Portland without trying their espresso.]]></summary></entry></feed>

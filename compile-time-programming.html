@@ -121,8 +121,8 @@ graph LR
 </div>
 </center>
 
-<p>At the end of the day, the program <em>really</em> only depends on <code class="language-plaintext highlighter-rouge">enable_bar</code> and <code class="language-plaintext highlighter-rouge">value</code>, and we know the values of both of these at compile-time.
-There are no runtime dependencies of this program, yet the compiler will still emit runtime instructions (even with <code class="language-plaintext highlighter-rouge">-O3</code>) because it doesn’t know for a fact that the dependencies can be resolved at compile time.</p>
+<p>At the end of the day, the program <em>really</em> only depends on <code class="language-bash highlighter-rouge">enable_bar</code> and <code class="language-bash highlighter-rouge">value</code>, and we know the values of both of these at compile-time.
+There are no runtime dependencies of this program, yet the compiler will still emit runtime instructions (even with <code class="language-bash highlighter-rouge"><span class="nt">-O3</span></code>) because it doesn’t know for a fact that the dependencies can be resolved at compile time.</p>
 
 <p>Consider this altered version of the code snippet above (<a href="https://godbolt.org/z/s1Ycahn56">godbolt</a>):</p>
 
@@ -159,7 +159,7 @@ graph LR
 </div>
 </center>
 
-<p>The dependency-tree representation of the program now contains several nodes that <em>do not require any runtime instructions</em> because we’ve used the <code class="language-plaintext highlighter-rouge">consteval</code> and <code class="language-plaintext highlighter-rouge">constexpr</code> specifiers to inform the compiler that we know everything we need to know in order to call those functions/use those variables at compile-time.</p>
+<p>The dependency-tree representation of the program now contains several nodes that <em>do not require any runtime instructions</em> because we’ve used the <code class="language-bash highlighter-rouge">consteval</code> and <code class="language-bash highlighter-rouge">constexpr</code> specifiers to inform the compiler that we know everything we need to know in order to call those functions/use those variables at compile-time.</p>
 
 <p>We can take this further:</p>
 
@@ -214,14 +214,14 @@ graph LR
 <p><br></p>
 
 <p>Compile-time programming is one of the most compelling reasons to adopt the newest possible C++ standard you are able to.
-You’ll notice that in our code snippets, we used the <code class="language-plaintext highlighter-rouge">consteval</code> specifier on our functions <code class="language-plaintext highlighter-rouge">bar</code> and <code class="language-plaintext highlighter-rouge">foo</code>.
+You’ll notice that in our code snippets, we used the <code class="language-bash highlighter-rouge">consteval</code> specifier on our functions <code class="language-bash highlighter-rouge">bar</code> and <code class="language-bash highlighter-rouge">foo</code>.
 This means the result of the function <em>must</em> be a compile-time constant; or, the node in the syntax tree <em>must</em> be green.</p>
 
-<p>In C++ standards older than C++20, <code class="language-plaintext highlighter-rouge">consteval</code> was not available, and <code class="language-plaintext highlighter-rouge">constexpr</code> was the only option (besides preprocessor code).
-Before C++17, <code class="language-plaintext highlighter-rouge">constexpr</code> was weaker, and could not perform as much work.</p>
+<p>In C++ standards older than C++20, <code class="language-bash highlighter-rouge">consteval</code> was not available, and <code class="language-bash highlighter-rouge">constexpr</code> was the only option (besides preprocessor code).
+Before C++17, <code class="language-bash highlighter-rouge">constexpr</code> was weaker, and could not perform as much work.</p>
 
-<p><code class="language-plaintext highlighter-rouge">constexpr</code> only tells the compiler that <em>it is possible</em> to evaluate the value of the function or variable at compile time, but the compiler is not <em>mandated</em> to do so.
-Assuming we only have <code class="language-plaintext highlighter-rouge">constexpr</code> available to us, our graph could only really look like the following, where orange boxes represent <em>potentially</em> compile-time code:</p>
+<p><code class="language-bash highlighter-rouge">constexpr</code> only tells the compiler that <em>it is possible</em> to evaluate the value of the function or variable at compile time, but the compiler is not <em>mandated</em> to do so.
+Assuming we only have <code class="language-bash highlighter-rouge">constexpr</code> available to us, our graph could only really look like the following, where orange boxes represent <em>potentially</em> compile-time code:</p>
 
 <center>
 <div class="mermaid">

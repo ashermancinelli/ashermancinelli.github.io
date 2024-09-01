@@ -80,7 +80,7 @@ This post explores using Clang tools to address this case.</p>
 <a href="https://github.com/kokkos/kokkos">Kokkos</a>, the capture clauses of lambda statements are extremely important.
 When developing the open source optimization engine <a href="https://github.com/LLNL/hiop">HiOp</a> to use the portability library RAJA
 in its linear algebra library,
-we ran into an issue where a RAJA <code class="language-plaintext highlighter-rouge">forall</code> statement would implicitly capture the <code class="language-plaintext highlighter-rouge">this</code> pointer in an instance method
+we ran into an issue where a RAJA <code class="language-bash highlighter-rouge">forall</code> statement would implicitly capture the <code class="language-bash highlighter-rouge">this</code> pointer in an instance method
 which would cause memory access errors when running on a GPU device.</p>
 
 <p>For example, let’s say we have the following Vector class:</p>
@@ -110,7 +110,7 @@ which would cause memory access errors when running on a GPU device.</p>
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>As described in the comments above, the data lives on the device, but is accessed via the <code class="language-plaintext highlighter-rouge">this</code> pointer which does not.
+<p>As described in the comments above, the data lives on the device, but is accessed via the <code class="language-bash highlighter-rouge">this</code> pointer which does not.
 The solution to this memory access error is to create a local copy of the pointer outside the scope of the RAJA lambda:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kt">void</span> <span class="nf">times_constant</span><span class="p">(</span><span class="kt">int</span> <span class="n">factor</span><span class="p">)</span> <span class="p">{</span>
@@ -124,7 +124,7 @@ The solution to this memory access error is to create a local copy of the pointe
 </code></pre></div></div>
 
 <p>Of course, this is not an error that will be captured by nvcc, hipcc or another host compiler (that I know of).
-At first we just examined each kernel in our codebase to ensure we did not use the <code class="language-plaintext highlighter-rouge">this</code> pointer implicitly.
+At first we just examined each kernel in our codebase to ensure we did not use the <code class="language-bash highlighter-rouge">this</code> pointer implicitly.
 Without too much effort however, we were able to develop a small tool to search our codebase for this exact case.</p>
 
 <h2 id="clang-tools">Clang Tools</h2>
@@ -132,7 +132,7 @@ Without too much effort however, we were able to develop a small tool to search 
 <p>The first step in creating this tool was to set up a CMake project to link against LLVM libraries.
 The directory structure looked like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 lambda-checker
 ├── CMakeLists.txt
 └── src
@@ -145,8 +145,8 @@ lambda-checker
 <p>Quite simple, no?
 <a href="https://clang.llvm.org/docs/RAVFrontendAction.html">The Clang documentation for frontend actions</a> walks through a similar task.</p>
 
-<p><code class="language-plaintext highlighter-rouge">src/driver.cpp</code> contains all of the code to instantiate an AST Action with a clang compiler instance
-(and any options you would like to give your driver), while <code class="language-plaintext highlighter-rouge">src/actions.hpp</code> contains the actual code to
+<p><code class="language-bash highlighter-rouge">src/driver.cpp</code> contains all of the code to instantiate an AST Action with a clang compiler instance
+(and any options you would like to give your driver), while <code class="language-bash highlighter-rouge">src/actions.hpp</code> contains the actual code to
 traverse the AST.</p>
 
 <h3 id="cmake">CMake</h3>
@@ -189,18 +189,18 @@ traverse the AST.</p>
 
 <h3 id="actions">Actions</h3>
 
-<p>Before we start with <code class="language-plaintext highlighter-rouge">src/actions.hpp</code>, let us first discuss strategy.
+<p>Before we start with <code class="language-bash highlighter-rouge">src/actions.hpp</code>, let us first discuss strategy.
 Finding a potentially dangerous lambda capture requires two predicates for each lambda function found in the AST:</p>
 
 <ol>
-  <li>Does the lambda capture <code class="language-plaintext highlighter-rouge">this</code>?</li>
-  <li>Does the lambda dereference <code class="language-plaintext highlighter-rouge">this</code> to access a pointer or array-like member?</li>
+  <li>Does the lambda capture <code class="language-bash highlighter-rouge">this</code>?</li>
+  <li>Does the lambda dereference <code class="language-bash highlighter-rouge">this</code> to access a pointer or array-like member?</li>
 </ol>
 
 <p>I broke each of these steps into its own frontend action.
-The first simple searches the AST for a lambda function and checks if it captures <code class="language-plaintext highlighter-rouge">this</code>:</p>
+The first simple searches the AST for a lambda function and checks if it captures <code class="language-bash highlighter-rouge">this</code>:</p>
 
-<h4 id="find-lambda-that-captures-this">Find Lambda that Captures <code class="language-plaintext highlighter-rouge">this</code>
+<h4 id="find-lambda-that-captures-this">Find Lambda that Captures <code class="language-bash highlighter-rouge">this</code>
 </h4>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/actions.hpp</span>
@@ -241,10 +241,10 @@ The first simple searches the AST for a lambda function and checks if it capture
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>You may find that we define the function <code class="language-plaintext highlighter-rouge">VisitLambdaExpr</code> - because this is a special name registered within clang,
+<p>You may find that we define the function <code class="language-bash highlighter-rouge">VisitLambdaExpr</code> - because this is a special name registered within clang,
 the compiler instance will run this function on any AST node that matches it: every lambda expression.</p>
 
-<p>Walking through the class above, we first check if the lambda expression captures <code class="language-plaintext highlighter-rouge">this</code>:</p>
+<p>Walking through the class above, we first check if the lambda expression captures <code class="language-bash highlighter-rouge">this</code>:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kt">bool</span> <span class="n">FoundThis</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
     <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">Expr</span><span class="o">-&gt;</span><span class="n">capture_begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">Expr</span><span class="o">-&gt;</span><span class="n">capture_end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
@@ -255,7 +255,7 @@ the compiler instance will run this function on any AST node that matches it: ev
     <span class="p">}</span>
 </code></pre></div></div>
 
-<p>If the lambda does not capture <code class="language-plaintext highlighter-rouge">this</code>, we can continue traversing the AST:</p>
+<p>If the lambda does not capture <code class="language-bash highlighter-rouge">this</code>, we can continue traversing the AST:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">FoundThis</span><span class="p">)</span>
       <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
@@ -277,11 +277,11 @@ member variables accessed in the lambda:</p>
     <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Now that we have a higher-level AST traversal class to find lambdas that capture <code class="language-plaintext highlighter-rouge">this</code>, we can look at our next
+<p>Now that we have a higher-level AST traversal class to find lambdas that capture <code class="language-bash highlighter-rouge">this</code>, we can look at our next
 AST traversal class which checks for problematic uses of member variables.
 The member visitor will accept <em>all forms of expressions</em>, so we only run that visitor on the statements
 in the body of the lambda.
-You may also notice that we set the <code class="language-plaintext highlighter-rouge">Parent</code> field of our <code class="language-plaintext highlighter-rouge">MemberVisitor</code> - this is to improve the quality
+You may also notice that we set the <code class="language-bash highlighter-rouge">Parent</code> field of our <code class="language-bash highlighter-rouge">MemberVisitor</code> - this is to improve the quality
 of the diagnostics we are able to emit. We’ll expand on this later.</p>
 
 <h4 id="member-visitor">Member Visitor</h4>
@@ -355,7 +355,7 @@ I think we should report three things to the user if a lambda expression meets o
 critera for an error:</p>
 
 <ol>
-  <li>Location in the lambda where the member variable is used via <code class="language-plaintext highlighter-rouge">this</code> pointer</li>
+  <li>Location in the lambda where the member variable is used via <code class="language-bash highlighter-rouge">this</code> pointer</li>
   <li>Location of that member’s declaration</li>
   <li>Suggestion for fixing the issue</li>
 </ol>
@@ -404,11 +404,11 @@ connect our AST consumer classes up to a compiler instance:</p>
 <span class="p">};</span>
 </code></pre></div></div>
 
-<p>Now we’re done with the file <code class="language-plaintext highlighter-rouge">src/actions.hpp</code>.</p>
+<p>Now we’re done with the file <code class="language-bash highlighter-rouge">src/actions.hpp</code>.</p>
 
 <h3 id="driver">Driver</h3>
 
-<p>In <code class="language-plaintext highlighter-rouge">src/driver.cpp</code> we create an AST frontend action to create and use the compiler action we defined in <code class="language-plaintext highlighter-rouge">src/actions.hpp</code>:</p>
+<p>In <code class="language-bash highlighter-rouge">src/driver.cpp</code> we create an AST frontend action to create and use the compiler action we defined in <code class="language-bash highlighter-rouge">src/actions.hpp</code>:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// src/driver.cpp</span>
 <span class="k">class</span> <span class="nc">LambdaCaptureCheckerAction</span> <span class="o">:</span> <span class="k">public</span> <span class="n">clang</span><span class="o">::</span><span class="n">ASTFrontendAction</span> <span class="p">{</span>
@@ -446,19 +446,19 @@ which can be loaded via compiler invocation, however I opted to stick with a sta
 <p>In order to fully test our AST action, I also created a subdirectory for examples,
 giving us the following directory structure:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 lambda-checker
 ├── CMakeLists.txt
 ├── src
 │   ├── CMakeLists.txt
 │   ├── driver.cpp
 │   └── actions.hpp
-└── test
+└── <span class="nb">test</span>
     └── capture-test.cpp
 
 </code></pre></div></div>
 
-<p>Where <code class="language-plaintext highlighter-rouge">capture-test.cpp</code> contains:</p>
+<p>Where <code class="language-bash highlighter-rouge">capture-test.cpp</code> contains:</p>
 
 <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// capture-test.cpp</span>
 <span class="k">struct</span> <span class="nc">CaptureTest</span> <span class="p">{</span>
@@ -512,7 +512,7 @@ lambda-checker
 
 <p>I added this as a CMake target such that the compile commands database would be generated for
 our test case (<a href="https://clang.llvm.org/docs/HowToSetupToolingForLLVM.html">additional documentation for compile-commands database</a>).
-To do this, add the following to the top-level <code class="language-plaintext highlighter-rouge">CMakeLists.txt</code>:</p>
+To do this, add the following to the top-level <code class="language-bash highlighter-rouge">CMakeLists.txt</code>:</p>
 
 <div class="language-cmake highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># top-level CMakeLists.txt</span>
 <span class="nb">set</span><span class="p">(</span>CMAKE_EXPORT_COMPILE_COMMANDS ON<span class="p">)</span>

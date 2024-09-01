@@ -73,7 +73,7 @@ What are some of the benefits of this, other than onboarding new developers?</p>
 
 <p>As we’ve developed our private spack repository, we’ve also added some spack environments along the way:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 floodsimulationrepo
 ├── environments
 │   ├── jupiter
@@ -103,7 +103,7 @@ For weeks we stepped through debuggers and discussed possibile issues with our c
 <p>We eventually enlisted the help of collaborators from another laboratory to build and test our codebase under similar conditions on their platforms to ensure they were able to reproduce the bug.
 In order to ensure our collaborators were able to accurately reproduce the environments in which we found the bug, we created and distributed spack environments specific to that development snapshot.</p>
 
-<p>Continuing with our <code class="language-plaintext highlighter-rouge">FloodSimulation</code> example, let us imagine we found a bug when running with CUDA versions v11.0.104 through 11.1 and HiOp v0.3.0 on our imaginary cluster Jupiter, and would like other teammembers to reproduce the bug on differrent platforms but using the same stack.
+<p>Continuing with our <code class="language-bash highlighter-rouge">FloodSimulation</code> example, let us imagine we found a bug when running with CUDA versions v11.0.104 through 11.1 and HiOp v0.3.0 on our imaginary cluster Jupiter, and would like other teammembers to reproduce the bug on differrent platforms but using the same stack.
 We might create an environment file like so:</p>
 
 <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
@@ -126,12 +126,12 @@ We then asked our collaborators to install all versions of this spack environmen
 
 <p>We also tend to track these environments in our repository like so:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
 floodsimulationrepo
 ├── environments
 │   ├── jupiter
 │   │   ├── env.yaml
-│   │   └── reproduce-error.yaml &lt;---
+│   │   └── reproduce-error.yaml &lt;<span class="nt">---</span>
 │   ├── saturn
 │   │   └── env.yaml
 │   └── osx
