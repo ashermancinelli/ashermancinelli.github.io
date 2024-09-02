@@ -68,6 +68,33 @@
   </em>
 </font>
 
+<h2 id="vim">Vim</h2>
+
+<h3 id="localremote-editing-with-neovim-and-neovide">Local+Remote Editing With Neovim And Neovide</h3>
+
+<p>First log into my machine forwarding port 6666 and attach to my tmux sessions</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span><span class="nb">local</span><span class="o">)</span>  <span class="nv">$ </span>ssh <span class="nt">-L</span> 6666:localhost:666 host
+<span class="o">(</span>remote<span class="o">)</span> <span class="nv">$ </span>tmux attach
+</code></pre></div></div>
+
+<p>Then when I want to edit something with a gui I start up neovim remotely:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>remote<span class="o">)</span> <span class="nv">$ </span>nvim <span class="nt">--listen</span> localhost:6666 <span class="nt">--headless</span> ./file.c
+</code></pre></div></div>
+
+<p>Or by running <code class="language-bash highlighter-rouge">:call serverstart<span class="o">(</span><span class="s2">"localhost:6666"</span><span class="o">)</span></code> in a neovim session I already have open and want to attach to locally.</p>
+
+<p>Then locally I start up neovide to get the local gui:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span><span class="nb">local</span><span class="o">)</span>  <span class="nv">$ </span>neovide <span class="nt">--no-multigrid</span> <span class="nt">--fork</span> <span class="nt">--server</span> localhost:6666
+</code></pre></div></div>
+
+<h3 id="plugins">Plugins</h3>
+
+<p>I use lazy.nvim. Call <code class="language-bash highlighter-rouge">:Lazy</code> to manage plugins.</p>
+
+<p><a href="https://castel.dev/post/lecture-notes-1/">crazy blog post on completions in vim</a></p>
+
 <h2 id="shellscripting">Shell/Scripting</h2>
 
 <h3 id="gnu-parallel">GNU Parallel</h3>
@@ -213,10 +240,6 @@ usage<span class="o">()</span> <span class="o">{</span>
     <span class="nv">say</span> <span class="p">"</span><span class="s2">ec=$?</span><span class="p">";</span>
 <span class="p">}</span>
 </code></pre></div></div>
-
-<h2 id="vim">Vim</h2>
-
-<p><a href="https://castel.dev/post/lecture-notes-1/">crazy blog post on completions in vim</a></p>
 
   </div>
 
