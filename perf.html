@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Linux Perf Notes – Asher Mancinelli – C++, Compilers, Coffee</title>
+    <title>Linux Perf Notes – Asher Mancinelli – compilers, coffee, etc</title>
 
         <meta charset="utf-8">
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -29,7 +29,7 @@
     <![endif]-->
 
     <link rel="stylesheet" type="text/css" href="/style.css">
-    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - C++, Compilers, Coffee" href="/feed.xml">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - compilers, coffee, etc" href="/feed.xml">
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
   </head>
@@ -42,7 +42,7 @@
 
           <div class="site-info">
             <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
-            <p class="site-description">C++, Compilers, Coffee</p>
+            <p class="site-description">compilers, coffee, etc</p>
           </div>
 
           <nav>
@@ -115,7 +115,7 @@ perf annotate <span class="nt">-i</span> perf.data <span class="nt">--stdio</spa
 <span class="nb">popd</span>
 </code></pre></div></div>
 
-<p>I usually like to create separate directories for all the data on a per-flag basis because I’m usually trying lots of different flags when investigating a performance change.
+<p>I like to create separate directories for all the data on a per-flag basis because I’m trying lots of different flags when investigating a performance change.
 This way, each time I want to try another combination of flags, my history is preserved in its own directory and I don’t have to wait to look at any reports:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># whatever directory was created by the above script</span>

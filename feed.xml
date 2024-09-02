@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-09-01T16:29:05-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>C++, Compilers, Coffee</subtitle><entry><title type="html">Linux Perf Notes</title><link href="/perf" rel="alternate" type="text/html" title="Linux Perf Notes" /><published>2024-08-31T00:00:00-07:00</published><updated>2024-08-31T00:00:00-07:00</updated><id>/Linux-Perf-Notes</id><content type="html" xml:base="/perf"><![CDATA[<p>How do I use perf again?</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-09-02T10:20:47-07:00</updated><id>/feed.xml</id><title type="html">Asher Mancinelli</title><subtitle>compilers, coffee, etc</subtitle><entry><title type="html">Linux Perf Notes</title><link href="/perf" rel="alternate" type="text/html" title="Linux Perf Notes" /><published>2024-08-31T00:00:00-07:00</published><updated>2024-08-31T00:00:00-07:00</updated><id>/Linux-Perf-Notes</id><content type="html" xml:base="/perf"><![CDATA[<p>How do I use perf again?</p>
 
 <font size="-1">
   <em>
@@ -54,7 +54,7 @@ perf annotate <span class="nt">-i</span> perf.data <span class="nt">--stdio</spa
 <span class="nb">popd</span>
 </code></pre></div></div>
 
-<p>I usually like to create separate directories for all the data on a per-flag basis because I’m usually trying lots of different flags when investigating a performance change.
+<p>I like to create separate directories for all the data on a per-flag basis because I’m trying lots of different flags when investigating a performance change.
 This way, each time I want to try another combination of flags, my history is preserved in its own directory and I don’t have to wait to look at any reports:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># whatever directory was created by the above script</span>
@@ -77,7 +77,185 @@ perf record ...
 make <span class="nv">FLAGS</span><span class="o">=</span><span class="s2">"-O3"</span>
 perf record ...
 perf diff
-</code></pre></div></div>]]></content><author><name></name></author><category term="linux, c++, perfanalysis" /><summary type="html"><![CDATA[How do I use perf again?]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
+</code></pre></div></div>]]></content><author><name></name></author><category term="linux, c++, perfanalysis" /><summary type="html"><![CDATA[How do I use perf again?]]></summary></entry><entry><title type="html">Shell and Scripting Notes</title><link href="/shell" rel="alternate" type="text/html" title="Shell and Scripting Notes" /><published>2024-08-30T00:00:00-07:00</published><updated>2024-08-30T00:00:00-07:00</updated><id>/Shell</id><content type="html" xml:base="/shell"><![CDATA[<p>What I need to remember when scripting</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="shellscripting">Shell/Scripting</h2>
+
+<h3 id="gnu-parallel">GNU Parallel</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">seq </span>200 | parallel <span class="nt">--bar</span> ./t.sh <span class="o">{}</span> <span class="s1">'&gt;'</span> ajm-<span class="o">{}</span>.txt
+</code></pre></div></div>
+
+<p>Used with some test script like this to find corner cases:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span><span class="nb">cat </span>t.sh
+  <span class="nv">init</span><span class="o">=</span><span class="nv">$PWD</span>
+  <span class="nb">cd</span> <span class="si">$(</span><span class="nb">mktemp</span> <span class="nt">-d</span><span class="si">)</span>
+  <span class="nb">echo</span> <span class="nv">$1</span>
+  ./exe <span class="nv">$1</span> &amp;&gt; stdout
+  diff stdout <span class="nv">$init</span>/correct <span class="o">&amp;&amp;</span> <span class="nb">echo </span>pass
+</code></pre></div></div>
+
+<p>This way I can run the executable N times and then recursively grep the output directory to find any cases that passed/failed.</p>
+
+<h3 id="bash-regex">Bash REGEX</h3>
+
+<p>Use <code class="language-bash highlighter-rouge"><span class="nv">$BASH_REMATCH</span></code> or <code class="language-bash highlighter-rouge"><span class="k">${</span><span class="nv">BASH_REMATCH</span><span class="p">[@]</span><span class="k">}</span></code> with the regex match operator in a test expression:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="o">[[</span> <span class="s2">" -c -fPIC /path/to/file.F90 "</span> <span class="o">=</span>~ <span class="o">[</span>^<span class="se">\ </span><span class="o">]</span>+/file.F90 <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">BASH_REMATCH</span><span class="p">[@]</span><span class="k">}</span>
+/path/to/file.F90
+</code></pre></div></div>
+
+<p><a href="http://molk.ch/tips/gnu/bash/rematch.html">more bash regex stuff</a></p>
+
+<h3 id="cli">CLI</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">exe</span><span class="o">=</span><span class="nv">$0</span>
+usage<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOD</span><span class="sh">
+</span><span class="no">EOD
+</span>    <span class="nb">exit </span>1
+<span class="o">}</span>
+
+<span class="nv">port</span><span class="o">=</span>6666
+<span class="nv">cmd</span><span class="o">=</span><span class="s2">""</span>
+<span class="nv">host</span><span class="o">=</span><span class="s2">""</span>
+<span class="k">while</span> <span class="o">[[</span> <span class="nv">$# </span><span class="nt">-ne</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">do
+  case</span> <span class="nv">$1</span> <span class="k">in</span>
+    <span class="nt">-p</span><span class="p">)</span> <span class="nv">port</span><span class="o">=</span><span class="nv">$2</span><span class="p">;</span> <span class="nb">shift</span><span class="p">;;</span>
+    <span class="nt">-h</span><span class="p">)</span> <span class="nv">host</span><span class="o">=</span><span class="nv">$2</span><span class="p">;</span> <span class="nb">shift</span><span class="p">;;</span>
+    <span class="nt">--</span><span class="p">)</span> <span class="nb">shift</span><span class="p">;</span><span class="nv">cmd</span><span class="o">=</span><span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span><span class="p">;</span><span class="nb">shift</span> <span class="nv">$#;</span><span class="p">;</span>
+    <span class="k">*</span><span class="o">)</span> usage<span class="p">;;</span>
+  <span class="k">esac</span>
+  <span class="nb">shift
+</span><span class="k">done</span>
+</code></pre></div></div>
+
+<h3 id="strings">Strings</h3>
+
+<p>global sub</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ var</span><span class="o">=</span><span class="s2">"some text to work with, more text"</span>
+  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">var</span><span class="p">//text/content</span><span class="k">}</span>
+  some content to work with, more content
+</code></pre></div></div>
+
+<p>previous command with some replacement</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span><span class="nb">echo </span>one two three one
+  one two three one
+  <span class="nv">$ </span><span class="o">!!</span>:gs/one/five
+  <span class="nv">$ </span><span class="nb">echo </span>five two three five
+  five two three five
+</code></pre></div></div>
+
+<p>local sub</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">var</span><span class="p">/text/content</span><span class="k">}</span>
+  some content to work with, more text
+</code></pre></div></div>
+
+<p>Deletes LONGEST match, be careful of ./file.txt as the ./ component will get the whole thing removed.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ file</span><span class="o">=</span>log.txt
+  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">file</span><span class="p">%%.*</span><span class="k">}</span>
+  log
+
+  <span class="nv">$ file</span><span class="o">=</span>./log.txt
+  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">file</span><span class="p">%.*</span><span class="k">}</span>
+  ./log
+</code></pre></div></div>
+
+<p>string casing</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">x</span><span class="o">=</span><span class="s2">"HELLO"</span>
+  <span class="nb">echo</span> <span class="nv">$x</span>  <span class="c"># HELLO</span>
+</code></pre></div></div>
+
+<p>tolower</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">y</span><span class="o">=</span><span class="k">${</span><span class="nv">x</span><span class="p">,,</span><span class="k">}</span>
+  <span class="nb">echo</span> <span class="nv">$y</span>  <span class="c"># hello</span>
+</code></pre></div></div>
+
+<p>toupper</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">z</span><span class="o">=</span><span class="k">${</span><span class="nv">y</span><span class="p">^^</span><span class="k">}</span>
+  <span class="nb">echo</span> <span class="nv">$z</span>  <span class="c"># HELLO</span>
+</code></pre></div></div>
+
+<p><a href="https://tldp.org/LDP/abs/html/string-manipulation.html">Linux documentation on string manipulation</a></p>
+
+<h2 id="perl">Perl</h2>
+
+<h3 id="one-liners">One-Liners</h3>
+
+<p>(Other perl one-liners)[https://learnbyexample.github.io/learn_perl_oneliners/one-liner-introduction.html]</p>
+
+<p>print line number and line of matching regex</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>perl <span class="nt">-ne</span> <span class="s1">'printf "%8d %s", $., $_ if /pattern/'</span>
+</code></pre></div></div>
+
+<p>in-place replacement of input</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>perl <span class="nt">-pi</span>.bk <span class="nt">-E</span> <span class="s1">'s/, !dbg !\d+//'</span> good.llvm
+      |      |                 | input file
+      |      | regex/code/replacement
+      | backup file extension to use
+</code></pre></div></div>
+
+<h3 id="getopt">Getopt</h3>
+
+<div class="language-perl highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<h3 id="misc">Misc</h3>
+
+<p>Print the command to be run, run the arguments in a shell, and print all the lines of stderr/stdout:</p>
+
+<div class="language-perl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">sub </span><span class="nf">sh</span> <span class="p">{</span>
+    <span class="k">my</span> <span class="nv">$cmd</span><span class="o">=</span><span class="p">"</span><span class="si">@_</span><span class="p">";</span>
+    <span class="nb">chomp</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+    <span class="nv">say</span> <span class="nv">$cmd</span><span class="p">;</span>
+    <span class="nb">open</span> <span class="k">my</span> <span class="nv">$fh</span><span class="p">,</span> <span class="p">"</span><span class="si">$cmd</span><span class="s2">|</span><span class="p">";</span>
+    <span class="k">print</span> <span class="k">while</span> <span class="p">(</span><span class="o">&lt;</span><span class="nv">$fh</span><span class="o">&gt;</span><span class="p">);</span>
+    <span class="nb">close</span> <span class="nv">$fh</span><span class="p">;</span>
+    <span class="nv">say</span> <span class="p">"</span><span class="s2">ec=$?</span><span class="p">";</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="vim">Vim</h2>
+
+<p><a href="https://castel.dev/post/lecture-notes-1/">crazy blog post on completions in vim</a></p>]]></content><author><name></name></author><category term="linux, shell, scripting" /><summary type="html"><![CDATA[What I need to remember when scripting]]></summary></entry><entry><title type="html">Barista - 9/10</title><link href="/barista" rel="alternate" type="text/html" title="Barista - 9/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Barista</id><content type="html" xml:base="/barista"><![CDATA[<p>Solid option in NW Portland with a variety of local roasts, not just their own.</p>
+
+<hr />
+
+<p>I had the spirit lifter blend from Puff roasters, which was unfortunately out of stock in the consumer-sized bags, so I was unable to see the actual roast level, flavor comps, etc.
+It tasted like a medium roast with some very mild sweetness, almost like a vanilla tea; very clear, very light body.</p>
+
+<p>They had two other roasts on espresso; this is a thoughtful cafe with interesting roasts.
+I plan on returning to rate all three roasts they have available, and I’ll keep my eyes on what new roasts they bring into the shop.</p>
+
+<p>Although they roast their own coffee, they also bring in beans from other local roasters.
+Sourcing and serving the best local beans is their mission statement, as listed on their website.</p>
+
+<hr />
+
+<h3>
+    <center>
+    <a href="https://baristapdx.com/" target="blank">
+    Barista homepage
+    </a>
+    </center>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Solid option in NW Portland with a variety of local roasts, not just their own.]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
 
 <hr />
 
@@ -146,28 +324,7 @@ I would want any espresso afficionados visiting the city to finish their time he
     Sterling Coffee homepage
     </a>
     </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[This place is something special. Please don’t leave Portland without trying their espresso.]]></summary></entry><entry><title type="html">Barista - 9/10</title><link href="/barista" rel="alternate" type="text/html" title="Barista - 9/10" /><published>2023-06-22T00:00:00-07:00</published><updated>2023-06-22T00:00:00-07:00</updated><id>/Barista</id><content type="html" xml:base="/barista"><![CDATA[<p>Solid option in NW Portland with a variety of local roasts, not just their own.</p>
-
-<hr />
-
-<p>I had the spirit lifter blend from Puff roasters, which was unfortunately out of stock in the consumer-sized bags, so I was unable to see the actual roast level, flavor comps, etc.
-It tasted like a medium roast with some very mild sweetness, almost like a vanilla tea; very clear, very light body.</p>
-
-<p>They had two other roasts on espresso; this is a thoughtful cafe with interesting roasts.
-I plan on returning to rate all three roasts they have available, and I’ll keep my eyes on what new roasts they bring into the shop.</p>
-
-<p>Although they roast their own coffee, they also bring in beans from other local roasters.
-Sourcing and serving the best local beans is their mission statement, as listed on their website.</p>
-
-<hr />
-
-<h3>
-    <center>
-    <a href="https://baristapdx.com/" target="blank">
-    Barista homepage
-    </a>
-    </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Solid option in NW Portland with a variety of local roasts, not just their own.]]></summary></entry><entry><title type="html">Superjoy Coffee Lab &amp;amp; Roasters - 10/10</title><link href="/superjoy" rel="alternate" type="text/html" title="Superjoy Coffee Lab &amp;amp; Roasters - 10/10" /><published>2023-06-21T00:00:00-07:00</published><updated>2023-06-21T00:00:00-07:00</updated><id>/Superjoy</id><content type="html" xml:base="/superjoy"><![CDATA[<p>There’s too much to say. You should really just go try their espresso.</p>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[This place is something special. Please don’t leave Portland without trying their espresso.]]></summary></entry><entry><title type="html">Superjoy Coffee Lab &amp;amp; Roasters - 10/10</title><link href="/superjoy" rel="alternate" type="text/html" title="Superjoy Coffee Lab &amp;amp; Roasters - 10/10" /><published>2023-06-21T00:00:00-07:00</published><updated>2023-06-21T00:00:00-07:00</updated><id>/Superjoy</id><content type="html" xml:base="/superjoy"><![CDATA[<p>There’s too much to say. You should really just go try their espresso.</p>
 
 <hr />
 
@@ -483,63 +640,4 @@ I think they would get a lot of business in a more central location, though I do
         Morgon Coffee Roasters homepage
         </a>
     </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Pleasant, mild, unique, imported roasts from Sweden - try some beans you’ll likely not find anywhere else!]]></summary></entry><entry><title type="html">Sterling - 10/10</title><link href="/sterling" rel="alternate" type="text/html" title="Sterling - 10/10" /><published>2023-06-14T00:00:00-07:00</published><updated>2023-06-14T00:00:00-07:00</updated><id>/Sterling</id><content type="html" xml:base="/sterling"><![CDATA[<p>This place is something special. <em>Please</em> don’t leave Portland without trying their espresso.</p>
-
-<hr />
-<p><em>6/21/23 update:</em></p>
-
-<p>In my second visit, I had another Etheopian roast, the <em>Sidama Setamo</em>, an Etheopian washed-process SO Heirloom roast with bergamot and wild cherries as flavor comps.
-The barista compared the roast to Fruit Loops, which felt far closer to my experience than the listed comps; I also got notes of green apple.</p>
-
-<p>I’m determined to try every roast this place puts on espresso.
-If I ever move from Portland, I’m going to kick myself for not having as much of this espresso as I can.
-This may be consistently the best espresso I’ll ever have.</p>
-
-<hr />
-<p><em>6/14/23 (original review):</em></p>
-
-<p>Prior to trying Sterling’s espresso, the #1 on my list was from Courier Coffee.
-When I told the barista at Courier how much I enjoyed their espresso, he made sure to recommend Sterling for my next stop.</p>
-
-<blockquote>
-  <p>Oh, you like espresso? Yeah, you should definitely check out Sterling</p>
-</blockquote>
-
-<p>He backed that comment up with a few more remarks about how special their espresso is, and it went to the top of my list of places to try next.
-It did not dissapoint.</p>
-
-<hr />
-
-<p>The barista was excited to welcome me in and tell me all about the roast they had ready for espresso, which happened to be the <em>Nigusse Lemma</em>, a natural-process small-batch Ethiopian roast with Etheopian Heriloom varietals.
-I got the same feelings I get trying a new whiskey at the Scotch Lounge on the East side of town - she talked through the roasting process at their East-side roastery and the origins of the beans.</p>
-
-<p>After pulling the shot, she put together a board with a small glass of sparkling water as a pallate clenser (as is usual in espresso-focused cafes).</p>
-
-<p>Adding to the Scotch Lounge feelings, the espresso was served in a glencairn-style whiskey serving glass along with a third glass with a drip brew so as to try the roast from another perspective.</p>
-
-<p>Both coffees were smooth and creamy - I jotted down <em>notes of strawberries and cream</em> before I even saw <em>“Raspberry &amp; Vanilla Cream”</em> listed as flavor comps on the bag of coffee they used for my espresso.</p>
-
-<hr />
-
-<p>This espresso struck me as <strong><em>perfectly balanced</em></strong> - without hesitation, I wanted to share it with every one of my friends still not won over by espresso.
-In my experience, when people try espresso and decide they hate it, 95% of the time it’s due to the intensity of the flavors, especially with sour and bitter notes.
-When I try an intense espresso, something that punches you in the mouth with sourness or fruit or bitterness or chocolate or nuttiness, I can enjoy the intensity (if it’s done well!) - but that seems to be the attribute of espresso that puts people off of it.</p>
-
-<p>This espresso was not intense in the usual way, but not too mild either.
-It was full of flavor with delicious notes of citrus, cream, a balance of bitterness to round out the flavor profile, yet not too intense to be someone’s first espresso.</p>
-
-<p>This espresso, along with their drip brew, the knowledgable baristas, and a cozy cafe seating area nestled into NW Portland with indoor trees and fast wifi brings this to the top of my list.
-The barista who served me happened to recommend <em>Barista</em> for one of my next espresso destinations which I haven’t had the opportunity to try yet - I look forward to posting a review given that the current champion of my list thinks I should give it a try.</p>
-
-<p>As I work out an espresso tour of Portland, I <em>have</em> to pencil Sterling in as the final destination.
-I would want any espresso afficionados visiting the city to finish their time here with a Sterling espresso.</p>
-
-<hr />
-
-<h3>
-    <center>
-    <a href="https://www.sterling.coffee/" target="blank">
-    Sterling Coffee homepage
-    </a>
-    </center>
-</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[This place is something special. Please don’t leave Portland without trying their espresso.]]></summary></entry></feed>
+</h3>]]></content><author><name></name></author><summary type="html"><![CDATA[Pleasant, mild, unique, imported roasts from Sweden - try some beans you’ll likely not find anywhere else!]]></summary></entry></feed>

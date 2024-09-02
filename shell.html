@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shell and Scripting Notes – Asher Mancinelli – compilers, coffee, etc</title>
+
+        <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    
+    <meta name="description" content="What I need to remember when scripting
+">
+    <meta property="og:description" content="What I need to remember when scripting
+">
+    
+    <meta name="author" content="Asher Mancinelli">
+
+    
+    <meta property="og:title" content="Shell and Scripting Notes">
+    <meta property="twitter:title" content="Shell and Scripting Notes">
+    
+
+    <link rel="icon" href="/images/chip.png">
+
+
+    <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Asher Mancinelli - compilers, coffee, etc" href="/feed.xml">
+
+    <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
+  </head>
+
+  <body>
+    <div class="wrapper-masthead">
+      <div class="container">
+        <header class="masthead clearfix">
+          <a href="/" class="site-avatar"><img src="https://raw.githubusercontent.com/ashermancinelli/ashermancinelli.github.io/master/images/chip.png"></a>
+
+          <div class="site-info">
+            <h1 class="site-name"><a href="/">Asher Mancinelli</a></h1>
+            <p class="site-description">compilers, coffee, etc</p>
+          </div>
+
+          <nav>
+            <a href="/">DevBlog</a>
+            <a href="/about">About</a>
+            <a href="/coffee">CoffeeBlog</a>
+          </nav>
+        </header>
+      </div>
+    </div>
+
+    <div id="main" role="main" class="container">
+      <article class="post">
+  <h1>Shell and Scripting Notes</h1>
+
+  <div class="entry">
+    <p>What I need to remember when scripting</p>
+
+<font size="-1">
+  <em>
+    These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
+    These views are entirely my own.
+  </em>
+</font>
+
+<h2 id="shellscripting">Shell/Scripting</h2>
+
+<h3 id="gnu-parallel">GNU Parallel</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">seq </span>200 | parallel <span class="nt">--bar</span> ./t.sh <span class="o">{}</span> <span class="s1">'&gt;'</span> ajm-<span class="o">{}</span>.txt
+</code></pre></div></div>
+
+<p>Used with some test script like this to find corner cases:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span><span class="nb">cat </span>t.sh
+  <span class="nv">init</span><span class="o">=</span><span class="nv">$PWD</span>
+  <span class="nb">cd</span> <span class="si">$(</span><span class="nb">mktemp</span> <span class="nt">-d</span><span class="si">)</span>
+  <span class="nb">echo</span> <span class="nv">$1</span>
+  ./exe <span class="nv">$1</span> &amp;&gt; stdout
+  diff stdout <span class="nv">$init</span>/correct <span class="o">&amp;&amp;</span> <span class="nb">echo </span>pass
+</code></pre></div></div>
+
+<p>This way I can run the executable N times and then recursively grep the output directory to find any cases that passed/failed.</p>
+
+<h3 id="bash-regex">Bash REGEX</h3>
+
+<p>Use <code class="language-bash highlighter-rouge"><span class="nv">$BASH_REMATCH</span></code> or <code class="language-bash highlighter-rouge"><span class="k">${</span><span class="nv">BASH_REMATCH</span><span class="p">[@]</span><span class="k">}</span></code> with the regex match operator in a test expression:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="o">[[</span> <span class="s2">" -c -fPIC /path/to/file.F90 "</span> <span class="o">=</span>~ <span class="o">[</span>^<span class="se">\ </span><span class="o">]</span>+/file.F90 <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">BASH_REMATCH</span><span class="p">[@]</span><span class="k">}</span>
+/path/to/file.F90
+</code></pre></div></div>
+
+<p><a href="http://molk.ch/tips/gnu/bash/rematch.html">more bash regex stuff</a></p>
+
+<h3 id="cli">CLI</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">exe</span><span class="o">=</span><span class="nv">$0</span>
+usage<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="no">EOD</span><span class="sh">
+</span><span class="no">EOD
+</span>    <span class="nb">exit </span>1
+<span class="o">}</span>
+
+<span class="nv">port</span><span class="o">=</span>6666
+<span class="nv">cmd</span><span class="o">=</span><span class="s2">""</span>
+<span class="nv">host</span><span class="o">=</span><span class="s2">""</span>
+<span class="k">while</span> <span class="o">[[</span> <span class="nv">$# </span><span class="nt">-ne</span> 0 <span class="o">]]</span><span class="p">;</span> <span class="k">do
+  case</span> <span class="nv">$1</span> <span class="k">in</span>
+    <span class="nt">-p</span><span class="p">)</span> <span class="nv">port</span><span class="o">=</span><span class="nv">$2</span><span class="p">;</span> <span class="nb">shift</span><span class="p">;;</span>
+    <span class="nt">-h</span><span class="p">)</span> <span class="nv">host</span><span class="o">=</span><span class="nv">$2</span><span class="p">;</span> <span class="nb">shift</span><span class="p">;;</span>
+    <span class="nt">--</span><span class="p">)</span> <span class="nb">shift</span><span class="p">;</span><span class="nv">cmd</span><span class="o">=</span><span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span><span class="p">;</span><span class="nb">shift</span> <span class="nv">$#;</span><span class="p">;</span>
+    <span class="k">*</span><span class="o">)</span> usage<span class="p">;;</span>
+  <span class="k">esac</span>
+  <span class="nb">shift
+</span><span class="k">done</span>
+</code></pre></div></div>
+
+<h3 id="strings">Strings</h3>
+
+<p>global sub</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ var</span><span class="o">=</span><span class="s2">"some text to work with, more text"</span>
+  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">var</span><span class="p">//text/content</span><span class="k">}</span>
+  some content to work with, more content
+</code></pre></div></div>
+
+<p>previous command with some replacement</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span><span class="nb">echo </span>one two three one
+  one two three one
+  <span class="nv">$ </span><span class="o">!!</span>:gs/one/five
+  <span class="nv">$ </span><span class="nb">echo </span>five two three five
+  five two three five
+</code></pre></div></div>
+
+<p>local sub</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">var</span><span class="p">/text/content</span><span class="k">}</span>
+  some content to work with, more text
+</code></pre></div></div>
+
+<p>Deletes LONGEST match, be careful of ./file.txt as the ./ component will get the whole thing removed.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ file</span><span class="o">=</span>log.txt
+  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">file</span><span class="p">%%.*</span><span class="k">}</span>
+  log
+
+  <span class="nv">$ file</span><span class="o">=</span>./log.txt
+  <span class="nv">$ </span><span class="nb">echo</span> <span class="k">${</span><span class="nv">file</span><span class="p">%.*</span><span class="k">}</span>
+  ./log
+</code></pre></div></div>
+
+<p>string casing</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">x</span><span class="o">=</span><span class="s2">"HELLO"</span>
+  <span class="nb">echo</span> <span class="nv">$x</span>  <span class="c"># HELLO</span>
+</code></pre></div></div>
+
+<p>tolower</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">y</span><span class="o">=</span><span class="k">${</span><span class="nv">x</span><span class="p">,,</span><span class="k">}</span>
+  <span class="nb">echo</span> <span class="nv">$y</span>  <span class="c"># hello</span>
+</code></pre></div></div>
+
+<p>toupper</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">z</span><span class="o">=</span><span class="k">${</span><span class="nv">y</span><span class="p">^^</span><span class="k">}</span>
+  <span class="nb">echo</span> <span class="nv">$z</span>  <span class="c"># HELLO</span>
+</code></pre></div></div>
+
+<p><a href="https://tldp.org/LDP/abs/html/string-manipulation.html">Linux documentation on string manipulation</a></p>
+
+<h2 id="perl">Perl</h2>
+
+<h3 id="one-liners">One-Liners</h3>
+
+<p>(Other perl one-liners)[https://learnbyexample.github.io/learn_perl_oneliners/one-liner-introduction.html]</p>
+
+<p>print line number and line of matching regex</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>perl <span class="nt">-ne</span> <span class="s1">'printf "%8d %s", $., $_ if /pattern/'</span>
+</code></pre></div></div>
+
+<p>in-place replacement of input</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>perl <span class="nt">-pi</span>.bk <span class="nt">-E</span> <span class="s1">'s/, !dbg !\d+//'</span> good.llvm
+      |      |                 | input file
+      |      | regex/code/replacement
+      | backup file extension to use
+</code></pre></div></div>
+
+<h3 id="getopt">Getopt</h3>
+
+<div class="language-perl highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<h3 id="misc">Misc</h3>
+
+<p>Print the command to be run, run the arguments in a shell, and print all the lines of stderr/stdout:</p>
+
+<div class="language-perl highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">sub </span><span class="nf">sh</span> <span class="p">{</span>
+    <span class="k">my</span> <span class="nv">$cmd</span><span class="o">=</span><span class="p">"</span><span class="si">@_</span><span class="p">";</span>
+    <span class="nb">chomp</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+    <span class="nv">say</span> <span class="nv">$cmd</span><span class="p">;</span>
+    <span class="nb">open</span> <span class="k">my</span> <span class="nv">$fh</span><span class="p">,</span> <span class="p">"</span><span class="si">$cmd</span><span class="s2">|</span><span class="p">";</span>
+    <span class="k">print</span> <span class="k">while</span> <span class="p">(</span><span class="o">&lt;</span><span class="nv">$fh</span><span class="o">&gt;</span><span class="p">);</span>
+    <span class="nb">close</span> <span class="nv">$fh</span><span class="p">;</span>
+    <span class="nv">say</span> <span class="p">"</span><span class="s2">ec=$?</span><span class="p">";</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="vim">Vim</h2>
+
+<p><a href="https://castel.dev/post/lecture-notes-1/">crazy blog post on completions in vim</a></p>
+
+  </div>
+
+  <hr>
+
+  <div class="date">
+    Written on Aug 30th, 2024
+  </div>
+
+  
+</article>
+
+    </div>
+
+    <div class="wrapper-footer">
+      <div class="container">
+        <footer class="footer">
+          
+<a href="mailto:ashermancinelli@gmail.com"><i class="svg-icon email"></i></a>
+
+
+<a href="https://github.com/ashermancinelli"><i class="svg-icon github"></i></a>
+
+<a href="https://www.linkedin.com/in/https://www.linkedin.com/in/asher-mancinelli-bb4a56144/"><i class="svg-icon linkedin"></i></a>
+
+
+
+
+<a href="https://youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ"><i class="svg-icon youtube"></i></a>
+
+        </footer>
+      </div>
+    </div>
+    
+    <!--
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+    -->
+    
+    
+
+  </body>
+</html>
