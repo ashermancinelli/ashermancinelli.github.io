@@ -4,11 +4,12 @@ layout: post
 title: Sterling - 10/10
 permalink: /sterling
 cat: coffee
----
+...
 
 This place is something special. *Please* don't leave Portland without trying their espresso.
 
 ---
+
 *6/21/23 update:*
 
 In my second visit, I had another Etheopian roast, the *Sidama Setamo*, an Etheopian washed-process SO Heirloom roast with bergamot and wild cherries as flavor comps.
