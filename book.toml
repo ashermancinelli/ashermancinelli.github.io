@@ -14,7 +14,7 @@ assets_version = "3.0.2" # do not edit: managed by `mdbook-admonish install`
 [output]
 
 [output.html]
-default-theme = "light"
+default-theme = "ayu"
 preferred-dark-theme = "coal"
 smart-punctuation = true
 mathjax-support = true
