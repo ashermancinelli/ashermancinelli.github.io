@@ -28,7 +28,9 @@ Eg:
 ```
 
 [One key difference between the two:](https://stackoverflow.com/questions/3488821/is-alloca-completely-replaceable)
-> The memory alloca() returns is valid as long as the current function persists. The lifetime of the memory occupied by a VLA is valid as long as the VLA's identifier remains in scope. You can `alloca` memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates.
+```admonish quote
+The memory alloca() returns is valid as long as the current function persists. The lifetime of the memory occupied by a VLA is valid as long as the VLA's identifier remains in scope. You can `alloca` memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates.
+```
 
 ## Memory Layout
 
@@ -48,8 +50,10 @@ When the function returns, the stack space will be available for subsequent func
 
 ## Examples
 
-GCC docs:
->  These arrays are declared like any other automatic arrays, but with a length that is not a constant expression. The storage is allocated at the point of declaration and deallocated when the block scope containing the declaration exits.
+From the GCC docs:
+```admonish quote
+These arrays are declared like any other automatic arrays, but with a length that is not a constant expression. The storage is allocated at the point of declaration and deallocated when the block scope containing the declaration exits.
+```
 
 ```c
 // ./vla <size>

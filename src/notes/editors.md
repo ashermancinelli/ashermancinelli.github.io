@@ -68,7 +68,7 @@ Setting the target granularity to `generic` means I can _usually_ install once f
 
 From a script, I load all the default packages I need by just choosing the first one that matches my current generic architecture.
 ```bash
-arch=`spack arch --platform`-`spack arch --operating-system`-`spack arch --generic-target`
+garch=`spack arch --platform`-`spack arch --operating-system`-`spack arch --generic-target`
 for pkg in ${packages[@]}; do eval `spack load --sh --first $pkg arch=$garch`; done
 ```
 
