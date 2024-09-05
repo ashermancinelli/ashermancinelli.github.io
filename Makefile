@@ -1,31 +1,23 @@
-
 PREFIX :=
-JEKYLL := $(shell type -p jekyll)
-RBVER  := 3.3.4
+MDBOOK := $(shell type -p mdbook)
+CARGO := $(shell type -p CARGO)
 
 ifeq ($(PREFIX),)
 PREFIX := $(shell pwd)/../ashermancinelli.github.io-build
 endif
 
 all:
-	$(JEKYLL) build --verbose --trace
+	$(MDBOOK) build --dest-dir $(PREFIX)
 
 serve:
-	$(JEKYLL) serve --verbose
+	$(MDBOOK) serve --dest-dir $(PREFIX)
 
 dep:
-	for prog in bundler rbenv; do \
-		type -p $$prog || false Needs program $$prog; \
-	done
-	rbenv versions | grep -q "$(RBVER)" || rbenv install $(RBVER)
-	rbenv global $(RBVER)
-	eval "$$(rbenv init)"
-	: This should be the rbenv install location
-	gem env home
-	bundler install
+	$(CARGO) install mdbook
+	$(CARGO) install mdbook-admonish
 
 install:
-	$(JEKYLL) build -d $(PREFIX) --verbose --trace
+	$(MDBOOX) build --dest-dir $(PREFIX)
 	cp ./CNAME $(PREFIX)
 
 deploy: install
