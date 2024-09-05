@@ -9,18 +9,33 @@ cat: cs
 
 How do I use perf again?
 
+# First, RTM.
 
-## RTM
+[Brendan Gregg's perf one-liners. Reread these every time. What you want is probably here.](https://www.brendangregg.com/perf.html)
+You should browse the rest of his site as well.
 
-* [Brendan Gregg perf one-liners. Reread these every time. What you want is probably here.](https://www.brendangregg.com/perf.html)
-
-Truly, read the manpages. The `perf` man pages could be more thorough and some commands are not well-documented (looking at you, `perf diff`), but they are invaluable resources.
+Please, read the manpages.
+The `perf` man pages could be more thorough and some commands are not well-documented (looking at you, `perf diff`), but they are invaluable resources.
 
 * [man perf](https://www.man7.org/linux/man-pages/man1/perf.1.html)
 * [man perf-list](https://www.man7.org/linux/man-pages/man1/perf-list.1.html)
 * [man perf-diff](https://www.man7.org/linux/man-pages/man1/perf-diff.1.html)
 
-## What is my app doing?
+# Visibility
+
+They key to performance is understand what your application is doing.
+
+Think about this in two ways: _first_ from the top-down, _then_ from the bottom up.
+
+## Top-Down
+
+~~~admonish todo
+unfinished
+~~~
+
+## Bottom-Up
+
+`perf` is ideal for this.
 
 This script watches most of the events I care about and generates all the reports in one place.
 
@@ -71,14 +86,15 @@ $PAGER $d/perf.annotate
 $PAGER $d/perf.report
 ```
 
-NOTE: make sure you build with `-fno-omit-frame-pointer` so perf can give you reasonable traces.
-Debug info works _okayyy_ but you'll end up with _massive_ data dumps that take forever to load into perf-report and other tools.
+~~~admonish tip
+Build with `-fno-omit-frame-pointer` so perf can give you reasonable traces.
+Debug info (`perf record --call-graph=dwarf`) works _okayyy_ but you'll end up with _massive_ perf output files that take forever to load into perf-report and other tools.
+~~~
 
 ## Why is my app slower when I X?
 
-```admonish note
-`perf-diff` is worse when name mangling is different (e.g. with Fortran apps) because perf can't match the events up.
-```
+I've seen next-to-noone mention `perf diff` for looking at differences between two profiles.
+I've found it invaluable when comparing performance of the same app built differently or with different compilers.
 
 ```bash
 make FLAGS="-O0"
@@ -86,4 +102,8 @@ perf record ...
 make FLAGS="-O3"
 perf record ...
 perf diff
+```
+
+```admonish warning title="Heads up!"
+`perf-diff` is worse when name mangling is different (e.g. with Fortran apps) because perf can't match the events up.
 ```

@@ -2,13 +2,19 @@
 
 [About](about.md)
 
+<!-- 
+
+For supported admonishments:
+https://tommilligan.github.io/mdbook-admonish/
+
+-->
+
 # Notes & References
 
 - [Linux Perf Notes](notes/2024-8-31-Linux-Perf-Notes.md)
 - [Shell and Scripting Notes](notes/2024-8-30-Shell.md)
 - [Editors and Tools](notes/editors.md)
 - [Values](notes/values.md)
-<!-- - [Value Statement](values.md) -->
 
 # Blog
 
