@@ -1,43 +1,46 @@
-PREFIX :=
 MDBOOK := $(shell type -p mdbook)
 CARGO := $(shell type -p CARGO)
+HOST := localhost
+PORT := 3000
 
-ifeq ($(PREFIX),)
-PREFIX := $(shell pwd)/../ashermancinelli.github.io-build
-endif
+RED:=\e[41m
+YELLOW:=\e[33m
+CYAN:=\e[36m
+GREEN:=\e[32m
+CLR:=\e[0m
+CLRNL:=$(CLR)\n
+INFO:=printf "\t\t$(CYAN)%s$(CLRNL)"
 
 all:
-	$(MDBOOK) build --dest-dir $(PREFIX)
+	@$(INFO) "Building"
+	$(MDBOOK) build
 
 serve:
-	$(MDBOOK) serve --dest-dir $(PREFIX)
+	@$(INFO) "Serving on $(HOST):$(PORT)"
+	$(MDBOOK) serve -n $(HOST) -p $(PORT)
 
 dep:
+	@$(INFO) "Installing dependencies"
 	$(CARGO) install mdbook
 	$(CARGO) install mdbook-admonish
 
-install:
-	$(MDBOOX) build --dest-dir $(PREFIX)
-	cp ./CNAME $(PREFIX)
-
-deploy: install
-	cd $(PREFIX) && \
-		if [ ! -d .git ]; then \
-			git init; \
-			git remote add \
-				origin git@github.com:ashermancinelli/ashermancinelli.github.io; \
-		fi
-	cd $(PREFIX) && \
-		if [ ! $$(git branch | cut -f2 -d' ') = "gh-pages" ]; then \
-			echo 'must be on branch gh-pages'; \
-			git fetch --all; \
-			git checkout -f gh-pages; \
-		fi
-	cd $(PREFIX) && \
-		rm -rf pres && \
+# https://github.com/rust-lang/mdBook/wiki/Automated-Deployment%3A-GitHub-Actions
+deploy: all
+	(test -d gh-pages || git worktree add gh-pages)
+	git config user.name "Asher Mancinelli"
+	git config user.email "<ashermancinelli@gmail.com>"
+	cd gh-pages && \
+		$(INFO) "Deleting the ref to prevent history" && \
+		git update-ref -d refs/heads/gh-pages && \
+		rm -rf * && \
+		$(INFO) "Copying the build directory into gh-pages worktree" && \
+		mv ../book/* . && \
+		cp ../CNAME . && \
 		git add . && \
-		git commit -m 'Publish' && \
-		git push
+		$(INFO) "Pushing to gh-pages branch" && \
+		git commit -m "Deploy to gh-pages" && \
+		git push --force --set-upstream origin gh-pages && \
+		$(INFO) "Done!"
 
 # Sometimes I forget which one
 publish: deploy

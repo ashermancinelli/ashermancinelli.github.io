@@ -6,6 +6,7 @@
 
 - [Linux Perf Notes](2024-8-31-Linux-Perf-Notes.md)
 - [Shell and Scripting Notes](2024-8-30-Shell.md)
+- [Editors and Tools](editors.md)
 <!-- - [Value Statement](values.md) -->
 
 # Blog

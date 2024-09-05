@@ -1,7 +1,7 @@
 # Debugging in Parallel
 
 Let's say you have a compiler pass that performs some transformation.
-You make some update to improve the pass or fix a bug...
+You check in a change to the compiler...
 
 ```c++
 void my_pass(ast_t *ast) {
@@ -9,9 +9,14 @@ void my_pass(ast_t *ast) {
 }
 ```
 
-and you get a bug report back.
+...and you get a bug report back.
 
 Something is broken, but it only shows up in a huge translation unit, and your pass runs thousands of times.
+How do you reduce the problem?
+
+## Constrain the Problem
+
+I break the code before and after my patch into two new functions, each called from the old depending on some environment variable:
 
 ```c++
 void old_pass(ast_t *ast) { /* ... */ }
@@ -30,6 +35,10 @@ void my_pass(ast_t *ast) {
 
     num_calls++;
 }
+```
+
+I can then change from the command line which code path the compiler will use when my pass is run:
+```bash
 ```
 
 ```bash
