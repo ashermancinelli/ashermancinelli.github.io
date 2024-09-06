@@ -50,8 +50,7 @@ When the function returns, the stack space will be available for subsequent func
 
 ## Examples
 
-From the GCC docs:
-```admonish quote
+```admonish quote title="GCC Documentation"
 These arrays are declared like any other automatic arrays, but with a length that is not a constant expression. The storage is allocated at the point of declaration and deallocated when the block scope containing the declaration exits.
 ```
 
@@ -103,9 +102,11 @@ diff: 48
 
 Compare the GCC docs for `alloca` with that of variable length arrays and notice the similarities:
 
-> The function alloca supports a kind of half-dynamic allocation in which blocks are allocated dynamically but freed automatically.
->
-> Allocating a block with alloca is an explicit action; you can allocate as many blocks as you wish, and compute the size at run time. But all the blocks are freed when you exit the function that alloca was called from, just as if they were automatic variables declared in that function. There is no way to free the space explicitly. 
+~~~admonish quote title="GCC Documentation"
+The function alloca supports a kind of half-dynamic allocation in which blocks are allocated dynamically but freed automatically.
+
+Allocating a block with alloca is an explicit action; you can allocate as many blocks as you wish, and compute the size at run time. But all the blocks are freed when you exit the function that alloca was called from, just as if they were automatic variables declared in that function. There is no way to free the space explicitly. 
+~~~
 
 ## Why Might This Be a Bad Idea?
 

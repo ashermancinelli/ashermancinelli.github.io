@@ -7,8 +7,6 @@ wip: false
 cat: cs
 -->
 
-How do I use perf again?
-
 # First, RTM.
 
 [Brendan Gregg's perf one-liners. Reread these every time. What you want is probably here.](https://www.brendangregg.com/perf.html)

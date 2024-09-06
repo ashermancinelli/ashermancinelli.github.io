@@ -5,7 +5,7 @@ These values motivate and inform how I work.
 
 They are _values_, meaning I _aspire_ to live up to them and they are at times in tension with each other.
 
-They are (in no order): curiosity, honesty, rigor, communication, empathy.
+They are: **curiosity, honesty, rigor, communication, empathy.**
 ```
 
 ## Curiosity
@@ -44,7 +44,11 @@ They are (in no order): curiosity, honesty, rigor, communication, empathy.
 
 * The code I write considers the user and the next developer to read or modify it.
     Have empathy on the developer that maintains your code, because it will most likely be you.
+* This includes writing tools for tasks that others also perform.
+    Share the value of your work with others and deduplicate where possible.
+    Make other's lives better.
 
+##
 ---
 
 [^nvda_values]: [Link to NVIDIA's core values page](https://www.nvidia.com/en-in/about-nvidia/culture-at-nvidia/)
