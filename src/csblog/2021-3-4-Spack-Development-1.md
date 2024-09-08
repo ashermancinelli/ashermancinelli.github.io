@@ -108,4 +108,4 @@ The next post will go further into managing environments and multi-platform conf
 
 [Next in this Series](/spack2)
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->

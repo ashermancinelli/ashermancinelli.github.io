@@ -242,4 +242,4 @@ Read on for discussion on additional uses for environments you should consider i
 
 [Next in this Series](/spack3)
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->

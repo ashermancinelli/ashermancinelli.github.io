@@ -508,7 +508,7 @@ The full code listings can be found in the [repository linked here](https://gith
 The code snippets used here for example purposes will not map perfectly to the current repository, but should
 serve as a concrete starting point.
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->
 
 ## References
 

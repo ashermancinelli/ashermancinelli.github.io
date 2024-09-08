@@ -7,7 +7,7 @@ wip: true
 cat: cs
 -->
 
-{% include mermaid.html %}
+<!-- {% include mermaid.html %} -->
 
 My mental model for compile-time programming.
 

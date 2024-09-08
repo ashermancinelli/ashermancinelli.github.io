@@ -696,7 +696,7 @@ Fortran has a wonderfully rich history, and it's certainly a part of our future.
 
 I hope you all enjoyed foray into the history of programming languages (and computing in general)!
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->
 
 <!---
 ## YouTube Description:

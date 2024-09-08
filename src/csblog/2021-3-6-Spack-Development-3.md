@@ -98,4 +98,4 @@ This way, the profiling team may work on a known working configuration of the so
 
 [Next in this Series](/spack4)
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->

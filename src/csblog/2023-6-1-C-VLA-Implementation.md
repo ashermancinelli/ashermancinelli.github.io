@@ -69,7 +69,7 @@ Declaring the array decrements the stack pointer enough to provide memory for th
 gcc _includes/vla/inspect-stack.c && LEN=10 IDX=4 ./a.out
 -->
 ```c
-{% include vla/inspect-stack.c %}
+<!-- {% include vla/inspect-stack.c %} -->
 ```
 ```shell
 $ uname -a
@@ -90,7 +90,7 @@ Instead of declaring a VLA array, we can create a pointer to memory allocated by
 gcc _includes/vla/inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
 -->
 ```c
-{% include vla/inspect-stack-alloca.c %}
+<!-- {% include vla/inspect-stack-alloca.c %} -->
 ```
 ```shell
 $ gcc inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
@@ -125,7 +125,7 @@ Docs explanation of alloca:
 clang -S -emit-llvm -o - _includes/vla/simple.c
 -- >
 ```c
-{% include vla/simple.c %}
+<!-- {% include vla/simple.c %} -->
 ```
 ```llvm
 @.str = private unnamed_addr constant [4 x i8] c"LEN\00", align 1

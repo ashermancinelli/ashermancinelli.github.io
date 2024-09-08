@@ -288,7 +288,7 @@ Thanks for tuning in and I hope you enjoyed this example program.
 You can find all the GPU examples I used in the links below.
 Connor Hoekstra, if you're reading or watching this, I hope to see you out-do my BQN and CUDA solutions in another video :).
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->
 
 ## Links
 

@@ -7,7 +7,7 @@ cat: cs
 
 Design principles apply to your tests more often then you might think!
 
-{% include disclaimer.html %}
+<!-- {% include disclaimer.html %} -->
 
 ## Intro
 
@@ -222,7 +222,7 @@ HiOp currently only runs in unified virtual memory, and we are actively
 developing the last parts of the optimization routines such that the solver can
 run entirely in device memory.
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->
 
 ## References
 

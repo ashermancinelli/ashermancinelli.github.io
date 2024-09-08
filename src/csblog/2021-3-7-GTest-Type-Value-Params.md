@@ -330,7 +330,7 @@ all:
 	$(CXX) addone_test.cpp $(CFLAGS) -o tests
 ```
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->
 
 ## References
 

@@ -110,7 +110,7 @@ Note that using a single value as an extent passed to `submdspan` squashes the d
 I hope this article was enough to get you interested in `mdspan` and the future of C++!
 Make sure to check out Daisy Hollman's appearance on CppCast, Context Free's YouTube channel, and the reference implementation of C++23's `std::mdspan`.
 
-{% include footer.html %}
+<!-- {% include footer.html %} -->
 
 ## Links
 

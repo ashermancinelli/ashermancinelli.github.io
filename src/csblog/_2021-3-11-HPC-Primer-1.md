@@ -7,7 +7,7 @@ cat: cs
 
 First lessons in distributed and high-performance computing.
 
-{% include disclaimer.html %}
+<!-- {% include disclaimer.html %} -->
 
 ### Intro
 
