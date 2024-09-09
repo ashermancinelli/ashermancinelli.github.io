@@ -1,10 +1,23 @@
-# About
+# Welcome
 
 I find compilers, programming languages and performance _really_ interesting.
 
 My personal notes and blog posts are enumerated on the left, or you can use the search bar at the top.
 
-For my day job, I work on [the NVHPC C, C++ and Fortran compilers at NVIDIA](https://developer.nvidia.com/hpc-sdk).
+Professionally, I work on [the NVHPC C, C++ and Fortran compilers at NVIDIA](https://developer.nvidia.com/hpc-sdk).
+
+```admonish tip title="Heads up!"
+For code blocks with shell commands, I use `;` instead of the typical `$`.
+This way, if you use the button in the top-right of the code block to copy the commands,
+the semicolon doesn't mess up the commands like `$` does.
+```
+
+---
+
+- [Youtube](https://www.youtube.com/@AsherMancinelli)
+- [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)
+
+---
 
 <font size="-1">
   <em>
@@ -12,12 +25,3 @@ For my day job, I work on [the NVHPC C, C++ and Fortran compilers at NVIDIA](htt
     These views are entirely my own.
   </em>
 </font>
-
-```admonish tip title="Heads up!"
-Many of these posts are incomplete.
-```
-
----
-
-- [Youtube](https://www.youtube.com/@AsherMancinelli)
-- [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)

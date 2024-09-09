@@ -7,18 +7,9 @@ wip: false
 cat: cs
 -->
 
-How do I use perf again?
+## Example
 
-
-## RTM
-
-* [Brendan Gregg perf one-liners. Reread these every time. What you want is probably here.](https://www.brendangregg.com/perf.html)
-
-Truly, read the manpages. The `perf` man pages could be more thorough and some commands are not well-documented (looking at you, `perf diff`), but they are invaluable resources.
-
-* [man perf](https://www.man7.org/linux/man-pages/man1/perf.1.html)
-* [man perf-list](https://www.man7.org/linux/man-pages/man1/perf-list.1.html)
-* [man perf-diff](https://www.man7.org/linux/man-pages/man1/perf-diff.1.html)
+Povray[^povray] is a cpu-intensive.
 
 ## What is my app doing?
 
@@ -87,3 +78,18 @@ make FLAGS="-O3"
 perf record ...
 perf diff
 ```
+
+## Resources
+
+* [Brendan Gregg perf one-liners. Reread these every time. What you want is probably here.](https://www.brendangregg.com/perf.html)
+
+Truly, read the manpages. The `perf` man pages could be more thorough and some commands are not well-documented (looking at you, `perf diff`), but they are invaluable resources.
+
+* [man perf](https://www.man7.org/linux/man-pages/man1/perf.1.html)
+* [man perf-list](https://www.man7.org/linux/man-pages/man1/perf-list.1.html)
+* [man perf-diff](https://www.man7.org/linux/man-pages/man1/perf-diff.1.html)
+
+* Search for Brendan Gregg on YouTube, he has plenty of great talks there.
+    * [Give me 15 minutes and I'll change your view of Linux tracing](https://www.youtube.com/watch?v=GsMs3n8CB6g)
+
+[^povray]: [  Benchmarking with POV-Ray  ](https://www.povray.org/download/benchmark.php)

@@ -9,16 +9,13 @@ https://tommilligan.github.io/mdbook-admonish/
 
 -->
 
-# Notes & References
-
-- [Linux Application Perf](notes/2024-8-31-Linux-Perf-Notes.md)
-- [Shell and Scripting Notes](notes/2024-8-30-Shell.md)
-- [Editors and Tools](notes/editors.md)
-- [Values](notes/values.md)
-
 # Blog
 
 - [Debugging in Parallel 9/4/2024](csblog/2024-9-4-Debugging-In-Parallel.md)
+- [The Linux Perf Tool 8/31/2024](notes/2024-8-31-Linux-Perf-Notes.md)
+- [Values 8/26/2024](notes/values.md)
+- [Shell+Scripting 8/24/2024](notes/2024-8-30-Shell.md)
+- [Editors+Tools 8/24/2024](notes/editors.md)
 - [Understanding VLA 6/1/2023](csblog/2023-6-1-C-VLA-Implementation.md)
 - [BQN and Reflections on the Joy of Programming 5/2/2022](csblog/2022-5-2-BQN-reflections.md)
 - [LLVM Development on NixOS 2/2/2022](csblog/2022-2-2-LLVM-Development-On-NixOS.md)

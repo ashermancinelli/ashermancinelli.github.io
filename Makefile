@@ -1,5 +1,5 @@
-MDBOOK := $(shell type -p mdbook)
-CARGO := $(shell type -p CARGO)
+MDBOOK := $(shell command -v mdbook)
+CARGO := $(shell command -v cargo)
 HOST := localhost
 PORT := 3000
 
@@ -16,6 +16,7 @@ all:
 	$(MDBOOK) build
 
 serve:
+	@$(INFO) "cargo: $(CARGO) "
 	@$(INFO) "Serving on $(HOST):$(PORT)"
 	$(MDBOOK) serve -n $(HOST) -p $(PORT)
 

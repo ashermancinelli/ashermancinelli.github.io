@@ -11,6 +11,9 @@ title = "Notes"
 command = "mdbook-admonish"
 assets_version = "3.0.2" # do not edit: managed by `mdbook-admonish install`
 
+[preprocessor.toc]
+marker = "[[_TOC_]]"
+
 [output]
 
 [output.html]

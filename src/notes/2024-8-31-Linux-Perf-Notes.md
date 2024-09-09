@@ -7,33 +7,227 @@ wip: false
 cat: cs
 -->
 
-# First, RTM.
-
-[Brendan Gregg's perf one-liners. Reread these every time. What you want is probably here.](https://www.brendangregg.com/perf.html)
-You should browse the rest of his site as well.
-
-Please, read the manpages.
-The `perf` man pages could be more thorough and some commands are not well-documented (looking at you, `perf diff`), but they are invaluable resources.
-
-* [man perf](https://www.man7.org/linux/man-pages/man1/perf.1.html)
-* [man perf-list](https://www.man7.org/linux/man-pages/man1/perf-list.1.html)
-* [man perf-diff](https://www.man7.org/linux/man-pages/man1/perf-diff.1.html)
-
-# Visibility
-
-They key to performance is understand what your application is doing.
-
-Think about this in two ways: _first_ from the top-down, _then_ from the bottom up.
-
-## Top-Down
-
-~~~admonish todo
-unfinished
+~~~admonish example title="TOC"
+[[_TOC_]]
 ~~~
 
-## Bottom-Up
+# Linux Performance Analysis
 
-`perf` is ideal for this.
+Perf analysis is _super_ interesting to me - why does an application run faster or slower under certain conditions?
+Why does one compiler (or compiler switch) produce a faster application than any other?
+I want to know what tricks my compiler is doing to speed up my app.
+
+This post is an example performance analysis of an application called _POV-Ray_.
+I explain my benchmark choice in the [section on POV-Ray](#pov-ray).
+
+## Approaches
+
+There are two ways I think about approaching performance analysis:
+a _top-down_ approach and a _bottom-up_ approach.
+I use perf for both of these approaches, so we'll start with an overview of perf
+and then apply these approaches to povray.
+
+~~~admonish tip title="Key Terms"
+**Top-down approach:** look at the application starting at the root of the call stack.
+What does `main()` look like? What is the application doing at an extremely high level?
+
+**Bottom-up approach:** Look at the fine-grained details of the application.
+What instructions are being executed? Is the application memory-, network-, or compute-bound?
+Where are these instructions coming from in the source?
+~~~
+
+# The Linux Perf Tool
+
+So how do we see into the guts of this app as it's running?
+
+IMO the best place to start (and often finish) is with the `perf` tool[^man_perf].
+Perf is a part of the linux project, so it's supported on all linux platforms.
+
+~~~admonish tip title=""
+If you don't already have it, you can _probably_ install it from your package manager as `linux-tools-common`:
+```bash
+sudo apt install linux-tools-common linux-tools-`uname -r`
+```
+~~~
+
+Perf has lots of commands, but the main two you'll need to interact with are `perf-record` and `perf-report`.
+The workflow is generally:
+
+```bash
+; perf stat -- ./a.out
+
+# This leaves the recorded data in ./perf.data
+; perf record -- ./a.out
+; perf report
+```
+
+`perf report` will give you a TUI report like this by default:
+```bash
+Samples: 88K of event 'cycles', Event count (approx.): 72137516526
+  Children      Self  Command  Shared Object              Symbol
++   99.61%     0.00%  povray   libboost_thread.so.1.74.0  [.] 0x00007f61e2d6f0cb
++   99.54%     0.00%  povray   povray                     [.] pov::Task::TaskThread
++   97.41%     0.03%  povray   povray                     [.] pov::Trace::ComputeTextureColour
++   97.40%     0.06%  povray   povray                     [.] pov::Trace::ComputeOneTextureColour
+...
+```
+
+This view lets you drill into the call stack to see **where samples were recorded** in the application,
+even down to the assembly instructions that corresponded to samples.
+`perf report --stdio` gives the same information initially, but with all the call stacks expanded;
+this may quickly get overwhelming.
+
+## Perf Events and Perf List
+
+Note that in the previous section I said `perf report` helps you view
+_where samples were recorded_ and not _where time was spent_;
+perf watches for _events_ and takes periodic samples of what's happening on the system when it wakes up.
+These samples do not necessarily indicate where user-time is being spent.
+
+Depending on your system, kernel configuration, and the configuration of perf itself, you'll have different events available to profile.
+
+Run `perf list`[^man_perf_list] to get a view of all the sampling events you can use on your system:
+```bash
+; perf list
+List of pre-defined events (to be used in -e):
+
+  branch-instructions OR branches                    [Hardware event]
+  branch-misses                                      [Hardware event]
+  bus-cycles                                         [Hardware event]
+  cache-misses                                       [Hardware event]
+...
+```
+The list of samplable events is rather long and often has architecture- and cpu-specific entries,
+so I'll leave it as an excercise for the reader to see what perf events are
+available to you on _your_ system, and learn what they all mean.
+
+The `-F` flag tells perf what observation frequency it should use when recording samples -
+often `-F 99` (for 99 hertz) is a good place to start; you get enough data to gain insights without being overwhelmed.
+You can always turn it down for longer-running applications or when you're sampling many different events.
+
+## Perf Stat
+
+The best place to start with perf is often `perf stat`.
+This command gives a brief overview of total samples of events.
+If something from perf stat's report stands out, you can use perf record with that
+event to drill into the sources of those samples.
+
+A perf stat run might look like this:
+```bash
+; perf stat -- ./a.out
+ Performance counter stats for './a.out':
+
+         21,829.89 msec task-clock                #    0.963 CPUs utilized          
+             7,097      context-switches          #  325.105 /sec                   
+                 1      cpu-migrations            #    0.046 /sec                   
+             5,062      page-faults               #  231.884 /sec                   
+    70,001,621,188      cycles                    #    3.207 GHz                    
+   155,086,020,805      instructions              #    2.22  insn per cycle         
+     9,013,464,722      branches                  #  412.896 M/sec                  
+        49,795,347      branch-misses             #    0.55% of all branches        
+
+      22.661088635 seconds time elapsed
+
+      21.785643000 seconds user
+       0.051956000 seconds sys
+```
+
+## Perf Record
+
+`perf record` is the primary command for recording samples about your application or system.
+
+My perf record commands usually look like this:
+```bash
+; export \
+    APP=./a.out \
+    FREQ=99 \
+    EVENTS="cycles,instructions,branches,loads,task-clock"
+; perf record \
+    --output perf-$APP.data \
+    --call-graph fp \
+    -F $FREQ -e $EVENTS \
+    -- taskset 0x2 ./a.out >/dev/null
+```
+
+I'm using `--call-graph fp` because I want perf to record callgraph information
+using the frame pointer - this is why you must often build your application with
+the `-fno-omit-frame-pointer` compiler flag (more on that later).
+
+I'm also using `taskset 0x2` because I only want the app to run on a single core
+in this example; perf can also record data for _everything running on your entire system_
+if you would like it to - or just on a specific core or for a specific application.
+
+## Perf Report
+
+~~~admonish todo
+need to finish this section
+~~~
+
+# POV-Ray
+
+Povray[^povray] is a 3d graphics code commonly used for benchmarking - it's part of CPU benchmarking suites from OpenBenchmarking[^openbench_povray] and spec2017[^spec2017_povray], which means a few things:
+
+1. It's reasonably well-optimized.
+    
+    Compiler writers and hardware vendors don't care too much about benchmarking
+    silly code that doesn't represent what users will actually be running.
+
+1. It's well-supported by most/all compilers
+
+    compiler authors and hardware vendors care about how well POV-Ray runs on their tech,
+    so we can assume they've put effort into handling povray's code well and ensuring
+    it builds with their compilers.
+
+1. It doesn't rely _too_ much on libraries.
+
+    OpenBenchmarking and SPEC suites are especially useful for benchmarking
+    because they are mostly self-contained.
+
+## Building POV-Ray
+
+POV-Ray is opensource, so we can download it and built it ourselves:
+```bash
+; git clone --branch latest-stable git@github.com:POV-Ray/povray.git
+; cd povray
+; (cd unix; ./preinstall.sh)
+```
+
+We will build the app with come debug information enabled so we have more visibility into the app's behavior as it runs:
+```bash
+; ./configure \
+    --disable-strip \
+    --prefix=$PWD/../povray-gcc-12/ \
+    COMPILED_BY="Asher Mancinelli on $(date)" \
+    CFLAGS='-fno-omit-frame-pointer' CXXFLAGS='-fno-omit-frame-pointer' \
+    CC=gcc-12 CXX=g++-12
+; ./unix/povray --version |& grep flags
+  Compiler flags:      -pipe -Wno-multichar -Wno-write-strings -fno-enforce-eh-specs -Wno-non-template-friend -g -pg -O3 -ffast-math -march=native -fno-omit-frame-pointer
+```
+
+~~~admonish tip title="Frame Pointer"
+You'll notice I used the unfortunately-named `-fno-omit-frame-pointer`.
+This tells the compiler to maintain the frame pointer in the frame pointer register (`ebp` on x86_64 systems);
+the compiler might otherwise reuse the register as a general-purpose register,
+but we're going to tell the perf tool to use the frame pointer register for building analyses,
+so we need to keep it around.
+~~~
+
+Once we have the app built, we can run the standard benchmark (this takes a while):
+
+```bash
+; make -j `nproc` install
+; ./unix/povray --benchmark </dev/null
+...
+Render Options
+  Quality:  9
+  Bounding boxes.......On   Bounding threshold: 3
+  Antialiasing.........On  (Method 1, Threshold 0.300, Depth 3, Jitter 0.30,
+ Gamma 2.50)
+==== [Rendering...] ========================================================
+Rendered 15360 of 262144 pixels (5%)
+```
+
+<!--
 
 This script watches most of the events I care about and generates all the reports in one place.
 
@@ -84,15 +278,14 @@ $PAGER $d/perf.annotate
 $PAGER $d/perf.report
 ```
 
-~~~admonish tip
-Build with `-fno-omit-frame-pointer` so perf can give you reasonable traces.
-Debug info (`perf record --call-graph=dwarf`) works _okayyy_ but you'll end up with _massive_ perf output files that take forever to load into perf-report and other tools.
-~~~
+NOTE: make sure you build with `-fno-omit-frame-pointer` so perf can give you reasonable traces.
+Debug info works _okayyy_ but you'll end up with _massive_ data dumps that take forever to load into perf-report and other tools.
 
 ## Why is my app slower when I X?
 
-I've seen next-to-noone mention `perf diff` for looking at differences between two profiles.
-I've found it invaluable when comparing performance of the same app built differently or with different compilers.
+```admonish note
+`perf-diff` is worse when name mangling is different (e.g. with Fortran apps) because perf can't match the events up.
+```
 
 ```bash
 make FLAGS="-O0"
@@ -102,6 +295,25 @@ perf record ...
 perf diff
 ```
 
-```admonish warning title="Heads up!"
-`perf-diff` is worse when name mangling is different (e.g. with Fortran apps) because perf can't match the events up.
-```
+-->
+
+# Further Reading
+
+[Brendan Gregg perf one-liners. Reread these several times. What you want is probably already here.](https://www.brendangregg.com/perf.html)
+
+Truly, read the manpages.
+The perf man pages could be more thorough and some commands are not exceptionally
+well-documented (looking at you, `perf diff`), but they are invaluable resources.
+
+Search for Brendan Gregg on YouTube, he has plenty of great talks there.
+For example: 
+[_Give me 15 minutes and I'll change your view of Linux tracing_](https://www.youtube.com/watch?v=GsMs3n8CB6g)
+
+## References
+
+[^povray]: [  POVRay.org: Benchmarking with POV-Ray  ](https://www.povray.org/download/benchmark.php)
+[^openbench_povray]: [OpenBenchmarking POV-Ray](https://openbenchmarking.org/test/system/povray)
+[^spec2017_povray]: [511.povray_r: SPEC CPU®2017 Benchmark Description](https://www.spec.org/cpu2017/Docs/benchmarks/511.povray_r.html)
+[^man_perf]: [man perf](https://www.man7.org/linux/man-pages/man1/perf.1.html)
+[^man_perf_list]: [man perf-list](https://www.man7.org/linux/man-pages/man1/perf-list.1.html)
+[^man_perf_diff]: [man perf-diff](https://www.man7.org/linux/man-pages/man1/perf-diff.1.html)
