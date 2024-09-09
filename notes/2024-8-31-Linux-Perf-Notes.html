@@ -1,0 +1,651 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>The Linux Perf Tool 8/31/2024 - Notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../about.html">About</a></li><li class="chapter-item expanded affix "><li class="part-title">Blog</li><li class="chapter-item expanded "><a href="../csblog/2024-9-4-Debugging-In-Parallel.html">Debugging in Parallel 9/4/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-31-Linux-Perf-Notes.html" class="active">The Linux Perf Tool 8/31/2024</a></li><li class="chapter-item expanded "><a href="../notes/values.html">Values 8/26/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-30-Shell.html">Shell+Scripting 8/24/2024</a></li><li class="chapter-item expanded "><a href="../notes/editors.html">Editors+Tools 8/24/2024</a></li><li class="chapter-item expanded "><a href="../csblog/2023-6-1-C-VLA-Implementation.html">Understanding VLA 6/1/2023</a></li><li class="chapter-item expanded "><a href="../csblog/2022-5-2-BQN-reflections.html">BQN and Reflections on the Joy of Programming 5/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html">LLVM Development on NixOS 2/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-10-CUDA-101-Matvec.html">CUDA 101: Matrix-Vector Product 2/10/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-12-12-Compiler-Perf-Debugging.html">Debugging Performance in Compilers 12/12/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-1-15-Std-Expected.html">std::expected And Why It's Awesome 1/15/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-7-GTest-Type-Value-Params.html">GTest Type and Value Parameterized Tests 3/7/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Spack-Development-3.html">Spack for Package Development Part 3 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Clang-Tools-Lambda.html">Clang Tools for Checking Domain-Specific Errors 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-5-Spack-Development-2.html">Spack for Package Development Part 2 3/5/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-4-Spack-Development-1.html">Spack for Package Development Part 1 3/4/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-12-23-std-mdspan-Response.html">A Look at std::mdspan 12/23/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-24-Popular-Languages-1965.html">Using the Most Popular Programming Languages of the '60s 10/24/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html">One Problem, Four Languages, Two Paradigms 10/19/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-11-BQN-Cpp-CUDA.html">BQN and CUDA C++ LeetCode Solutions 10/11/2021</a></li><li class="chapter-item expanded affix "><li class="part-title">Coffee</li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html">Best Espresso In Portland (6/11/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Sterling.html">Sterling (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Deadstock.html">Deadstock (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Barista.html">Barista (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Never-Coffee.html">Never Coffee (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Upper-Left-Roasters.html">Upper Left Roasters (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Abba.html">Abba (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Rose-City-Coffee.html">Rose City Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Sterling.html">Sterling (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-21-Superjoy.html">Superjoy (6/21/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Beginners-Guide.html">Beginners Guide (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-19-Seattle-Trip-Report.html">Seattle Trip Report (6/19/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Adapt-Coffee.html">Adapt Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Coava.html">Coava (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-PDX-Espresso-Research.html">PDX Espresso Research (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Nossa-Familia-Coffee.html">Nossa Familia Coffee (6/15/2023)</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+layout: post
+title: Linux Perf Notes
+permalink: /perf
+category: linux, c++, perfanalysis
+wip: false
+cat: cs
+-->
+<div id="admonition-toc" class="admonition admonish-example" role="note" aria-labelledby="admonition-toc-title">
+<div class="admonition-title">
+<div id="admonition-toc-title">
+<p>TOC</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-toc"></a>
+</div>
+<div>
+<ul>
+<li><a href="#linux-performance-analysis">Linux Performance Analysis</a>
+<ul>
+<li><a href="#approaches">Approaches</a></li>
+</ul>
+</li>
+<li><a href="#the-linux-perf-tool">The Linux Perf Tool</a>
+<ul>
+<li><a href="#perf-events-and-perf-list">Perf Events and Perf List</a></li>
+<li><a href="#perf-stat">Perf Stat</a></li>
+<li><a href="#perf-record">Perf Record</a></li>
+<li><a href="#perf-report">Perf Report</a></li>
+<li><a href="#flamegraph">FlameGraph</a></li>
+</ul>
+</li>
+<li><a href="#pov-ray">POV-Ray</a>
+<ul>
+<li><a href="#building-pov-ray">Building POV-Ray</a></li>
+</ul>
+</li>
+<li><a href="#further-reading">Further Reading</a>
+<ul>
+<li><a href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<h1 id="linux-performance-analysis"><a class="header" href="#linux-performance-analysis">Linux Performance Analysis</a></h1>
+<p>Perf analysis is <em>super</em> interesting to me - why does an application run faster or slower under certain conditions?
+Why does one compiler (or compiler switch) produce a faster application than any other?
+I want to know what tricks my compiler is doing to speed up my app.</p>
+<p>This post is an example performance analysis of an application called <em>POV-Ray</em>.
+I explain my benchmark choice in the <a href="#pov-ray">section on POV-Ray</a>.</p>
+<h2 id="approaches"><a class="header" href="#approaches">Approaches</a></h2>
+<p>There are two ways I think about approaching performance analysis:
+a <em>top-down</em> approach and a <em>bottom-up</em> approach.
+I use perf for both of these approaches, so we’ll start with an overview of perf
+and then apply these approaches to povray.</p>
+<div id="admonition-key-terms" class="admonition admonish-tip" role="note" aria-labelledby="admonition-key-terms-title">
+<div class="admonition-title">
+<div id="admonition-key-terms-title">
+<p>Key Terms</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-key-terms"></a>
+</div>
+<div>
+<p><strong>Top-down approach:</strong> look at the application starting at the root of the call stack.
+What does <code>main()</code> look like? What is the application doing at an extremely high level?</p>
+<p><strong>Bottom-up approach:</strong> Look at the fine-grained details of the application.
+What instructions are being executed? Is the application memory-, network-, or compute-bound?
+Where are these instructions coming from in the source?</p>
+</div>
+</div>
+<h1 id="the-linux-perf-tool"><a class="header" href="#the-linux-perf-tool">The Linux Perf Tool</a></h1>
+<p>So how do we see into the guts of this app as it’s running?</p>
+<p>IMO the best place to start (and often finish) is with the <code>perf</code> tool<sup class="footnote-reference"><a href="#man_perf">1</a></sup>.
+Perf is a part of the linux project, so it’s supported on all linux platforms.</p>
+<div id="admonition-default" class="admonition admonish-tip" role="note">
+<div>
+<p>If you don’t already have it, you can <em>probably</em> install it from your package manager as <code>linux-tools-common</code>:</p>
+<pre><code class="language-bash">sudo apt install linux-tools-common linux-tools-`uname -r`
+</code></pre>
+</div>
+</div>
+<p>Perf has lots of commands, but the main two you’ll need to interact with are <code>perf-record</code> and <code>perf-report</code>.
+The workflow is generally:</p>
+<pre><code class="language-bash">; perf stat -- ./a.out
+
+# This leaves the recorded data in ./perf.data
+; perf record -- ./a.out
+; perf report
+</code></pre>
+<p>Perf report helps you drill into the call stack to see <strong>where samples were recorded</strong> in the application,
+even down to the assembly instructions that corresponded to samples.</p>
+<h2 id="perf-events-and-perf-list"><a class="header" href="#perf-events-and-perf-list">Perf Events and Perf List</a></h2>
+<p>Note that in the previous section I said <code>perf report</code> helps you view
+<em>where samples were recorded</em> and not <em>where time was spent</em>;
+perf watches for <em>events</em> and takes periodic samples of what’s happening on the system when it wakes up.
+These samples do not necessarily indicate where user-time is being spent.</p>
+<p>Depending on your system, kernel configuration, and the configuration of perf itself, you’ll have different events available to profile.</p>
+<p>Run <code>perf list</code><sup class="footnote-reference"><a href="#man_perf_list">2</a></sup> to get a view of all the sampling events you can use on your system:</p>
+<pre><code class="language-bash">; perf list
+List of pre-defined events (to be used in -e):
+
+  branch-instructions OR branches                    [Hardware event]
+  branch-misses                                      [Hardware event]
+  bus-cycles                                         [Hardware event]
+  cache-misses                                       [Hardware event]
+...
+</code></pre>
+<p>The list of samplable events is rather long and often has architecture- and cpu-specific entries,
+so I’ll leave it as an excercise for the reader to see what perf events are
+available to you on <em>your</em> system, and learn what they all mean.</p>
+<p>The <code>-F</code> flag tells perf what observation frequency it should use when recording samples -
+often <code>-F 99</code> (for 99 hertz) is a good place to start; you get enough data to gain insights without being overwhelmed.
+You can always turn it down for longer-running applications or when you’re sampling many different events.</p>
+<h2 id="perf-stat"><a class="header" href="#perf-stat">Perf Stat</a></h2>
+<p>The best place to start with perf is often <code>perf stat</code>.
+This command gives a brief overview of total samples of events.
+If something from perf stat’s report stands out, you can use perf record with that
+event to drill into the sources of those samples.</p>
+<p>A perf stat run might look like this:</p>
+<pre><code class="language-bash">; perf stat -- ./a.out
+ Performance counter stats for './a.out':
+
+         21,829.89 msec task-clock                #    0.963 CPUs utilized          
+             7,097      context-switches          #  325.105 /sec                   
+                 1      cpu-migrations            #    0.046 /sec                   
+             5,062      page-faults               #  231.884 /sec                   
+    70,001,621,188      cycles                    #    3.207 GHz                    
+   155,086,020,805      instructions              #    2.22  insn per cycle         
+     9,013,464,722      branches                  #  412.896 M/sec                  
+        49,795,347      branch-misses             #    0.55% of all branches        
+
+      22.661088635 seconds time elapsed
+
+      21.785643000 seconds user
+       0.051956000 seconds sys
+</code></pre>
+<h2 id="perf-record"><a class="header" href="#perf-record">Perf Record</a></h2>
+<p><code>perf record</code> is the primary command for recording samples about your application or system.</p>
+<p>My perf record commands usually look like this:</p>
+<pre><code class="language-bash">; export \
+    APP=./a.out \
+    FREQ=99 \
+    EVENTS="cycles,instructions,branches,loads,task-clock"
+; perf record \
+    --output perf-$APP.data \
+    --call-graph fp \
+    -F $FREQ -e $EVENTS \
+    -- taskset 0x2 ./a.out &gt;/dev/null
+</code></pre>
+<p>I’m using <code>--call-graph fp</code> because I want perf to record callgraph information
+using the frame pointer - this is why you must often build your application with
+the <code>-fno-omit-frame-pointer</code> compiler flag (more on that later).</p>
+<p>I’m also using <code>taskset 0x2</code> because I only want the app to run on a single core
+in this example; perf can also record data for <em>everything running on your entire system</em>
+if you would like it to - or just on a specific core or for a specific application.</p>
+<h2 id="perf-report"><a class="header" href="#perf-report">Perf Report</a></h2>
+<p><code>perf report</code> will give you a TUI report like this by default:</p>
+<pre><code class="language-bash">Samples: 88K of event 'cycles', Event count (approx.): 72137516526
+  Children      Self  Command  Shared Object              Symbol
++   99.61%     0.00%  povray   libboost_thread.so.1.74.0  [.] 0x00007f61e2d6f0cb
++   99.54%     0.00%  povray   povray                     [.] pov::Task::TaskThread
++   97.41%     0.03%  povray   povray                     [.] pov::Trace::ComputeTextureColour
++   97.40%     0.06%  povray   povray                     [.] pov::Trace::ComputeOneTextureColour
+...
+</code></pre>
+<p>Notice the event used for the report is given in the first line.</p>
+<p><code>perf report --stdio</code> gives the same information initially, but with all the call stacks expanded;
+this may get overwhelming.
+For a the 20 second recording I took for this example, the stdio output of
+perf report was over 10k lines long:</p>
+<pre><code class="language-bash">; perf report --stdio|wc -l
+10010
+</code></pre>
+<p>From inside the TUI you can press <code>h</code> to get a list of all the available commands,
+so I won’t enumerate them here.</p>
+<p>I usually run perf report with the <code>-G</code> flag, which is shorthand for <code>--inverted</code>,
+meaning the callgraph representation is inverted.</p>
+<p>You may have noticed that the snippet from perf report I pasted above starts
+with two columns: <code>Self</code> and <code>Children</code>.</p>
+<div id="admonition-the-self-and-children-columns" class="admonition admonish-tip" role="note" aria-labelledby="admonition-the-self-and-children-columns-title">
+<div class="admonition-title">
+<div id="admonition-the-self-and-children-columns-title">
+<p>The <code>Self</code> and <code>Children</code> columns</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-the-self-and-children-columns"></a>
+</div>
+<div>
+<p>The <em>Children</em> indicates the percentage of samples taken in that stack frame
+<em>or any of its children</em> - meaning any samples recorded while in this stack
+frame or that of any functions called from the current stack frame.</p>
+<p>The <em>Self</em> column is more significant: it indicates what percentage of samples
+were taken <em>in the given stack frame only</em> - meaning instructions coming from
+that function alone, and not any functions it calls.</p>
+<p>The <code>main()</code> function is always at the top, since it calls all other function.
+However, unless your entire program was inlined into the main routine, its <em>Self</em>
+column is likely very low since most of the work being done is probably happening
+elsewhere.</p>
+</div>
+</div>
+<h2 id="flamegraph"><a class="header" href="#flamegraph">FlameGraph</a></h2>
+<p>I mention Brendan Gregg<sup class="footnote-reference"><a href="#brendan_gregg_blog">3</a></sup> a few times in this post, and you should get familiar with
+him and his work.
+His blog has many pearls and he might have a one-liner for exactly your use case.</p>
+<p>One of his other contributions is the FlameGraph repo<sup class="footnote-reference"><a href="#brendan_gregg_flamegraph">4</a></sup>.</p>
+<p>Remember how our perf report contains over 10k lines of reporting for just a single application running for ~20 seconds?
+His flamegraph repo gives us a way to visualize and gain insights from <em>all</em> of that data at a very high level
+by creating a flamegraph from perf’s recorded data.</p>
+<div id="admonition-note" class="admonition admonish-tip" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note"></a>
+</div>
+<div>
+<p>The FlameGraph repo actually knows how to deal with other profilers too, like DTrace and SystemTap.</p>
+</div>
+</div>
+<p>A workflow for generating a flamegraph might look like this:</p>
+<pre><code class="language-bash"># build and profile your application
+; make
+; perf record --call-graph fp -- ./a.out
+
+; git clone https://github.com/brendangregg/FlameGraph ../FlameGraph
+
+; perf script \
+    | ../FlameGraph/stackcollapse-perf.pl \
+    | ../FlameGraph/flamegraph.pl \
+    &gt; flamegraph.svg
+</code></pre>
+<div id="admonition-note-1" class="admonition admonish-tip" role="note" aria-labelledby="admonition-note-1-title">
+<div class="admonition-title">
+<div id="admonition-note-1-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note-1"></a>
+</div>
+<div>
+<p>The FlameGraph scripts have actally been merged into the linux kernel’s repo,
+so perf built for a newer kernel has FlameGraph as a built-in script, used like so:</p>
+<pre><code class="language-bash">; perf script flamegraph -- ./a.out
+
+# alternatively...
+; perf record -- ./a.out
+; perf script report flamegraph
+</code></pre>
+<p>This requires python scripting support built into perf, which my perf build does
+not have, so I can’t test it myself. I still use the scripts from Brendan’s repo.</p>
+</div>
+</div>
+<h1 id="pov-ray"><a class="header" href="#pov-ray">POV-Ray</a></h1>
+<p>Povray<sup class="footnote-reference"><a href="#povray">5</a></sup> is a 3d graphics code commonly used for benchmarking - it’s part of CPU benchmarking suites from OpenBenchmarking<sup class="footnote-reference"><a href="#openbench_povray">6</a></sup> and spec2017<sup class="footnote-reference"><a href="#spec2017_povray">7</a></sup>, which means a few things:</p>
+<ol>
+<li>
+<p>It’s reasonably well-optimized.</p>
+<p>Compiler writers and hardware vendors don’t care too much about benchmarking
+silly code that doesn’t represent what users will actually be running.</p>
+</li>
+<li>
+<p>It’s cross-platform</p>
+<p>Part of its utility is that we can compare performance across hardware vendors</p>
+</li>
+<li>
+<p>It’s well-supported by most/all compilers</p>
+<p>compiler authors and hardware vendors care about how well POV-Ray runs on their tech,
+so we can assume they’ve put effort into handling povray’s code well and ensuring
+it builds with their compilers.</p>
+</li>
+<li>
+<p>It doesn’t rely <em>too</em> much on libraries.</p>
+<p>OpenBenchmarking and SPEC suites are especially useful for benchmarking
+because they are mostly self-contained.</p>
+</li>
+</ol>
+<h2 id="building-pov-ray"><a class="header" href="#building-pov-ray">Building POV-Ray</a></h2>
+<p>POV-Ray is opensource, so we can download it and built it ourselves:</p>
+<pre><code class="language-bash">; git clone --branch latest-stable git@github.com:POV-Ray/povray.git
+; cd povray
+; (cd unix; ./preinstall.sh)
+</code></pre>
+<p>We will build the app with come debug information enabled so we have more visibility into the app’s behavior as it runs:</p>
+<pre><code class="language-bash">; ./configure \
+    --disable-strip \
+    --prefix=$PWD/../povray-gcc-12/ \
+    COMPILED_BY="Asher Mancinelli on $(date)" \
+    CFLAGS='-fno-omit-frame-pointer' CXXFLAGS='-fno-omit-frame-pointer' \
+    CC=gcc-12 CXX=g++-12
+; ./unix/povray --version |&amp; grep flags
+  Compiler flags:      -pipe -Wno-multichar -Wno-write-strings -fno-enforce-eh-specs -Wno-non-template-friend -g -pg -O3 -ffast-math -march=native -fno-omit-frame-pointer
+</code></pre>
+<div id="admonition-frame-pointer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-frame-pointer-title">
+<div class="admonition-title">
+<div id="admonition-frame-pointer-title">
+<p>Frame Pointer</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-frame-pointer"></a>
+</div>
+<div>
+<p>You’ll notice I used the unfortunately-named <code>-fno-omit-frame-pointer</code>.
+This tells the compiler to maintain the frame pointer in the frame pointer register (<code>ebp</code> on x86_64 systems);
+the compiler might otherwise reuse the register as a general-purpose register,
+but we’re going to tell the perf tool to use the frame pointer register for building analyses,
+so we need to keep it around.</p>
+</div>
+</div>
+<p>Once we have the app built, we can run the standard benchmark (this takes a while):</p>
+<pre><code class="language-bash">; make -j `nproc` install
+; ./unix/povray --benchmark &lt;/dev/null
+...
+Render Options
+  Quality:  9
+  Bounding boxes.......On   Bounding threshold: 3
+  Antialiasing.........On  (Method 1, Threshold 0.300, Depth 3, Jitter 0.30,
+ Gamma 2.50)
+==== [Rendering...] ========================================================
+Rendered 15360 of 262144 pixels (5%)
+</code></pre>
+<!--
+
+This script watches most of the events I care about and generates all the reports in one place.
+
+```bash
+set -x
+
+events="cycles:u,instructions,user_time,cache-misses,branch-misses,task-clock"
+freq=99 # sampling frequency
+app=$PWD/a.out
+config="$*"
+name=$(echo "$*" | sed -e 's/ /_/g')
+
+ulimit -Ss unlimited
+test -d $name || mkdir $name
+pushd $name
+
+perf record \
+    --output perf.data \
+    --call-graph fp \
+    -F $freq -e "$events" \
+    -- taskset 0x2 $app >/dev/null
+
+perf report \
+    --stdio -G \
+    --inline --itrace=i \
+    > perf.report
+
+perf stat record \
+    -o perf-stat.data \
+    -e "$events" \
+    -- taskset 0x2 $app >/dev/null
+
+# --stdio much preferred to --stdio2
+perf annotate -i perf.data --stdio > perf.annotate
+
+popd
+```
+
+I like to create separate directories for all the data on a per-flag basis because I'm trying lots of different flags when investigating a performance change.
+This way, each time I want to try another combination of flags, my history is preserved in its own directory and I don't have to wait to look at any reports:
+
+```bash
+# whatever directory was created by the above script
+d="flags"
+perf report -i $d/perf.data
+perf stat report $d/perf-stat.data
+$PAGER $d/perf.annotate
+$PAGER $d/perf.report
+```
+
+NOTE: make sure you build with `-fno-omit-frame-pointer` so perf can give you reasonable traces.
+Debug info works _okayyy_ but you'll end up with _massive_ data dumps that take forever to load into perf-report and other tools.
+
+## Why is my app slower when I X?
+
+```admonish note
+`perf-diff` is worse when name mangling is different (e.g. with Fortran apps) because perf can't match the events up.
+```
+
+```bash
+make FLAGS="-O0"
+perf record ...
+make FLAGS="-O3"
+perf record ...
+perf diff
+```
+
+-->
+<h1 id="further-reading"><a class="header" href="#further-reading">Further Reading</a></h1>
+<p>Truly, read the manpages.
+The perf man pages could be more thorough and some commands are not exceptionally
+well-documented (looking at you, <code>perf diff</code>), but they are invaluable resources.</p>
+<p>Search for Brendan Gregg on YouTube, he has plenty of great talks there.
+For example:
+<a href="https://www.youtube.com/watch?v=GsMs3n8CB6g"><em>Give me 15 minutes and I’ll change your view of Linux tracing</em></a></p>
+<h2 id="references"><a class="header" href="#references">References</a></h2>
+<div class="footnote-definition" id="brendan_gregg_blog"><sup class="footnote-definition-label">3</sup>
+<p><a href="https://www.brendangregg.com/perf.html">Brendan Gregg’s blog post with perf one-liners. Reread this list several times. What you want is probably already here.</a></p>
+</div>
+<div class="footnote-definition" id="brendan_gregg_flamegraph"><sup class="footnote-definition-label">4</sup>
+<p><a href="https://github.com/brendangregg/FlameGraph">FlameGraph repo</a>. <a href="https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html">See also: his blog post on flamegraphs</a></p>
+</div>
+<div class="footnote-definition" id="povray"><sup class="footnote-definition-label">5</sup>
+<p><a href="https://www.povray.org/download/benchmark.php">  POVRay.org: Benchmarking with POV-Ray  </a></p>
+</div>
+<div class="footnote-definition" id="openbench_povray"><sup class="footnote-definition-label">6</sup>
+<p><a href="https://openbenchmarking.org/test/system/povray">OpenBenchmarking POV-Ray</a></p>
+</div>
+<div class="footnote-definition" id="spec2017_povray"><sup class="footnote-definition-label">7</sup>
+<p><a href="https://www.spec.org/cpu2017/Docs/benchmarks/511.povray_r.html">511.povray_r: SPEC CPU®2017 Benchmark Description</a></p>
+</div>
+<div class="footnote-definition" id="man_perf"><sup class="footnote-definition-label">1</sup>
+<p><a href="https://www.man7.org/linux/man-pages/man1/perf.1.html">man perf</a></p>
+</div>
+<div class="footnote-definition" id="man_perf_list"><sup class="footnote-definition-label">2</sup>
+<p><a href="https://www.man7.org/linux/man-pages/man1/perf-list.1.html">man perf-list</a></p>
+</div>
+<div class="footnote-definition" id="man_perf_diff"><sup class="footnote-definition-label">8</sup>
+<p><a href="https://www.man7.org/linux/man-pages/man1/perf-diff.1.html">man perf-diff</a></p>
+</div>
+<div class="footnote-definition" id="redhat_flamegraph"><sup class="footnote-definition-label">9</sup>
+<p><a href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-flamegraphs_monitoring-and-managing-system-status-and-performance#creating-flamegraphs-over-the-entire-system_getting-started-with-flamegraphs">RedHat blog post on flamegraphs</a></p>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2024-9-4-Debugging-In-Parallel.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../notes/values.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2024-9-4-Debugging-In-Parallel.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../notes/values.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

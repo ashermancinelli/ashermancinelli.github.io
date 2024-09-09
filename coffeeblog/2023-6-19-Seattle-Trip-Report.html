@@ -1,0 +1,319 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Seattle Trip Report (6/19/2023) - Notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../about.html">About</a></li><li class="chapter-item expanded affix "><li class="part-title">Blog</li><li class="chapter-item expanded "><a href="../csblog/2024-9-4-Debugging-In-Parallel.html">Debugging in Parallel 9/4/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-31-Linux-Perf-Notes.html">The Linux Perf Tool 8/31/2024</a></li><li class="chapter-item expanded "><a href="../notes/values.html">Values 8/26/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-30-Shell.html">Shell+Scripting 8/24/2024</a></li><li class="chapter-item expanded "><a href="../notes/editors.html">Editors+Tools 8/24/2024</a></li><li class="chapter-item expanded "><a href="../csblog/2023-6-1-C-VLA-Implementation.html">Understanding VLA 6/1/2023</a></li><li class="chapter-item expanded "><a href="../csblog/2022-5-2-BQN-reflections.html">BQN and Reflections on the Joy of Programming 5/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html">LLVM Development on NixOS 2/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-10-CUDA-101-Matvec.html">CUDA 101: Matrix-Vector Product 2/10/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-12-12-Compiler-Perf-Debugging.html">Debugging Performance in Compilers 12/12/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-1-15-Std-Expected.html">std::expected And Why It's Awesome 1/15/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-7-GTest-Type-Value-Params.html">GTest Type and Value Parameterized Tests 3/7/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Spack-Development-3.html">Spack for Package Development Part 3 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Clang-Tools-Lambda.html">Clang Tools for Checking Domain-Specific Errors 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-5-Spack-Development-2.html">Spack for Package Development Part 2 3/5/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-4-Spack-Development-1.html">Spack for Package Development Part 1 3/4/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-12-23-std-mdspan-Response.html">A Look at std::mdspan 12/23/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-24-Popular-Languages-1965.html">Using the Most Popular Programming Languages of the '60s 10/24/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html">One Problem, Four Languages, Two Paradigms 10/19/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-11-BQN-Cpp-CUDA.html">BQN and CUDA C++ LeetCode Solutions 10/11/2021</a></li><li class="chapter-item expanded affix "><li class="part-title">Coffee</li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html">Best Espresso In Portland (6/11/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Sterling.html">Sterling (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Deadstock.html">Deadstock (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Barista.html">Barista (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Never-Coffee.html">Never Coffee (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Upper-Left-Roasters.html">Upper Left Roasters (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Abba.html">Abba (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Rose-City-Coffee.html">Rose City Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Sterling.html">Sterling (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-21-Superjoy.html">Superjoy (6/21/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Beginners-Guide.html">Beginners Guide (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-19-Seattle-Trip-Report.html" class="active">Seattle Trip Report (6/19/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Adapt-Coffee.html">Adapt Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Coava.html">Coava (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-PDX-Espresso-Research.html">PDX Espresso Research (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Nossa-Familia-Coffee.html">Nossa Familia Coffee (6/15/2023)</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+layout: post
+title: Seattle Trip Report (8 Reviews)
+permalink: /seattle-trip-report
+cat: coffee
+where: Seattle, WA
+-->
+<p>All the shops and roasters I tried while visiting my friend in Seattle!</p>
+<p>–&gt;</p>
+<h2 id="lets-get-the-ratings-out-of-the-way"><a class="header" href="#lets-get-the-ratings-out-of-the-way">Let’s Get the Ratings Out of the Way</a></h2>
+<ol>
+<li>Cafe Allegro: 8.5/10</li>
+<li>Cafe Vita: 8/10</li>
+<li>Cafe Ladro: 8.5/10</li>
+<li>Zeitgeist: 6.5/10</li>
+<li>Good Weather Bike &amp; Coffee: 7.5/10</li>
+<li>Lighthouse Roasters: 7/10</li>
+<li>Monorail Espresso: 3/10</li>
+<li>Fonté: 2/10</li>
+</ol>
+<h2 id="overall-impressions"><a class="header" href="#overall-impressions">Overall Impressions</a></h2>
+<p>I was struck by how much more prevalent darker roasts were in Seattle - it was my impression that most specialty espresso was in the lighter range of roasts to bring out more of the differences between varietals.
+Almost every shop I visited served a pretty dark and heavy-bodied roast for their espresso, and few places changed their roasts out with the seasons.</p>
+<p>I spoke with Collin from Cafe Ladro about the coffee culture in Seattle:</p>
+<blockquote>
+<p>We were really ahead of our time in the 90s, but most places haven’t been updated since then.
+You would probably find fewer shops serving lighter (and better) roasts in a newer place like Portland.
+Things are even worse in San Fran - they were killing the game 30 years ago, but if you go now it’s mostly the same stuff.</p>
+</blockquote>
+<p>That being said, there were still some <em>great</em> spots roasting beans in-house.
+<em><strong>Cafe Ladro</strong></em> (where I met Collin) and <em><strong>Cafe Vita</strong></em> were wonderful.
+<em><strong>Cafe Allegro</strong></em> was a hidden gem I would <em>absolutely</em> swing by again, especially given how close it is to the 1 metro line; I had two coffees with an old friend there before hopping on the 1 to catch my Amtrack back to Portland, but I could have stayed much longer.
+<em><strong>The Good Weather Bike &amp; Coffee</strong></em> cafe-and-bike-repair-shop-combo served a really nice Herkimer espresso blend, who roasts their beans a few neighborhoods away.</p>
+<p>Collin mentioned Superjoy Roasters in Portland, and though they are on my list I have not stopped by there yet.</p>
+<!---
+- milstead in freemont
+- were ahead of the curve in the 90s haven't really updated 
+- san fran is worse than seattle
+- collin 
+- superjoy
+- kurasu roasters from japan
+-->
+<h2 id="cafe-allegro-8510"><a class="header" href="#cafe-allegro-8510">Cafe Allegro: 8.5/10</a></h2>
+<p>Hidden in an alleyway in between a used bookstore and a pizza joint, Cafe Allegro had the most enjoyable espresso of any of the cafes I visited in Seattle.
+The barista had a t-shirt reading <em>Where the hell is Allegro?</em> paying homage to the cafe’s obscure location.</p>
+<p>I felt a sense of relief when I took my first sip of Allegro’s espresso and felt familiar waves of fruit wash over me.
+For most of my coffee-drinking life I considered myself more of a dark-roast kinda guy, but since getting more into espresso and going back to darker roasts, I feel like my taste has developed to like well-done lighter roasts far more.</p>
+<p>I got notes of berries (strawberries?) and dried fruit.
+The listed flavor comps were stone fruit (?) and chocolate.
+I didn’t get much of either of those, but I still loved it (and went back for a second).</p>
+<p>The barista mentioned a cafe in northern San Fransisco named after the Italian city <em>Trieste</em> after which Cafe Allegro was designed; maybe if my espresso journey takes me that far I’ll give it a try!
+Definitely stop by if you have some time near the 1 line in the University District.</p>
+<h2 id="cafe-vita-810"><a class="header" href="#cafe-vita-810">Cafe Vita: 8/10</a></h2>
+<p>I had the <em>Cafe del Sol</em>, a house-roasted medium blend.
+It was pretty good - the first &gt;=8 score of this Seattle trip.
+I experienced medium body, balanced flavor (not nearly as dark as my previous shots) on the nutty side of sweet.
+The flavor comps on the bag read <em>milk chocolate, caramel, dark cherry</em>; I mostly got the caramel.</p>
+<p>Nothing mind-blowing, but I would have it again.</p>
+<h2 id="cafe-ladro-8510"><a class="header" href="#cafe-ladro-8510">Cafe Ladro: 8.5/10</a></h2>
+<p>This was the first specialty espresso place I got to visit.
+I had the Ladro house medium blend with milk chocolate, dark cherry and caramel flavor comps, but the strongest flavors I got were nuttiness/hazelnut and vanilla.
+I found a really mild finish, I wasn’t punched in the nose by bitterness or dryness like many of the other shops.</p>
+<p>This was a really nice espresso! If you’re in the West Queen Anne area you might want to stop by.</p>
+<h2 id="zeitgeist-6510"><a class="header" href="#zeitgeist-6510">Zeitgeist: 6.5/10</a></h2>
+<p>This smaller German coffeehouse with aged brick walls was a nice environment and okayish coffee, but wasn’t overly impressive to me.
+Unfortunately, they didn’t seem all that busy either - I could see myself coming back if I needed a place to work or if I knew there would be a more busy or upbeat energy, but this was not my favorite place.
+I had the Jackson Street Blues roast from Fulcrum Coffee Roasters.</p>
+<h2 id="good-weather-bike--coffee-7510"><a class="header" href="#good-weather-bike--coffee-7510">Good Weather Bike &amp; Coffee: 7.5/10</a></h2>
+<p>Good Weather was interesting - the cafe environment was serene, tucked into an alleyway in Capitol Hill near a secondhand sportswear shop.
+I was excited to see them serving Herkimer’s espresso blend; I wanted to try these beans from a Herkimer cafe front, but I didn’t get the chance.</p>
+<p>I got a lighter body, almost like a black tea and a <em>much</em> lighter roast than some of the other (read: worse) shots I tried this weekend.
+I tasted soem chamomile and dried fruits, maybe raisins/craisins.</p>
+<h2 id="lighthouse-roasters-710"><a class="header" href="#lighthouse-roasters-710">Lighthouse Roasters: 7/10</a></h2>
+<p>This neighborhood roaster was <em>filled</em> with dogs, and the cafe bar shelved probably a dozen kinds of dog treats.
+The roast was too dark for specialty espresso, but I would absolutely have an americano or latte of their house roast.
+I get the sense the neighborhood patrons stop by for a coffee and grab a bag of their house roast for their drip machine at home.
+An extremely small and cozy shop with maybe 4 small tables right next to the roasters and at least half a dozen bags of green coffee beansready to be processed.</p>
+<p>If I lived next to this cafe, I’d probably be drinking far more americano for how enjoyable their cafe environment was.</p>
+<h2 id="monorail-espresso-310"><a class="header" href="#monorail-espresso-310">Monorail Espresso: 3/10</a></h2>
+<p>The cute window-only cafe front was unfortunately not very good…
+Very dry, very dark, HEAVY body.
+The smells from the cafe and from my espresso were wonderful (I still <em>love</em> a dark-roast) but my espresso was not very good.
+My friend’s vanilla latte was great though!</p>
+<h2 id="fonté-210"><a class="header" href="#fonté-210">Fonté: 2/10</a></h2>
+<p>Fonté was unfortunately the first espresso in this entire journey that I could not even finish.
+Extremely dark and heavy-bodied, my mouth puckered up with bitterness with both of the sips I could get down.
+Very unfortunate.</p>
+<p>–&gt;</p>
+<p>Thanks to my friend Emma that stuck with me and my annoying coffee flavor charts and endless cafes :)</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../coffeeblog/2023-6-13-Beginners-Guide.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../coffeeblog/2023-6-15-Adapt-Coffee.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../coffeeblog/2023-6-13-Beginners-Guide.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../coffeeblog/2023-6-15-Adapt-Coffee.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

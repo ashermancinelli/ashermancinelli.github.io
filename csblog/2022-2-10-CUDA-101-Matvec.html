@@ -1,0 +1,1221 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>CUDA 101: Matrix-Vector Product 2/10/2022 - Notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../about.html">About</a></li><li class="chapter-item expanded affix "><li class="part-title">Blog</li><li class="chapter-item expanded "><a href="../csblog/2024-9-4-Debugging-In-Parallel.html">Debugging in Parallel 9/4/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-31-Linux-Perf-Notes.html">The Linux Perf Tool 8/31/2024</a></li><li class="chapter-item expanded "><a href="../notes/values.html">Values 8/26/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-30-Shell.html">Shell+Scripting 8/24/2024</a></li><li class="chapter-item expanded "><a href="../notes/editors.html">Editors+Tools 8/24/2024</a></li><li class="chapter-item expanded "><a href="../csblog/2023-6-1-C-VLA-Implementation.html">Understanding VLA 6/1/2023</a></li><li class="chapter-item expanded "><a href="../csblog/2022-5-2-BQN-reflections.html">BQN and Reflections on the Joy of Programming 5/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html">LLVM Development on NixOS 2/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-10-CUDA-101-Matvec.html" class="active">CUDA 101: Matrix-Vector Product 2/10/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-12-12-Compiler-Perf-Debugging.html">Debugging Performance in Compilers 12/12/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-1-15-Std-Expected.html">std::expected And Why It's Awesome 1/15/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-7-GTest-Type-Value-Params.html">GTest Type and Value Parameterized Tests 3/7/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Spack-Development-3.html">Spack for Package Development Part 3 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Clang-Tools-Lambda.html">Clang Tools for Checking Domain-Specific Errors 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-5-Spack-Development-2.html">Spack for Package Development Part 2 3/5/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-4-Spack-Development-1.html">Spack for Package Development Part 1 3/4/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-12-23-std-mdspan-Response.html">A Look at std::mdspan 12/23/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-24-Popular-Languages-1965.html">Using the Most Popular Programming Languages of the '60s 10/24/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html">One Problem, Four Languages, Two Paradigms 10/19/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-11-BQN-Cpp-CUDA.html">BQN and CUDA C++ LeetCode Solutions 10/11/2021</a></li><li class="chapter-item expanded affix "><li class="part-title">Coffee</li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html">Best Espresso In Portland (6/11/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Sterling.html">Sterling (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Deadstock.html">Deadstock (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Barista.html">Barista (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Never-Coffee.html">Never Coffee (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Upper-Left-Roasters.html">Upper Left Roasters (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Abba.html">Abba (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Rose-City-Coffee.html">Rose City Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Sterling.html">Sterling (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-21-Superjoy.html">Superjoy (6/21/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Beginners-Guide.html">Beginners Guide (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-19-Seattle-Trip-Report.html">Seattle Trip Report (6/19/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Adapt-Coffee.html">Adapt Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Coava.html">Coava (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-PDX-Espresso-Research.html">PDX Espresso Research (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Nossa-Familia-Coffee.html">Nossa Familia Coffee (6/15/2023)</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+layout: post
+title: "CUDA 101: Matrix-Vector Product"
+permalink: /cuda-matvec
+category: c, c++, cuda, GPU, HPC
+cat: cs
+-->
+<p>{% include latex.html %}
+{% include mermaid.html %}</p>
+<p>The foundation of GPU programming is linear algebra.
+This post takes you from a basic linear algebra example problem to a GPU-accelerated example that calculates a matrix-vector product.</p>
+<h1 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h1>
+<ol>
+<li>Correctness precedes parallelism and performance</li>
+<li>Identify and understand the underlying algorithms at play</li>
+<li>Speed is not the same as efficiency</li>
+<li>Use sane defaults, only optimize after profiling and testing</li>
+<li>Use the most specialized tool for the job</li>
+</ol>
+<p><em><strong>NOTE: This post is geared towards those without significant experience in linear algebra, high performance computing, or GPU programming.</strong></em></p>
+<h1 id="outline"><a class="header" href="#outline">Outline</a></h1>
+<ol>
+<li>Mathematical Understanding of Algorithm</li>
+<li>Algorithm Analysis</li>
+<li>C on the Host</li>
+<li>CUDA C
+<ol>
+<li>Core Concepts
+<ol>
+<li>Host and Device</li>
+<li>Using the CUDA Runtime</li>
+<li>Shared Memory</li>
+<li>CUDA Mat-Vec Multiply</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>CUDA C++
+<ol>
+<li>Naive Approach</li>
+<li>More Sophisticated Approach</li>
+<li>The Best Tool for the Job</li>
+</ol>
+</li>
+<li>Conclusion</li>
+<li>BQN Example</li>
+<li>Links, References, Additional Reading</li>
+</ol>
+<h1 id="mathematical-understanding-of-algorithm"><a class="header" href="#mathematical-understanding-of-algorithm">Mathematical Understanding of Algorithm</a></h1>
+<p>We’ll be performing a matrix-vector dot product several ways in this post.</p>
+<p>The operation is depicted below:</p>
+<center>
+<img
+  src="/images/hpc-101-matvec/matvec.png"
+  alt="Matvec dot product, credit this post: https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/"
+  >
+</center>
+<p>Let <code>p</code> be the result of the dot product of matrix <code>Mat</code> and vector <code>v</code>.
+The dot product is calculated like so:</p>
+<center>
+$$
+\\
+  p \gets Mat \cdot v
+<p>\</p>
+<p>=</p>
+<p>v_0 \cdot
+\left[ {\begin{array}{c}
+Mat_{0, 0} \
+Mat_{1, 0} \
+Mat_{2, 0} \
+\end{array} } \right]
++
+v_1 \cdot
+\left[ {\begin{array}{c}
+Mat_{0, 1} \
+Mat_{1, 1} \
+Mat_{2, 1} \
+\end{array} } \right]
++
+v_2 \cdot
+\left[ {\begin{array}{c}
+Mat_{0, 2} \
+Mat_{1, 2} \
+Mat_{2, 2} \
+\end{array} } \right]</p>
+<p>\</p>
+<p>=</p>
+<p>\left[ {\begin{array}{cc}
+(Mat_{0,0} \cdot v_0) + (Mat_{0,1} \cdot v_1) + (Mat_{0,2} \cdot v_2) \
+(Mat_{1,0} \cdot v_0) + (Mat_{1,1} \cdot v_1) + (Mat_{1,2} \cdot v_2) \
+(Mat_{2,0} \cdot v_0) + (Mat_{2,1} \cdot v_1) + (Mat_{2,2} \cdot v_2) \
+\end{array} } \right]
+\
+$$</p>
+<!---
+  =   \left[ {\begin{array}{cc}
+    6 \\ 24 \\ 42
+  \end{array} } \right]
+  --->
+</center>
+<p>Notice how values of <code>v</code> are broadcast to match the shape of <code>Mat</code>:</p>
+<center>
+$$
+\\
+  \left[ {\begin{array}{c}
+    v_{0} & v_{1} & \cdots & v_{n}\\
+    v_{0} & v_{1} & \cdots & v_{n}\\
+    \vdots & \vdots & \ddots & \vdots\\
+    v_{0} & v_{1} & \cdots & v_{n}\\
+  \end{array} } \right]
+\\
+$$
+</center>
+<p>We can broadcast values of <code>v</code> into columns of a matrix with the same shape as the matrix <code>Mat</code>, and then pair the <code>Mat</code> and <code>v</code> element-wise, creating a matrix of tuples (or a 3d matrix if you prefer):</p>
+<center>
+$$
+\\
+  tuplespace \gets
+  \left[ {\begin{array}{cc}
+    (Mat_{0,0}, v_0) & (Mat_{0,1}, v_1) & (Mat_{0,2}, v_2) \\
+    (Mat_{1,0}, v_0) & (Mat_{1,1}, v_1) & (Mat_{1,2}, v_2) \\
+    (Mat_{2,0}, v_0) & (Mat_{2,1}, v_1) & (Mat_{2,2}, v_2) \\
+  \end{array} } \right]
+\\
+$$
+</center>
+<p>This is sometimes called a <em>tuple space</em>, or the <em>domain</em> of our algorithm.
+The book <a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&referer=brief_results" target="blank"><em>How to Write Parallel Programs: A First Course</em></a> covers tuple spaces in great detail.</p>
+<p>Now that we have constructed our tuple space, we might group our computations into self-contained units of work along each row.</p>
+<p>Let <em>tuplespace</em> be the 2 dimensional matrix tuple space given above.
+We then may form a vector with units of work yielding indices of the output vector:</p>
+<center>
+$$
+\\
+  \left[ {\begin{array}{cccc}
+    w(0) \gets \sum_{i \gets 0}^{N} tuplespace_{0, i, 0} \cdot tuplespace_{0, i, 1} \\
+    w(1) \gets \sum_{i \gets 0}^{N} tuplespace_{1, i, 0} \cdot tuplespace_{1, i, 1} \\
+    \vdots \\
+    w(M) \gets \sum_{i \gets 0}^{N} tuplespace_{M, i, 0} \cdot tuplespace_{M, i, 1} \\
+  \end{array} } \right]
+\\
+$$
+</center>
+<p>Equivalently:</p>
+<center>
+$$
+\\
+  \left[ {\begin{array}{cccc}
+    w(0) \gets \sum_{i \gets 0}^{N} Mat_{0,i} \cdot v_{i} \\
+    w(1) \gets \sum_{i \gets 0}^{N} Mat_{1,i} \cdot v_{i} \\
+    \vdots \\
+    w(M) \gets \sum_{i \gets 0}^{N} Mat_{M,i} \cdot v_{i} \\
+  \end{array} } \right]
+\\
+$$
+</center>
+<p>Our units of work may independently operate on subsets (rows) of our tuple space.</p>
+<h1 id="algorithm-analysis"><a class="header" href="#algorithm-analysis">Algorithm Analysis</a></h1>
+<p>The first question we must ask ourselves when parallelizing code is this: <em>are any iterations of the algorithm dependent on values calculated in other iterations? Is iteration <code>N</code> dependent on calculations in iteration <code>N-1</code>?</em>
+In other words, <em>are the loop bodies entirely</em> <em><strong>independent</strong></em> <em>of each other?</em></p>
+<p>If so, our algorithm is <em>loop independent</em> and <em>trivially parallelizable</em>.
+<a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">This slidedeck from a UT Austin lecture</a> are helpful additional reading on this topic.</p>
+<p>The fundamental algorithm at play here is a <em>reduction</em> or a <em>fold</em>.
+If you see these terms elsewhere in literature, documentation, or algorithms in libraries or programming languages, they almost certainly mean the same thing.
+Some collection of values are <em>reduced</em> or <em>folded</em> into a single value.</p>
+<p>You might be thinking to yourself, <em>we are starting with a collection of values (a matrix) and yet we end up with a collection of values (a vector). How is this a reduction/fold?</em></p>
+<p>This is a good question: the reduction is not performed over the entire matrix, but only the <em>rows</em> of the matrix.
+Each row of the matrix is <em>reduced</em> into a single value.</p>
+<!---
+
+For the following definitions:
+
+<center>
+$$
+  \\
+  M \gets   \left[ {\begin{array}{cc}
+    0 & 1 & 2 \\
+    3 & 4 & 5 \\
+    6 & 7 & 8 \\
+  \end{array} } \right] ,
+  v \gets \left[ {\begin{array}{cc} 2 \\ 2 \\ 2  \end{array} } \right]
+  \\
+$$
+</center>
+
+-->
+<p>The algorithm each unit of work performs is called <em>transform-reduce</em> (or sometimes <em>map-reduce</em>).</p>
+<p>Although <em>transform-reduce</em> might seem like two algorithms (it kinda is!), it is such a universal operation that it is often considered it’s own algorithm (or at least it’s packaged as its own algorithm in libraries).
+For example, <a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">the Thrust abstraction library that ships with NVIDIA’s CUDA Toolkit has the <em>transform-reduce</em> algorithm built-in.</a></p>
+<p>In this case, we would like to <em>transform</em> our input tuples by multiplying two elements together, and then <em>reduce</em> our input using the sum operator.</p>
+<p>In Python, a given unit of work might look like this:</p>
+<pre><code class="language-python">from functools import reduce
+tuplespace_row0 = [
+    (0, 2),
+    (1, 2),
+    (2, 2),
+    ]
+
+def work(tupl):
+    return reduce(
+            lambda a, b: a + b,        # use + to reduce
+            map(lambda x: x[0] * x[1], # use * to transform
+                tupl                   # input tuple
+                )
+            )
+
+# Input to map is mat_row
+# Input to reduce is [0, 2, 4]
+# Final value is 6
+print(work(tuplespace_row0)) # yields 6
+</code></pre>
+<p>The following formula is a more formal definition of a single unit of work in our example:</p>
+<center>
+$$
+\\
+  r \gets current rank \\
+  W_{r} \gets \sum_{i \gets 0}^{N} M_{r,i} \cdot v_{i} \\
+\\
+$$
+</center>
+<p>In the above case, the summation is the <em>reduce</em> operation, and the multiplication of the matrix elements and vector elements is the <em>transform</em> operation, transforming each tuple into a scalar before the reduction.</p>
+<p>The key insight about this reduction is that no unit of work depends on another unit of work.
+The domains of each unit of work are non-overlapping.
+In other words, this algorithm is <em>loop independent</em> and can be parallelized along the rows of our tuplespace, again given by:</p>
+<center>
+$$
+\\
+  \left[ {\begin{array}{ccc}
+    (Mat_{0,0}, v_0) & (Mat_{0,1}, v_1) & (Mat_{0,2}, v_2) \\
+    \hline \\
+    (Mat_{1,0}, v_0) & (Mat_{1,1}, v_1) & (Mat_{1,2}, v_2) \\
+    \hline \\
+    (Mat_{2,0}, v_0) & (Mat_{2,1}, v_1) & (Mat_{2,2}, v_2) \\
+  \end{array} } \right]
+\\
+$$
+</center>
+<p>It was by identifying and understanding the underlying algorithms (<em>broadcast</em> and <em>transform-reduce</em>) of our higher-level algorithm that we are able to determine if and how it is parallelizable and loop independent.</p>
+<blockquote>
+<p>Identify and understand the underlying algorithms</p>
+</blockquote>
+<p><em>NOTE: Even if your operation seems to be loop dependent, there are sometimes clever tricks you can use to parallelize your code. Perhaps you just haven’t been exposed to the correct algorithm yet!</em></p>
+<p>We now hopefully understand that a matrix-vector product is formally <em>a broadcasted multiply followed by a series of sum-reductions</em> and that we can parallelize our algorithm by breaking it up into self-contained units of work.
+We can now move on to implementing and parallelizing the algorithm.</p>
+<h1 id="c-on-the-host"><a class="header" href="#c-on-the-host">C on the Host</a></h1>
+<p><a href="https://godbolt.org/z/T3qzr8fve" target="blank">The code for such a calculation might look like this in C</a>:</p>
+<pre><code class="language-c">void matvecmul(int* mat, int* vec, int* out, int m, int n) {
+    for (int i=0; i &lt; m; i++)
+        for (int j=0; j &lt; n; j++)
+            out[i] += vec[j] * mat[j+(i*n)];
+}
+</code></pre>
+<p>Here’s some example data fed into our matrix vector product:</p>
+<pre><code class="language-c">int main() {
+    int M = 3;
+    int N = 4;
+
+    int mat[M*N];
+    for (int i=0; i &lt; M*N; i++) mat[i] = i;
+
+    int vec[N];
+    for (int i=0; i &lt; N; i++) vec[i] = i;
+
+    int out[M];
+
+    memset(out, 0, sizeof(int[M]));
+    matvecmul(mat, vec, out, M, N);
+
+    return 0;
+}
+</code></pre>
+<p>The output of this program (with some printing code added in):</p>
+<pre><code class="language-console">Matrix:
+  0   1   2   3 
+  4   5   6   7 
+  8   9  10  11 
+Vector:
+  0   1   2   3 
+Output:
+ 14  38  62 
+</code></pre>
+<p>Feel free to verify these results and play around with other values using <a href="https://keisan.casio.com/exec/system/15052033860538" target="blank">online software like this CASIO calculator website</a>, or a scripting language.
+<a href="https://mlochbaum.github.io/BQN/try.html#code=bSDihpAgMwpuIOKGkCA0Ck11bCDihpAgK8ud4oiYw5fijokx4oC/4oieCgptYXQg4oaQIG3igL9u4qWK4oaVMjAwCnZlYyDihpAg4oaVbgoKbWF0IE11bCB2ZWM=" target="blank">
+Here’s an example of the above problem using BQN, one of my favorite languages to use when understanding an algorithm.
+</a></p>
+<p>Demonstrating that we have a <em>correct</em> algorithm with tests is a precondition for optimizing and parallelizing an algorithm:</p>
+<blockquote>
+<p>Testing for correctness precedes parallelism and performance</p>
+</blockquote>
+<p>We know that a given index in our output vector can be computed independently of any other indices in the output vector from the respective row in our tuple space.
+We can then pull out a function that performs a <em>single unit of work</em> as identified above.</p>
+<pre><code class="language-c">int unit_of_work(int* mat, int* vec, int row, int n) {
+    double sum = 0;
+    mat += row * n;
+    for (int i=0; i &lt; n; i++)
+        sum += mat[i] * vec[i];
+    return sum;
+}
+</code></pre>
+<p>Compare this now with the single unit of work we described above:</p>
+<center>
+$$
+\\
+  r \gets current rank \\
+  W_{r} \gets \sum_{i \gets 0}^{N} M_{r,i} \cdot v_{i} \\
+\\
+$$
+</center>
+<p>Our new <code>matvecmul</code> function can now just iterate over all the rows and dispatch the actual work to the <code>unit_of_work</code> function.
+We can even use OpenMP to parallelize our loop:</p>
+<pre><code class="language-c">void matvecmul_on_tuplespace(int* mat, int* vec, int* out, int m, int n) {
+    // dispatch calculations to unit_of_work for each row of mat
+    #pragma omp parallel for
+    for (int row=0; row &lt; m; row++)
+        out[row] = unit_of_work(mat, vec, row, n);
+}
+</code></pre>
+<p>You might have noticed that our new implementation has more code than our original implementation, and might be slightly more complex.
+This is okay, and it gets at an important point:</p>
+<blockquote>
+<p>Speed is not the same as efficiency</p>
+</blockquote>
+<a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank">
+This excellent podcast episode from the lead HPC architect at NVIDIA explains this point in detail.
+</a>
+<p>If our code performs <em>more work overall</em> it is less <em>efficient</em>.
+If that additional work means we can perform calculations on multiple threads or additional devices resulting in lower runtime, it is <em>faster</em> and we’ve increased its <em>speed</em>.
+The key difference between speed and efficiency is this: speed is a factor of <em>time</em> and efficiency is a factor of <em>work</em>.
+Sometimes optimizing code means improving speed, other times efficiency.
+Most of the time, to run code on a GPU, you do have to perform more work to set up the calculation, so strictly speaking our code will be faster and less efficient.</p>
+<h1 id="cuda-c"><a class="header" href="#cuda-c">CUDA C</a></h1>
+<p>CUDA C is the basis of the CUDA runtime, and forms the foundation for all other CUDA-related abstractions.
+We’ll take a look at some basic concepts before jumping into the code.
+<a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">
+This CUDA C introductory slide deck is helpful in understanding the basics.
+</a></p>
+<h2 id="core-concepts"><a class="header" href="#core-concepts">Core Concepts</a></h2>
+<h3 id="host-and-device"><a class="header" href="#host-and-device">Host and Device</a></h3>
+<p>When working with a GPU, it’s important to keep in mind the difference between the <em>host</em> and the <em>device</em>.</p>
+<center>
+<img
+  src="https://cis.temple.edu/~giorgio/cis307/readings/CUDA_processing_flow.png"
+  alt="GPU-CPU interaction"
+  />
+</center>
+<p>Just like your CPU, your GPU has access to it’s own <em>memory</em>.
+Programming a GPU entails managing your CPU’s memory along with your GPU’s memory.
+If you would like your GPU to have access to some memory you’re using on the CPU, you’ll have to allocate memory on the GPU and copy it over.</p>
+<a href="https://godbolt.org/z/9eeEedhd5" target="blank">
+If you don't tell the GPU to perform any work, then your CUDA C code is really just C code:
+</a>
+```c
+#include <cstdio>
+int main() {
+  puts("Hello!");
+  return 0;
+}
+```
+<p>You can then invoke NVIDIA’s compiler, NVCC, to compile the program:</p>
+<pre><code class="language-console">$ cat hello.cu
+#include &lt;cstdio&gt;
+int main() {
+  puts("Hello!");
+  return 0;
+}
+$ nvcc hello.cu -o hello &amp;&amp; ./hello
+Hello!
+</code></pre>
+<p>If you invoke <code>nvcc</code> with the <code>-v</code> flag for extra verbosity, you can see that <code>nvcc</code> actually uses a <em>host</em> compiler to build the parts of your program that don’t involve running code or manipulating memory on the GPU.
+<code>nvcc</code> uses multiple passes, where it compiles the CUDA code and generates host-only source for the host compiler to compile.
+<a href="https://godbolt.org/z/axTn1ex5x" target="blank">
+See this Compiler Explorer link and look at the compilation output window in the bottom right pane to see all the output.
+</a>
+Notice that GCC is invoked, along with the program <code>ptxas</code>.
+PTX is an assembly target, so your CUDA programs will emit ptx code which can be run on your GPU’s special purpose processing units.
+<a href="https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html#nvcc-examples" target="blank">
+The command line flags for code generation can be complicated.
+Refer to the official CUDA programming guide when needed.
+</a>
+Just as you can use <code>asm volitile("" : : : "");</code> in C and C++ to write inline assembly, you can also write inline ptx assembly in your programs.
+Also like C and C++, it is almost certainly more effective for you to write your code in a higher level language like CUDA C++, and write PTX after profiling and testing, when you are sure you need it.</p>
+<p>If you’re careful, you might also have noticed that GCC was passed the command line argument <code>-x c++</code>, even though we’re working in plain CUDA C.
+This is because cuda code is <em>by default built on the host as C++</em>.
+If you use the oldest CUDA compiler available on Compiler Explorer, you’ll see that it still defaults to building the host code under C++14.</p>
+<p>The full NVCC compilation pipeline is depicted below:</p>
+<center>
+<img
+src="https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/graphics/cuda-compilation-from-cu-to-executable.png"
+alt="The full NVCC compilation pipeline"
+/>
+</center>
+<h3 id="using-the-cuda-runtime"><a class="header" href="#using-the-cuda-runtime">Using the CUDA Runtime</a></h3>
+<a href="https://godbolt.org/z/81v3jfehq" target="blank">
+In this example, we introduce three aspects of the CUDA programming model:
+</a>
+<ul>
+<li>The special keyword <code>__global__</code></li>
+<li>Device memory management</li>
+<li>Kernel launches</li>
+</ul>
+<pre><code class="language-cuda">// square.cu
+#include &lt;cstdio&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+
+__global__ void square(int *ar, int n) {
+  int tid = threadIdx.x;
+  if (tid &lt; n)
+    ar[tid] = ar[tid] * ar[tid];
+}
+
+int main() {
+  #define N 10
+
+  // Allocate static memory on host
+  int ar[N];
+  for (int i=0; i &lt; N; i++) ar[i] = i;
+
+  // Allocate memory on device, copy from host to device
+  int* d_ar;
+  cudaMalloc(&amp;d_ar, sizeof(int[N]));
+  cudaMemcpy(d_ar, ar, sizeof(int[N]), cudaMemcpyHostToDevice);
+
+  // Launch kernel to run on the device
+  square&lt;&lt;&lt;1, 15&gt;&gt;&gt;(d_ar, N);
+
+  // Copy memory back from device
+  cudaMemcpy(ar, d_ar, sizeof(int[N]), cudaMemcpyDeviceToHost);
+
+  // Display values after kernel
+  for (int i=0; i &lt; N; i++)
+    printf("%d ", ar[i]);
+  puts("");
+
+  // Deallocate memory
+  cudaFree(d_ar);
+  return 0;
+}
+</code></pre>
+<pre><code class="language-console">$ nvcc square.cu -o square
+$ ./square
+0 1 4 9 16 25 36 49 64 81
+</code></pre>
+<p><code>__global__</code> indicates that the code <em>runs on the device</em> and is <em>called from the host</em>.
+Keep in mind that we have two <em>memory spaces</em> and two <em>execution spaces</em>.</p>
+<p>The following table enumerates common operations in C along with their CUDA counterpart:</p>
+<center>
+{% include hpc-101-matvec/cuda-c-alloc-table.html %}
+</center>
+<a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/#execution-configuration" target="blank">
+The angle brackets surrounding our _kernel launch parameters_ determine how the kernel will be executed by the GPU.
+The possible kernel launch parameters are enumerated at this link.
+</a>
+<p>The kernel launch parameters determine how many streaming multiprocessors (SMs) will execute code on the GPU.
+The first two parameters are objects of type <code>dim3</code>, and they can be up to three-dimensional vectors.
+The first kernel launch parameter is the <em>grid size</em>, and the second is the <em>block size</em>.</p>
+<p>Grids consist of blocks.</p>
+<p>Blocks consist of threads.</p>
+<p>Therefore, the total number of threads launched by your kernel will be:</p>
+<center>
+$$
+totalthreads \gets gridsize.x \times gridsize.y \times gridsize.z \\
+                   \times blocksize.x \times blocksize.y \times blocksize.z \\
+$$
+</center>
+<p>CUDA kernels may be launched with a 1-3 dimensional grid, and a 1-3 dimensional block.
+The image below might have been launched with these kernel launch parameters:</p>
+<pre><code class="language-cuda">  dim3 grid_size(3, 3, 1);
+  dim3 block_size(3, 3, 1);
+  myfunc&lt;&lt;&lt;grid_size, block_size&gt;&gt;&gt;();
+</code></pre>
+<center>
+<img
+  src="http://www.microway.com/wp-content/uploads/CUDA-GridBlockThread-Structure.png"
+  alt="CUDA Grid and Block Depiction"
+  />
+</center>
+<p>You might also notice that we guard our operation with this <code>if</code> statement.</p>
+<pre><code class="language-cuda">  if (tid &lt; n)
+    ar[tid] = ar[tid] * ar[tid];
+</code></pre>
+<p>For performance reasons, it’s usually best to launch your kernels with a multiple of the number of threads in a given block on your GPU, so you may launch with more GPU threads than you need.</p>
+<a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#hardware-implementation" target="blank">
+For additional reading on the hardware implementation of the CUDA programming model, please refer to chapter 4 of the NVIDIA CUDA Programming Guide.
+</a>
+<h3 id="shared-memory"><a class="header" href="#shared-memory">Shared Memory</a></h3>
+<p>Although each thread launches with its own stack memory, threads can share memory just like OS threads.
+The third kernel launch parameter determines how many bytes will be allocated <em>for each block</em> that is launched.</p>
+<a href="https://godbolt.org/z/nrbdK9nKj" target="blank">
+In the following example, we make use of CUDA shared memory, as indicated by the `__shared__` keyword annotating the array in our kernel, as well as our use of the third kernel launch parameter:
+</a>
+```cuda
+#include <cstdio>
+#include <cuda.h>
+#include <cuda_runtime.h>
+<p><strong>global</strong> void mulsum(int* a, int* b, int* out, int n) {
+int tid = threadIdx.x;
+extern <strong>shared</strong> int tmp[];
+/* ▲</p>
+<ul>
+<li>│  ┌───────────────────────────────┐</li>
+<li>│  │External and shared, allocated │</li>
+<li>└──┤by the cuda runtime when kernel│</li>
+<li>│         is launched           │</li>
+<li>└───────────────────────────────┘
+*/
+if (tid &gt;= n)
+return;</li>
+</ul>
+<p>tmp[tid] = a[tid] * b[tid];</p>
+<p>__syncthreads();</p>
+<p>if (tid == 0) {
+int sum = 0;
+for (int i=0; i &lt; n; i++)
+sum += tmp[i];
+*out = sum;
+}
+}</p>
+<p>int main() {
+#define N 10</p>
+<p>int a[N];
+for (int i=0; i &lt; N; i++) a[i] = i;</p>
+<p>int b[N];
+for (int i=0; i &lt; N; i++) b[i] = i;</p>
+<p>int* d_a;
+cudaMalloc(&amp;d_a, sizeof(int[N]));
+cudaMemcpy(d_a, a, sizeof(int[N]), cudaMemcpyHostToDevice);</p>
+<p>int* d_b;
+cudaMalloc(&amp;d_b, sizeof(int[N]));
+cudaMemcpy(d_b, b, sizeof(int[N]), cudaMemcpyHostToDevice);</p>
+<p>int* d_out;
+cudaMalloc(&amp;d_out, sizeof(int));</p>
+<p>mulsum&lt;&lt;&lt;1, N, sizeof(int[N])&gt;&gt;&gt;(d_a, d_b, d_out, N);
+/*             ▲</p>
+<ul>
+<li>
+<pre><code>        │
+</code></pre>
+</li>
+<li>┌────────┴────────────────────────────┐</li>
+<li>│Size of shared memory to be allocated│</li>
+<li>│         for kernel launch           │</li>
+<li>└─────────────────────────────────────┘
+*/</li>
+</ul>
+<p>int out;
+cudaMemcpy(&amp;out, d_out, sizeof(int), cudaMemcpyDeviceToHost);
+printf(“%d\n”, out);</p>
+<p>cudaFree(d_a);
+cudaFree(d_b);
+cudaFree(d_out);
+return 0;
+}</p>
+<pre><code>
+```console
+$ nvcc mul-sum-reduce.cu &amp;&amp; ./a.out
+285
+</code></pre>
+<p>Notice how our shared memory is declared:</p>
+<pre><code class="language-cuda">  extern __shared__ int tmp[];
+</code></pre>
+<p>It is <code>external</code> because we are not allocating the memory in our kernel; it’s allocated by the cuda runtime when we pass the third parameter to the kernel launch parameters:</p>
+<pre><code class="language-cuda">mulsum&lt;&lt;&lt;1, N, sizeof(int)*N&gt;&gt;&gt;(d_a, d_b, d_out, N);
+               ▲
+               │
+ ┌─────────────┴───────────────────────┐
+ │Size of shared memory to be allocated│
+ │         for kernel launch           │
+ └─────────────────────────────────────┘
+</code></pre>
+<p>There can only be one segment of shared memory in a kernel launch, so the shared memory segment will be interpreted as whatever type we declare our shared memory with.
+In this case, it’s an array of ints.
+Although there is strictly one <em>segment</em> of shared memory in a kernel launch, you can still declare multiple variables as <code>__shared__</code>, so long as they all fit in the allocated shared memroy.</p>
+<p>We also introduced another CUDA extension to the host language: <code>__syncthreads()</code>.
+<code>__syncthreads()</code> is a <em>fence</em> or <em>barrier</em>, a point which no thread <em>in that block</em> can cross until all threads have reached it.
+<code>__syncthreads()</code>
+There are many other CUDA primitives for atomic, and synchronization operations, such as <code>atomicAdd</code>.</p>
+<h3 id="cuda-mat-vec-multiply"><a class="header" href="#cuda-mat-vec-multiply">CUDA Mat-Vec Multiply</a></h3>
+<p>We again return to our <code>matvecmul</code> example, this time armed with some knowledge about the CUDA runtime and some software and hardware abstractions.</p>
+<pre><code class="language-cuda">#include &lt;cstdio&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+
+__global__ void matvecmul(int* mat, int* vec, int* outv,
+                          int m, int n) {
+
+  int rowidx = blockIdx.x;
+  int colidx = threadIdx.x;
+
+  extern __shared__ int tmp[];
+
+  if (colidx &lt; n &amp;&amp; rowidx &lt; m) {
+    tmp[colidx] = mat[colidx + (rowidx * n)] * vec[colidx];
+
+    __syncthreads();
+
+    if (colidx == 0) {
+      int sum = 0;
+      for (int i=0; i &lt; n; i++)
+        sum += tmp[i];
+      outv[rowidx] = sum;
+    }
+  }
+}
+
+int main() {
+  #define M 10
+  #define N 15
+
+  int a[M*N];
+  for (int i=0; i &lt; M*N; i++) a[i] = i;
+
+  int b[N];
+  for (int i=0; i &lt; N; i++) b[i] = i;
+
+  int* d_a;
+  cudaMalloc(&amp;d_a, sizeof(int[M*N]));
+  cudaMemcpy(d_a, a, sizeof(int[M*N]), cudaMemcpyHostToDevice);
+
+  int* d_b;
+  cudaMalloc(&amp;d_b, sizeof(int[N]));
+  cudaMemcpy(d_b, b, sizeof(int[N]), cudaMemcpyHostToDevice);
+
+  int* d_c;
+  cudaMalloc(&amp;d_c, sizeof(int[M]));
+
+  matvecmul&lt;&lt;&lt;M, N, sizeof(int[N])&gt;&gt;&gt;(d_a, d_b, d_c, M, N);
+
+  int c[M];
+  cudaMemcpy(c, d_c, sizeof(int[M]), cudaMemcpyDeviceToHost);
+
+  cudaFree(d_a);
+  cudaFree(d_b);
+  cudaFree(d_c);
+  return 0;
+}
+</code></pre>
+<p>After adding some printing code to our example above, we get the following:</p>
+<pre><code class="language-console">$ nvcc matvecmul.cu &amp;&amp; ./a.out
+Matrix:
+   0    1    2    3    4    5    6    7    8    9   10   11   12   13   14
+  15   16   17   18   19   20   21   22   23   24   25   26   27   28   29
+  30   31   32   33   34   35   36   37   38   39   40   41   42   43   44
+  45   46   47   48   49   50   51   52   53   54   55   56   57   58   59
+  60   61   62   63   64   65   66   67   68   69   70   71   72   73   74
+  75   76   77   78   79   80   81   82   83   84   85   86   87   88   89
+  90   91   92   93   94   95   96   97   98   99  100  101  102  103  104
+ 105  106  107  108  109  110  111  112  113  114  115  116  117  118  119
+ 120  121  122  123  124  125  126  127  128  129  130  131  132  133  134
+ 135  136  137  138  139  140  141  142  143  144  145  146  147  148  149
+
+Vector:
+   0    1    2    3    4    5    6    7    8    9   10   11   12   13   14
+
+Output:
+1015 2590 4165 5740 7315 8890 10465 12040 13615 15190
+</code></pre>
+<a href="https://mlochbaum.github.io/BQN/try.html#code=TXVsIOKGkCAry53iiJjDl+KOiTHigL/iiJ4KCm3ihpAxMOKAvzE14qWK4oaVMjAwCnbihpDihpUxNQoKbSBNdWwgdg==" target="blank">
+This BQN example verifies the output from our CUDA program:
+</a>
+```
+   Mul ← +˝∘×⎉1‿∞
+   m←10‿15⥊↕200
+   v←↕15
+   m Mul v
+⟨ 1015 2590 4165 5740 7315 8890 10465 12040 13615 15190 ⟩
+```
+<p>In our CUDA C example, we launch a block for each row of our matrix.
+This way, we can share memory between each thread operating on a given row of the matrix.
+A single thread per row can then perform the sum reduction and assign the value to the index in the output vector.</p>
+<h1 id="cuda-c-1"><a class="header" href="#cuda-c-1">CUDA C++</a></h1>
+<h2 id="naive-approach"><a class="header" href="#naive-approach">Naive Approach</a></h2>
+<p>In our previous CUDA C example, we weren’t really using CUDA C <em>perse</em>, but CUDA C++.
+If you read the introductory chapter in <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/#cuda-general-purpose-parallel-computing-architecture" target="blank">the official NVIDIA CUDA Programming guide</a>, you’ll see that CUDA C is really just CUDA mixed with the common language subset between C and C++ on the host.
+We were using CUDA C++ the whole time, we just restricted ourselves to the C subset of C++ for simplicity.</p>
+<pre><code class="language-c++">#include &lt;cstdio&gt;
+#include &lt;thrust/device_vector.h&gt;
+#include &lt;thrust/host_vector.h&gt;
+#include &lt;thrust/sequence.h&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+
+/* ┌───────────────────────────┐
+   │Using thrust's pointer type│
+   │     instead of int*       │
+   └───────────────────────────┘ */
+__global__ void matvecmul(
+    thrust::device_ptr&lt;int&gt; mat,
+    thrust::device_ptr&lt;int&gt; vec,
+    thrust::device_ptr&lt;int&gt; outv,
+    int m, int n) {
+
+  int rowidx = blockIdx.x;
+  int colidx = threadIdx.x;
+
+  extern __shared__ int tmp[];
+
+  if (colidx &lt; n &amp;&amp; rowidx &lt; m)
+  {
+    tmp[colidx] = mat[colidx + (rowidx * n)] * vec[colidx];
+
+    __syncthreads();
+
+    if (colidx == 0) {
+      int sum = 0;
+      for (int i=0; i &lt; n; i++)
+        sum += tmp[i];
+      outv[rowidx] = sum;
+    }
+  }
+}
+
+int main() {
+  #define M 10
+  #define N 15
+
+  /* ┌────────────────────────────────┐
+     │ Using thrust's host and device │
+     │    vectors over raw arrays.    │
+     │No longer need to use cudaMemcpy│
+     │        or cudaMalloc!          │
+     └────────────────────────────────┘ */
+  thrust::device_vector&lt;int&gt; a(M*N);
+  thrust::sequence(a.begin(), a.end(), 0);
+
+  thrust::device_vector&lt;int&gt; b(N);
+  thrust::sequence(b.begin(), b.end(), 0);
+
+  thrust::device_vector&lt;int&gt; c(M, 0);
+
+  matvecmul&lt;&lt;&lt;M, N, sizeof(int[N])&gt;&gt;&gt;(a.data(), b.data(), c.data(), M, N);
+
+  /* ┌────────────────────────────┐
+     │The assignment operator will│
+     │   perform the cudaMemcpy   │
+     └────────────────────────────┘ */
+  thrust::host_vector&lt;int&gt; out = c;
+
+  puts("Output:");
+  for (int i=0; i &lt; M; i++)
+    printf("%d ", out[i]);
+  puts("");
+  return 0;
+}
+</code></pre>
+<pre><code class="language-console">$ nvcc thrust-ex.cu &amp;&amp; ./a.out
+Output:
+1015 2590 4165 5740 7315 8890 10465 12040 13615 15190
+</code></pre>
+<p>As you can see, the code looks quite similar, except for the lack of memory management.
+This is hiding a few extra details as well.
+In our original CUDA example, we first allocate and assign to memory on the host before copying it to the device.
+In this example, we allocate memory <em>on the device first</em>, and perform assignments <em>on the device</em>.</p>
+<p>In this line, we allocate <em>device</em> memory for our matrix, and assign values to it <em>on the device</em>.</p>
+<pre><code class="language-c++">  thrust::device_vector&lt;int&gt; a(M*N);
+  thrust::sequence(a.begin(), a.end(), 0);
+</code></pre>
+<p><code>thrust::sequence</code> is almost identical to <code>std::iota</code> or <code>for (int i=0; i &lt; N; i++) vec[i] = i;</code>, except that it may execute on the device.
+In this new example, we launch three kernels instead of one: one for each call to <code>thrust::sequence</code>, and one for our manual kernel launch.
+<a href="https://godbolt.org/z/nKvajeE5P" target="blank">
+You can look at the details of the ptx assembly in Compiler Explorer here.
+</a></p>
+<h2 id="more-sophisticated-approach"><a class="header" href="#more-sophisticated-approach">More Sophisticated Approach</a></h2>
+<p>Remember all that fuss about <em>fundamental algorithms</em> in the earlier sections?
+How our <em>fundamental algorithm</em> here is a transform-reduce?</p>
+<p>Well, in our first-pass CUDA implementation, we don’t really use this to our advantage.
+Our kernel contains the following lines:</p>
+<pre><code class="language-cpp">    if (colidx == 0) {
+      int sum = 0;
+      for (int i=0; i &lt; n; i++)
+        sum += tmp[i];
+      outv[rowidx] = sum;
+    }
+</code></pre>
+<a href="https://github.com/NVIDIA/thrust/blob/d461afaefdb0b22d830f8d5e9a7b42aebff7004f/thrust/system/cuda/detail/reduce.h#L489" target="blank">
+Thrust's `transform_reduce` uses a rather complicated multi-pass, tiled approach to reducing a collection of values to a single value, but we only use a single thread in a block to actually reduce a given index in our output vector.
+</a>
+<p>While we used a raw loop at least once per block, an optimized reduction will perform something like the following:</p>
+<center>
+<img
+  src="https://i.stack.imgur.com/HxccQ.png"
+  alt="depiction of a multi-pass sum reduction"
+  />
+</center>
+<p>Extremely performant reductions are actually quite hard to get right - it’s easy to get <em>some</em> parallelism in a reduction, but it takes significant effort to truly maximize the speed you can get from a GPU.
+<a href="https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf" target="blank">
+This slidedeck from the NVIDIA developer blog details various approaches to optimizing a reduction operation on a GPU.
+</a>
+Thrust’s reduce implementation will even select different strategies and launch parameters based on the sizes of the data it operates on.</p>
+<p>The point of this Thrust discussion is not to dissuade you from writing raw CUDA kernels - it’s to dissuage you from doing it too early.
+In the majority of cases, it’s likely that using a library around raw CUDA kernels will result in faster code and less development time.
+Once you have already written your code using <em>known algorithms</em>, once you have tested your code to demonstrate its correctness, once you have profiled your code to demonstrate where the performance bottlenecks are on the target architectures you care about, then it makes sense to write raw CUDA kernels.</p>
+<blockquote>
+<p>Use sane defaults, only optimize after profiling and testing</p>
+</blockquote>
+<p>So let’s try again, using Thrust’s parallel algorithms to compute the reductions for each row of the matrix-vector multiplication <a href="https://godbolt.org/z/G7KEfqWcE" target="blank">(godbolt link here)</a>:</p>
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
+#include &lt;thrust/iterator/zip_iterator.h&gt;
+#include &lt;thrust/tuple.h&gt;
+#include &lt;thrust/device_vector.h&gt;
+#include &lt;thrust/host_vector.h&gt;
+#include &lt;thrust/sequence.h&gt;
+
+__global__
+void broadcast_to_matrix(thrust::device_ptr&lt;int&gt; mat,
+    thrust::device_ptr&lt;int&gt; vec,
+    int m, int n) {
+  const auto col = blockIdx.x;
+  const auto row = threadIdx.x;
+
+  if (row &lt; m and col &lt; n)
+    mat[col+(row*n)] = vec[col];
+}
+
+int main() {
+  #define M 10
+  #define N 15
+
+  thrust::device_vector&lt;int&gt; a(M*N);
+  thrust::sequence(a.begin(), a.end(), 0);
+
+  thrust::device_vector&lt;int&gt; b(N);
+  thrust::sequence(b.begin(), b.end(), 0);
+
+  thrust::device_vector&lt;int&gt; broadcasted_b(M*N);
+  broadcast_to_matrix&lt;&lt;&lt;N, M&gt;&gt;&gt;(broadcasted_b.data(), b.data(), M, N);
+
+  thrust::host_vector&lt;int&gt; c(M);
+
+  thrust::zip_iterator iter(thrust::make_tuple(a.begin(), broadcasted_b.begin()));
+
+  for (int i=0; i &lt; M; i++)
+    c[i] = thrust::transform_reduce(iter+(i*N), iter+(i*N)+N,
+        [] __device__ (auto tup) -&gt; int {
+          return thrust::get&lt;0&gt;(tup) * thrust::get&lt;1&gt;(tup);
+        },
+        0,
+        thrust::plus&lt;int&gt;()
+        );
+
+  puts("Output:");
+  for (int i=0; i &lt; M; i++)
+    printf("%d ", c[i]);
+  puts("");
+  return 0;
+}
+</code></pre>
+<p>Since we’re using some more fancy C++ features, we have to pass some extra flags to the compiler:</p>
+<pre><code class="language-console">$ nvcc -std=c++17 --extended-lambda fancy.cu &amp;&amp; ./a.out
+Output:
+1015 2590 4165 5740 7315 8890 10465 12040 13615 15190
+</code></pre>
+<p>The first kernel is launched manually, since we’re just broadcasting values from the vector to another vector to match the shape of our matrix.
+We perform this step so we can create a zip iterator from the matrix and the broadcasted vector:</p>
+<pre><code class="language-cpp">  thrust::zip_iterator iter(thrust::make_tuple(a.begin(), broadcasted_b.begin()));
+</code></pre>
+<p>This means we can feed the single iterator into our <code>transform_reduce</code> operation.
+Elements obtained by the zip iterator are passed into our lambda function, and we simply multiply the two values together, before using the <code>plus</code> functor to reduce the vector of intermediate values for a given row into a scalar:</p>
+<pre><code class="language-cpp">  for (int i=0; i &lt; M; i++)
+    c[i] = thrust::transform_reduce(iter+(i*N), iter+(i*N)+N,
+        [] __device__ (auto tup) -&gt; int {
+          return thrust::get&lt;0&gt;(tup) * thrust::get&lt;1&gt;(tup);
+        },
+        0,
+        thrust::plus&lt;int&gt;()
+        );
+</code></pre>
+<p>If we want to use threading on the host as well, we can even use an OpenMP directive:</p>
+<pre><code class="language-cpp">#pragma openmp parallel for
+  for (int i=0; i &lt; M; i++)
+    c[i] = thrust::transform_reduce(iter+(i*N), iter+(i*N)+N,
+        [] __device__ (auto tup) -&gt; int {
+          return thrust::get&lt;0&gt;(tup) * thrust::get&lt;1&gt;(tup);
+        },
+        0,
+        thrust::plus&lt;int&gt;()
+        );
+</code></pre>
+<p>We’ll have to tell <code>nvcc</code> to pass the <code>-fopenmp</code> flag to the host compiler:</p>
+<pre><code class="language-console">$ nvcc -std=c++17 --extended-lambda -Xcompiler -fopenmp fancy.cu
+</code></pre>
+<h2 id="the-best-tool-for-the-job"><a class="header" href="#the-best-tool-for-the-job">The Best Tool for the Job</a></h2>
+<p>We have by now hopefully learned that we should use the most specialized tool for the job, and we should write kernels by hand only when we’re sure we can do better than your libraries of choice.
+We can take this principle one step further with a little extra knowledge of our problem.</p>
+<p>A matrix-vector product is a very common linear algebra operation, and a member of the Basic Linear Algebra Subroutines interface, which CUDA provides a library for (CUBLAS).
+Because this is such a common operation, NVIDIA provides an extremely fast implementation - far more optimized than anything we would write by hand.</p>
+<p>This knowledge of our problem leads us to using the most appropriate library, and likely to the fastest solution.</p>
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
+#include &lt;thrust/device_vector.h&gt;
+#include &lt;thrust/host_vector.h&gt;
+#include &lt;thrust/sequence.h&gt;
+#include &lt;cuda.h&gt;
+#include &lt;cuda_runtime.h&gt;
+#include &lt;cublas_v2.h&gt;
+
+int main() {
+  #define M 10
+  #define N 15
+
+  cublasHandle_t ch;
+  cublasCreate(&amp;ch);
+
+  thrust::device_vector&lt;double&gt; a(M*N);
+  thrust::sequence(a.begin(), a.end(), 0);
+
+  const double alpha = 1.0;
+  const double beta = 0.0;
+
+  thrust::device_vector&lt;double&gt; b(N);
+  thrust::sequence(b.begin(), b.end(), 0);
+
+  thrust::device_vector&lt;double&gt; c(M);
+
+  #define PTR(x) thrust::raw_pointer_cast(x.data())
+  cublasDgemv(
+      ch,
+      CUBLAS_OP_T,
+      N, M,
+      &amp;alpha,
+      PTR(a), N,
+      PTR(b), 1,
+      &amp;beta,
+      PTR(c), 1
+      );
+  #undef PTR
+
+  thrust::host_vector&lt;double&gt; hc = c;
+
+  puts("Output:");
+  for (int i=0; i &lt; M; i++)
+    printf("%.1f ", hc[i]);
+  puts("");
+
+  cublasDestroy(ch);
+
+  return 0;
+}
+</code></pre>
+<pre><code class="language-console">$ nvcc cublas.cu -lcublas &amp;&amp; ./a.out
+Output:
+1015.0 2590.0 4165.0 5740.0 7315.0 8890.0 10465.0 12040.0 13615.0 15190.0
+</code></pre>
+<h1 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h1>
+<h1 id="bqn-example"><a class="header" href="#bqn-example">BQN Example</a></h1>
+<p>Personally, I use BQN to prototype solutions to problems and to better understand the fundamental algorithms at play; you don’t have to know an APL in order to understand this, but it might be helpful.
+Feel free to skip this section; it is not critical to understanding the concepts.</p>
+<p><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">Here’s a permalink to the BQN snippet.</a></p>
+<pre><code>   # Same matrix as in our C example
+   mat ← 3‿3⥊↕10
+┌─       
+╵ 0 1 2  
+  3 4 5  
+  6 7 8  
+        ┘
+   # Same vector as in our C example
+   vec ← 3⥊2
+⟨ 2 2 2 ⟩
+
+   +˝⎉1 mat×vec
+⟨ 6 24 42 ⟩
+</code></pre>
+<p>The core algorithm is seen in the final expression:</p>
+<pre><code>+˝⎉1 mat×vec
+▲    ▲
+│    │     ┌───────────────────────────┐
+│    └─────┤Multiply rows of mat by vec│
+│          │        element-wise       │
+│          └───────────────────────────┘
+│     ┌─────────────────────────┐
+│     │Sum-reduce rows of matrix│
+└─────┤ resulting from mat×vec  │
+      └─────────────────────────┘
+</code></pre>
+<p>Alternatively:</p>
+<center>
+<img height=300 src="/images/hpc-101-matvec/bqn-matvecmul-explain.png" alt="Try BQN explanation of matvecmul"/>
+</center>
+<h1 id="links-references-additional-reading"><a class="header" href="#links-references-additional-reading">Links, References, Additional Reading</a></h1>
+<ul>
+<li><a href="https://mlochbaum.github.io/BQN/try.html#code=4oCiU2hvdyBtYXQg4oaQIDPigL8z4qWK4oaVMTAK4oCiU2hvdyB2ZWMg4oaQIDPipYoyCivLneKOiTEgbWF0w5d2ZWMK" target="blank">BQN matvecmul example</a></li>
+<li><a href="https://hadrienj.github.io/posts/Deep-Learning-Book-Series-2.2-Multiplying-Matrices-and-Vectors/" target="blank">Matrix-Vector Product image</a></li>
+<li><a href="https://www.cs.utexas.edu/~lin/cs380c/handout27.pdf" target="blank">UT Austin slides on loop-carried dependencies and parallelism</a></li>
+<li><a href="https://www.worldcat.org/title/how-to-write-parallel-programs-a-first-course/oclc/912171709&referer=brief_results" target="blank"><em>How to Write Parallel Programs: A First Course</em></a></li>
+<li><a href="https://thrust.github.io/doc/group__transformed__reductions_ga0d4232a9685675f488c3cc847111e48d.html" target="blank">Thrust parallel algorithms library</a></li>
+<li><a href="https://adspthepodcast.com/2021/11/12/Episode-51.html" target="blank"> ADSP podcast episode from the lead HPC architect at NVIDIA discussing speed vs efficiency</a></li>
+<li><a href="https://youtu.be/KK3JXvSiJG4" target="blank"> Bryce Adelstein Lelbach’s talk on C++ standard parallelism </a></li>
+<li><a href="https://github.com/kokkos/mdspan/blob/single-header/mdspan.hpp" target="blank"> Kokkos <code>mdspan</code> single header </a></li>
+<li><a href="https://www.nvidia.com/content/GTC-2010/pdfs/2131_GTC2010.pdf" target="blank">CUDA C Introduction Slides</a></li>
+<li><a href="https://github.com/uysalere/cuda-matrix-vector-multiplication" target="blank"> More sophisticated CUDA matrix-vector product implementations </a></li>
+<li><a href="https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf" target="blank"> Slides on CUDA reduction operation </a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2022-12-12-Compiler-Perf-Debugging.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2022-12-12-Compiler-Perf-Debugging.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
