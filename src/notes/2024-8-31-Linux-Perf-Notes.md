@@ -61,21 +61,9 @@ The workflow is generally:
 ; perf report
 ```
 
-`perf report` will give you a TUI report like this by default:
-```bash
-Samples: 88K of event 'cycles', Event count (approx.): 72137516526
-  Children      Self  Command  Shared Object              Symbol
-+   99.61%     0.00%  povray   libboost_thread.so.1.74.0  [.] 0x00007f61e2d6f0cb
-+   99.54%     0.00%  povray   povray                     [.] pov::Task::TaskThread
-+   97.41%     0.03%  povray   povray                     [.] pov::Trace::ComputeTextureColour
-+   97.40%     0.06%  povray   povray                     [.] pov::Trace::ComputeOneTextureColour
-...
-```
-
-This view lets you drill into the call stack to see **where samples were recorded** in the application,
+Perf report helps you drill into the call stack to see **where samples were recorded** in the application,
 even down to the assembly instructions that corresponded to samples.
-`perf report --stdio` gives the same information initially, but with all the call stacks expanded;
-this may quickly get overwhelming.
+
 
 ## Perf Events and Perf List
 
@@ -159,8 +147,97 @@ if you would like it to - or just on a specific core or for a specific applicati
 
 ## Perf Report
 
-~~~admonish todo
-need to finish this section
+`perf report` will give you a TUI report like this by default:
+```bash
+Samples: 88K of event 'cycles', Event count (approx.): 72137516526
+  Children      Self  Command  Shared Object              Symbol
++   99.61%     0.00%  povray   libboost_thread.so.1.74.0  [.] 0x00007f61e2d6f0cb
++   99.54%     0.00%  povray   povray                     [.] pov::Task::TaskThread
++   97.41%     0.03%  povray   povray                     [.] pov::Trace::ComputeTextureColour
++   97.40%     0.06%  povray   povray                     [.] pov::Trace::ComputeOneTextureColour
+...
+```
+
+Notice the event used for the report is given in the first line.
+
+`perf report --stdio` gives the same information initially, but with all the call stacks expanded;
+this may get overwhelming.
+For a the 20 second recording I took for this example, the stdio output of
+perf report was over 10k lines long:
+```bash
+; perf report --stdio|wc -l
+10010
+```
+
+From inside the TUI you can press `h` to get a list of all the available commands,
+so I won't enumerate them here.
+
+I usually run perf report with the `-G` flag, which is shorthand for `--inverted`,
+meaning the callgraph representation is inverted.
+
+You may have noticed that the snippet from perf report I pasted above starts
+with two columns: `Self` and `Children`.
+
+~~~admonish important title="The `Self` and `Children` columns"
+The _Children_ indicates the percentage of samples taken in that stack frame
+_or any of its children_ - meaning any samples recorded while in this stack
+frame or that of any functions called from the current stack frame.
+
+The _Self_ column is more significant: it indicates what percentage of samples
+were taken _in the given stack frame only_ - meaning instructions coming from
+that function alone, and not any functions it calls.
+
+The `main()` function is always at the top, since it calls all other function.
+However, unless your entire program was inlined into the main routine, its _Self_
+column is likely very low since most of the work being done is probably happening
+elsewhere.
+~~~
+
+## FlameGraph
+
+I mention Brendan Gregg[^brendan_gregg_blog] a few times in this post, and you should get familiar with
+him and his work.
+His blog has many pearls and he might have a one-liner for exactly your use case.
+
+One of his other contributions is the FlameGraph repo[^brendan_gregg_flamegraph].
+
+Remember how our perf report contains over 10k lines of reporting for just a single application running for ~20 seconds?
+His flamegraph repo gives us a way to visualize and gain insights from _all_ of that data at a very high level
+by creating a flamegraph from perf's recorded data.
+
+~~~admonish tip title="Note"
+The FlameGraph repo actually knows how to deal with other profilers too, like DTrace and SystemTap.
+~~~
+
+A workflow for generating a flamegraph might look like this:
+
+```bash
+# build and profile your application
+; make
+; perf record --call-graph fp -- ./a.out
+
+; git clone https://github.com/brendangregg/FlameGraph ../FlameGraph
+
+; perf script \
+    | ../FlameGraph/stackcollapse-perf.pl \
+    | ../FlameGraph/flamegraph.pl \
+    > flamegraph.svg
+```
+
+~~~admonish tip title="Note"
+The FlameGraph scripts have actally been merged into the linux kernel's repo,
+so perf built for a newer kernel has FlameGraph as a built-in script, used like so:
+
+```bash
+; perf script flamegraph -- ./a.out
+
+# alternatively...
+; perf record -- ./a.out
+; perf script report flamegraph
+```
+
+This requires python scripting support built into perf, which my perf build does
+not have, so I can't test it myself. I still use the scripts from Brendan's repo.
 ~~~
 
 # POV-Ray
@@ -171,6 +248,10 @@ Povray[^povray] is a 3d graphics code commonly used for benchmarking - it's part
     
     Compiler writers and hardware vendors don't care too much about benchmarking
     silly code that doesn't represent what users will actually be running.
+
+1. It's cross-platform
+
+    Part of its utility is that we can compare performance across hardware vendors
 
 1. It's well-supported by most/all compilers
 
@@ -299,8 +380,6 @@ perf diff
 
 # Further Reading
 
-[Brendan Gregg perf one-liners. Reread these several times. What you want is probably already here.](https://www.brendangregg.com/perf.html)
-
 Truly, read the manpages.
 The perf man pages could be more thorough and some commands are not exceptionally
 well-documented (looking at you, `perf diff`), but they are invaluable resources.
@@ -311,9 +390,12 @@ For example:
 
 ## References
 
+[^brendan_gregg_blog]: [Brendan Gregg's blog post with perf one-liners. Reread this list several times. What you want is probably already here.](https://www.brendangregg.com/perf.html)
+[^brendan_gregg_flamegraph]: [FlameGraph repo](https://github.com/brendangregg/FlameGraph). [See also: his blog post on flamegraphs](https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html)
 [^povray]: [  POVRay.org: Benchmarking with POV-Ray  ](https://www.povray.org/download/benchmark.php)
 [^openbench_povray]: [OpenBenchmarking POV-Ray](https://openbenchmarking.org/test/system/povray)
 [^spec2017_povray]: [511.povray_r: SPEC CPU®2017 Benchmark Description](https://www.spec.org/cpu2017/Docs/benchmarks/511.povray_r.html)
 [^man_perf]: [man perf](https://www.man7.org/linux/man-pages/man1/perf.1.html)
 [^man_perf_list]: [man perf-list](https://www.man7.org/linux/man-pages/man1/perf-list.1.html)
 [^man_perf_diff]: [man perf-diff](https://www.man7.org/linux/man-pages/man1/perf-diff.1.html)
+[^redhat_flamegraph]: [RedHat blog post on flamegraphs](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/monitoring_and_managing_system_status_and_performance/getting-started-with-flamegraphs_monitoring-and-managing-system-status-and-performance#creating-flamegraphs-over-the-entire-system_getting-started-with-flamegraphs)
