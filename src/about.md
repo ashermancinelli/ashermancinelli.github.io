@@ -1,16 +1,16 @@
 # Welcome
 
-I find compilers, programming languages and performance _really_ interesting.
+I find compilers, programming languages and performance really interesting.
 
 My personal notes and blog posts are enumerated on the left, or you can use the search bar at the top.
 
-Professionally, I work on [the NVHPC C, C++ and Fortran compilers at NVIDIA](https://developer.nvidia.com/hpc-sdk).
+I work on [the NVHPC C, C++ and Fortran compilers at NVIDIA](https://developer.nvidia.com/hpc-sdk).
 
-```admonish tip title="Heads up!"
-For code blocks with shell commands, I use `;` instead of the typical `$`.
-This way, if you use the button in the top-right of the code block to copy the commands,
-the semicolon doesn't mess up the commands like `$` does.
-```
+<!-- ```admonish tip title="Heads up!" -->
+<!-- For code blocks with shell commands, I use `;` instead of the typical `$`. -->
+<!-- This way, if you use the button in the top-right of the code block to copy the commands, -->
+<!-- the semicolon doesn't mess up the commands like `$` does. -->
+<!-- ``` -->
 
 ---
 
