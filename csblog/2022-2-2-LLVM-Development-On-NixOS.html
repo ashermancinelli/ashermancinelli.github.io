@@ -1,0 +1,514 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>LLVM Development on NixOS 2/2/2022 - Notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../about.html">About</a></li><li class="chapter-item expanded affix "><li class="part-title">Blog</li><li class="chapter-item expanded "><a href="../csblog/2024-9-4-Debugging-In-Parallel.html">Debugging in Parallel 9/4/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-31-Linux-Perf-Notes.html">The Linux Perf Tool 8/31/2024</a></li><li class="chapter-item expanded "><a href="../notes/values.html">Values 8/26/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-30-Shell.html">Shell+Scripting 8/24/2024</a></li><li class="chapter-item expanded "><a href="../notes/editors.html">Editors+Tools 8/24/2024</a></li><li class="chapter-item expanded "><a href="../csblog/2023-6-1-C-VLA-Implementation.html">Understanding VLA 6/1/2023</a></li><li class="chapter-item expanded "><a href="../csblog/2022-5-2-BQN-reflections.html">BQN and Reflections on the Joy of Programming 5/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html" class="active">LLVM Development on NixOS 2/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-10-CUDA-101-Matvec.html">CUDA 101: Matrix-Vector Product 2/10/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-12-12-Compiler-Perf-Debugging.html">Debugging Performance in Compilers 12/12/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-1-15-Std-Expected.html">std::expected And Why It's Awesome 1/15/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-7-GTest-Type-Value-Params.html">GTest Type and Value Parameterized Tests 3/7/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Spack-Development-3.html">Spack for Package Development Part 3 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Clang-Tools-Lambda.html">Clang Tools for Checking Domain-Specific Errors 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-5-Spack-Development-2.html">Spack for Package Development Part 2 3/5/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-4-Spack-Development-1.html">Spack for Package Development Part 1 3/4/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-12-23-std-mdspan-Response.html">A Look at std::mdspan 12/23/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-24-Popular-Languages-1965.html">Using the Most Popular Programming Languages of the '60s 10/24/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html">One Problem, Four Languages, Two Paradigms 10/19/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-11-BQN-Cpp-CUDA.html">BQN and CUDA C++ LeetCode Solutions 10/11/2021</a></li><li class="chapter-item expanded affix "><li class="part-title">Coffee</li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html">Best Espresso In Portland (6/11/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Sterling.html">Sterling (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Deadstock.html">Deadstock (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Barista.html">Barista (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Never-Coffee.html">Never Coffee (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Upper-Left-Roasters.html">Upper Left Roasters (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Abba.html">Abba (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Rose-City-Coffee.html">Rose City Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Sterling.html">Sterling (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-21-Superjoy.html">Superjoy (6/21/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Beginners-Guide.html">Beginners Guide (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-19-Seattle-Trip-Report.html">Seattle Trip Report (6/19/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Adapt-Coffee.html">Adapt Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Coava.html">Coava (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-PDX-Espresso-Research.html">PDX Espresso Research (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Nossa-Familia-Coffee.html">Nossa Familia Coffee (6/15/2023)</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+layout: post
+title: LLVM Development on NixOS
+permalink: /llvm-nixos
+category: c++, nixos, llvm
+cat: cs
+-->
+<p>I’ve found NixOS to provide a wonderful development environment after learning a bit of the Nix language - but building and hacking on LLVM on NixOS gave me some trouble.
+Hopefully reading this post will save you the trouble!</p>
+<h1 id="build-environment"><a class="header" href="#build-environment">Build Environment</a></h1>
+<h3 id="if-youd-just-like-to-see-my-config-go-to-the-end-of-the-post-where-ive-pasted-the-whole-thing"><a class="header" href="#if-youd-just-like-to-see-my-config-go-to-the-end-of-the-post-where-ive-pasted-the-whole-thing"><em><strong>If you’d just like to see my config, go to the end of the post where I’ve pasted the whole thing</strong></em></a></h3>
+<p>I’m no Nix language expert by any stretch of the imagination, nor am I an expert in dynamic linking or managing an operating system.</p>
+<p>I started with the <code>nix-shell</code> example provided in <a href="https://nixos.wiki/wiki/LLVM">the nix documentation here</a> and made additions as I found the need.</p>
+<p>I had to pass the library directories of both GCC and GLIBC using both the <code>-B</code> and <code>-L</code> flags, because some required object files (like <code>crt1.o</code>) must be found at link time, and clang/gcc don’t search <code>LD_LIBRARY_PATH</code> for these files.
+<code>-B</code> will tell the compilers to look in the provided paths for these files.</p>
+<pre><code class="language-nix">  libcFlags = [
+    "-L ${stdenv.cc.libc}/lib"
+    "-B ${stdenv.cc.libc}/lib"
+  ];
+
+  # The string version of just the gcc flags for NIX_LDFLAGS
+  nixLd = lib.concatStringsSep " " [
+    "-L ${gccForLibs}/lib"
+    "-L ${gccForLibs}/lib/gcc/${targetPlatform.config}/${gccForLibs.version}"
+  ];
+
+  gccFlags = [
+    "-B ${gccForLibs}/lib/gcc/${targetPlatform.config}/${gccForLibs.version}"
+    "${nixLd}"
+  ];
+</code></pre>
+<p>The official documentation uses <code>LLVM_ENABLE_PROJECTS</code> to enable runtimes, which is deprecated, so I first removed that in favor of a manual two-stage build for libc++ and libc++abi.</p>
+<pre><code class="language-nix">  # For building clang itself, we're just using the compiler wrapper and we
+  # don't need to inject any flags of our own.
+  cmakeFlags = lib.concatStringsSep " " [
+    "-DGCC_INSTALL_PREFIX=${gcc}"
+    "-DC_INCLUDE_DIRS=${stdenv.cc.libc.dev}/include"
+    "-DCMAKE_BUILD_TYPE=Release"
+    "-DCMAKE_INSTALL_PREFIX=${installdir}"
+    "-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON"
+    "-DLLVM_ENABLE_PROJECTS=clang"
+    "-DLLVM_TARGETS_TO_BUILD=X86"
+  ];
+  cmakeCmd = lib.concatStringsSep " " [
+    "export CC=${stdenv.cc}/bin/gcc; export CXX=${stdenv.cc}/bin/g++;"
+    "${cmakeCurses}/bin/cmake -B ${builddir} -S llvm"
+    "${cmakeFlags}"
+  ];
+</code></pre>
+<p>To build clang itself, I activate the nix shell and build only clang:</p>
+<pre><code class="language-console">$ cd llvm-project
+$ nix-shell
+$ eval "$cmakeCmd"
+$ make -C build -j `nproc`
+</code></pre>
+<p>I didn’t use <code>LLVM_ENABLE_RUNTIMES</code> since I had trouble passing the CMake arguments to the runtime builds through the top-level build.
+The purpose of <code>LLVM_ENABLE_RUNTIMES</code> is to build an LLVM project using the just-built clang/LLVM, however compile and link arguments are not passed to the runtime builds using the default <code>CMAKE_CXX_FLAGS</code> as I expected (or at least I was unable to get this to work).</p>
+<p>Instead, I configured a seperate set of cmake arguments for the runtimes, and manually passed the just-built clang compiler as <code>CXX</code> to the runtime builds like so:</p>
+<pre><code class="language-nix">  cmakeRuntimeFlags = lib.concatStringsSep " " [
+    "-DCMAKE_CXX_FLAGS=\"${flags}\""
+    "-DLIBCXX_TEST_COMPILER_FLAGS=\"${flags}\""
+    "-DLIBCXX_TEST_LINKER_FLAGS=\"${flags}\""
+    "-DLLVM_ENABLE_RUNTIMES='libcxx;libcxxabi'"
+  ];
+  cmakeRtCmd = lib.concatStringsSep " " [
+    "export CC=${builddir}/bin/clang; export CXX=${builddir}/bin/clang++;"
+    "${cmakeCurses}/bin/cmake -B ${builddir}-rt -S runtimes"
+    "${cmakeRuntimeFlags}"
+  ];
+</code></pre>
+<pre><code class="language-console">$ cd llvm-project
+$ eval "$cmakeRtCmd"
+$ make -C build-rt -j `nproc`
+</code></pre>
+<h1 id="testing-linking-running"><a class="header" href="#testing-linking-running">Testing, Linking, Running</a></h1>
+<p>A huge issue with testing arose due to the way NixOS handles it’s dynamic loader.</p>
+<p>When you use software in NixOS, it’s usually found somewhere in the <code>/run/current-system/sw/</code> prefix, while most software expects to be run from <code>/usr</code> or <code>/usr/local</code>, or it expects to be able to find key libraries under those prefixes (eg <code>libc.so</code>).</p>
+<p>Instead, each software component has it’s own prefix under <code>/nix/store</code>, for example:</p>
+<pre><code class="language-console">$ which perl
+/run/current-system/sw/bin/perl
+$ file $(which perl)
+/run/current-system/sw/bin/perl: symbolic link to 
+    /nix/store/kpzx6f97583zbjyyd7b17rbv057l4vn2-perl-5.34.0/bin/perl
+</code></pre>
+<p>Each compiler must then know the correct locations of the standard libraries and software components, such as the dynamic loader, the standard C library, etc.
+To acomplish this, Nix-provided compilers ship with <em>wrappers</em> that inject the required flags.</p>
+<p>If I inspect my GNU compilers, we see that I’m not using <code>g++</code> directly:</p>
+<pre><code class="language-console">$ which g++
+/nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++
+$ file $(which g++)
+/nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++:
+  a /nix/store/v1d8l3zqnia3hccqd0701szhlx22g54z-bash-5.1-p8/bin/bash
+  script, ASCII text executable
+</code></pre>
+<p>The actual compiler is found in a seperate prefix:</p>
+<pre><code class="language-console">$ grep 'g++' $(which g++) | head -n1
+[[ "/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0/bin/g++" = *++ ]] &amp;&amp; isCxx=1 || isCxx=0
+</code></pre>
+<p>On my current system, the true compiler is found under <code>/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0</code>.</p>
+<p>This becomes an issue with testing LLVM because the tests run executables built with the just-built <code>clang++</code>, not with the wrapped compiler!
+That’s why we have to inject so many flags in our <code>shell.nix</code>.</p>
+<p>When I initially ran <code>make check-cxx</code> to run the tests for libc++, I found errors like this:</p>
+<pre><code class="language-console">FileNotFoundError: [Errno 2]
+    No such file or directory:
+    '/home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe'
+</code></pre>
+<p>It <em>looks</em> like the tests rely on an executable that’s not there.
+However, if I check that location:</p>
+<pre><code class="language-console">$ file /home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe
+/home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe:
+ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked,
+interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, with debug_info, not stripped
+</code></pre>
+<p>the executable <em>was</em> built.</p>
+<p>If I try to run it directly, it still appears to not exist:</p>
+<pre><code class="language-console">$ /home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe
+bash: /home/asher/workspace/llvm-project/brt/libcxx/test/std/containers/sequences/deque/deque.modifiers/Output/erase_iter_iter.pass.cpp.dir/t.tmp.exe:
+  No such file or directory
+</code></pre>
+<p><em><strong>What’s going on here?</strong></em></p>
+<h2 id="dynamic-linker"><a class="header" href="#dynamic-linker">Dynamic Linker</a></h2>
+<p>If we return to the output of running <code>file</code> on our mysterious executable, we see it thinks its dynamic linker is <code>/lib64/ld-linux-x86-64.so.2</code>:</p>
+<pre><code>ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked,
+interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, with debug_info, not stripped
+</code></pre>
+<p>However, if we look for that file, it doesn’t exist:</p>
+<pre><code class="language-console">$ file /lib64/ld-linux-x86-64.so.2
+/lib64/ld-linux-x86-64.so.2:
+  cannot open `/lib64/ld-linux-x86-64.so.2'
+  (No such file or directory)
+</code></pre>
+<p>The <code>patchelf</code> utility from the NixOS developers will tell us where the dynamic linker is for a given executable:</p>
+<pre><code class="language-console">$ patchelf --print-interpreter /path/to/llvm-test.exe
+/lib64/ld-linux-x86-64.so.2
+</code></pre>
+<p>Again, our executable wasn’t built by a Nix compiler wrapper, it was built by the clang we just compiled ourselves.
+What dynamic linker do other programs on this system use?</p>
+<pre><code class="language-console">$ patchelf --print-interpreter $(which bash)
+/nix/store/vjq3q7dq8vmc13c3py97v27qwizvq7fd-glibc-2.33-59/lib/ld-linux-x86-64.so.2
+</code></pre>
+<p>That’s right, everything on NixOS is built in its own prefix.
+If we had used a compiler wrapper, the flags to tell the executable which linker to use would have been injected.</p>
+<p>I found that the linker flag <code>--dynamic-linker</code> will set the dynamic linker path for a given executable, and it’s used here in GCC’s compiler wrapper:</p>
+<pre><code class="language-console">$ grep 'dynamic-link' $(which g++)
+        extraBefore+=("-Wl,-dynamic-linker=$NIX_DYNAMIC_LINKER_x86_64_unknown_linux_gnu")
+</code></pre>
+<p>I can’t quite figure out how <code>NIX_DYNAMIC_LINKER_x86_64_unknown_linux_gnu</code> is set other than that it’s set by the script in <code>$gcc_wrapper_prefix/nix-support/add-flags.sh</code>, but I did find the file <code>dynamic-linker</code> under that same prefix:</p>
+<pre><code class="language-console">$ file $(which g++)
+/run/current-system/sw/bin/g++: symbolic link to
+  /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/bin/g++
+$ ls /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0
+bin  nix-support
+$ ls /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/nix-support
+add-flags.sh      cc-ldflags      libc-crt1-cflags  libcxx-ldflags  orig-libc-dev            utils.bash
+add-hardening.sh  dynamic-linker  libc-ldflags      orig-cc         propagated-build-inputs
+cc-cflags         libc-cflags     libcxx-cxxflags   orig-libc       setup-hook
+</code></pre>
+<p>So the file <code>$gcc_wrapper_prefix/nix-support/dynamic-linker</code> contains the path to the dynamic linker the compiler is using:</p>
+<pre><code class="language-console">$ cat /nix/store/gkzmfpb04ddb7phzj8g9sl6saxzprssg-gcc-wrapper-10.3.0/nix-support/dynamic-linker
+/nix/store/vjq3q7dq8vmc13c3py97v27qwizvq7fd-glibc-2.33-59/lib/ld-linux-x86-64.so.2
+</code></pre>
+<p>I’ll then use this in my <code>shell.nix</code> to get the path to the dynamic linker, and then pass that to clang for building the LLVM runtimes so the correct dynamic linker is used for executables built by clang:</p>
+<pre><code class="language-nix">  dynLinker = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
+  flags = lib.concatStringsSep " " ([
+    "-Wno-unused-command-line-argument"
+    "-Wl,--dynamic-linker=${dynLinker}"
+                          ↑↑↑↑↑↑↑↑↑↑↑↑↑
+  ] ++ gccFlags ++ libcFlags);
+</code></pre>
+<p>I’ve also added <code>-Wno-unused-command-line-argument</code> to the compile flags so we’re not spammed with warnings every time a link directory or file directory I pass to the compiler invokation is ignored.</p>
+<p>We can now finally run our tests.
+Sometimes required binaries are still not found by lit, so I use the <code>cxx-test-depends</code> target to build test dependencies and then I run lit manually:</p>
+<pre><code class="language-console">$ make cxx-test-depends -C build-rt
+$ ./build/bin/llvm-lit ./libcxx
+</code></pre>
+<h1 id="full-config"><a class="header" href="#full-config">Full Config</a></h1>
+<p>I was able to find lots of information about nix from playing around in the nix repl and using tab completion, like this:</p>
+<pre><code class="language-console">$ nix repl
+Welcome to Nix 2.4. Type :? for help.
+
+nix-repl&gt; pkgs = import &lt;nixpkgs&gt; {}
+
+nix-repl&gt; pkgs.lib.concatStringsSep " " ["one" "two" "three"]
+"one two three"
+
+nix-repl&gt; pkgs.stdenv.cc.&lt;TAB&gt;&lt;TAB&gt;
+pkgs.stdenv.cc.__ignoreNulls                pkgs.stdenv.cc.libc_dev
+pkgs.stdenv.cc.all                          pkgs.stdenv.cc.libc_lib
+pkgs.stdenv.cc.args                         pkgs.stdenv.cc.man
+pkgs.stdenv.cc.bintools                     pkgs.stdenv.cc.meta
+...
+
+nix-repl&gt; "${pkgs.stdenv.cc.cc}"
+"/nix/store/mrqrvina0lfgrvdzfyri7sw9vxy6pyms-gcc-10.3.0"
+
+nix-repl&gt; pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"
+"/nix/store/vjq3q7dq8vmc13c3py97v27qwizvq7fd-glibc-2.33-59/lib/ld-linux-x86-64.so.2"
+</code></pre>
+<p>Here’s the full config:</p>
+<pre><code class="language-nix">with import &lt;nixpkgs&gt; {};
+
+let
+  builddir = "build";
+  installdir = "install";
+  gccForLibs = stdenv.cc.cc;
+  dynLinker = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
+  libcFlags = [
+    "-L ${stdenv.cc.libc}/lib"
+    "-B ${stdenv.cc.libc}/lib"
+    ];
+
+  # The string version of just the gcc flags for NIX_LDFLAGS
+  nixLd = lib.concatStringsSep " " [
+    "-L ${gccForLibs}/lib"
+    "-L ${gccForLibs}/lib/gcc/${targetPlatform.config}/${gccForLibs.version}"
+  ];
+
+  gccFlags = [
+    "-B ${gccForLibs}/lib/gcc/${targetPlatform.config}/${gccForLibs.version}"
+    "${nixLd}"
+    ];
+
+  flags = lib.concatStringsSep " " ([
+      "-Wno-unused-command-line-argument"
+      "-Wl,--dynamic-linker=${dynLinker}"
+    ] ++ gccFlags ++ libcFlags);
+
+  # For building clang itself, we're just using the compiler wrapper and we
+  # don't need to inject any flags of our own.
+  cmakeFlags = lib.concatStringsSep " " [
+    "-DGCC_INSTALL_PREFIX=${gcc}"
+    "-DC_INCLUDE_DIRS=${stdenv.cc.libc.dev}/include"
+    "-DCMAKE_BUILD_TYPE=Release"
+    "-DCMAKE_INSTALL_PREFIX=${installdir}"
+    "-DLLVM_INSTALL_TOOLCHAIN_ONLY=ON"
+    "-DLLVM_ENABLE_PROJECTS=clang"
+    "-DLLVM_TARGETS_TO_BUILD=X86"
+  ];
+
+  # For configuring a build of LLVM runtimes however, we do need to inject the
+  # extra flags.
+  cmakeRuntimeFlags = lib.concatStringsSep " " [
+    "-DCMAKE_CXX_FLAGS=\"${flags}\""
+    "-DLIBCXX_TEST_COMPILER_FLAGS=\"${flags}\""
+    "-DLIBCXX_TEST_LINKER_FLAGS=\"${flags}\""
+    "-DLLVM_ENABLE_RUNTIMES='libcxx;libcxxabi'"
+  ];
+
+  cmakeCmd = lib.concatStringsSep " " [
+    "export CC=${stdenv.cc}/bin/gcc; export CXX=${stdenv.cc}/bin/g++;"
+    "${cmakeCurses}/bin/cmake -B ${builddir} -S llvm"
+    "${cmakeFlags}"
+  ];
+
+  cmakeRtCmd = lib.concatStringsSep " " [
+    "export CC=${builddir}/bin/clang; export CXX=${builddir}/bin/clang++;"
+    "${cmakeCurses}/bin/cmake -B ${builddir}-rt -S runtimes"
+    "${cmakeRuntimeFlags}"
+  ];
+
+in stdenv.mkDerivation {
+
+  name = "llvm-dev-env";
+
+  buildInputs = [
+    bashInteractive
+    cmakeCurses
+    llvmPackages_latest.llvm
+  ];
+
+  # where to find libgcc
+  NIX_LDFLAGS = "${nixLd}";
+
+  # teach clang about C startup file locations
+  CFLAGS = "${flags}";
+  CXXFLAGS = "${flags}";
+
+  cmakeRuntimeFlags="${cmakeRuntimeFlags}";
+  cmakeFlags="${cmakeFlags}";
+
+  cmake="${cmakeCmd}";
+  cmakeRt="${cmakeRtCmd}";
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2022-5-2-BQN-reflections.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2022-2-10-CUDA-101-Matvec.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2022-5-2-BQN-reflections.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2022-2-10-CUDA-101-Matvec.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

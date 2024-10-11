@@ -1,0 +1,465 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>std::expected And Why It&#x27;s Awesome 1/15/2022 - Notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../about.html">About</a></li><li class="chapter-item expanded affix "><li class="part-title">Blog</li><li class="chapter-item expanded "><a href="../csblog/2024-9-4-Debugging-In-Parallel.html">Debugging in Parallel 9/4/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-31-Linux-Perf-Notes.html">The Linux Perf Tool 8/31/2024</a></li><li class="chapter-item expanded "><a href="../notes/values.html">Values 8/26/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-30-Shell.html">Shell+Scripting 8/24/2024</a></li><li class="chapter-item expanded "><a href="../notes/editors.html">Editors+Tools 8/24/2024</a></li><li class="chapter-item expanded "><a href="../csblog/2023-6-1-C-VLA-Implementation.html">Understanding VLA 6/1/2023</a></li><li class="chapter-item expanded "><a href="../csblog/2022-5-2-BQN-reflections.html">BQN and Reflections on the Joy of Programming 5/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html">LLVM Development on NixOS 2/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-10-CUDA-101-Matvec.html">CUDA 101: Matrix-Vector Product 2/10/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-12-12-Compiler-Perf-Debugging.html">Debugging Performance in Compilers 12/12/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-1-15-Std-Expected.html" class="active">std::expected And Why It's Awesome 1/15/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-7-GTest-Type-Value-Params.html">GTest Type and Value Parameterized Tests 3/7/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Spack-Development-3.html">Spack for Package Development Part 3 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Clang-Tools-Lambda.html">Clang Tools for Checking Domain-Specific Errors 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-5-Spack-Development-2.html">Spack for Package Development Part 2 3/5/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-4-Spack-Development-1.html">Spack for Package Development Part 1 3/4/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-12-23-std-mdspan-Response.html">A Look at std::mdspan 12/23/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-24-Popular-Languages-1965.html">Using the Most Popular Programming Languages of the '60s 10/24/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html">One Problem, Four Languages, Two Paradigms 10/19/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-11-BQN-Cpp-CUDA.html">BQN and CUDA C++ LeetCode Solutions 10/11/2021</a></li><li class="chapter-item expanded affix "><li class="part-title">Coffee</li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html">Best Espresso In Portland (6/11/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Sterling.html">Sterling (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Deadstock.html">Deadstock (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Barista.html">Barista (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Never-Coffee.html">Never Coffee (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Upper-Left-Roasters.html">Upper Left Roasters (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Abba.html">Abba (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Rose-City-Coffee.html">Rose City Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Sterling.html">Sterling (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-21-Superjoy.html">Superjoy (6/21/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Beginners-Guide.html">Beginners Guide (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-19-Seattle-Trip-Report.html">Seattle Trip Report (6/19/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Adapt-Coffee.html">Adapt Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Coava.html">Coava (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-PDX-Espresso-Research.html">PDX Espresso Research (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Nossa-Familia-Coffee.html">Nossa Familia Coffee (6/15/2023)</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+layout: post
+title: std::expected And Why It's Awesome
+permalink: /std-expected
+cat: cs
+-->
+<p><code>std::expected</code> and some spectacular extensions are hopefully coming to C++23.</p>
+<h2 id="existing-practice"><a class="header" href="#existing-practice">Existing Practice</a></h2>
+<p>I’m used to seeing code that looks like this, not just in C but in C++ codebases too:</p>
+<pre><code class="language-c++">int main() {
+  int ierr;
+  double * mat = (double*)malloc(sizeof(double[100]));
+
+  ierr = dowork(mat, 10, 10);
+  check_error(ierr);
+
+  ierr = domorework(mat, 10, 10);
+  check_error(ierr);
+
+  free(mat);
+}
+</code></pre>
+<p>Integers represent error conditions, and these usually map to an error message like so:</p>
+<pre><code class="language-c++">const char* error_messages[] = {
+    "success",
+    "got some failure",
+    "another kind of failure",
+};
+enum error_types {
+    success,
+    some_failure,
+    some_other_failure,
+};
+
+void check_error(int ierr) {
+    if (ierr) {
+        printf("got error '%s'\n", error_messages[ierr]);
+        exit(ierr);
+    }
+}
+</code></pre>
+<p>This way when you encounter an error condition in some function, you just return the corresponding error code like so:</p>
+<pre><code class="language-c++">int dowork(double* matrix, int M, int N) {
+  // do some work here
+
+  if (/*some error condition*/)
+      return some_failure;
+
+  // success state
+  return success;
+}
+</code></pre>
+<p>And the error handler reports the failures:</p>
+<pre><code class="language-console">  Program returned: 1
+got error 'got some failure'
+</code></pre>
+<p>On one hand, there’s a sense of security to writing code like this.
+You always check your error conditions, your code never throws exceptions, and the range of possible failures is very clear.
+I don’t mind this pattern in C, but in C++ we have some goodies that are far nicer to use in my opinion (especially in C++23).</p>
+<h2 id="why-stdexpected-is-awesome"><a class="header" href="#why-stdexpected-is-awesome">Why <code>std::expected</code> is Awesome</a></h2>
+<p>I’ll be using <a href="https://github.com/kokkos/mdspan"><code>mdspan</code> from the Kokkos implementation</a> and <a href="https://github.com/TartanLlama/expected"><code>expected</code> from Sy Brand’s implementation</a> for this section.</p>
+<p>In the last year, 3 papers have come through the ISO C++ mailing lists for <code>std::expected</code>, and <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">the most recent paper from Jeff Garland</a> proposes some of Sy Brand’s wonderful extensions to <code>std::expected</code> which allow you to chain together monadic operations on expected values:</p>
+<ol>
+<li><code>and_then</code></li>
+<li><code>or_else</code></li>
+<li><code>transform</code></li>
+</ol>
+<p>I think these extensions are <em>extremely</em> elegant, and I think some folks that are more used to the C-style error handling could be won over.
+Using <code>std::expected</code> means your errors have <em>value semantics</em>, which is something I like about the C-stlye error handling.
+Chaining together these operations makes the programmer’s intent so much clearer.</p>
+<p>Let’s look at another example using matrices, but this time using <code>expected</code> and <code>mdspan</code>.</p>
+<h3 id="expected-example"><a class="header" href="#expected-example"><code>expected</code> Example</a></h3>
+<p>I’ll get some <code>using</code> statements out of the way:</p>
+<pre><code class="language-c++">namespace stdex = std::experimental;
+using mat_t = stdex::mdspan&lt;double, 
+    stdex::extents&lt;
+      stdex::dynamic_extent,
+      stdex::dynamic_extent
+    &gt;
+  &gt;;
+using expect_mat = tl::expected&lt;mat_t, std::string&gt;;
+</code></pre>
+<p>I can’t help but marvel at how nice and readable this looks:
+The intent of the programmer is very clear in my opinion, even without seeing the rest of the code.</p>
+<pre><code class="language-cpp">int main() {
+  auto raw = std::make_unique&lt;double[]&gt;(25);
+  auto mat = mat_t(raw.get(), 5, 5);
+  setup(mat)                  // zero initialize
+    .and_then(set_diag)       // set the diagonal of the matrix
+    .and_then(print)          // print out some values
+    .or_else(report_errors);  // if unexpected, print the error and quit
+}
+
+/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 0.0 1.0 0.0 0.0 0.0 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */
+</code></pre>
+<p>This leads to some nice and/or interesting patterns.
+Say we want to check that the matrix passed to <code>set_diag</code> is square;
+we could perform our check and return an error message if the check fails, much like we could throw an exception:</p>
+<pre><code class="language-cpp">auto set_diag(mat_t mat) {
+  if (mat.extent(0) != mat.extent(1))
+    return make_unexpected("expected square matrix!");
+
+  for (int i=0; i &lt; mat.extent(0); i++)
+    mat(i, i) = 1.0;
+
+  return expect_mat(mat);
+} 
+</code></pre>
+<p>I also like using an immediatly invoked lambda for this, but I’m not sure how readable/maintainable this is long-term:</p>
+<pre><code class="language-cpp">auto set_diag(mat_t mat) {
+  return mat.extent(0) == mat.extent(1)
+    ? [=] {
+      for (int i=0; i &lt; mat.extent(0); i++)
+        mat(i, i) = 1.0;
+      return expect_mat(mat);
+    }()
+    : make_unexpected("expected square matrix!");
+} 
+</code></pre>
+<p>Either way, the error is handled as expected (no pun intended):</p>
+<pre><code class="language-cpp">auto report_errors(std::string_view err) {
+  fmt::print("got error: '{}'\n", err);
+  std::exit(EXIT_FAILURE);
+}
+int main() {
+  auto raw = std::make_unique&lt;double[]&gt;(25);
+  // It's not square!
+  auto mat = mat_t(raw.get(), 25, 1);
+  setup(mat)
+    .and_then(set_diag)
+    .and_then(print)
+    .or_else(report_errors);
+}
+/*
+ * Program returned: 1
+ * got error: 'expected square matrix!'
+ */
+</code></pre>
+<h3 id="3-ways-to-use-the-monadic-functions-on-an-expected-value"><a class="header" href="#3-ways-to-use-the-monadic-functions-on-an-expected-value">3 Ways to use the Monadic Functions on an Expected Value</a></h3>
+<h4 id="1-functor"><a class="header" href="#1-functor">1. Functor</a></h4>
+<p>We can use functors in the expected chain like so:</p>
+<pre><code class="language-cpp">struct SetRow {
+  std::size_t row;
+  double value;
+  expect_mat operator()(mat_t mat) {
+    for (int i=0; i&lt;mat.extent(1); i++)
+      mat(row, i) = value;
+    return mat;
+  }
+};
+int main() {
+  auto raw = std::make_unique&lt;double[]&gt;(25);
+  auto mat = mat_t(raw.get(), 5, 5);
+  setup(mat)
+    .and_then(set_diag)
+    .and_then(SetRow{1, 3.5})
+    .and_then(print)
+    .or_else(report_errors);
+}
+/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 3.5 3.5 3.5 3.5 3.5 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */
+</code></pre>
+<h4 id="2-binding-args-to-a-function-that-takes-multiple-arguments"><a class="header" href="#2-binding-args-to-a-function-that-takes-multiple-arguments">2. Binding Args to a Function that Takes Multiple Arguments</a></h4>
+<p>Using <code>std::bind</code> on a function taking more arguments would also acomplish this:</p>
+<pre><code class="language-cpp">auto set_row(mat_t mat, std::size_t row, double value) {
+    for (int i=0; i&lt;mat.extent(1); i++)
+        mat(row, i) = value;
+    return expect_mat(mat);
+}
+int main() {
+  auto raw = std::make_unique&lt;double[]&gt;(25);
+  auto mat = mat_t(raw.get(), 5, 5);
+  setup(mat)
+    .and_then(set_diag)
+    .and_then(std::bind(set_row, /*mat=*/_1, /*row=*/1, /*value=*/3.5))
+    .and_then(print)
+    .or_else(report_errors);
+}
+/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 3.5 3.5 3.5 3.5 3.5 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 0.0 0.0 0.0 1.0 0.0 
+ * 0.0 0.0 0.0 0.0 1.0 
+ */
+</code></pre>
+<h4 id="3-lambdas"><a class="header" href="#3-lambdas">3. Lambdas</a></h4>
+<p>And of course, lambdas:</p>
+<pre><code class="language-cpp">int main() {
+  auto raw = std::make_unique&lt;double[]&gt;(25);
+  auto mat = mat_t(raw.get(), 5, 5);
+  setup(mat)
+    .and_then(set_diag)
+    .and_then([] (auto mat) {
+      for (int i=0; i &lt; mat.extent(1); i++)
+        mat(3, i) = 2.0;
+      return expect_mat(mat);
+    })
+    .and_then(print)
+    .or_else(report_errors);
+}
+/*
+ * Program returned: 0
+ * 1.0 0.0 0.0 0.0 0.0 
+ * 0.0 1.0 0.0 0.0 0.0 
+ * 0.0 0.0 1.0 0.0 0.0 
+ * 2.0 2.0 2.0 2.0 2.0 
+ * 0.0 0.0 0.0 0.0 1.0
+ */
+</code></pre>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Hopefully you’ve been won over by the elegance of <code>expected</code> and <code>mdspan</code>.
+Godbolt links can be found for these examples in the links below:</p>
+<ol>
+<li><a href="https://youtu.be/uj9ozuzZy6g">YouTube version of this content</a></li>
+<li><a href="https://godbolt.org/z/jPqdYPEv9">C-style example</a></li>
+<li><a href="https://godbolt.org/z/hWYj34EcW">Full <code>expected</code>+<code>mdspan</code> example</a></li>
+<li><a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html">Jeff Garland’s 12/2022 <code>expected</code> paper</a></li>
+<li><a href="https://github.com/TartanLlama">Sy Brand’s <code>tl::expected</code></a></li>
+<li><a href="https://github.com/kokkos/mdspan">Kokkos <code>mdspan</code> impl</a></li>
+</ol>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2022-12-12-Compiler-Perf-Debugging.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2021-3-7-GTest-Type-Value-Params.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2022-12-12-Compiler-Perf-Debugging.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2021-3-7-GTest-Type-Value-Params.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

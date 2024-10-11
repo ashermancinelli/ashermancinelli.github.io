@@ -1,0 +1,423 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Spack for Package Development Part 2 3/5/2021 - Notes</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "coal" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../about.html">About</a></li><li class="chapter-item expanded affix "><li class="part-title">Blog</li><li class="chapter-item expanded "><a href="../csblog/2024-9-4-Debugging-In-Parallel.html">Debugging in Parallel 9/4/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-31-Linux-Perf-Notes.html">The Linux Perf Tool 8/31/2024</a></li><li class="chapter-item expanded "><a href="../notes/values.html">Values 8/26/2024</a></li><li class="chapter-item expanded "><a href="../notes/2024-8-30-Shell.html">Shell+Scripting 8/24/2024</a></li><li class="chapter-item expanded "><a href="../notes/editors.html">Editors+Tools 8/24/2024</a></li><li class="chapter-item expanded "><a href="../csblog/2023-6-1-C-VLA-Implementation.html">Understanding VLA 6/1/2023</a></li><li class="chapter-item expanded "><a href="../csblog/2022-5-2-BQN-reflections.html">BQN and Reflections on the Joy of Programming 5/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-2-LLVM-Development-On-NixOS.html">LLVM Development on NixOS 2/2/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-2-10-CUDA-101-Matvec.html">CUDA 101: Matrix-Vector Product 2/10/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-12-12-Compiler-Perf-Debugging.html">Debugging Performance in Compilers 12/12/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2022-1-15-Std-Expected.html">std::expected And Why It's Awesome 1/15/2022</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-7-GTest-Type-Value-Params.html">GTest Type and Value Parameterized Tests 3/7/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Spack-Development-3.html">Spack for Package Development Part 3 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-6-Clang-Tools-Lambda.html">Clang Tools for Checking Domain-Specific Errors 3/6/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-5-Spack-Development-2.html" class="active">Spack for Package Development Part 2 3/5/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-3-4-Spack-Development-1.html">Spack for Package Development Part 1 3/4/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-12-23-std-mdspan-Response.html">A Look at std::mdspan 12/23/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-24-Popular-Languages-1965.html">Using the Most Popular Programming Languages of the '60s 10/24/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html">One Problem, Four Languages, Two Paradigms 10/19/2021</a></li><li class="chapter-item expanded "><a href="../csblog/2021-10-11-BQN-Cpp-CUDA.html">BQN and CUDA C++ LeetCode Solutions 10/11/2021</a></li><li class="chapter-item expanded affix "><li class="part-title">Coffee</li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html">Best Espresso In Portland (6/11/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Sterling.html">Sterling (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Deadstock.html">Deadstock (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-22-Barista.html">Barista (6/22/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Never-Coffee.html">Never Coffee (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Upper-Left-Roasters.html">Upper Left Roasters (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Abba.html">Abba (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Rose-City-Coffee.html">Rose City Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-Sterling.html">Sterling (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-21-Superjoy.html">Superjoy (6/21/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Beginners-Guide.html">Beginners Guide (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-19-Seattle-Trip-Report.html">Seattle Trip Report (6/19/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Adapt-Coffee.html">Adapt Coffee (6/15/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-13-Coava.html">Coava (6/13/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-14-PDX-Espresso-Research.html">PDX Espresso Research (6/14/2023)</a></li><li class="chapter-item expanded "><a href="../coffeeblog/2023-6-15-Nossa-Familia-Coffee.html">Nossa Familia Coffee (6/15/2023)</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Notes</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+layout: post
+title: Spack for Package Development Part 2
+permalink: /spack2
+cat: cs
+-->
+<p>Second in this series, this post focuses on <em>getting stared with environments</em>.</p>
+<p>In the <a href="/spack1">previous post about package development with Spack</a>, we discussed the following points:</p>
+<ul>
+<li>Creating a private spack repository</li>
+<li>Maintaining private packages</li>
+<li>Maintaining forks of upstream packages</li>
+</ul>
+<p>In the following post(s), we’ll discuss the following in greater detail:</p>
+<ul>
+<li>Managing environments for reproducibility</li>
+<li>Using environments for development</li>
+<li>Using environments for continuous integration</li>
+<li>Managing configurations for distributed and multi-platform development</li>
+</ul>
+<h2 id="managing-environments"><a class="header" href="#managing-environments">Managing Environments</a></h2>
+<p>One of the most useful features of Spack is it’s support for <a href="https://spack.readthedocs.io/en/latest/environments.html">environments</a>.
+An environment is a file describing a package or set of packages you wish to install, along with all of the spack configuration options you wish to use (see documentation linked above for more information).
+In the previous post, we used an example package <code>FloodSimulation</code> and a corresponding repository - we’ll continue with this example here.</p>
+<p>When managing a complex and mutable set of dependencies, reproducibility is <em>extremely</em> important.
+Spack environments allow the development team to document <em><strong>every single option</strong></em> they used to install a particular package or set of packages.
+For example, let’s say <code>FloodSimulation</code> has a few more dependencies: <a href="https://github.com/LLNL/hiop">HiOp</a>, <a href="https://icl.cs.utk.edu/projectsfiles/magma/doxygen/index.html">MAGMA</a>, CUDA &gt; 10.1, and <a href="https://gitlab.com/petsc/petsc">PETSc</a>.
+Each of these packages has many configuration and installation options, and you may even want to use versions of these packages installed by your system administrator.</p>
+<p>Our <code>FloodSimulation</code> package may have a <code>package.py</code> file that looks like this:</p>
+<pre><code class="language-python">
+from spack import *
+import os
+
+class FloodSimulation(CMakePackage):
+    homepage = "https://github.com/your-username/flood-simulation"
+    git = "https://github.com/your-username/flood-simulation.git"
+    version('1.0.0', tag='v1.0.0')
+    depends_on('petsc')
+    depends_on('hiop')
+    depends_on('cuda@10.1:', when='+cuda')
+    depends_on('magma', when='+cuda')
+
+    def cmake_args(self):
+        args = []
+        if '+cuda' in self.spec:
+            args.append('-DFLOODSIMULATION_ENABLE_CUDA=ON')
+        return args
+
+</code></pre>
+<p>Let us also assume you <em>need</em> to install with your fork of the PETSc and HiOp spack packages, and that you’d like to use the MAGMA and CUDA installations provided by your system administrator or package manager.
+In this case, you might have an environment file like this:</p>
+<pre><code class="language-yaml">
+# example-env.yaml
+spack:
+  specs:
+  - floodsimulation ^floodsimulationrepo.petsc ^floodsimulationrepo.hiop
+  view: true
+  packages:
+    magma:
+      externals:
+      - spec: magma@2.5.4
+        prefix: /path/to/magma
+      buildable: false
+    cuda:
+      externals:
+      - spec: cuda@10.2.89
+        prefix: /path/to/cuda
+      buildable: false
+
+</code></pre>
+<p>Constructing your spack environment from this file is easy as:</p>
+<pre><code>
+$ spack env create my-environment ./example-env.yaml
+$ spack install
+
+$ # To locate your new installation:
+$ spack location -i floodsimulation
+
+</code></pre>
+<p>This way, if another developer needs to reproduce your development environment, you may distribute the environment file to perfectly recreate your installation.
+I reccommend tracking your environments in version control along with the rest of your private spack repository with the following example directory layout:</p>
+<pre><code>
+floodsimulationrepo
+├── environments
+│   └── example-env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+
+</code></pre>
+<h2 id="using-spack-environments"><a class="header" href="#using-spack-environments">Using Spack Environments</a></h2>
+<p>In my opinion, the three most significant use cases for spack environments are:</p>
+<ol>
+<li>Reproducible environments for development</li>
+<li>Reproducing finicky errors</li>
+<li>Continuous integration/testing</li>
+</ol>
+<h3 id="reproducible-environments-for-development"><a class="header" href="#reproducible-environments-for-development">Reproducible Environments for Development</a></h3>
+<p>With a complex codebase, onboarding often requires significant resources for new developers.
+Gettings started with a new codebase can be challanging, especially when building the software stack in the first place can take up to several days.
+I have found distributing a spack environment which is known to instantiate your software stack on a particular development machine to be a mostly frictionless method of getting new developers started on a codebase.
+With the example environment file above, we specify instructions to instatiate the <code>FloodSimulation</code> software stack on a particular machine with a couple pre-installed packages.
+If you are developing on many platforms and you need developers up and running on all platforms with a short turnaround time, distributing spack environments will likely be a suitable solution.</p>
+<p>Extending the example above, the following directory structure is a suitable way to maintain spack environments to instatiate the <code>FloodSimulation</code> stack on multiple platforms.
+Let’s assume you want developers up and running on two clusters, Jupiter and Saturn, as well as OSX for local development:</p>
+<pre><code>
+floodsimulationrepo
+├── environments
+│   ├── jupiter
+│   │   └── env.yaml
+│   ├── saturn
+│   │   └── env.yaml
+│   └── osx
+│       └── env.yaml
+├── packges
+│   ├── ipopt
+│   │   └── package.py
+│   └── floodsimulation
+│       └── package.py
+└── repo.yaml
+
+</code></pre>
+<p>In this way, you may simply instruct a new developer to run the following to get started with local development on a Mac:</p>
+<pre><code class="language-console">
+$ # in the directory `floodsimulationrepo`:
+$ spack env create local-development ./environments/osx/env.yaml
+$ spack install
+
+$ # Any time the developer logs in to develop locally:
+$ spack env activate local-development
+
+</code></pre>
+<p>And when they need to get started developing on the institutional cluster Jupiter:</p>
+<pre><code class="language-console">
+$ spack env create remote-development ./environments/jupiter/env.yaml
+$ spack install
+
+</code></pre>
+<h4 id="an-aside-on-spack-views"><a class="header" href="#an-aside-on-spack-views">An Aside on Spack Views</a></h4>
+<p>If you didn’t notice earlier, our environment file contains the line:</p>
+<pre><code class="language-yaml">  view: true
+</code></pre>
+<p>This means that when you activate your spack environment (<code>spack env activate &lt;environment name&gt;</code>), spack will use a “view” by defaul.
+A view is a single installation prefix into which all packages installed via the environment are symbolically linked.</p>
+<p>By default, spack views are installed to:</p>
+<pre><code>$SPACK_ROOT/var/spack/environments/&lt;environment name&gt;/.spack-env/
+</code></pre>
+<p>and the environment file is installed to</p>
+<pre><code>$SPACK_ROOT/var/spack/environments/&lt;environment name&gt;/spack.yaml
+</code></pre>
+<p>If our new developer activates her spack environment like so:</p>
+<pre><code class="language-console">
+$ spack env activate local-development
+$ ls $SPACK_ROOT/var/spack/environments/local-development/.spack-env/lib
+libmagma.so libhiop.so ...
+
+</code></pre>
+<p>she will have access to all of her newly installed libraries in a single installation prefix, automatically added to her <code>LD_LIBRARY_PATH</code> and <code>DYLD_LIBRARY_PATH</code>.</p>
+<p><a href="https://spack.readthedocs.io/en/latest/command_index.html?highlight=view#spack-view">The Spack command reference on views</a> contains further information on this topic.</p>
+<h4 id="back-to-using-environments"><a class="header" href="#back-to-using-environments">Back to Using Environments</a></h4>
+<p>Now that we have a feel for creating, using, and distributing spack environments, how do we develop with them?</p>
+<p>As we saw in the aside on views above, activating a spack environment with the view option enabled (which is the default) adds the view to the user’s path, library path, etc.
+Assuming <code>FloodSimulation</code> is a CMake project (as we specified in the example spack package above) and we have written clean enough CMake to find external libraries, the workflow for building <code>FloodSimulation</code> should be relatively straightforward:</p>
+<pre><code class="language-console">
+$ git clone https://github.com/your-username/flood-simulation.git
+$ mkdir build install
+$ cd build
+
+$ # At this step, cmake should be able to find all of your libraries in the
+$ # spack view:
+$ cmake ../flood-simulation -DCMAKE_INSTALL_PREFIX=$PWD/../insatll
+
+$ # If some libraries are not found, simply run `spack location -i package`
+$ # to find the prefix for the package, and add it manually with ccmake:
+
+$ # Assuming magma is the package cmake failed to find, run this command and
+$ # copy the path:
+$ spack location -i magma
+
+$ # Manually add the path to the magma installtion to cmake:
+$ ccmake
+
+$ make install
+
+</code></pre>
+<p>From here, developers may continue the edit-build-test cycle for <code>FloodSimulation</code>, knowing they are using the correct set of dependencies.</p>
+<p>Read on for discussion on additional uses for environments you should consider incorporating into your workflow.</p>
+<p><a href="/spack1">Previous in this Series</a></p>
+<p><a href="/spack3">Next in this Series</a></p>
+<p>{% include footer.html %}</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2021-3-6-Clang-Tools-Lambda.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2021-3-4-Spack-Development-1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2021-3-6-Clang-Tools-Lambda.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2021-3-4-Spack-Development-1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
