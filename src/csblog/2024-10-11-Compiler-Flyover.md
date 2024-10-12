@@ -1,7 +1,9 @@
 
 # Compiler Flyover
 
-10k ft overview of compilers and what I do for work, from ancient Greek philosophy to today.
+Overview of compilers and what I do for work, from ancient Greek philosophy to today.
+
+I wrote this for some friends where we all gave a little presentation on what we do for work.
 
 
 ---
