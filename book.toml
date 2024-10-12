@@ -11,7 +11,10 @@ title = "Notes"
 command = "mdbook-admonish"
 assets_version = "3.0.2" # do not edit: managed by `mdbook-admonish install`
 
-[preprocessor.presentation-preprocessor]
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+# [preprocessor.presentation-preprocessor]
 
 [preprocessor.toc]
 marker = "[[_TOC_]]"
@@ -26,6 +29,7 @@ mathjax-support = true
 copy-fonts = true
 no-section-label = true
 additional-css = ["./mdbook-admonish.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
 
 [output.html.print]
 enable = true
