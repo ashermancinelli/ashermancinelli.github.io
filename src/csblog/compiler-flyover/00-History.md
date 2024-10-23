@@ -78,24 +78,22 @@ We'll talk more about this later.
 
 - Advances in type theory and formal semantics lead to more sophisticated static analysis and verification in compilers.
 - Languages like Smalltalk introduced object-oriented concepts, which later influenced the development of many modern programming languages6.
+- Most compilers at this point are still proprietary. In the early days of computing, most compilers were proprietary and closed-source, developed by hardware manufacturers or specialized software companies.
+- Each hardware platform typically had its own proprietary compiler, leading to a fragmented ecosystem. This made it difficult to port software between different systems, as code often needed to be substantially rewritten for each new platform.
+- With closed-source compilers, only the original developers could make improvements or add features. This resulted in slower innovation compared to open-source models, where a broader community can contribute to development.
 
+## Advent of Open Source (1990s-):
 
-## 1980s-1990s
-
-Object-oriented languages gain prominence, requiring new compilation techniques for features like dynamic dispatch.
-
-
-## 1990s-present:
-
-Focus shifts to managed runtimes, just-in-time compilation, and highly optimizing compilers for languages like Java and C#. Compiler design also adapts to parallel and heterogeneous architectures.
-
+- The advent of open source compilers began with the release of GCC (GNU Compiler Collection) in 1987. GCC was a significant breakthrough as the first portable ANSI C optimizing compiler released as free software. It quickly became a foundation for free software development.
+- LLVM, started in 2000 at the University of Illinois, emerged as another major open source compiler project. LLVM's modular design and intermediate representation allowed for greater flexibility and easier adaptation to different languages and architectures.
+- rise in the FE/ME/BE seperation of concerns.
+    - experts could focus on their area, everyone could collaborate.
+    - could write a compiler FE to plug into GCC and leverate the nice backends that hardware vendors worked on.
+    - hardware vendors could focus more on what "makes their beer taste better" instead of the FE.
 
 <center>
 <img src="dragonbook.png" />
 </center>
-<!-- ![Dragon Book](dragonbook.png) -->
-<!-- 1. Modern Era (1980s-Present): -->
-<!--     - The development of personal computers led to the creation of many new programming languages and paradigms. Python, developed by Guido van Rossum in the late 1980s, has become one of the most popular languages due to its readability and versatility. -->
 
 ---
 
@@ -107,3 +105,5 @@ Focus shifts to managed runtimes, just-in-time compilation, and highly optimizin
 [^wiki_contextfreegrammar]: [wikipedia Context-free grammar](https://en.wikipedia.org/wiki/Context-free_grammar)
 [^wiki_bnf]: [Backus-Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form#:~:text=His%20notation%20was%20first%20used,are%20enclosed%20in%20angle%20brackets.)
 [^blog_kubuszok]: [Nice blog post that covers much of this](https://kubuszok.com/2019/from-string-to-ast-parsing/)
+[^lattner_golden_age]: [ASPLOS Keynote: The Golden Age of Compiler Design in an Era of HW/SW Co-design by Dr. Chris Lattner](https://www.youtube.com/watch?v=4HgShra-KnY)
+[^hennessy_acm_turing_award]: [John Hennessy and David Patterson 2017 ACM A.M. Turing Award Lecture](https://www.youtube.com/watch?v=3LVeEjsn8Ts&t=122s)

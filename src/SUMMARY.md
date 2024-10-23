@@ -14,6 +14,7 @@ https://tommilligan.github.io/mdbook-admonish/
 - [Compiler Flyover](csblog/2024-10-11-Compiler-Flyover.md)
     - [History](csblog/compiler-flyover/00-History.md)
     - [Lexing and Parsing](csblog/compiler-flyover/01-Lexing-and-Parsing.md)
+    - [Value Prop](csblog/compiler-flyover/02-Value-Prop.md)
 - [Debugging in Parallel 9/4/2024](csblog/2024-9-4-Debugging-In-Parallel.md)
 - [The Linux Perf Tool 8/31/2024](notes/2024-8-31-Linux-Perf-Notes.md)
 - [Values 8/26/2024](notes/values.md)
