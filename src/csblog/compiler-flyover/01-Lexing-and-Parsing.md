@@ -51,7 +51,7 @@ Little optimization was done (chapters 12, 13 and 14 of the dragon book are abou
 This is not often the case today for a variety of reasons.
 We'll look at some modern architectures later.
 
-## Context Free Grammar -> AST
+## Grammar -> AST
 
 In language theory, the syntax of a group of *morphemes* has a hierarchichal structure, just like Chomskey laid out in the theory of Universal Grammar.[^ast_in_english]
 
@@ -159,6 +159,35 @@ $ clang -Xclang -ast-dump t.c
 ```
 
 This corrolates directly to the linguistic syntax tree we created from the english sentance earlier.
+
+~~~admonish important title="Note"
+Note that many popular languages today are not context-free (e.g. C and C++).
+This means the parsers need to carry context as they parse, and often need to consult the semantic analysis phase of the compiler to determine how a particular bit of source should be parsed.
+For example, if you take a perf profile of Clang (`perf record -- clang test.c`) you'll find the semantic analysis under the parser in the call graph.
+This call graph indicates the parser's reliance on semantic analysis to correctly parse.
+~~~
+
+~~~admonish todo
+
+3. FEs
+    1. Preceeded by things like preprocessors, dsls, other compilers (nvptx)
+    2. Parts
+        1. Preproc/dsl
+        2. Lex
+            1. Word on parser generators
+        3. Parse
+        4. Sema
+    3. SOME optimization can go here
+        1. Depends on what context is needed for the opt and how it may affect downstream optimizations
+        2. Inlining for example
+    4. Early streaming compilers
+        1. Cared about locality bc it was tough to fit the whole program in memory
+        2. Almost like a bash pipe where the program was piped to the compiler and assembly was written out
+        3. Whole program opts more common now bc of different constraints
+    5. Look at tinycc
+    6. Parser generators
+
+~~~
 
 ---
 

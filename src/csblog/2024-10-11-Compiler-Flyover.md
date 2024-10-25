@@ -5,8 +5,14 @@ Overview of compilers and what I do for work, from ancient Greek philosophy to t
 
 I wrote this for some friends where we all gave a little presentation on what we do for work.
 
-
 ---
+
+***NOTE:*** This blog series is unfinished. You'll see sections like this at the end of nearly every section with things I still want to add to the given section:
+
+~~~admonish todo
+- some ideas I'd like to add/expand on...
+~~~
+
 <!--
 https://www.spec.org/cpu2017/Docs/benchmarks/557.xz_r.html
 https://www.spec.org/cpu2017/Docs/index.html#intrate

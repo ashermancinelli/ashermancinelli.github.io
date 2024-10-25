@@ -95,6 +95,14 @@ We'll talk more about this later.
 <img src="dragonbook.png" />
 </center>
 
+~~~admonish todo
+
+- RMS missed an email
+    - RMS missed an email from Chris Lattner offering to donate the llvm codebase to the gnu project
+    - alternate world where llvm became a part of the gnu project, did apple go a different direction?
+
+~~~
+
 ---
 
 [^howtheancientgreeksinventedpl]: [StrangeLoop 2012: How the Ancient Greeks Invented PL by Matt Butcher](https://www.infoq.com/presentations/Philosophy-Programming/#downloadPdf/)
