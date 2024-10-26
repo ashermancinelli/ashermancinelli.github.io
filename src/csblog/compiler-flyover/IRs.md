@@ -33,4 +33,15 @@ Without this, you have to rely on behavioral tests or reading a lower-level IR w
 ## Chez-Scheme's Nanopass Architecture with ♾️ small IRs
 
 ~~~admonish todo
+- why mlir is so useful in so many domains
+    - modular IR description/parser/ast manipulation tools
+- how IRs look in other languages
+- most newer languages have a higher-level IR to target first
+    - (GHC Core, Rust MIR, Swift SIR, Clang CIR, Flang HLFir/Fir)
+- notes on how IRs can be constraints on the compiler, or how a compiler can outgrow its IR
+    - example of llvm ir being too similar/tied to C, making it more difficult for other FEs
 ~~~
+
+---
+
+

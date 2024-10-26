@@ -21,12 +21,15 @@ And then you have tools like FYPP that intend to fill the gap, effectively addin
 These tools often taken a generic implementation, interface, and a list of types which the interface should be generic over, and produces a bunch of subroutines with the type stringified and added to the generic subroutine as a suffix.
 Generic programming is *the* use case for metaprogramming, and with this (extremely common) use case not being supported in ISO standard Fortran makes the use of FYPP and other tools entirely unsurprising to me.
 
-I don't mean to denegrate the work of the developers of FYPP or the Fortran users that use it; they're just doing the best with what they have, inventing their own compiler layer on top of Fortran (as users will always do when the language doesn't see to their needs).
+I don't mean to denigrate the work of the developers of FYPP or the Fortran users that use it;
+they're being quite creative with the constraints they have,
+inventing their own compiler layer on top of Fortran
+(as users will always do when the language doesn't see to their needs).
 
 I'm not denigrating the wonderful people that sit on the ISO committee for Fortran either - they've made wonderful progress advancing one of the first programming languages ever conceived of (save a few critical mistakes[^pklausler_j3]).
 This Python scripting layer on top of Fortran simply demonstrates the gap between *modern* users' needs and *modern* Fortran - the language has still come a tremendously long way.
 
-~~~admonish quote title="Dennis Ritchie, *Development of C*"
+~~~admonish quote title="Dennis Ritchie, *The Development of the C Language*"
 Many other changes occurred around 1972-3, but the most important was the introduction
 of the preprocessor, partly at the urging of Alan Snyder [Snyder 74], but also in recognition of the
 utility of the the file-inclusion mechanisms available in BCPL and PL/I. Its original version was
@@ -37,6 +40,15 @@ preprocessor was originally considered an optional adjunct to the language itsel
 some years, it was not even invoked unless the source program contained a special signal at its
 beginning. This attitude persisted, and explains both the incomplete integration of the syntax of
 the preprocessor with the rest of the language and the imprecision of its description in early reference manuals.
+~~~
+~~~admonish quote title="Dennis Ritchie, cont."
+Thus the core C language escaped nearly unscathed from the standardization process, and
+the Standard emerged more as a better, careful codification than a new invention. More important
+changes took place in the language’s surroundings: the preprocessor and the library. The preprocessor performs macro substitution, using conventions distinct from the rest of the language. Its
+interaction with the compiler had never been well-described, and X3J11 attempted to remedy the
+situation. The result is noticeably better than the explanation in the first edition of K&R; besides
+being more comprehensive, it provides operations, like token concatenation, previously available
+only by accidents of implementation.
 ~~~
 
 ~~~admonish todo

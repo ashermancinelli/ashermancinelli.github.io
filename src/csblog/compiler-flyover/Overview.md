@@ -5,9 +5,14 @@ A compiler is, in the simplest terms, a *translator between two textual formats*
 We will return to this core description several times.
 As complicated as compilers can be, forget not that we're simply going from one textual format to another.
 
-Usually some level of optimization is also implied, e.g. we're going from one textual format to *the most ideal version* of the content in the target format.
+There are usually 3 other attributes expected of a compiler:
+- Some level of optimization
+    - e.g. we're going from one textual format to *the most ideal version* of the content in the target format.
+- The target language is "lower-level" than the source language
+    - compilers between lateral languages (at a similar level of abstraction) are often called *transpilers*, [though the distinction is moot, I would argue.](Asides.md#transpilers)
+- The semantics/intents of the programmer are preserved
 
-Another implication is the preservation of intent; if the compiler is simply putting some content into another format (with some optimization along the way), that means the intent of the author ought to be preserved.
+## Not Just C
 
 When a programmer thinks of a compiler, they often think of a source-to-machine-code compiler, such as a program that takes your C code and gives you a program that you can run directly on your machine.
 While this is the primary topic to be discussed here, it's worth noting that compilers have other purposes.
@@ -26,4 +31,4 @@ This is a DSL for describing graphs, which is compiled into the graph itself.
 This is all to say nothing of tech like Tensorflow, whereby the user describes a computational graph in Python which is bytecode-compiled in CPython, after which the computational graph is AOT-compiled into something that trains a neural network model for example... things get messy from here on out.
 
 The clean and precise categories of *interpreter*, *transpiler*, and *compiler* get very fuzzy when you pull back the covers.
-The distinctions between them are relatively non-existent, though you can usually name one when you see one 😁.
+The distinctions between them are relatively non-existent (though you can usually name one when you see one 😁).
