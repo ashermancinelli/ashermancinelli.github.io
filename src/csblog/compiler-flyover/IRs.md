@@ -10,10 +10,52 @@ For example, the LLVM Opt optimizer runs passes over LLVM IR files (in bitcode/b
 
 Both of those codebases use various other IRs better-suited for different parts of the compiler's pipeline.
 
-## MLIR's Novelty
+## SSA form
+
+- what?
+    - static single assignment
+    - not how the programmer usually thinks/operates, but much nicer for the optimizer
+- why
+    - a whole suite of traditional compiler optimizations become entirely trivial to implement with ssa
+    - used to not be available to compilers because it took up so much more memory
+    - instead of variables just like source code you have a new "register"
+        for every time a value is assigned to
+    - now that we don't have the same memory constraints we can just put it in a nicer format
+        - don't have to track use-def analysis on variables during optimization once it's in SSA format
+        - much nice for the optimizer to work on
+
+## LLVM IR and MLIR's Utility
 
 - extremely modular
 - the json of IRs
+- progressive lowering
+    - at the start, you can have a nice relatively faithful representation of the source code
+    - as you take steps towards llvm ir and then MIR and machine code, each step looks more like what certain optimizations are expecting
+    - optimizations get to work on what the expect
+        - example of working with loops in scf dialect vs llvm ir
+
+- overview of using an IR like LLVM and the pros and cons
+    - can point out loops by finding PHI nodes at top of block doing some work (probably loop bodies) and their predecessors (loop preheaders and backedges)
+        - analysis needed for induction vars and step sizes etc
+    - and then look at scf and affine dialects
+        - not much analysis is needed to construct the loops, they exist in the source code
+        - ISel and later optimizations don't need to know this, so the constructs aren't as readily available in the IR at that point in the compiler
+    - phi nodes
+    - that's basically it, only has SSAs, function calls+defs, loads/stores, math ops, basic blocks and phi nodes
+        - LLVM LangRef[^langref] is really all you have. It's basically done.
+    - not very extensible
+        - every new thing you want to model essentially HAS to be modeled as a new llvm intrinsic
+            - e.g. better vectorizer support results in `@llvm.vp.exp.v4f32(...)`
+        - to add functionality you need basically *ALL* stakeholders to sign off
+            - representatives from Google, Meta, Intel, Qualcomm, etc all need to agree with you if you want to add something to langref.
+            - alternative is keeping a downstream fork of llvm
+                - Huge maintenance burden for that company, harder to contribute things
+    - these constraints (while restrictive in certain ways) also makes it relatively straightforward to work with
+        - you can probably just crack open the compiler and understand the IR at any point in the compiler and know what's happening.
+            - optimizer can dump the IR before and after every single pass
+            - can just read over all the code. if the IR at the end has a bug and it doesn't at the start, well you can just go backwards until you don't see the bug before a pass and you *DO* see it after, then you know the bug is made manifest in that pass.
+    - use opaqueptr transition as an example of how tough it is to move everything over
+
 
 ## Other uses of high-level IRs
 
@@ -37,11 +79,18 @@ Without this, you have to rely on behavioral tests or reading a lower-level IR w
     - modular IR description/parser/ast manipulation tools
 - how IRs look in other languages
 - most newer languages have a higher-level IR to target first
-    - (GHC Core, Rust MIR, Swift SIR, Clang CIR, Flang HLFir/Fir)
+    - (GHC Core, Rust MIR, Swift SIR, Clang CIR, Flang HLFir/Fir, GCC gimple)
 - notes on how IRs can be constraints on the compiler, or how a compiler can outgrow its IR
     - example of llvm ir being too similar/tied to C, making it more difficult for other FEs
+- description of SSA, examples in llvm ir
+    - drawbacks being very heavyweight at times. takes way more memory at times
+    - with non-ssa, IR takes less memory, can just reassign like (most) source code
+    - plusses being every assignment is the *ONLY* assignment
 ~~~
 
 ---
 
-
+[^carruth_opt]: [Understanding Compiler Optimization - Chandler Carruth - Opening Keynote Meeting C++ 2015](https://www.youtube.com/watch?v=FnGCDLhaxKU&list=WL&index=1)
+    - starts talking about IRs at 9m in
+[^langref]: [LLVM Language Reference](https://llvm.org/docs/LangRef.html)
+[^ssa_construction]: [Simple and Efficient Construction of Static Single Assignment Form](https://bernsteinbear.com/assets/img/braun13cc.pdf)

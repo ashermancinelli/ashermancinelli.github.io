@@ -23,7 +23,7 @@ https://tommilligan.github.io/mdbook-admonish/
     - [Middle End]()
         - [What is an optimizer?](csblog/compiler-flyover/Optimizer-Overview.md)
         - [IRs](csblog/compiler-flyover/IRs.md)
-        - [Common Optimizations](csblog/compiler-flyover/Optimizers.md)
+        - [Tour of Optimizations](csblog/compiler-flyover/Optimizers.md)
     - [Back End]()
         - [Code Generation](csblog/compiler-flyover/Code-Generation.md)
     - [Where To Go From Here](csblog/compiler-flyover/Where-To-Go-From-Here.md)

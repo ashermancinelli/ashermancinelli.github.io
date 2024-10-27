@@ -1,9 +1,46 @@
 
+~~~admonish example title="Table of Contents"
+
+I tried to sesibly order these subsections, so if you're not at all familiar with
+compiler optimizations I suggest you read them straight through.
+
 [[_TOC_]]
+~~~
 
-# Common Optimizations
+# Tour of Optimizations
 
-## LICM
+~~~admonish important
+The most relevant and thorough source of information I've been able to find on
+this subject is *Optimizing compilers for modern architectures: a dependence-based approach*
+by Kennedy and Allen.
+
+Your time would be better spent reading that book than reading this blog, frankly.
+~~~
+
+There are two categories I'll break the optimizations into:
+some classic and more straightforward optimizations, and some trickier, more nuanced optimizations.
+The latter are much more interesting to me, so I'll give them much more time in this article.
+We'll take a tour of the simpler optimizations, but not deeper than what an introductory compilers course might give you.
+Grabbing a compilers textbook off the shelf will likely tell you about the first category,
+but the latter are usually found only in more specific resources or in the documentation of a specific compiler.
+
+## Generic Optimizations
+
+You are likely to find these optimizations covered in great detail in 
+
+### CFG (Control-Flow Graph) Simplification
+### Forwarding + CSE (Common Subexpression Elimination)
+### Unrolling
+### DCE (Dead Code Elimination)
+
+## Optimization on Core Abstractions
+
+In Chandler Carruth's talk on the LLVM optimizer[^carruth_opt], he points out three core abstractions used in software today.
+We will use this as our delimiter between the well-studied, tranditional optimizations and the more nuanced
+(and load-bearing, I would argue) optimizations.
+This section is about the latter.
+
+### LICM (Loop Invariant Code Motion)
 
 LICM identifies instructions that produce the same result each time the loop is executed
 and moves them to the loop preheader block, so they are only executed once rather than on every loop iteration.
@@ -48,35 +85,33 @@ void foo(int * arr, int N, int * ptr, int default) {
 }
 ```
 
+### Inlining
 
-## CFG Simplification
+### Vectorization
 
-## Inlining
+#### Versioning
 
-## Forwarding + CSE
+#### VLA vs VLS
 
-## Vectorization
+### Loop Fusion
 
-## Unrolling
+### Loop Unrolling
 
-## DCE
-
-## Parallelism
-
-In the introductory section, I claimed that this is an exciting era to be working on compilers
-because the *free lunch* of direct hardware improvements
-(specifically per-core CPU improvements year-over-year(see Moore's Law)) is tapering off,
-and we need more advanced compiler and programming language technology to leverage today's
-hardware advances.
-
-Exploiting the parallelism available in the user's program given the constraints of the
-programming langauge and the way the user described their program is how compilers and programming languages
-can and will leverage hardware advancement.
+<!--In the introductory section, I claimed that this is an exciting era to be working on compilers-->
+<!--because the *free lunch* of direct hardware improvements-->
+<!--(specifically per-core CPU improvements year-over-year(see Moore's Law)) is tapering off,-->
+<!--and we need more advanced compiler and programming language technology to leverage today's-->
+<!--hardware advances.-->
+<!---->
+<!--Exploiting the parallelism available in the user's program given the constraints of the-->
+<!--programming langauge and the way the user described their program is how compilers and programming languages-->
+<!--can and will leverage hardware advancement.-->
 
 <!--Some amount of *lowering* is often also implied, meaning the code gets a bit lower-level as it flows through the compiler.-->
 <!--This is necessarily true for some optimizations (...).-->
 
 ~~~admonish todo
+
 4. ME
     1. Most reusable component
     1. Look at all the llvm fes and bes; its bc the me is so reusable
@@ -108,19 +143,83 @@ can and will leverage hardware advancement.
         want it to. The compiler engineer notices that an optimization isn't being
         triggered because it relies on another optimization running first, so it's moved to the end.
         and so on.
+    - used to be more of an art, but becoming more of a science
 
 - nature of an optimizer
     - pass structure
     - given ability to specify passes etc
+    - big job of optimizer is to break code into easily recognizable patterns so rest of opts can know what to look for
+        - pattern matching?
+
+
+- HW/SW co-design
+    - we want programming languages with abstractions that collapse down to really efficient code
+    - everyone could write python where we have a struct representing a generic object with specialized calls for every operation you can conceive of,
+    - or we can have a model for objects (and object lifetimes) that boils down to something closer to what the hardware expects
+    - most software relies on a few abstractions
+        - functions (func calls and the call graph)
+        - memory (loads/stores)
+        - iteration/loops
+    - how to design langs and optimizers to boil those abstractions down to hardware
+
+- break opts into categories?
+    - show ops in godbolt on simple examples taken from test suite
+    - fundamental well-known optimizations (roughly solved problems).
+        most/all compilers need them at some level for the rest of the optimizations to work,
+        but they're so well-studied and relatively straightforward to implement that they are less interesting to me
+
+        - list:
+            - GVN
+            - DCE
+            - Forwarding
+            - CSE
+            - constprop, GVN
+
+        - many of the ops are less interesting to an optimizer that uses SSA internally
+        - once the ir is in ssa, dataflow analysis and lots of other trickier
+            optimizer issues become far more straightforward
+
+    - more interesting opts work on those key abstractions.
+        Ideally these abstractions are useful to the programmer but not to the program,
+        and they can wiped away by the optimizer. no longer present in the program. Not always possible.
+        - each of these opts has entire textbooks and fields of research dedicated to them.
+        - function calls/call graph -> inliner
+            - also: partial inlining, function specialization
+            - very tough to tune, enables nearly every other optimization
+            - loops with function calls can go from black boxes to vectorized/versioned/unrolled/unswitched/constprop'ed speedy things
+            - issues with recursive funcs and cycles in the call graph more generally
+            - becomes a graph problem on the callgraph
+                - llvm uses bottom-up SCC based walk of the callgraph, GCC uses top-down approach
+                - leverage graph theory to break the problem into smaller parts
+            - once it's been decided that inlining can+should take place, it's sorta like textual substitution
+            - compare this to the graphs a user builds in tensorflow, then passed to some TF compiler
+                - that's how TF is sorta an AOT-compiled DSL within python
+            - ***CONTEXT*** is key for many optimizations,
+                inlining ideally gives them the context when possible
+        - loops/iteration -> vectorizer
+            - relies on inlining lot of the time
+        - memory -> also vectorizer? sorta
+            - SSA form abstracts this away from the optimizer SORTA
+            - offers opter ability to pretend we have infinite registers to use,
+                FE builds this abstraction for us, BE boils it down to actual registers and stack space
+            - example llvm eliding alloca and memcpy etc
+            - destructuring
+                - *AFTER* you inline, might see that one field of the structure is never actually used! so can just get rid of it
 
 ~~~
 
 ---
 
+[^kennedy]: [Optimizing compilers for modern architectures: a dependence-based approach, by Kennedy and Allen](https://dl.acm.org/doi/10.5555/502981)
+[^racecar]: [High Performance Compilers for Parallel Computing](https://dl.acm.org/doi/10.5555/572937)
 [^cs6120]: [Cornell CS 6120: Advanced Compilers](https://www.cs.cornell.edu/courses/cs6120/2023fa/)
 [^rustc]: [Rust MIR](https://blog.rust-lang.org/2016/04/19/MIR.html)
 [^ee663]: [EE663: Optimizing Compilers](https://engineering.purdue.edu/~eigenman/ECE663/Handouts/ece663slides.pdf)
-[^racecar]: [High Performance Compilers for Parallel Computing](https://dl.acm.org/doi/10.5555/572937)
 [^mwolfe_blog]: [Detecting Divergence Using PCAST to Compare GPU to CPU Results](https://developer.nvidia.com/blog/detecting-divergence-using-pcast-to-compare-gpu-to-cpu-results/)
 [^compilerres]: [gist.github.com/chiehwen: Compiler Learning Resources](https://gist.github.com/chiehwen/6c1872fc687a4b198ec9)
 [^llvm_licm]: [LICM.cpp - Loop Invariant Code Motion Pass](https://llvm.org/doxygen/LICM_8cpp_source.html)
+[^llvm_pass_ordering]: [LLVM: The middle-end optimization pipeline by @nikic](https://www.npopov.com/2023/04/07/LLVM-middle-end-pipeline.html)
+[^cmu]: [CMU: 15-745 Optimizing Compilers for Modern Architectures](https://www.cs.cmu.edu/afs/cs/academic/class/15745-s19/www/index.html)
+[^carruth_opt]: [Understanding Compiler Optimization - Chandler Carruth - Opening Keynote Meeting C++ 2015](https://www.youtube.com/watch?v=FnGCDLhaxKU&list=WL&index=1)
+    - inlining at 28m
+[^plres]: [](https://bernsteinbear.com/pl-resources/)

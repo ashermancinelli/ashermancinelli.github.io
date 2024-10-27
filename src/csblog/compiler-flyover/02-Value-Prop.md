@@ -1,7 +1,9 @@
-# Compiler Value Proposition
+# Value Proposition of Better Compilers
 
 ~~~admonish important title="Key Question"
 Why learn about compilers? Why are they important right now?
+
+***So what? Who cares?***
 ~~~
 
 Software used to get "better" every year by virtue of the hardware getting exponentially better.
