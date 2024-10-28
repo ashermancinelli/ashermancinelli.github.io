@@ -86,6 +86,9 @@ Without this, you have to rely on behavioral tests or reading a lower-level IR w
     - drawbacks being very heavyweight at times. takes way more memory at times
     - with non-ssa, IR takes less memory, can just reassign like (most) source code
     - plusses being every assignment is the *ONLY* assignment
+    - point out how true functional programming is almost in ssa format already,
+        makes some optimizations more straightforward now that we have the memory to
+        handle (nearly) arbitrarily large program units
 ~~~
 
 ---
@@ -94,3 +97,4 @@ Without this, you have to rely on behavioral tests or reading a lower-level IR w
     - starts talking about IRs at 9m in
 [^langref]: [LLVM Language Reference](https://llvm.org/docs/LangRef.html)
 [^ssa_construction]: [Simple and Efficient Construction of Static Single Assignment Form](https://bernsteinbear.com/assets/img/braun13cc.pdf)
+[^proglangdoc]: [Blog post on PL development](https://docs.google.com/document/d/e/2PACX-1vSPUfmDiniZy0yn9wjqag8lWOg4Kei_3EXy03EB_pQ-5elwacy0IBZjFyOsjrehIldvhUq0_odDY0Ft/pub)

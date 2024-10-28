@@ -14,7 +14,7 @@ The most relevant and thorough source of information I've been able to find on
 this subject is *Optimizing compilers for modern architectures: a dependence-based approach*
 by Kennedy and Allen.
 
-Your time would be better spent reading that book than reading this blog, frankly.
+Your time may be better spent reading that book than reading this blog.
 ~~~
 
 There are two categories I'll break the optimizations into:
@@ -24,23 +24,63 @@ We'll take a tour of the simpler optimizations, but not deeper than what an intr
 Grabbing a compilers textbook off the shelf will likely tell you about the first category,
 but the latter are usually found only in more specific resources or in the documentation of a specific compiler.
 
+~~~admonish todo
+- need to better categorize these
+    - would like to make distinction between textbook opts, upstream type opts and downstream type opts
+    - want to categorize in a theoretical sense, but also categorize similar to llvm so I can
+        reuse llvm resources
+~~~
+
 ## Generic Optimizations
 
 You are likely to find these optimizations covered in great detail in 
 
 ### CFG (Control-Flow Graph) Simplification
 ### Forwarding + CSE (Common Subexpression Elimination)
-### Unrolling
+### Compile-Time Unrolling
+
+Notice that there's another 
+
 ### DCE (Dead Code Elimination)
 
 ## Optimization on Core Abstractions
 
-In Chandler Carruth's talk on the LLVM optimizer[^carruth_opt], he points out three core abstractions used in software today.
+In one of Chandler Carruth's talks on the LLVM optimizer[^carruth_opt], he points out three core abstractions used in software today.
 We will use this as our delimiter between the well-studied, tranditional optimizations and the more nuanced
 (and load-bearing, I would argue) optimizations.
 This section is about the latter.
 
-### LICM (Loop Invariant Code Motion)
+### Good-Neighbor Opts
+
+I've further categorized these optimizations into *good-neighbor* optimizations and *true* optimizations;
+the disctinction being the good-neighbor optimizations are really just making way for another optimization
+
+Good-neighbor optimizations do not usually improve the performance or size of the generated code all that much,
+but they are really good at enabling downstream optimizations (optimizations that run *latter*) at doing a better job.
+
+#### Mem2Reg
+
+***TODO***
+
+#### Loop Canonicalization
+
+This is not really an optimization, but it *is* a critical part of the optimization pipeline as a whole.
+Generally, there are lots and lots of ways to express the exact same program.
+If optimizations are looking for specific patterns however,
+it's really useful to have one form that the optimizations know they can look for.
+
+For example, you could write any comparison as an equality check `eq` or a not-equality check `neq`,
+but nearly all optimizations are going to look out for `eq` and not all the combinations of boolean logic logically equivilant to an `eq`.
+Putting the intermediate representation of the program into some regularized format
+that the rest of the compiler optimization pipeline can rely on is critical
+for getting the optimizations to trigger as frequently as is possible.
+
+~~~admonish todo
+- Loop canonicalization specifically
+    - canonical preheader and backedge
+~~~
+
+#### LICM (Loop Invariant Code Motion)
 
 LICM identifies instructions that produce the same result each time the loop is executed
 and moves them to the loop preheader block, so they are only executed once rather than on every loop iteration.
@@ -85,17 +125,38 @@ void foo(int * arr, int N, int * ptr, int default) {
 }
 ```
 
-### Inlining
+This is a great example of why it's not necessarily difficult to *perform* many of these operations;
+the lions share of the work is in determining whether it's *legal* and *profitable* to perform them.
+Simply moving a pointer load out of a loop and into the preheader is not difficult;
+checking to make sure it's legal may be!
+
+This has a key side effect of making loop bodies as simple as possible.
+The vectorizer, loop fusion, the unroller, and all kinds of ops will do a better job
+the simpler the loop bodies are.
+
+#### Inlining
+
+~~~admonish quote title="Nikita Popov, lead maintainer of LLVM"
+[Inlining] is the single most important optimization, really.[^nikic_opt]
+~~~
 
 ### Vectorization
 
 #### Versioning
+***TODO***
 
 #### VLA vs VLS
+***TODO***
 
 ### Loop Fusion
+***TODO***
 
 ### Loop Unrolling
+
+~~~admonish todo
+- distinction between runtime and compile time unrolling
+- why is it harder to do other optimizations downstream?
+~~~
 
 <!--In the introductory section, I claimed that this is an exciting era to be working on compilers-->
 <!--because the *free lunch* of direct hardware improvements-->
@@ -222,4 +283,9 @@ void foo(int * arr, int N, int * ptr, int default) {
 [^cmu]: [CMU: 15-745 Optimizing Compilers for Modern Architectures](https://www.cs.cmu.edu/afs/cs/academic/class/15745-s19/www/index.html)
 [^carruth_opt]: [Understanding Compiler Optimization - Chandler Carruth - Opening Keynote Meeting C++ 2015](https://www.youtube.com/watch?v=FnGCDLhaxKU&list=WL&index=1)
     - inlining at 28m
-[^plres]: [](https://bernsteinbear.com/pl-resources/)
+[^plres]: [PL resources from a personal blog](https://bernsteinbear.com/pl-resources/)
+[^nikic]: [Nikita Popov's Blog (nikic)](https://www.npopov.com/)
+    - Nikita is the primary reviewer for LLVM's optimizer. His blog is a great resource.
+    - [^nikic_2023]: [Nikita's 2023 Year in Review blog](https://www.npopov.com/2024/01/01/This-year-in-LLVM-2023.html)
+    - [^nikic_opt]: [2023 EuroLLVM - Tutorial: A whirlwind tour of the LLVM optimizer](https://youtu.be/7GHXDEIMGIY?si=34z8FA0M4b5Cr6ym)
+    - [^nikic_canon]: [LLVM: Canonicalization and target-independence](https://www.npopov.com/2023/04/10/LLVM-Canonicalization-and-target-independence.html)

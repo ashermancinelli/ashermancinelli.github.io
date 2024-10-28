@@ -12,3 +12,4 @@ Tech should be accessible.
 This is a relatively young field, and our educational materials have a long way to go.
 
 That being said, these concepts *do* build on lots of other concepts in software development.
+I try to link to good resources at the bottom of each post, and the [Where to Go From Here](Where-To-Go-From-Here.md) post has more suggested reading.
