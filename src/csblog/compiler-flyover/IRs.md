@@ -56,6 +56,13 @@ Both of those codebases use various other IRs better-suited for different parts 
             - can just read over all the code. if the IR at the end has a bug and it doesn't at the start, well you can just go backwards until you don't see the bug before a pass and you *DO* see it after, then you know the bug is made manifest in that pass.
     - use opaqueptr transition as an example of how tough it is to move everything over
 
+~~~admonish tip
+Note that MLIR's developers have written an unusually large amount of
+documentation about their design decisions[^mlir_rat].
+Please take advantage of this resource, as it summarizes lots of discussion
+across several mediums (LLVM discourse, discord, etc).
+~~~
+
 
 ## Other uses of high-level IRs
 
@@ -98,3 +105,6 @@ Without this, you have to rely on behavioral tests or reading a lower-level IR w
 [^langref]: [LLVM Language Reference](https://llvm.org/docs/LangRef.html)
 [^ssa_construction]: [Simple and Efficient Construction of Static Single Assignment Form](https://bernsteinbear.com/assets/img/braun13cc.pdf)
 [^proglangdoc]: [Blog post on PL development](https://docs.google.com/document/d/e/2PACX-1vSPUfmDiniZy0yn9wjqag8lWOg4Kei_3EXy03EB_pQ-5elwacy0IBZjFyOsjrehIldvhUq0_odDY0Ft/pub)
+[^mlir_rat]: [MLIR Rationale Root Document](https://mlir.llvm.org/docs/Rationale/Rationale/)
+    - The MLIR developers have documented their rationale for design decisions quite well.
+        Please take advantage of this resource.

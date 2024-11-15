@@ -31,12 +31,22 @@ but the latter are usually found only in more specific resources or in the docum
         reuse llvm resources
 ~~~
 
-## Generic Optimizations
+## Textbook Optimizations
 
-You are likely to find these optimizations covered in great detail in 
+You are likely to find these optimizations covered in great detail in most compiler textbooks you find.
 
 ### CFG (Control-Flow Graph) Simplification
-### Forwarding + CSE (Common Subexpression Elimination)
+
+### Store-to-Load Forwarding
+
+This can actually be a difficult optimization without an internal SSA representation.
+Without this, you need an analysis to track the various uses and reaching definitions
+for each variable you're analyzing, whereas with SSA form, you already know each
+virtual register in the IR is only assigned to once and any stores can be propogated
+to any loads.
+
+### CSE (Common Subexpression Elimination)
+
 ### Compile-Time Unrolling
 
 Notice that there's another 
@@ -140,15 +150,28 @@ the simpler the loop bodies are.
 [Inlining] is the single most important optimization, really.[^nikic_opt]
 ~~~
 
-### Vectorization
+~~~admonish todo
+- fuzzy heuristics
+- cross-module inlining, LTO
+
+~~~
+
+### Loop Vectorization
+
+*NOTE*: compilers can and do vectorize code outsie of loops.
+In LLVM this is in the `SLPVectorize` pass (superword-level parallelism) and
+primarily just vectorizes straight-line code.
 
 #### Versioning
+
 ***TODO***
 
 #### VLA vs VLS
+
 ***TODO***
 
 ### Loop Fusion
+
 ***TODO***
 
 ### Loop Unrolling
@@ -289,3 +312,5 @@ the simpler the loop bodies are.
     - [^nikic_2023]: [Nikita's 2023 Year in Review blog](https://www.npopov.com/2024/01/01/This-year-in-LLVM-2023.html)
     - [^nikic_opt]: [2023 EuroLLVM - Tutorial: A whirlwind tour of the LLVM optimizer](https://youtu.be/7GHXDEIMGIY?si=34z8FA0M4b5Cr6ym)
     - [^nikic_canon]: [LLVM: Canonicalization and target-independence](https://www.npopov.com/2023/04/10/LLVM-Canonicalization-and-target-independence.html)
+[^futhark_blog]: [Futhark Blog on inlining](https://futhark-lang.org/blog/2024-10-28-inlining.html)
+[^pmk_ftn_array]: [Peter Klausler's documentation on array operations modelled in the Flang compiler](https://github.com/llvm/llvm-project/blob/main/flang/docs/ArrayComposition.md)

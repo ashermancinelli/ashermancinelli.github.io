@@ -15,3 +15,7 @@ such that each phase is optimally effective.
 ~~~admonish quote
 *Writing* optimizations is more of a science, *ordering* optimizations is more of an art.
 ~~~
+
+~~~admonish todo
+- PGO, dynamic phase ordering with a planner
+~~~

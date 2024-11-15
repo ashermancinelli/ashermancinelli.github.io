@@ -31,6 +31,7 @@ https://tommilligan.github.io/mdbook-admonish/
         - [Instruction Selection](csblog/compiler-flyover/ISel.md)
         - [Register Allocation](csblog/compiler-flyover/RegAlloc.md)
         <!--- [Code Generation](csblog/compiler-flyover/Code-Generation.md)-->
+    - [Performance Analysis](csblog/compiler-flyover/Perf.md)
     - [Where To Go From Here](csblog/compiler-flyover/Where-To-Go-From-Here.md)
     - [Asides](csblog/compiler-flyover/Asides.md)
 - [Debugging in Parallel 9/4/2024](csblog/2024-9-4-Debugging-In-Parallel.md)

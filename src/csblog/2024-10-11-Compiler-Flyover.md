@@ -1,24 +1,23 @@
 
 # Compiler Flyover
 
-Overview of compilers and what I do for work, from ancient Greek philosophy to today.
+An overview of compilers: their history, development, and theory.
 
-I wrote this for some friends where we all gave a little presentation on what we do for work.
-
----
+~~~ admonish tip
 
 The topics were ordered with *people already interested in but not familiar with compilers* in mind.
 If you're already familiar with compilers, then the following sections may be most interesting to you:
 
 1. [Tour of Optimizations](compiler-flyover/Optimizers.md)
 1. [History](compiler-flyover/00-History.md)
+~~~
 
----
+~~~admonish tip
 
-***NOTE:*** This blog series is unfinished. You'll see sections like this at the end of nearly every section with things I still want to add to the given section:
+Nearly everything covered in this blog series is worth a textbook
+of its own. Please don't assume that this series is exhaustive;
+I'm writing it primarily for my own entertainment.
 
-~~~admonish todo
-- some ideas I'd like to add/expand on...
 ~~~
 
 <!--

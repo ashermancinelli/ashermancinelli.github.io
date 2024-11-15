@@ -47,3 +47,8 @@ When a sorter recognizes a pattern it's designed to optimize - say,
 a loop with an invariant computation - it plucks that piece of IR off the belt.
 The robotic arm then transforms the code (moving the invariant computation out of the loop) and places the optimized version back on the belt.
 This process continues, with multiple specialized sorters and optimizers working in sequence, each improving the code in its own way.
+
+~~~admonish todo
+- introduce IRs, passes, phase ordering, link to those sections so the
+    transition feels more natural
+~~~

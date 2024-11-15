@@ -1,18 +1,26 @@
 # History of PL and Compilers
 
-OO vs FP can be thought of as Aristotle vs Plato (though IMO prolog is a better analogy for Plato because of it's declarative emphasis on relationships)
+~~~admonish todo
+- brief section on greek philosophers
+    - laid groundwork for theory of language
+    - Plato's concept of a *logcal grammar* and *Plato's Problem*
+- maybe Rene Descartes's language aquisition stuff
+- Grace Hopper's algorithm on *Charles Babbage's Analytical Engine*.
+- OO vs FP can be thought of as Aristotle vs Plato
+    - (though IMO prolog is a better analogy for Plato because of it's declarative emphasis on relationships)
+~~~
 
-## Ancient Greek Philosophy (5th-4th century BCE):
-
-- Plato et al laid the groundwork for understanding language and its relationship to knowledge.
-- Concept of a *Logical Grammar*: might be thought of as a context-free grammar or a grammar specification. Followed up by the Universal Grammar (later).
-    <!-- - Theory of innate knowledge, known as "Plato's Problem," posed the question of how humans acquire so much knowledge despite limited experiences. This concept would later influence linguistic theories. -->
+<!-- ## Ancient Greek Philosophy (5th-4th century BCE):-->
+<!---->
+<!--- Plato et al laid the groundwork for understanding language and its relationship to knowledge.-->
+<!--- Concept of a *Logical Grammar*: might be thought of as a context-free grammar or a grammar specification. Followed up by the Universal Grammar (later).-->
+<!--- Theory of innate knowledge, known as "Plato's Problem," posed the question of how humans acquire so much knowledge despite limited experiences. This concept would later influence linguistic theories. -->
 <!-- 1. Enlightenment Era (17th-18th century): -->
 <!--     - René Descartes and the rationalist movement further developed ideas about language acquisition, believing in its innate nature as a reflection of human rationality. In contrast, John Locke proposed that all knowledge, including language, comes from sensory experience rather than innate abilities. -->
 
-## Early Computing Concepts (Early 20th century):
-
-- The Antikythera mechanism, dating back to ancient Greece, is often cited as an early analog computing device. In the early 20th century, pioneers like Ada Lovelace contributed to the foundations of computer science by writing the first algorithm for Charles Babbage's Analytical Engine.
+<!-- ## Early Computing Concepts (Early 20th century):-->
+<!---->
+<!--- The Antikythera mechanism, dating back to ancient Greece, is often cited as an early analog computing device. In the early 20th century, pioneers like Ada Lovelace contributed to the foundations of computer science by writing the first algorithm for Charles Babbage's Analytical Engine.-->
 
 
 ## Chomsky's Universal Grammar
@@ -91,10 +99,6 @@ We'll talk more about this later.
     - could write a compiler FE to plug into GCC and leverate the nice backends that hardware vendors worked on.
     - hardware vendors could focus more on what "makes their beer taste better" instead of the FE.
 
-<center>
-<img src="dragonbook.png" />
-</center>
-
 ~~~admonish todo
 
 - RMS missed an email
@@ -102,6 +106,10 @@ We'll talk more about this later.
     - alternate world where llvm became a part of the gnu project, did apple go a different direction?
 
 ~~~
+
+<center>
+<img src="dragonbook.png" />
+</center>
 
 ---
 
