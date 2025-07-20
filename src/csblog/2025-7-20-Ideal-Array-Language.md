@@ -1,34 +1,132 @@
-# Ideal Array Language 7/20/2025
 
-What would the ideal array language look like?
+# Ideal Array Language
 
-## User-Extensible Rank Polymorphism
+What do I think the ideal array language should look like?
+
+- [Ideal Array Language](#ideal-array-language)
+- [User-Extensible Rank Polymorphism](#user-extensible-rank-polymorphism)
+- [Value Semantics and Automatic Bufferization](#value-semantics-and-automatic-bufferization)
+  - [Fortran's Array Semantics](#fortrans-array-semantics)
+  - [Comparison with MLIR Types and Concepts](#comparison-with-mlir-types-and-concepts)
+  - [Fortran Array Semantics in MLIR](#fortran-array-semantics-in-mlir)
+  - [Aside: Dependent Types in Fortran](#aside-dependent-types-in-fortran)
+- [Compilation Step](#compilation-step)
+- [Compiler Transparency and Inspectability](#compiler-transparency-and-inspectability)
+  - [Example: NVHPC's User-Facing Optimization Reporting](#example-nvhpcs-user-facing-optimization-reporting)
+- [SIMT and Automatic Parallelization](#simt-and-automatic-parallelization)
+  - [Why Parallelism Matters](#why-parallelism-matters)
+  - [SIMT vs SIMD](#simt-vs-simd)
+  - [Default Modes of Parallelism](#default-modes-of-parallelism)
+- [Array-Aware Type System](#array-aware-type-system)
+
+# User-Extensible Rank Polymorphism
 
 IMO this is what makes something an array language.
 No language can be an array language without rank polymorphism.
 
 Some languages have rank polymorphism, but I wouldn't necessarily call them array languages.
 
-Numpy provides _some_ rank polymorphism, but it's not a first-class feature.
-Numpy really needs to be paired with a JIT compiler to make python a real array language, so NUMBA or another kernel language is required for Python to make the list.
+Numpy provides _some_ rank polymorphism, but it's not a first-class _language_ feature.
+Numpy also needs to be paired with a JIT compiler to make python a real array language, so NUMBA or another kernel language is required for Python to make the list.
 Otherwise, users would not be able to write their own polymorphic kernels (`ufunc`s).
 
 Similarly, JAX provides an array language base, but without a kernel language like Pallas it's not extensible enough.
 
-## Automatic Bufferization
+# Value Semantics and Automatic Bufferization
 
-Automatic bufferization - most of the major ML frameworks have this, and it gives the compiler much more leeway.
+Most of the major ML frameworks have value semantics for arrays by default, and it gives the compiler much more leeway when it comes to memory.
+Not only is manual memory management a huge pain and a source of bugs, if the ownership semantics are not sufficiently represented in the language or the language defaults are not ammenable to optimization, the compiler will have a much harder time generating performant code.
 
-## Compilation Step
+My understanding of the Rust borrow checker is that its purpose is to handle the intersection of manual memory management and strict ownership.
+Value semantics allows the compiler to decide when to copy or borrow for the vast majority of cases, with the convenient knock-on effect that the user does not need to keep ownership semantics in their head (unless they opt in to it).
+
+## Fortran's Array Semantics
+
+In a way, value semantics and automatic bufferization of arrays is part of why Fortran compilers are able to generate such performant code.
+
+When you use an array in Fortran, you are not just getting a pointer to a contiguous block of memory.
+If you access an array from C FFI, you get access to an _array descriptor_ or a _dopevector_ which contains not only the memory backing the array, but also rich shape, stride, and bounds information.
+
+This is not always how the array is represented in the final program however; because the low level representation of the array is only revealed to the user if they ask for it, the compiler is able to optimize around it in a way that is not possible with C.
+
+In C, the compiler _must assume arrays alias each other_ unless the user provides explicit aliasing information.
+In Fortran, it is exactly the opposite: unless the user informs the compiler that they formed a pointer to an array, the compiler can assume that the array has exclusive ownership.
+The language rules dictate that function arguments may not alias unless the user explicitly declares them to be aliasing.
+This means the compiler can optimize around array operations in a way that is only possible in C with lots of extra effort from the user.
+
+Additionally, Fortran represents rank polymorphism natively.
+Just like Numpy universal functions (`ufunc`s), Fortran has the concept of `ELEMENTAL` procedures which can be called on arrays of any rank.
+
+## Comparison with MLIR Types and Concepts
+
+[MLIR](https://mlir.llvm.org/) is the compiler infrastructure backing many of the major ML frameworks.
+I won't go too deep into MLIR here, but many of the components of MLIR are designed to handle array descriptors and their associated shape, stride, and bounds information in various intermediate representations.
+
+~~~admonish note title="Intermediate Representations"
+An intermediate representation (IR) is the language used inside of a compiler to represent the program.
+There are often several IRs in a compiler, each with a different purpose and possibly different semantics.
+
+MLIR provides infrastructure for heterogeneous IRs, meaning many different IRs can co-exist in the same program.
+These IRs are called dialects, and each dialect defines its own operations and types, and often conforms with semantics defined in the core of MLIR so they can compose with other dialects that are not specific to the project.
+~~~
+
+## Fortran Array Semantics in MLIR
+
+The LLVM Flang Fortran compiler was one of the first users of MLIR in the world outside of ML frameworks.
+Flang has two primary MLIR dialects for representing Fortran programs: `hlfir` and `fir`, or high-level Fortran intermediate representation and Fortran intermediate representation, respectively.
+
+`hlfir` initially represents Fortran programs that are _not bufferized_, meaning the compiler can optimize around array operations without considering the details of memory management, except when required by the user's program.
+
+Take this Fortran program:
+```fortran
+subroutine axpy(a, b, c, n)
+  implicit none
+  integer, intent(in)    :: n
+  real,    intent(in)    :: a(n,n), b(n,n)
+  real,    intent(inout)   :: c(n,n)
+  c = a * b + c
+end subroutine
+```
+
+[At this godbolt link](https://godbolt.org/z/sMWvMoo5M), we can see the IR for this program after every compiler pass in the bottom-right panel, which is MLIR in the `hlfir` and `fir` dialects.
+
+A savy reader might notice that the `hlfir` dialect is not bufferized, meaning the memory backing the arrays is not represented in the IR.
+The language semantics give the compiler this freedom.
+
+After each pass, the IR is dumped with this message: `IR Dump After <pass name>`.
+If you search for `IR Dump After BufferizeHLFIR`, you can see the IR after the compiler pass that introduces memory to back a temporary array used to calculate the result.
+
+If you then turn the optimization level up to `-O3` by changing the compiler flags in the top-right, you can search for the pass `OptimizedBufferization` which leverages the language semantics to reduce and reuse memory in the program, and you'll notice that the temporary array is no longer present in the IR.
+
+An ideal array language should be able to represent this kind of dynamic shape information in the type system and leave space for the compiler to perform these sorts of optimizations.
+
+## Aside: Dependent Types in Fortran
+
+You may have also noticed that the shapes of the matrices passed to the function are dynamic - the parameter `n` is used to determine the shape of the arrays.
+
+In the IR dumps, you can see that the shapes are used to determine the types of the arrays _at runtime_; the types of the arrays depends on the parameter passed into the function.
+
+This is represented in the IR like this:
+```mlir
+func.func @_QPaxpy(
+    %arg0: !fir.ref<!fir.array<?x?xf32>> {fir.bindc_name = "a"}, // ...
+    ) {
+    // ...
+    %12 = fir.shape %6, %11 : (index, index) -> !fir.shape<2>
+    %13:2 = hlfir.declare %arg0(%12)
+                {fortran_attrs = #fir.var_attrs<intent_in>, uniq_name = "_QFaxpyEa"}
+                : (!fir.ref<!fir.array<?x?xf32>>, !fir.shape<2>, !fir.dscope)
+                -> (!fir.box<!fir.array<?x?xf32>>, !fir.ref<!fir.array<?x?xf32>>)
+```
+
+# Compilation Step
 
 Whether offline or online compilation, there needs to be a compilation step.
 Part of the beauty of array languages is the language semantics, but the real power comes from the _ability to optimize_ around those semantics.
 
 If a user adds two arrays together, it's imperative that a compiler is able to see the high-level information in the user's program and optimize around it.
 
-## Value Semantics
-
-## Compiler Reporting
+# Compiler Transparency and Inspectability
 
 Compiler optimizations are notoriously unreliable.
 If there were a library that was as unreliable and opaque as most compilers, I do not believe users would be willing to adopt it.
@@ -42,6 +140,124 @@ If a user finds that their C program is slow, they might look at Clang's optimiz
 Even if they manage to dump the logs and use LLVM's remarks-to-html tool and generate a readable report of their program, they may still have problems finding actionable information in that report.
 ***User-facing optimization reports and hints are a must.***
 
+## Example: NVHPC's User-Facing Optimization Reporting
+
+This is one of my favorite features of the NVHPC compilers - they all have a user-facing optimization reporting framework.
+Adding `-Minfo=all` and `-Mneginfo=all` to the command line gives a detailed report of the optimizations that the compiler is performing, optimizations that were missed, and why.
+
+[Take this C code for example](https://godbolt.org/z/b4ePMK7zo):
+
+```c
+void add_float_arrays(const float *a,
+                      const float *b,
+                            float *c,
+                      size_t n)
+{
+    for (size_t i = 0; i < n; ++i) {
+        c[i] = a[i] + b[i];
+    }
+}
+
+// -Minfo output:
+// add_float_arrays:
+//       8, Loop versioned for possible aliasing
+//          Generated vector simd code for the loop
+//          Vectorized loop was interleaved
+//          Loop unrolled 4 times
+```
+
+It doesn't take too savy of a user to see the `Loop versioned for possible aliasing` remark and wonder _"Well, how do I tell the compiler that these arrays are not aliasing?"_
+
+Of course, annotating the arrays with `restrict` gives the compiler this information:
+```c
+void add_float_arrays(const float *restrict a,
+                      const float *restrict b,
+                            float *restrict c,
+                      size_t                n)
+{
+    for (size_t i = 0; i < n; ++i) {
+        c[i] = a[i] + b[i];
+    }
+}
+
+// -Minfo output:
+// add_float_arrays_restrict:
+//      20, Generated vector simd code for the loop
+//          Vectorized loop was interleaved
+```
+
+Of course, the language semantics should be enough to tell the compiler that arrays in a function like this do not alias, but this is an example of what friendly user-facing compiler reporting looks like, in my opinion.
+
+# SIMT and Automatic Parallelization
+
+## Why Parallelism Matters
+
+The fundamental units of computation available to users today are not the same as they were 20 years ago.
+When users had at most a few cores on a single CPU, it made complete sense that every program was written with the assumption that it would only run on a single core.
+
+Even in a high-performance computing (HPC) context, the default mode of parallelism was (for a long time) the Message Passing Interface (MPI), which is a _descriptive_ model of multi-core and multi-node parallelism.
+Most code was still basically written with the same assumtions: all units of computation were assumed to be uniform.
+
+Hardware has trended towards heterogeneity in several ways:
+
+- More cores per node
+- More nodes per system
+- More kinds of subsystems (GPUs, FPGAs, etc.)
+- More kinds of computational units on a single subsystem
+    - CPUs have lots of vector units and specialized instructions
+    - NVIDIA GPUs have lots of tensor cores specialized for matrix operations
+- New paradigms at the assembly level
+    - Scalable Vector Extensions (SVE) and Scalable Matrix Extensions (SMEs) on Arm
+- Extremely tight release schedules, meaning less and less time in between changes in hardware and more and more rewrites required for hand-written code at the lowest level
+
+The old assumptions do not hold true anymore, and programming languages need to be aware of these changes and able to optimize around them.
+
+## SIMT vs SIMD
+
+SIMT is a programming model that allows for parallel execution of the same instruction on multiple threads.
+Users typically write a function which recieves a thread identifier, performs operations on data, and writes to an output parameter.
+It is nearly impossible to _not_ achieve parallelism with SIMT; once you have described your function in this way, the compiler has to do not other work in order to achieve parallelism.
+SIMT kernels often operate in _lockstep_, meaning that every instruction in a SIMT kernel is executed _by every thread_, but instructions in a thread that is not _active_ are not committed to memory.
+
+In this example, _every thread_ executes _both_ the `if` and the `else` branches, but only threads that are active in either region will actually write to `pointer`.
+
+```python
+if thread_id < 2:           # [1, 1, 1, 1] - all threads active
+    pointer[thread_id] = 1  # [1, 1, 0, 0] - 2 active threads
+else:
+    pointer[thread_id] = 2  # [0, 0, 1, 1] - 2 active threads
+```
+
+So, the user may write a _divergent_ (meaning lots of `if`/`else` branches that differ between threads) or otherwise suboptimal program, but they do not have to worry about whether parallelism was achieved or not.
+
+SIMD is a programming model that allows for parallel execution of the *S*ame *I*nstruction on *M*ultiple *D*ata elements.
+
+Unless users achieve SIMD by writing platform-specific intrinsics directly by specifying they want to use a particular assembly instruction to add two vectors of 8 32-bit floats together, they are relying on the compiler to generate the SIMD code for them.
+
+The lack of trust in compiler to generate near-optimal SIMD code was a major hurdle to adoption.
+Users savy enough to write their own assembly were always able to take advantage of the latest hardware, but this basically necessitates rewriting their code each time they want to leverage a new hardware target.
+
+I believe SIMT was a part of the success of the CUDA programming model in part because of how reliably it achieves parallelism ([Stephen Jones discusses this in his 2025 GTC talk](https://youtu.be/GmNkYayuaA4?si=7ZDmisps4eHxMgr3), [and this talk on scaling ML workloads had some interesting points too](https://www.youtube.com/watch?v=139UPjoq7Kw)).
+With CUDA, users described their programs in terms of SIMT kernels, functions which execute in parallel.
+
+With that in mind, in my ideal array language, users must be able to _opt in to SIMT programming_, but _achieve_ SIMT programming through automatic parallelization.
+
+## Default Modes of Parallelism
+
+In this ideal language, a _descriptive_ paradigm for parallelism should be the default while allowing users to opt in to a more _prescriptive_ paradigm if they desire.
+A descriptive model should be the default because it gives the compiler a huge amount of flexibility without putting a large burden on the user.
+
+Users should be able to write SIMT kernels with really specific information about how the compiler should map the code to the hardware, while relying on automatic parallelization for most cases.
+
+# Array-Aware Type System
+
+The type system should be able to represent the shape, stride, and bounds of an array with automatic type inference.
+I think the flexibility of OCaml's type system would be a nice match.
+Type annotations are not needed, but they are available if users or library authors would like to opt in to stricter constraints.
+Some Hindley-Milner style type inference giving users the ability to opt in to type declarations while allowing the compiler to infer types and optimizer around array information when it's available would be ideal.
+This may be paired with a high-level LTO compilation system that allows the compiler to perform whole-program optimizations and infer more array information in the type system may allow for more aggressive optimizations.
+
+[This PLDI 2025 talk on representing array information in the type system](https://www.youtube.com/watch?v=3Lbs0pJ_OHI) was really interesting - I don't know if it's my ideal, but it was fun to watch someone explore the space.
 
 <!-- Opt-out features:
 - Automatic parallelization
