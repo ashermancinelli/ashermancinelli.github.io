@@ -208,15 +208,21 @@ Hardware has trended towards heterogeneity in several ways:
     - NVIDIA GPUs have lots of tensor cores specialized for matrix operations
 - New paradigms at the assembly level
     - Scalable Vector Extensions (SVE) and Scalable Matrix Extensions (SMEs) on Arm
-- Extremely tight release schedules, meaning less and less time in between changes in hardware and more and more rewrites required for hand-written code at the lowest level
+- Tight hardware release schedules, meaning less and less time in between changes in hardware and more and more rewrites required for hand-written code at the lowest level
 
 The old assumptions do not hold true anymore, and programming languages need to be aware of these changes and able to optimize around them.
+
+Imagine the units of computation available in 2025 as a spectrum from SIMD units, to tensor cores, to CUDA cores, to small power-efficient Arm CPU cores, to large beefy AMD CPUs.
+It is easy to imagine this spectrum filling in with more specialized hardware pushing the upper and lower boundaries and filling in the gaps.
+One day it might be as natural to share work between nodes as it is between individual SIMD lanes on a single CPU core.
+This level of heterogeneity is not something that can be ignored by a programming language or a programming language ecosystem.
+I believe languages and compilers that do not consider the trajectory of hardware development will be left behind to some degree.
 
 ## SIMT vs SIMD
 
 SIMT is a programming model that allows for parallel execution of the same instruction on multiple threads.
 Users typically write a function which recieves a thread identifier, performs operations on data, and writes to an output parameter.
-It is nearly impossible to _not_ achieve parallelism with SIMT; once you have described your function in this way, the compiler has to do not other work in order to achieve parallelism.
+It is nearly impossible to _not_ achieve parallelism with SIMT; once you have described your function in this way, the compiler has to do not other work in order to achieve **parallelism**.
 SIMT kernels often operate in _lockstep_, meaning that every instruction in a SIMT kernel is executed _by every thread_, but instructions in a thread that is not _active_ are not committed to memory.
 
 In this example, _every thread_ executes _both_ the `if` and the `else` branches, but only threads that are active in either region will actually write to `pointer`.
