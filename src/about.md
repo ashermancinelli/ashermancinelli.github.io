@@ -4,7 +4,7 @@ I find compilers, programming languages and performance _really_ interesting.
 
 My personal notes and blog posts are enumerated on the left, or you can use the search bar at the top.
 
-For my day job, I work on [the NVHPC C, C++ and Fortran compilers at NVIDIA](https://developer.nvidia.com/hpc-sdk).
+I work on [the NUMBA-CUDA compiler](https://nvidia.github.io/numba-cuda/) and [the NVHPC C, C++ and Fortran compilers at NVIDIA](https://developer.nvidia.com/hpc-sdk).
 
 <font size="-1">
   <em>

@@ -18,6 +18,8 @@ https://tommilligan.github.io/mdbook-admonish/
 
 # Blog
 
+- [Ideal Array Language 7/20/2025](csblog/2025-7-20-Ideal-Array-Language.md)
+<!-- - [The Puzzle that Took Me 18 Months 7/19/2025](csblog/2025-7-19-Puzzle-Took-Year.md) -->
 - [Debugging in Parallel 9/4/2024](csblog/2024-9-4-Debugging-In-Parallel.md)
 - [Understanding VLA 6/1/2023](csblog/2023-6-1-C-VLA-Implementation.md)
 - [BQN and Reflections on the Joy of Programming 5/2/2022](csblog/2022-5-2-BQN-reflections.md)
