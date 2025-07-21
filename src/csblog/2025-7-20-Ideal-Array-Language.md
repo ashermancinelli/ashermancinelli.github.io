@@ -4,6 +4,7 @@
 What do I think the ideal array language should look like?
 
 - [Ideal Array Language](#ideal-array-language)
+- [Why does this matter?](#why-does-this-matter)
 - [User-Extensible Rank Polymorphism](#user-extensible-rank-polymorphism)
 - [Value Semantics and Automatic Bufferization](#value-semantics-and-automatic-bufferization)
   - [Fortran's Array Semantics](#fortrans-array-semantics)
@@ -11,6 +12,7 @@ What do I think the ideal array language should look like?
   - [Fortran Array Semantics in MLIR](#fortran-array-semantics-in-mlir)
   - [Aside: Dependent Types in Fortran](#aside-dependent-types-in-fortran)
 - [Compilation Step](#compilation-step)
+  - [Offline vs Online Compilation](#offline-vs-online-compilation)
 - [Compiler Transparency and Inspectability](#compiler-transparency-and-inspectability)
   - [Example: NVHPC's User-Facing Optimization Reporting](#example-nvhpcs-user-facing-optimization-reporting)
 - [SIMT and Automatic Parallelization](#simt-and-automatic-parallelization)
@@ -18,6 +20,11 @@ What do I think the ideal array language should look like?
   - [SIMT vs SIMD](#simt-vs-simd)
   - [Default Modes of Parallelism](#default-modes-of-parallelism)
 - [Array-Aware Type System](#array-aware-type-system)
+
+# Why does this matter?
+
+Hardware is changing very quickly, and programming languages and runtimes need to designed with these changes in mind.
+See section [Why Parallelism Matters](#why-parallelism-matters) for more thoughts.
 
 # User-Extensible Rank Polymorphism
 
@@ -69,6 +76,51 @@ There are often several IRs in a compiler, each with a different purpose and pos
 MLIR provides infrastructure for heterogeneous IRs, meaning many different IRs can co-exist in the same program.
 These IRs are called dialects, and each dialect defines its own operations and types, and often conforms with semantics defined in the core of MLIR so they can compose with other dialects that are not specific to the project.
 ~~~
+
+MLIR has a few array representations, most prominently the `memref` and `tensor` types, `tensor` being the more abstract, unbufferized version of a `memref`.
+The process of _bufferizing_, or converting ops with tensor semantics to ops with memref semantics ([described here](https://mlir.llvm.org/docs/Bufferization/)) is how abstract operations on arrays are converted to a more concrete representation with explicit memory backing.
+
+One might consider the `tensor` dialect to be a purely functional, un-bufferized array programming language that is primarily _internal_ to the compiler.
+In fact, [see this quote from Chris Lattner](https://pldb.io/blog/chrisLattner.html):
+
+~~~admonish quote
+_What languages changed the way you think?_
+
+I would put in some of the classics like Prolog and APL. APL and Prolog are like a completely different way of looking at problems and thinking about them.
+
+I love that, even though it's less practical in certain ways. Though all the ML compilers today are basically reinventing APL.
+~~~
+
+Array languages lend themselves to compilation for a few reasons:
+- The lack of bufferization is a great match for compiler optimizations; if the buffers do not exist in the user's program, the compiler can optimize them and sometimes get rid of them entirely.
+- Functional array langauges are a closer match to the internal representation of array programs in many compilers, particularly MLIR-based ones.
+    - The buffers are left entirely up to the compiler
+    - Most modern compilers use [SSA form for their internal representation](https://en.wikipedia.org/wiki/Static_single-assignment_form), meaning every "value" (virtual register) is assigned to exactly once.
+    - For example, to set an element in `tensor`-land, one must create an entirely new tensor. Which operations actually result in a new buffer being created is left up to the compiler.
+
+Take this example from the MLIR docs:
+
+```mlir
+%r = tensor.insert %f into %t[%idx] : tensor<5xf32>
+```
+
+The the tensor with `%f` inserted into the `%t` tensor at index `%idx` is `%r`: an entirely new tensor.
+Compare this with the bufferized version in the `memref` dialect:
+```mlir
+memref.store %f, %t[%idx] : memref<5xf32>
+```
+
+The `memref.store` operation has _side effects_ and the backing memory is modified in place.
+This is a lower-level representation, and typically harder to reason about.
+The compiler may have to consider if the memory escaped the current scope before modifying it in place, for example.
+The higher-level `tensor` dialect is much closer to function array programming languages, so a functional array language is a great match for an optimizing compiler.
+
+<!-- ~~~admonish todo
+- lattner apl mlir https://pldb.io/chrisLattner.html
+- An interview with Chris Lattner
+- Why compilers lend themselves to functional? Bc ssa format, can only deal with values, but then have special language for loads/stores, sorta like refs in ocaml where you got special language for interacting with memory in that way
+- Why pointer chasing so much more expensive?
+~~~ -->
 
 ## Fortran Array Semantics in MLIR
 
@@ -125,6 +177,22 @@ Whether offline or online compilation, there needs to be a compilation step.
 Part of the beauty of array languages is the language semantics, but the real power comes from the _ability to optimize_ around those semantics.
 
 If a user adds two arrays together, it's imperative that a compiler is able to see the high-level information in the user's program and optimize around it.
+
+## Offline vs Online Compilation
+
+One might argue for either offline compilation (like Fortran, with an explicit compilation step) or online compilation (like Python, where the compiler is invoked at runtime).
+For workloads with very heavy compute, it is likely that the process driving the computation can outpace the hardware, meaning it is not very costly to have the compiler invoked while the program is running.
+
+It can be quite a downside to have the compiler on the hotpath, especially for smaller programs where it might become a bottleneck.
+Compilers built for offline compilation can often get away with suboptimal performance.
+As long as users can lauch `make -j` and get their program back after grabbing a coffee, it's not usually a big deal.
+Online compilation introduces an entirely new set of challanges, but the lower barrier to entry for users may be worth it.
+
+All major ML frameworks driven by Python make this tradeoff, for example.
+
+<!-- ```admonish todo
+- Offline v online compilation. As long as you can drive your heavy units of compute, it doesnt matter which model you use, but you do get the downside of putting the compiler on the hotpath with online compilation. Can sorta get away with a lot in offline. Users will make and forget unless its egregious.
+``` -->
 
 # Compiler Transparency and Inspectability
 
