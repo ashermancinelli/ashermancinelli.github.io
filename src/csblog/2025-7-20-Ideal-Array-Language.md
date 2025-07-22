@@ -13,13 +13,14 @@ What do I think the ideal array language should look like?
   - [Aside: Dependent Types in Fortran](#aside-dependent-types-in-fortran)
 - [Compilation Step](#compilation-step)
   - [Offline vs Online Compilation](#offline-vs-online-compilation)
-- [Compiler Transparency and Inspectability](#compiler-transparency-and-inspectability)
-  - [Example: NVHPC's User-Facing Optimization Reporting](#example-nvhpcs-user-facing-optimization-reporting)
+  - [Compiler Transparency and Inspectability](#compiler-transparency-and-inspectability)
+    - [Example: NVHPC's User-Facing Optimization Reporting](#example-nvhpcs-user-facing-optimization-reporting)
 - [SIMT and Automatic Parallelization](#simt-and-automatic-parallelization)
   - [Why Parallelism Matters](#why-parallelism-matters)
   - [SIMT vs SIMD](#simt-vs-simd)
   - [Default Modes of Parallelism](#default-modes-of-parallelism)
 - [Array-Aware Type System](#array-aware-type-system)
+- [Syntax](#syntax)
 
 # Why does this matter?
 
@@ -194,7 +195,7 @@ All major ML frameworks driven by Python make this tradeoff, for example.
 - Offline v online compilation. As long as you can drive your heavy units of compute, it doesnt matter which model you use, but you do get the downside of putting the compiler on the hotpath with online compilation. Can sorta get away with a lot in offline. Users will make and forget unless its egregious.
 ``` -->
 
-# Compiler Transparency and Inspectability
+## Compiler Transparency and Inspectability
 
 Compiler optimizations are notoriously unreliable.
 If there were a library that was as unreliable and opaque as most compilers, I do not believe users would be willing to adopt it.
@@ -208,7 +209,7 @@ If a user finds that their C program is slow, they might look at Clang's optimiz
 Even if they manage to dump the logs and use LLVM's remarks-to-html tool and generate a readable report of their program, they may still have problems finding actionable information in that report.
 ***User-facing optimization reports and hints are a must.***
 
-## Example: NVHPC's User-Facing Optimization Reporting
+### Example: NVHPC's User-Facing Optimization Reporting
 
 This is one of my favorite features of the NVHPC compilers - they all have a user-facing optimization reporting framework.
 Adding `-Minfo=all` and `-Mneginfo=all` to the command line gives a detailed report of the optimizations that the compiler is performing, optimizations that were missed, and why.
@@ -340,3 +341,15 @@ This may be paired with a high-level LTO compilation system that allows the comp
 Opt-in features:
 - SIMT parallelism
 - Manual memory management -->
+
+# Syntax
+
+I purposefully do not have a strong opinion here.
+I think the syntax is too dependent on the target audience and I don't think my ideal language would succeed without a strong community of users.
+That being said, the core algorithms of array programming must be representable in a _consistent_ way.
+
+Take numpy for example.
+Coming to the language, one might expect a uniform way to perform generic algorithms like `reduce` and `map`.
+You end up needing to define your own `ufunc` and call it like `<ufunc>.reduce()`.
+Contrast this with a language like BQN, where a sum reduction is just `+´`.
+I recognize APL-like languages are not approachable or maintainable for everyone, but the flexibility and uniformity of APL-like languages ought to be considered.
