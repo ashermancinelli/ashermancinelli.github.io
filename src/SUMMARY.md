@@ -9,17 +9,11 @@ https://tommilligan.github.io/mdbook-admonish/
 
 -->
 
-# Notes & References
-
-- [Linux Application Perf](notes/2024-8-31-Linux-Perf-Notes.md)
-- [Shell and Scripting Notes](notes/2024-8-30-Shell.md)
-- [Editors and Tools](notes/editors.md)
-- [Values](notes/values.md)
-
 # Blog
 
 - [Use an SMT solver for your next interview 7/21/2025](csblog/2025-7-21-SMT-Solver-Interview.md)
 - [Ideal Array Language 7/20/2025](csblog/2025-7-20-Ideal-Array-Language.md)
+- [Values Statement](csblog/values.md)
 - [The Puzzle that Took Me 18 Months 7/19/2025](csblog/2025-7-19-Puzzle-Took-Year.md)
 - [Debugging in Parallel 9/4/2024](csblog/2024-9-4-Debugging-In-Parallel.md)
 - [Understanding VLA 6/1/2023](csblog/2023-6-1-C-VLA-Implementation.md)
@@ -37,6 +31,16 @@ https://tommilligan.github.io/mdbook-admonish/
 - [Using the Most Popular Programming Languages of the '60s 10/24/2021](csblog/2021-10-24-Popular-Languages-1965.md)
 - [One Problem, Four Languages, Two Paradigms 10/19/2021](csblog/2021-10-19-Leetcode-And-Distributed-Computing.md)
 - [BQN and CUDA C++ LeetCode Solutions 10/11/2021](csblog/2021-10-11-BQN-Cpp-CUDA.md)
+- [Linux Application Perf 8/31/2024](csblog/2024-8-31-Linux-Perf-Notes.md)
+- [Shell and Scripting Notes 8/30/2024](csblog/2024-8-30-Shell.md)
+- [Editors and Tools 8/30/2024](csblog/editors.md)
+
+# WIP
+
+- [Representing `VOLATILE` in Flang's Intermediate Representation 7/22/2025](csblog/2025-7-22-Volatile-Flang.md)
+- [What would an MLIR dialect for OCaml look like? 7/22/2025](csblog/2025-7-22-MLIR-OCaml.md)
+- [Let's talk about poison. 7/22/2025](csblog/2025-7-22-Poison.md)
+- [Simples Hindley-Milner Type Checker 7/22/2025](csblog/2025-7-22-Simples-Type-Checker.md)
 
 # Coffee
 

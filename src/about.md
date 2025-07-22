@@ -6,6 +6,13 @@ My personal notes and blog posts are enumerated on the left, or you can use the 
 
 I work on [the NUMBA-CUDA compiler](https://nvidia.github.io/numba-cuda/) and [the NVHPC C, C++ and Fortran compilers at NVIDIA](https://developer.nvidia.com/hpc-sdk).
 
+If you're looking for somewhere to start, these are some of my favorite posts:
+- [Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
+- [On Values](csblog/values.md)
+<!-- - [Representing `VOLATILE` in Flang's Intermediate Representation](csblog/2025-7-22-Volatile-Flang.md)
+- [What would an MLIR dialect for OCaml look like?](csblog/2025-7-22-MLIR-OCaml.md)
+- [Let's talk about `poison`.](csblog/2025-7-22-Poison.md) -->
+
 <font size="-1">
   <em>
     These views do not in any way represent those of NVIDIA or any other organization or institution that I am professionally associated with.
@@ -14,7 +21,7 @@ I work on [the NUMBA-CUDA compiler](https://nvidia.github.io/numba-cuda/) and [t
 </font>
 
 ```admonish tip title="Heads up!"
-Many of these posts are incomplete.
+Some of these posts are incomplete.
 ```
 
 ---

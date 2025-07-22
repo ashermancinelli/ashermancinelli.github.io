@@ -80,6 +80,32 @@ if s.check() == z3.sat:
 
 The `s.check()` call will return `z3.sat` if the provided constraints are satisfiable, and `z3.unsat` if they are not.
 
+Once we're done, we can also look at the representation used by the underlying solver, which uses s-expressions to represent the constraints.
+These are the sexprs for the last solution we looked at:
+
+```python
+print(s.sexpr())
+```
+
+```lisp
+(declare-fun grid_0_0 () (_ BitVec 1))
+(declare-fun grid_1_0 () (_ BitVec 1))
+(assert (and (= grid_0_0 grid_1_0) (= grid_1_0 grid_0_0)))
+(assert (let ((a!1 (mod (+ 0 (ite (= grid_0_0 #b1) 1 0) (ite (= grid_1_0 #b1) 1 0)) 4)))
+  (= a!1 0)))
+(minimize (+ 0 (ite (distinct grid_0_0 #b1) 1 0) (ite (distinct grid_1_0 #b1) 1 0)))
+(check-sat)
+
+(declare-fun grid_0_0 () (_ BitVec 1))
+(declare-fun grid_1_0 () (_ BitVec 1))
+(assert (and (= grid_0_0 grid_1_0) (= grid_1_0 grid_0_0)))
+(assert (let ((a!1 (mod (+ 0 (ite (= grid_0_0 #b1) 1 0) (ite (= grid_1_0 #b1) 1 0)) 4)))
+  (= a!1 0)))
+(minimize (+ 0 (ite (distinct grid_0_0 #b1) 1 0) (ite (distinct grid_1_0 #b1) 1 0)))
+(check-sat)
+```
+
+
 ---
 
 * [Alan Perlis, _EPIGRAMS IN PROGRAMMING_](https://www.cs.yale.edu/homes/perlis-alan/quotes.html)
