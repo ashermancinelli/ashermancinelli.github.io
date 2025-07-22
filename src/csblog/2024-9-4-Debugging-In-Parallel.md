@@ -1,5 +1,20 @@
 # Debugging in Parallel
 
+The most important skill in debugging compilers is the ability to _bisect_ your problems.
+
+Given that you have a bug report...
+* Does last last year's compiler work? Bisect all the changes to your compiler in the last year!
+* Does the bug reproduce with all your optimization passes disabled? Bisect your optimization passes!
+* Does the bug have multiple functions? Bisect your functions by disabling inlining and optimizations until you find one function that triggers the bug!
+* Does the bug have multiple files? Bisect your files by disabling optimizations on every file until you find one that triggers the bug!
+* Is the bug one giant function? Bisect the code inside that function by outlining chunks of code until you find a chunk that, when outlined, allows the test to pass!
+* Does the bug show up with a change you made to the compiler? Bisect the _instances_ of your transformation or change until you find the problematic call!
+
+This post is about the last bullet point.
+If you can frame your bug as a search-space of smaller bugs, you can automate the process of finding the root cause.
+
+---
+
 Let's say you have a compiler pass that performs some transformation.
 You check in a change to the compiler...
 
@@ -10,7 +25,6 @@ void my_pass(ast_t *ast) {
 ```
 
 ...and you get a bug report back.
-
 Something is broken, but it only shows up in a huge translation unit, and your pass runs thousands of times.
 How do you reduce the problem?
 
@@ -49,6 +63,9 @@ USE_NEW_CODE=1 build/bin/clang ./bug.c -O3
 ~~~admonish tip
 Rather than using environment variables, the same can be accomplished with clang's `cl::opt` command line options.
 `opt` has the command line flag `-opt-bisect-limit=<limit>` for bisecting LLVM passes, and you can do the same thing in your own pass.
+
+MLIR-based tools have similar functionality, but because MLIR is multithreaded at the framework-level, you usually need to disable threading with `-mlir-disable-threading` for this sort of bisecting.
+[There are built-in tools for bisecting MLIR passes](https://mlir.llvm.org/docs/ActionTracing/) as well, but I haven't used them.
 ~~~
 
 If we then turn this build and run step into a script that runs in a temporary directory,

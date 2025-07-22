@@ -1,7 +1,7 @@
 
 # Values Statement
 
-```admonish tldr
+```admonish tip title="_TL;DR_"
 These values motivate and inform how I work.
 
 They are _values_, meaning I _aspire_ to live up to them and they are at times in tension with each other.
@@ -11,9 +11,9 @@ They are: **curiosity, honesty, rigor, communication, empathy.**
 
 ## Curiosity
 
+* My career goal is to maximize the time I spend exploring ideas and problems, driven by curiosity.
 * I _chose_ to take an orientation of curiosity towards any problem I work on.
     Replace feelings of frustration, anger and disappointment with curiosity when possible.
-* Maximize time spent contemplating topics that pique my interest.
 
 ## Honesty
 

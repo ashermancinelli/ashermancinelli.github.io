@@ -9,12 +9,13 @@ https://tommilligan.github.io/mdbook-admonish/
 
 -->
 
-# Blog
+# 📝 Blog 💡
 
 - [Use an SMT solver for your next interview 7/21/2025](csblog/2025-7-21-SMT-Solver-Interview.md)
 - [Ideal Array Language 7/20/2025](csblog/2025-7-20-Ideal-Array-Language.md)
 - [Values Statement](csblog/values.md)
-- [The Puzzle that Took Me 18 Months 7/19/2025](csblog/2025-7-19-Puzzle-Took-Year.md)
+<!--  Merged into the smt solver post
+- [The Puzzle that Took Me 18 Months 7/19/2025](csblog/2025-7-19-Puzzle-Took-Year.md) -->
 - [Debugging in Parallel 9/4/2024](csblog/2024-9-4-Debugging-In-Parallel.md)
 - [Understanding VLA 6/1/2023](csblog/2023-6-1-C-VLA-Implementation.md)
 - [BQN and Reflections on the Joy of Programming 5/2/2022](csblog/2022-5-2-BQN-reflections.md)
@@ -35,14 +36,14 @@ https://tommilligan.github.io/mdbook-admonish/
 - [Shell and Scripting Notes 8/30/2024](csblog/2024-8-30-Shell.md)
 - [Editors and Tools 8/30/2024](csblog/editors.md)
 
-# WIP
+# 🚧 WIP 🚧
 
 - [Representing `VOLATILE` in Flang's Intermediate Representation 7/22/2025](csblog/2025-7-22-Volatile-Flang.md)
 - [What would an MLIR dialect for OCaml look like? 7/22/2025](csblog/2025-7-22-MLIR-OCaml.md)
 - [Let's talk about poison. 7/22/2025](csblog/2025-7-22-Poison.md)
 - [Simples Hindley-Milner Type Checker 7/22/2025](csblog/2025-7-22-Simples-Type-Checker.md)
 
-# Coffee
+# ☕️ Coffee
 
 - [Best Espresso In Portland (6/11/2023)](coffeeblog/2023-6-11-Best-Espresso-In-Portland.md)
 - [Sterling (6/22/2023)](coffeeblog/2023-6-22-Sterling.md)

@@ -6,6 +6,7 @@ What do I think the ideal array language should look like?
 - [Ideal Array Language](#ideal-array-language)
 - [Why does this matter?](#why-does-this-matter)
 - [User-Extensible Rank Polymorphism](#user-extensible-rank-polymorphism)
+  - [User Extensibility in Mojo](#user-extensibility-in-mojo)
 - [Value Semantics and Automatic Bufferization](#value-semantics-and-automatic-bufferization)
   - [Fortran's Array Semantics](#fortrans-array-semantics)
   - [Comparison with MLIR Types and Concepts](#comparison-with-mlir-types-and-concepts)
@@ -16,7 +17,6 @@ What do I think the ideal array language should look like?
   - [Compiler Transparency and Inspectability](#compiler-transparency-and-inspectability)
     - [Example: NVHPC's User-Facing Optimization Reporting](#example-nvhpcs-user-facing-optimization-reporting)
 - [SIMT and Automatic Parallelization](#simt-and-automatic-parallelization)
-  - [Why Parallelism Matters](#why-parallelism-matters)
   - [SIMT vs SIMD](#simt-vs-simd)
   - [Default Modes of Parallelism](#default-modes-of-parallelism)
 - [Array-Aware Type System](#array-aware-type-system)
@@ -24,21 +24,56 @@ What do I think the ideal array language should look like?
 
 # Why does this matter?
 
-Hardware is changing very quickly, and programming languages and runtimes need to designed with these changes in mind.
-See section [Why Parallelism Matters](#why-parallelism-matters) for more thoughts.
+The fundamental units of computation available to users today are not the same as they were 20 years ago.
+When users had at most a few cores on a single CPU, it made complete sense that every program was written with the assumption that it would only run on a single core.
+
+Even in a high-performance computing (HPC) context, the default mode of parallelism was (for a long time) the Message Passing Interface (MPI), which is a _descriptive_ model of multi-core and multi-node parallelism.
+Most code was still basically written with the same assumtions: all units of computation were assumed to be uniform.
+
+Hardware has trended towards heterogeneity in several ways:
+
+- More cores per node
+- More nodes per system
+- More kinds of subsystems (GPUs, FPGAs, etc.)
+- More kinds of computational units on a single subsystem
+    - CPUs have lots of vector units and specialized instructions
+    - NVIDIA GPUs have lots of tensor cores specialized for matrix operations
+- New paradigms at the assembly level
+    - Scalable Vector Extensions (SVE) and Scalable Matrix Extensions (SMEs) on Arm
+- Tight hardware release schedules, meaning less and less time in between changes in hardware and more and more rewrites required for hand-written code at the lowest level
+
+The old assumptions do not hold true anymore, and programming languages need to be aware of these changes and able to optimize around them.
+
+Imagine the units of computation available in 2025 as a spectrum from SIMD units, to tensor cores, to CUDA cores, to small power-efficient Arm CPU cores, to large beefy AMD CPUs.
+It is easy to imagine this spectrum filling in with more specialized hardware pushing the upper and lower boundaries and filling in the gaps.
+One day it might be as natural to share work between nodes as it is between individual SIMD lanes on a single CPU core.
+This level of heterogeneity is not something that can be ignored by a programming language or a programming language ecosystem.
+I believe languages and compilers that do not consider the trajectory of hardware development will be left behind to some degree.
 
 # User-Extensible Rank Polymorphism
 
 IMO this is what makes something an array language.
 No language can be an array language without rank polymorphism.
 
-Some languages have rank polymorphism, but I wouldn't necessarily call them array languages.
-
 Numpy provides _some_ rank polymorphism, but it's not a first-class _language_ feature.
 Numpy also needs to be paired with a JIT compiler to make python a real array language, so NUMBA or another kernel language is required for Python to make the list.
 Otherwise, users would not be able to write their own polymorphic kernels (`ufunc`s).
 
-Similarly, JAX provides an array language base, but without a kernel language like Pallas it's not extensible enough.
+Similarly, the JAX and XLA compilers provide an array language base, but without a kernel language like Pallas or Triton, it's not extensible enough for every use case they care about.
+
+~~~admonish tip title=""
+A proper array language will have an array language _base_ with the ability to write _kernels_ directly, either by exposing lower-level details the user can opt-in to, or by allowing primitives to be composed in a way the compiler can reason about.
+~~~
+
+## User Extensibility in Mojo
+
+~~~admonish todo title="TODO: unfinished section"
+* MLIR primitives exposed in the language
+* Pushing details out of the compiler and into the language
+* Helps extensibility; fewer uses of compiler builtins
+* Standard library contains lots of language features that are usually implemented in the compiler
+* [recent talk on _GPUMODE_](https://youtu.be/5gPG7SXoBag?si=kLnJhKjxxWo5udp2)
+~~~
 
 # Value Semantics and Automatic Bufferization
 
@@ -84,7 +119,7 @@ The process of _bufferizing_, or converting ops with tensor semantics to ops wit
 One might consider the `tensor` dialect to be a purely functional, un-bufferized array programming language that is primarily _internal_ to the compiler.
 In fact, [see this quote from Chris Lattner](https://pldb.io/blog/chrisLattner.html):
 
-~~~admonish quote
+~~~admonish quote title="_Chris Lattner_"
 _What languages changed the way you think?_
 
 I would put in some of the classics like Prolog and APL. APL and Prolog are like a completely different way of looking at problems and thinking about them.
@@ -258,34 +293,6 @@ void add_float_arrays(const float *restrict a,
 Of course, the language semantics should be enough to tell the compiler that arrays in a function like this do not alias, but this is an example of what friendly user-facing compiler reporting looks like, in my opinion.
 
 # SIMT and Automatic Parallelization
-
-## Why Parallelism Matters
-
-The fundamental units of computation available to users today are not the same as they were 20 years ago.
-When users had at most a few cores on a single CPU, it made complete sense that every program was written with the assumption that it would only run on a single core.
-
-Even in a high-performance computing (HPC) context, the default mode of parallelism was (for a long time) the Message Passing Interface (MPI), which is a _descriptive_ model of multi-core and multi-node parallelism.
-Most code was still basically written with the same assumtions: all units of computation were assumed to be uniform.
-
-Hardware has trended towards heterogeneity in several ways:
-
-- More cores per node
-- More nodes per system
-- More kinds of subsystems (GPUs, FPGAs, etc.)
-- More kinds of computational units on a single subsystem
-    - CPUs have lots of vector units and specialized instructions
-    - NVIDIA GPUs have lots of tensor cores specialized for matrix operations
-- New paradigms at the assembly level
-    - Scalable Vector Extensions (SVE) and Scalable Matrix Extensions (SMEs) on Arm
-- Tight hardware release schedules, meaning less and less time in between changes in hardware and more and more rewrites required for hand-written code at the lowest level
-
-The old assumptions do not hold true anymore, and programming languages need to be aware of these changes and able to optimize around them.
-
-Imagine the units of computation available in 2025 as a spectrum from SIMD units, to tensor cores, to CUDA cores, to small power-efficient Arm CPU cores, to large beefy AMD CPUs.
-It is easy to imagine this spectrum filling in with more specialized hardware pushing the upper and lower boundaries and filling in the gaps.
-One day it might be as natural to share work between nodes as it is between individual SIMD lanes on a single CPU core.
-This level of heterogeneity is not something that can be ignored by a programming language or a programming language ecosystem.
-I believe languages and compilers that do not consider the trajectory of hardware development will be left behind to some degree.
 
 ## SIMT vs SIMD
 
