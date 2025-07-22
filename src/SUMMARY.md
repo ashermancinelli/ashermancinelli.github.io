@@ -18,6 +18,7 @@ https://tommilligan.github.io/mdbook-admonish/
 
 # Blog
 
+- [Use an SMT solver for your next interview 7/21/2025](csblog/2025-7-21-SMT-Solver-Interview.md)
 - [Ideal Array Language 7/20/2025](csblog/2025-7-20-Ideal-Array-Language.md)
 - [The Puzzle that Took Me 18 Months 7/19/2025](csblog/2025-7-19-Puzzle-Took-Year.md)
 - [Debugging in Parallel 9/4/2024](csblog/2024-9-4-Debugging-In-Parallel.md)
