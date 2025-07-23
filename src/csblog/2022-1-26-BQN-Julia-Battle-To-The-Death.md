@@ -1,11 +1,6 @@
-<!--
-layout: post
-title: BQN & Julia
-permalink: /bqn-julia
-category: bqn
-wip: true
-cat: cs
--->
+# BQN & Julia battle to the death!
+
+_2022-01-26_
 
 BQN and Julia battle to the death!
 

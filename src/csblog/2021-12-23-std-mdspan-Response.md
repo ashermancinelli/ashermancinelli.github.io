@@ -1,12 +1,8 @@
-<!--
-layout: post
-title: A Look at std::mdspan
-permalink: /std-mdspan-tensors
-cat: cs
--->
+# A Look at std::mdspan
 
-New library feature coming to C++23
+_2021-12-23_
 
+New library feature coming to C++23.
 
 ## Tensors
 

@@ -1,5 +1,5 @@
-
 # Ideal Array Language
+_2025-07-20_
 
 What do I think the ideal array language should look like?
 

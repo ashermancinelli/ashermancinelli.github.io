@@ -1,9 +1,6 @@
-<!--
-layout: post
-title: Spack for Package Development Part 3
-permalink: /spack3
-cat: cs
--->
+# Spack for Package Development Part 3
+
+_2021-03-06_
 
 Third in this series, this post focuses on *leveraging environments for debugging and reproducing errors*.
 

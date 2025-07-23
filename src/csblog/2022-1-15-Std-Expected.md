@@ -1,9 +1,6 @@
-<!--
-layout: post
-title: std::expected And Why It's Awesome
-permalink: /std-expected
-cat: cs
--->
+# std::expected
+
+_2022-01-15_
 
 `std::expected` and some spectacular extensions are hopefully coming to C++23.
 

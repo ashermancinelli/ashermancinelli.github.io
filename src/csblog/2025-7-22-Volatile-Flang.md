@@ -1,4 +1,5 @@
-# Representing VOLATILE in Flang's Intermediate Representation 7/22/2025
+# Representing VOLATILE in Flang's Intermediate Representation
+_2025-07-22_
 
 ~~~admonish tip title="_TL;DR_"
 We represent volatile variables in the Flang compiler differently than some other compilers.

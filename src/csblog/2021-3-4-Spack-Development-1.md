@@ -1,9 +1,6 @@
-<!--
-layout: post
-title: Spack for Package Development Part 1
-permalink: /spack1
-cat: cs
--->
+# Spack for Package Development Part 1
+
+_2021-03-04_
 
 [Spack](https://spack.readthedocs.io/en/latest/) is typically used for package deployment, however this post will be about package *development* with Spack.
 First in this series, this post focuses on *motivation and introduction*.

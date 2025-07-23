@@ -1,9 +1,6 @@
-<!--
-layout: post
-title: GTest Type and Value Parameterized Tests
-permalink: /gtest-type-val-param
-cat: cs
--->
+# GTest Type and Value Parameterized Tests
+
+_2021-03-07_
 
 GTest exposes clean interfaces for parameterizing your tests by value and by
 type - but what if you want both?

@@ -1,11 +1,6 @@
-<!--
-layout: post
-title: Debugging Performance in Compilers
-permalink: /comp-debug-perf
-category: c++, llvm, compilers
-wip: false
-cat: cs
--->
+# Debugging Performance in Compilers
+
+_2022-12-12_
 
 Overview of how I debug performance regressions when developing a compiler.
 I don't claim this is the best way to do it, email me or tweet at me if you've got better ideas😉

@@ -1,11 +1,6 @@
-<!--
-layout: post
-title: Reflection TS and a Struct Replacement
-permalink: /reflection-ts-struct-replacement
-category: c++, metaprogramming
-wip: true
-cat: cs
--->
+# Reflection TS and a Struct Replacement
+
+_2022-01-31_
 
 description here
 

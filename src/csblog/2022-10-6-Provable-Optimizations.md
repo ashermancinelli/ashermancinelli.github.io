@@ -1,11 +1,6 @@
-<!--
-layout: post
-title: Provable Optimizations in Coq
-permalink: /prov-opt-coq
-category: c++, metaprogramming
-wip: true
-cat: cs
--->
+# Provable Optimizations in Coq
+
+_2022-10-06_
 
 Proving that optimization passes are correct with the formal verification
 assistant Coq.

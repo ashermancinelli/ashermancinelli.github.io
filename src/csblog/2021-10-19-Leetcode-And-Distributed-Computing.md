@@ -1,9 +1,6 @@
-<!--
-layout: post
-title: One Problem, Four Languages, Two Paradigms
-permalink: /leetcode-distributed-computing
-cat: cs
--->
+# One Problem, Four Languages, Two Paradigms
+
+_2021-10-19_
 
 Solving a leetcode problem in four programming languages using two acceleration paradigms!
 
@@ -19,18 +16,20 @@ Let's jump right in to our BQN solution.
 
 ## Content
 
-1. [BQN](#bqn)
-1. [Approach](#approach)
-1. [Python](#python)
-1. [Python And MPI](#python-and-mpi)
-1. [C++](#c++)
-1. [C++ And MPI](#c++-and-mpi)
-1. [C++ And CUDA](#c++-and-cuda)
-1. [C++ And CUDA And MPI](#c++-and-cuda-and-mpi)
-1. [Fortran](#fortran)
-1. [Fortran And MPI](#fortran-and-mpi)
-1. [Conclusion](#conclusion)
-1. [YouTube Video Description](#youtube-description)
+- [One Problem, Four Languages, Two Paradigms](#one-problem-four-languages-two-paradigms)
+  - [Content](#content)
+  - [BQN](#bqn)
+  - [Approach](#approach)
+  - [Python](#python)
+  - [Python And MPI](#python-and-mpi)
+  - [C++](#c)
+  - [C++ And MPI](#c-and-mpi)
+  - [C++ And CUDA](#c-and-cuda)
+  - [C++ And CUDA And MPI](#c-and-cuda-and-mpi)
+  - [Fortran](#fortran)
+  - [Fortran And MPI](#fortran-and-mpi)
+  - [Conclusion](#conclusion)
+  - [YouTube Description](#youtube-description)
 
 ## [BQN](#content)
 

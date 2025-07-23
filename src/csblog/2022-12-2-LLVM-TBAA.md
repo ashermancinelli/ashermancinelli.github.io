@@ -1,11 +1,6 @@
-<!--
-layout: post
-title: TBAA in LLVM IR
-permalink: /llvm-tbaa
-category: c++, llvm, compilers
-wip: true
-cat: cs
--->
+# TBAA in LLVM IR
+
+_2022-12-02_
 
 Overview of type-based alias analysis in LLMV IR.
 

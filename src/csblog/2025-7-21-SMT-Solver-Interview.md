@@ -1,4 +1,5 @@
-# Use an SMT solver for your next interview 7/21/2025
+# Use an SMT solver for your next interview
+_2025-07-21_
 
 Not really - but exploring the use of SMT solvers for solving problems is an entirely different way of thinking about programming.
 

@@ -1,11 +1,4 @@
-<!--
-layout: post
-title: BQN and CUDA C++ LeetCode Solutions
-permalink: /bqn-cuda-cpp-lc-longest-valid-parens
-category: bqn, c++, cuda, leetcode
-wip: false
-cat: cs
--->
+_2021-10-11_
 
 Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!
 

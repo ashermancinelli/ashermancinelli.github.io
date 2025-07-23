@@ -1,5 +1,7 @@
 # Debugging in Parallel
 
+_2024-09-04_
+
 The most important skill in debugging compilers is the ability to _bisect_ your problems.
 
 Given that you have a bug report...

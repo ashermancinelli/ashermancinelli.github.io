@@ -1,9 +1,6 @@
-<!--
-layout: post
-title: Spack for Package Development Part 2
-permalink: /spack2
-cat: cs
--->
+# Spack for Package Development Part 2
+
+_2021-03-05_
 
 Second in this series, this post focuses on *getting stared with environments*.
 

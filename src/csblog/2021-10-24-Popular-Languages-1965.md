@@ -1,9 +1,6 @@
-<!--
-layout: post
-title: Using the Most Popular Programming Languages of the '60s
-permalink: /pop-langs-1960s
-cat: cs
--->
+# Using the Most Popular Programming Languages of the '60s
+
+_2021-10-24_
 
 We use the 6 most popular programming languages of the 1960's to solve a leetcode problem!
 
