@@ -9,30 +9,30 @@ https://tommilligan.github.io/mdbook-admonish/
 
 -->
 
-# 📝 Blog 💡
+# 💡 Blog
 
-- [_2025_]()
+- [2025]()
     - [Let's talk about poison.](csblog/2025-7-22-Poison.md)
     - [Representing `VOLATILE` in Flang](csblog/2025-7-22-Volatile-Flang.md)
     - [Use an SMT solver for your next interview](csblog/2025-7-21-SMT-Solver-Interview.md)
     - [My Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
     - [My Values](csblog/values.md)
 
-- [_2024_]()
+- [2024]()
     - [Debugging in Parallel](csblog/2024-9-4-Debugging-In-Parallel.md)
     - [Linux Perf Notes](csblog/2024-8-31-Linux-Perf-Notes.md)
 
-- [_2023_]()
+- [2023]()
     - [Variable Length Arrays](csblog/2023-6-1-C-VLA-Implementation.md)
 
-- [_2022_]()
+- [2022]()
     - [BQN and Reflections on the Joy of Programming](csblog/2022-5-2-BQN-reflections.md)
     - [LLVM Development on NixOS](csblog/2022-2-2-LLVM-Development-On-NixOS.md)
     - [CUDA 101: Matrix-Vector Product](csblog/2022-2-10-CUDA-101-Matvec.md)
     - [Debugging Performance in Compilers](csblog/2022-12-12-Compiler-Perf-Debugging.md)
     - [std::expected And Why It's Awesome](csblog/2022-1-15-Std-Expected.md)
 
-- [_2021_]()
+- [2021]()
     - [GTest Type and Value Parameterized Tests](csblog/2021-3-7-GTest-Type-Value-Params.md)
     - [Spack for Package Development Part 3](csblog/2021-3-6-Spack-Development-3.md)
     - [Clang Tools for Checking Domain-Specific Errors](csblog/2021-3-6-Clang-Tools-Lambda.md)
@@ -45,28 +45,31 @@ https://tommilligan.github.io/mdbook-admonish/
 <!-- - [Shell and Scripting Notes](csblog/2024-8-30-Shell.md)
 - [Editors and Tools 8/30/2024](csblog/editors.md) -->
 
-# 🚧 WIP 🚧
-
-- [You can vectorize without a vector length? 7/22/2025](csblog/2025-7-22-Vector-Length.md)
-- [Why is functional programming such a great fit for Compilers? 7/22/2025](csblog/2025-7-22-Functional-Programming-Compilers.md)
-- [What would an MLIR dialect for OCaml look like? 7/22/2025](csblog/2025-7-22-MLIR-OCaml.md)
-- [The Simplest Hindley-Milner Type Checker 7/22/2025](csblog/2025-7-22-Simple-Type-Checker.md)
-
 # ☕️ Coffee
 
-- [Best Espresso In Portland (6/11/2023)](coffeeblog/2023-6-11-Best-Espresso-In-Portland.md)
-- [Sterling (6/22/2023)](coffeeblog/2023-6-22-Sterling.md)
-- [Deadstock (6/14/2023)](coffeeblog/2023-6-14-Deadstock.md)
-- [Barista (6/22/2023)](coffeeblog/2023-6-22-Barista.md)
-- [Never Coffee (6/13/2023)](coffeeblog/2023-6-13-Never-Coffee.md)
-- [Upper Left Roasters (6/15/2023)](coffeeblog/2023-6-15-Upper-Left-Roasters.md)
-- [Abba (6/14/2023)](coffeeblog/2023-6-14-Abba.md)
-- [Rose City Coffee (6/15/2023)](coffeeblog/2023-6-15-Rose-City-Coffee.md)
-- [Sterling (6/14/2023)](coffeeblog/2023-6-14-Sterling.md)
-- [Superjoy (6/21/2023)](coffeeblog/2023-6-21-Superjoy.md)
-- [Beginners Guide (6/13/2023)](coffeeblog/2023-6-13-Beginners-Guide.md)
-- [Seattle Trip Report (6/19/2023)](coffeeblog/2023-6-19-Seattle-Trip-Report.md)
-- [Adapt Coffee (6/15/2023)](coffeeblog/2023-6-15-Adapt-Coffee.md)
-- [Coava (6/13/2023)](coffeeblog/2023-6-13-Coava.md)
-- [PDX Espresso Research (6/14/2023)](coffeeblog/2023-6-14-PDX-Espresso-Research.md)
-- [Nossa Familia Coffee (6/15/2023)](coffeeblog/2023-6-15-Nossa-Familia-Coffee.md)
+- [2023]()
+    - [Best Espresso In Portland](coffeeblog/2023-6-11-Best-Espresso-In-Portland.md)
+    - [Sterling](coffeeblog/2023-6-22-Sterling.md)
+    - [Deadstock](coffeeblog/2023-6-14-Deadstock.md)
+    - [Barista](coffeeblog/2023-6-22-Barista.md)
+    - [Never Coffee](coffeeblog/2023-6-13-Never-Coffee.md)
+    - [Upper Left Roasters](coffeeblog/2023-6-15-Upper-Left-Roasters.md)
+    - [Abba](coffeeblog/2023-6-14-Abba.md)
+    - [Rose City Coffee](coffeeblog/2023-6-15-Rose-City-Coffee.md)
+    - [Sterling](coffeeblog/2023-6-14-Sterling.md)
+    - [Superjoy](coffeeblog/2023-6-21-Superjoy.md)
+    - [Beginners Guide](coffeeblog/2023-6-13-Beginners-Guide.md)
+    - [Seattle Trip Report](coffeeblog/2023-6-19-Seattle-Trip-Report.md)
+    - [Adapt Coffee](coffeeblog/2023-6-15-Adapt-Coffee.md)
+    - [Coava](coffeeblog/2023-6-13-Coava.md)
+    - [PDX Espresso Research](coffeeblog/2023-6-14-PDX-Espresso-Research.md)
+    - [Nossa Familia Coffee](coffeeblog/2023-6-15-Nossa-Familia-Coffee.md)
+
+
+# 🚧 WIP 🚧
+
+- [2025]()
+    - [You can vectorize without a vector length?](csblog/2025-7-22-Vector-Length.md)
+    - [Why is functional programming such a great fit for Compilers?](csblog/2025-7-22-Functional-Programming-Compilers.md)
+    - [What would an MLIR dialect for OCaml look like?](csblog/2025-7-22-MLIR-OCaml.md)
+    - [The Simplest Hindley-Milner Type Checker](csblog/2025-7-22-Simple-Type-Checker.md)
