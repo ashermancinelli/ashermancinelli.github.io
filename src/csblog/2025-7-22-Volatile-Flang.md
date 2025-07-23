@@ -1,4 +1,4 @@
-# Representing VOLATILE in Flang's Intermediate Representation
+# Representing VOLATILE in Flang's IR
 _2025-07-22_
 
 ~~~admonish tip title="_TL;DR_"

@@ -1,11 +1,6 @@
-<!--
-layout: post
-title: Linux Perf Notes
-permalink: /perf
-category: linux, c++, perfanalysis
-wip: false
-cat: cs
--->
+# Linux Perf Notes
+
+_2024-08-31_
 
 # First, RTM.
 
