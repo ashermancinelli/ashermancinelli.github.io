@@ -4,9 +4,11 @@ _2021-10-24_
 
 We use the 6 most popular programming languages of the 1960's to solve a leetcode problem!
 
+---
 
 Most of these languages have changed a lot since the 1960s, so the way I'm using these languages won't be quite the same as they were used back then.
 For example, I couldn't find a way to compile and/or run an ALGOL50 program, so I'll have to use Algol68, a later standard of the language.
+
 Similarly, the first APLs were intended for use on a blackboard, and the first actual implementations were all proprietary.
 Many of the languages were originally written on punchcards and physically inserted into a punchard reader, and I don't have access to any of that.
 For the most part, I made some attempt to use an older version of each language to get a better feel for what it would be like to use the language back in the day.
@@ -16,14 +18,8 @@ I'll be looking at the languages in ascending order based on their popularity in
 Along with my solution for each language, I'll give a little bit of history and a quote from Edsger Dijkstra (whether I agree with it or not :smile:).
 His scathing remarks about almost every language on this list were too good to leave out.
 
-<a target="_blank" href="https://github.com/ashermancinelli/algorithm-testbed">
-All these solutions and the build system needed to compile the examples can be found in this repository.
-</a>
-***NOTE: The repo linked above has been temporarily made private due to intellectual property questions and will be restored as soon as possible.***
-
-<a href="https://youtu.be/lYfCNa9coC4" target="_blank">
-See the youtube video version of this content linked here.
-</a>
+* [All these solutions and the build system needed to compile the examples can be found in this repository.](https://github.com/ashermancinelli/algorithm-testbed)
+* [See the youtube video version of this content linked here.](https://youtu.be/lYfCNa9coC4)
 
 ## Problem
 
@@ -57,18 +53,29 @@ See the youtube video version of this content linked here.
 Here's how the various languages stack up.
 We'll start at the bottom with APL and work our way up to Fortran.
 
-1. [Fortran](#fortran)
-1. [COBOL](#cobol)
-1. [ALGOL](#algol)
-1. [BASIC](#basic)
-1. [Lisp](#lisp)
-1. [APL](#apl)
+- [Using the Most Popular Programming Languages of the '60s](#using-the-most-popular-programming-languages-of-the-60s)
+  - [Problem](#problem)
+      - [Example 1:](#example-1)
+      - [Example 2:](#example-2)
+      - [Constraints:](#constraints)
+  - [Content](#content)
+    - [APL](#apl)
+      - [Second Solution](#second-solution)
+      - [Third Solution](#third-solution)
+    - [Lisp](#lisp)
+    - [BASIC](#basic)
+    - [ALGOL](#algol)
+    - [COBOL](#cobol)
+    - [Fortran](#fortran)
+  - [Conclusion](#conclusion)
+  - [References](#references)
+
 
 ### [APL](#content)
 
-> APL is a mistake, carried through to perfection. It is the language of the future for the programming techniques of the past: it creates a new generation of coding bums.
->
-> Edsger Dijkstra
+~~~admonish tip title="_Edsger Dijkstra_"
+_APL is a mistake, carried through to perfection. It is the language of the future for the programming techniques of the past: it creates a new generation of coding bums._
+~~~
 
 APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[[ref](#ref_hist_apl_computer_history)].
 Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
@@ -98,12 +105,7 @@ I used <a href="http://www.bitsavers.org/pdf/ibm/apl/APL_360_Users_Manual_Aug68.
 
 Here's a snippet from the user's manual linked earlier:
 
-<center>
-<img 
-  src="/images/lc-peak-element/apl360-users-manual.png"
-  alt="Here's a snippet from the user's manual linked earlier"
-  width=600/>
-</center>
+![apl360-users-manual](../../images/lc-peak-element/apl360-users-manual.png)
 
 And two more solutions from Ad&aacute;m:
 
@@ -151,9 +153,9 @@ You can generate diagrams like these on your own by clicking the *Explain* butto
 
 ### [Lisp](#content)
 
-> LISP has been jokingly described as "the most intelligent way to misuse a computer". I think that description a great compliment because it transmits the full flavor of liberation: it has assisted a number of our most gifted fellow humans in thinking previously impossible thoughts.
->
-> Edsger Dijkstra
+~~~admonish quote title="_Edsger Dijkstra_"
+LISP has been jokingly described as "the most intelligent way to misuse a computer". I think that description a great compliment because it transmits the full flavor of liberation: it has assisted a number of our most gifted fellow humans in thinking previously impossible thoughts.
+~~~
 
 The 5th most popular programming language in 1965 was Lisp.
 
@@ -334,9 +336,9 @@ And we can run it on a few inputs to verify our solution:
 
 ### [BASIC](#content)
 
-> It is practically impossible to teach good programming to students that have had a prior exposure to BASIC: as potential programmers they are mentally mutilated beyond hope of regeneration.
->
-> Edsger Dijkstra
+~~~admonish quote title="_Edsger Dijkstra_"
+_It is practically impossible to teach good programming to students that have had a prior exposure to BASIC: as potential programmers they are mentally mutilated beyond hope of regeneration._
+~~~
 
 BASIC stands for *Beginner’s All-Purpose Symbolic Instruction Code*[[ref](#ref_time_basic)].
 BASIC was designed by two math professors at Dartmouth College in 1964.
@@ -344,9 +346,9 @@ John Kemeny, one of the co-creators of BASIC attended lectures from  John von Ne
 These guys were clearly pretty bright.
 BASIC was probably the first beginner-oriented language, with the goal of getting students started writing programs as quickly as possible.
 
-> We needed a language that could be ‘taught’ to virtually all students (and faculty) without their having to take a course.
->
-> Thomas Kurtz, co-inventor of BASIC
+~~~admonish quote title="_Thomas Kurtz, co-inventor of BASIC_"
+_We needed a language that could be ‘taught’ to virtually all students (and faculty) without their having to take a course._
+~~~
 
 Visual Basic, a descendent of BASIC used in Excel and other Microsoft products, was actually one of the first languages I ever learned, writing Excel macros for the finance department of the company I worked for.
 
@@ -399,7 +401,9 @@ $ ./src/freebasic/lc-peak-element-freebasic
 You may notice that Algol is the only language that does not have a scathing quote from Dijkstra.
 This is probably in part because Dijkstra was a significant contributor to Algol![[ref](#ref_cwi_dijkstra)]
 
-> In 1958-1959, Dijkstra was involved in a number of meetings that culminated in the publication of the report defining the ALGOL 60 language. Ironically, Dijkstra’s name does not appear in the list of 13 authors of the final report: it seems he left the committee prematurely because he could not agree with the majority opinions.[[ref](#ref_cwi_dijkstra)]
+~~~admonish quote title="_ALGOL History_"
+_In 1958-1959, Dijkstra was involved in a number of meetings that culminated in the publication of the report defining the ALGOL 60 language. Ironically, Dijkstra’s name does not appear in the list of 13 authors of the final report: it seems he left the committee prematurely because he could not agree with the majority opinions.[[ref](#ref_cwi_dijkstra)]_
+~~~
 
 Algol/Fortran family tree:
 <center>
@@ -409,9 +413,9 @@ Algol/Fortran family tree:
   width=600/>
 </center>
 
-> Here is a language so far ahead of its time that it was not only an improvement on its predecessors but also on nearly all its successors.
->
->  Tony Hoare[[ref](https://en.wikipedia.org/wiki/ALGOL)]
+~~~admonish quote title="_Tony Hoare_"
+_Here is a language so far ahead of its time that it was not only an improvement on its predecessors but also on nearly all its successors._
+~~~
 
 I'm using the Algol68 Genie compiler-interpreter for this code.
 I honestly found Algol pretty usable!
@@ -452,9 +456,9 @@ I honestly wouldn't mind writing more Algol down the line.
 
 ### [COBOL](#content)
 
-> The use of COBOL cripples the mind; its teaching should, therefore, be regarded as a criminal offense.
->
-> Edsger Dijkstra
+~~~admonish quote title="_Edsger Dijkstra_"
+_The use of COBOL cripples the mind; its teaching should, therefore, be regarded as a criminal offense._
+~~~
 
 The history behind COBOL is extremely inspiring and exciting, however COBOL was *very* painful to use.
 And I only learned the most shallow bit of COBOL - in order to read more like plain English, COBOL has **over 300 keywords**. 
@@ -584,9 +588,9 @@ I don't want to write any more COBOL than I have to though :smile:.
 
 ### [Fortran](#content)
 
-> FORTRAN, 'the infantile disorder', by now nearly 20 years old, is hopelessly inadequate for whatever computer application you have in mind today: it is now too clumsy, too risky, and too expensive to use.
->
-> Edsger Dijkstra
+~~~admonish quote title="_Edsger Dijkstra_"
+_FORTRAN, 'the infantile disorder', by now nearly 20 years old, is hopelessly inadequate for whatever computer application you have in mind today: it is now too clumsy, too risky, and too expensive to use._
+~~~
 
 Fortran, the grand finale, #1 on our list.
 I *completely* disagree with Dijkstra on this one - I love Fortran's history and I occasionally write it professionally.
@@ -685,9 +689,9 @@ and I don't get to use the `intent` keyword, both of which were big drawbacks, b
 Looking to the future of Fortran, GCC's GFortran is very actively maintained, [the newest NVIDIA HPC SDK has fantastic Fortran support](https://developer.nvidia.com/hpc-sdk), [the new US Dept. of Energy Exascale supercomputer *Frontier*](https://www.olcf.ornl.gov/frontier/) will use AMD GPUs which have [hipfort, a Fortran interface to AMD GPU libraries](https://github.com/ROCmSoftwarePlatform/hipfort), and [Intel's GPU platform and Fortran compiler are widely used as well](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-cpp-fortran-compiler-openmp/top.html).
 Fortran has a wonderfully rich history, and it's certainly a part of our future.
 
-> Much of my work has come from being lazy. I didn't like writing programs, and so, when I was working on the IBM 701, writing programs for computing missile trajectories, I started work on a programming system to make it easier to write programs.
->
-> John Backus
+~~~admonish quote title="_John Backus_"
+_Much of my work has come from being lazy. I didn't like writing programs, and so, when I was working on the IBM 701, writing programs for computing missile trajectories, I started work on a programming system to make it easier to write programs._
+~~~
 
 ## Conclusion
 
