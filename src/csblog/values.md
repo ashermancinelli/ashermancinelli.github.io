@@ -1,5 +1,4 @@
-
-# Values Statement
+# Values
 
 ```admonish tip title="_TL;DR_"
 These values motivate and inform how I work.

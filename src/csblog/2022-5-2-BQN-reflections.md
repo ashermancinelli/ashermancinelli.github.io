@@ -7,16 +7,16 @@ wip: false
 cat: cs
 -->
 
-Solve a leetcode problem in BQN and I rant about the joy of programming.
+# BQN and Reflections on the Joy of Programming
 
-## Leetcode
+We solve a leetcode problem in BQN and I rant about the joy of programming.
 
-<a href="https://leetcode.com/problems/set-matrix-zeroes" target="blank">
-  The Leetcode problem is "Set Matrix Zeroes"
-</a>
+---
+
+[The Leetcode problem is "Set Matrix Zeroes"](https://leetcode.com/problems/set-matrix-zeroes)
 where we're tasked with setting rows and columns of a matrix that contain zero to be all zeroes.
 
-## BQN Solution
+In BQN:
 
 ```
    i←⟨
@@ -67,15 +67,16 @@ I was struck by the resemblance between solving this leetcode problem and creati
 I stumbled upon this thread on twitter describing how Kurt Vonnegut responded to a letter from a high school English student asking for life advice.
 In short, his response was to do art and enjoy the process of becoming who you are.
 
-<center>
-  <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Tear it up into teeny-weeny pieces, and discard them into widely separated trash receptacles. You will find that you have already been gloriously rewarded for your poem. You have experienced becoming, learned a lot more about what’s inside you, and you have made your soul grow.</p>&mdash; Gabe Hudson (@gabehudson) <a href="https://twitter.com/gabehudson/status/1521139749322477569?ref_src=twsrc%5Etfw">May 2, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-</center>
+~~~admonish quote title="_Kurt Vonnegut_"
+_Tear it up into teeny-weeny pieces, and discard them into widely separated trash receptacles. You will find that you have already been gloriously rewarded for your poem.
+
+You have experienced becoming, learned a lot more about what’s inside you, and you have made your soul grow._
+~~~
 
 Creating art seems to be central to the importance of life as far as I can tell.
 
-<a href="https://www.arraycast.com/episodes/episode26-stevan-apter" target="blank">
-  The most recent episode of ArrayCast with Stevan Apter dipped into this as well when the panelists discussed the aesthetic of writing APL.
-</a>
+[The most recent episode of ArrayCast with Stevan Apter dipped into this as well when the panelists discussed the aesthetic of writing APL.](https://www.arraycast.com/episodes/episode26-stevan-apter)
+
 In some ways they were a little reserved about saying they enjoy APL at least in part due to the aesthetic of the language.
 I don't think this is something to shy away from - if we can't appreciate the beauty of what we do, why are we doing it at all?
 

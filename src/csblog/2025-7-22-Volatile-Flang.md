@@ -7,8 +7,6 @@ This post discusses why.
 Folks working on the frontend also contributed to volatile support in the compiler; this post is just about the middle-end.
 ~~~
 
----
-
 Prior to Spring of 2025, the LLVM Flang Fortran compiler did not support the `VOLATILE` keyword.
 Some uses would result in a _Not Yet Implemented_ error, and others would silently produce code that treated the entities as non-volatile.
 [This is the RFC](https://discourse.llvm.org/t/rfc-volatile-representation-in-flang/85404) where myself and some other Flang folks discussed our strategy for adding support for `VOLATILE`.
@@ -81,6 +79,55 @@ Even if we represent volatility is an attribute on every single HLFIR-level oper
 # The Benefits of Representing Volatility on Types
 
 The solution we eventually settled on was to represent volatility on the _type_ of the entity rather than the operations modifying that memory.
+
+[Let's take another look at our matrix-multiply example, but this time, `a` will be volatile:](https://godbolt.org/z/n4z6YxEa9)
+```fortran
+subroutine s(a,b,n)
+  integer::n
+  real,dimension(n,n),intent(inout),volatile::a
+  real,dimension(n,n),intent(in)::b
+  a=matmul(a,b)
+end subroutine
+```
+
+This is represented in the IR as (simplified):
+```mlir
+    %temp = hlfir.matmul %a %b
+        : (!fir.box<!fir.array<?x?xf32>, volatile>, !fir.box<!fir.array<?x?xf32>>)
+        -> !hlfir.expr<?x?xf32>
+    hlfir.assign %temp to %a : !hlfir.expr<?x?xf32>, !fir.box<!fir.array<?x?xf32>, volatile>
+```
+
+See the `volatile` attribute on the SSA value representing `a`.
+Rather than having an attribute on the `matmul` operation, we can simply check the type of the entity during lowering to see if one of our operands was volatile.
+Developers do not need to consider volatile in the _construction_ of their operations, however they are forced to consider it during lowering and conversion patterns.
+
+We forced operations to consider volatility in lowering and conversion patterns by adding a check in their verifiers.
+When an operation in Fir or HLFIR is created, a verification checks that the volatility of the input and output types are consistent.
+
+This went a long way in enforcing safety and correct behavior in the compiler: after enabling the initial volatile support _without_ verification enabled, I would run the test suite with the extra verification enabled and each time a test would fail, we would get an error message indicating that an operation was created with input operands with types that did not match the output type's volatility.
+The obvious next step was to walk through the optimization pass that created the operation and look for where it was created.
+This iterative process of opt-in type safety checks made the development process extremely smooth.
+
+# Representing Volatility in MLIR Memory Effects
+
+In MLIR, operations have _memory effects_, which inform other components of the compiler how a given operation interacts with different memory _resources_.
+
+An interesting property of volatile entities is that they _can_ be reordered with respect to other operations, just _not other volatile_ operations.
+[My colleague pointed this out on the pull request for initial volatile support in the optimizer.](https://github.com/llvm/llvm-project/pull/132486#discussion_r2010515969)
+
+We handled this by adding a new [_memory resource_](https://mlir.llvm.org/docs/Rationale/SideEffectsAndSpeculation) to Flang.
+
+Typically, memory effects are considered in relation to the memory they effect.
+For example, it may be completely safe to reorder a load operation and a store operation so long as they don't access the same memory.
+For example, a `memref.load` indicates that it reads from the memory given as its operand.
+
+Volatile is handled differently in Flang though - not only do operations on volatile types have memory effects in relation to the memory they access, but they also have memory effects in relation to other volatile operations.
+This was modeled by _also_ reporting read/write effects to the abstract volatile memory resource.
+One may imagine the volatile memory resource as a far-off chunk of memory that the compiler does not have access to, and therefore can't reason about in optimization passes.
+This means whenever some operations interact with memory and one of their operands is volatile, the compiler must assume that the operations touch the far-off chunk of memory, and therefore they may not be reordered with respect to each other.
+
+[The full memory effects that LLVM considers volatile memory to have are actually quite interesting.](https://llvm.org/docs/LangRef.html#volatile-memory-accesses)
 
 <!--  
 TODO: conversion routines, optimization passes, runtime calls, communication of memory effects

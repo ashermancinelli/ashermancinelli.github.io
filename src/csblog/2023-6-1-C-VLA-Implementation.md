@@ -6,8 +6,9 @@ cat: cs
 tags: c++
 -->
 
-Scattered notes from learning about the implementation of VLA.
+# Variable Length Arrays
 
+Scattered notes from learning about the implementation of VLAs in C.
 
 ## What is VLA?
 
@@ -29,19 +30,16 @@ Eg:
 
 [One key difference between the two:](https://stackoverflow.com/questions/3488821/is-alloca-completely-replaceable)
 ```admonish quote
-The memory alloca() returns is valid as long as the current function persists. The lifetime of the memory occupied by a VLA is valid as long as the VLA's identifier remains in scope. You can `alloca` memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates.
+- _The memory alloca() returns is valid as long as the current function persists._
+- _The lifetime of the memory occupied by a VLA is valid as long as the VLA's identifier remains in scope._
+- _You can `alloca` memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates._
 ```
 
 ## Memory Layout
 
 Because the stack grows down on most platforms, the stack pointer after an `alloca` or VLA allocation but arrays are addressed sequentially upwards, the address of the first element of a VLA array (or the pointer returned by `alloca`) will be the value of the stack pointer *after* it's modified.
 
-<center>
-  <img
-    style="background-color:#240057;"
-    src="/images/vla/vla-stack-pointer-viz.drawio.png"
-    />
-</center>
+![VLA Stack Pointer Visualization](images/vla/vla-stack-pointer-viz.drawio.png)
 
 Element 0 of the array or `alloca`-allocated memory is therefore immediately above the stack pointer after allocation, and is addressed by increasing sequentially until the end of the array.
 Accessing past the array will then run into previously declared stack variables.
@@ -90,7 +88,7 @@ Instead of declaring a VLA array, we can create a pointer to memory allocated by
 gcc _includes/vla/inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
 -->
 ```c
-<!-- {% include vla/inspect-stack-alloca.c %} -->
+{{#include ../../_includes/vla/inspect-stack-alloca.c }}
 ```
 ```shell
 $ gcc inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
@@ -114,19 +112,18 @@ The dynamic nature of VLAs means the offset of stack variables declared after th
 
 This *may* be a worthwhile tradeoff, but know that use of VLAs means your code may need a few extra instructions every time you use stack variables.
 
-<!--
 ## LLVM IR
 
 Docs explanation of alloca:
 
-> The ‘alloca’ instruction allocates memory on the stack frame of the currently executing function, to be automatically released when this function returns to its caller
+~~~admonish quote title="_LLVM Docs_"
+_The ‘alloca’ instruction allocates memory on the stack frame of the currently executing function, to be automatically released when this function returns to its caller._
+~~~
 
-< !--
-clang -S -emit-llvm -o - _includes/vla/simple.c
--- >
 ```c
-<!-- {% include vla/simple.c %} -->
+{{#include ../../_includes/vla/simple.c }}
 ```
+
 ```llvm
 @.str = private unnamed_addr constant [4 x i8] c"LEN\00", align 1
 @.str.1 = private unnamed_addr constant [4 x i8] c"IDX\00", align 1

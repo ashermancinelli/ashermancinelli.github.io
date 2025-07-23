@@ -8,6 +8,7 @@ I work on [the NUMBA-CUDA compiler](https://nvidia.github.io/numba-cuda/) and [t
 
 If you're looking for somewhere to start, these are some of my favorite posts:
 - [Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
+- [BQN and Reflections on the Joy of Programming](csblog/2022-5-2-BQN-reflections.md)
 - [On Values](csblog/values.md)
 <!-- - [Representing `VOLATILE` in Flang's Intermediate Representation](csblog/2025-7-22-Volatile-Flang.md)
 - [What would an MLIR dialect for OCaml look like?](csblog/2025-7-22-MLIR-OCaml.md)
@@ -19,10 +20,6 @@ If you're looking for somewhere to start, these are some of my favorite posts:
     These views are entirely my own.
   </em>
 </font>
-
-```admonish tip title="Heads up!"
-Some of these posts are incomplete.
-```
 
 ---
 
