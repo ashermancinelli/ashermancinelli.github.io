@@ -49,6 +49,7 @@ https://tommilligan.github.io/mdbook-admonish/
 # 🚧 WIP 🚧
 
 - [2025]()
+    - [Monadic Operations on MLIR's `FailureOr`](csblog/2025-7-23-Monadic-MLIR-Types.md)
     - [You can vectorize without a vector length?](csblog/2025-7-22-Vector-Length.md)
     - [Why is functional programming such a great fit for Compilers?](csblog/2025-7-22-Functional-Programming-Compilers.md)
     - [What Would It Take to Build an MLIR-Based OCaml Compiler?](csblog/2025-7-22-MLIR-OCaml.md)

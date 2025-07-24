@@ -2,7 +2,7 @@
 
 _7/23/2025_
 
-Follow up to [the blog on `poison`](csblog/2025-7-22-Poison.md), this time about when undefined behavior can be a good thing.
+Follow up to [the blog on `poison`](2025-7-22-Poison.md), this time about when undefined behavior can be a good thing.
 
 ~~~admonish tip title="_Undefined Behavior_"
 Undefined behavior (UB) is when a program has violated the expectations or preconditions of the language.
@@ -181,7 +181,7 @@ Compilers have such rich information available to them by default.
 I'm not a Rust expert, but from my understanding, Rust has far stricter strict-aliasing rules than C and C++, and the borrow checker goes a fairly long way to help enforce non-aliasing by default, even for memory of the same type.
 
 Just for comparison, the equivalent loop in Rust generated the same LLVM IR as the Fortran example did.
-```rust
+```
 fn foo(x: &mut [i32], y: &[i32], n: usize) {
     for i in 0..n {
         x[i] = y[i];
