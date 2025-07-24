@@ -20,7 +20,13 @@ smart-punctuation = true
 mathjax-support = true
 copy-fonts = true
 no-section-label = true
-additional-css = ["./mdbook-admonish.css"]
+additional-css = [
+    "./mdbook-admonish.css",
+    "theme/highlight.css",
+]
+# additional-js = [
+#     "theme/highlight.min.js",
+# ]
 
 [output.html.print]
 enable = true

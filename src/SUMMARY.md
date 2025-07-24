@@ -12,6 +12,7 @@ https://tommilligan.github.io/mdbook-admonish/
 # 💡 Blog
 
 - [2025]()
+    - [Why UB is Good (When It Comes to Strict Aliasing)](csblog/2025-7-23-Strict-Aliasing.md)
     - [Let's talk about poison.](csblog/2025-7-22-Poison.md)
     - [Representing `VOLATILE` in Flang](csblog/2025-7-22-Volatile-Flang.md)
     - [Use an SMT solver for your next interview](csblog/2025-7-21-SMT-Solver-Interview.md)
@@ -45,6 +46,14 @@ https://tommilligan.github.io/mdbook-admonish/
 <!-- - [Shell and Scripting Notes](csblog/2024-8-30-Shell.md)
 - [Editors and Tools 8/30/2024](csblog/editors.md) -->
 
+# 🚧 WIP 🚧
+
+- [2025]()
+    - [You can vectorize without a vector length?](csblog/2025-7-22-Vector-Length.md)
+    - [Why is functional programming such a great fit for Compilers?](csblog/2025-7-22-Functional-Programming-Compilers.md)
+    - [What Would It Take to Build an MLIR-Based OCaml Compiler?](csblog/2025-7-22-MLIR-OCaml.md)
+    - [The Simplest Hindley-Milner Type Checker](csblog/2025-7-22-Simple-Type-Checker.md)
+
 # ☕️ Coffee
 
 - [2023]()
@@ -64,12 +73,3 @@ https://tommilligan.github.io/mdbook-admonish/
     - [Coava](coffeeblog/2023-6-13-Coava.md)
     - [PDX Espresso Research](coffeeblog/2023-6-14-PDX-Espresso-Research.md)
     - [Nossa Familia Coffee](coffeeblog/2023-6-15-Nossa-Familia-Coffee.md)
-
-
-# 🚧 WIP 🚧
-
-- [2025]()
-    - [You can vectorize without a vector length?](csblog/2025-7-22-Vector-Length.md)
-    - [Why is functional programming such a great fit for Compilers?](csblog/2025-7-22-Functional-Programming-Compilers.md)
-    - [What would an MLIR dialect for OCaml look like?](csblog/2025-7-22-MLIR-OCaml.md)
-    - [The Simplest Hindley-Milner Type Checker](csblog/2025-7-22-Simple-Type-Checker.md)
