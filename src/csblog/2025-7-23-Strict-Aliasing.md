@@ -89,6 +89,19 @@ The situation is much improved over the `restrict` keyword, at the very least be
 Users will get performant code by default, so long as they aren't breaking the language rules.
 The fact that the compiler can make this assumption is beneficial for performance, and if the user breaking the strict-aliasing rules were _not_ UB, the compiler would have to guard against the possibility of overlapping memory all the time.
 
+There are lots of gotchas with strict aliasing rules in C and C++.
+For example, the two arguments passed here _are allowed to alias_:
+```c
+struct { int x[10]; } s;
+int x[10];
+foo(s.x, x, 10);
+```
+
+Members of structs are usually _not_ allowed to alias however.
+To make matters worse, C and C++ differ in some of their strict aliasing rules.
+[Shafik Yaghmour wrote a great blog post: _What is the Strict Aliasing Rule and Why do we care?_](https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8)
+It's specific to C and C++, but it gives you an idea of when and why strict aliasing rules may kick in.
+
 # Strict Aliasing in Fortran
 
 Fortran has additional rules for strict aliasing which help Fortran compilers generate _much_ better code.
@@ -163,9 +176,35 @@ The metadata here is indicating via type-based aliasing metadata that the LLVM o
 This is, [along with other reasons I discussed in my blog on my ideal array language](csblog/2025-7-20-Ideal-Array-Language.md#fortrans-array-semantics), why I think Fortran is so amenable to performance and optimizations.
 Compilers have such rich information available to them by default.
 
+# Strict Aliasing in Rust
+
+I'm not a Rust expert, but from my understanding, Rust has far stricter strict-aliasing rules than C and C++, and the borrow checker goes a fairly long way to help enforce non-aliasing by default, even for memory of the same type.
+
+Just for comparison, the equivalent loop in Rust generated the same LLVM IR as the Fortran example did.
+```rust
+fn foo(x: &mut [i32], y: &[i32], n: usize) {
+    for i in 0..n {
+        x[i] = y[i];
+    }
+}
+```
+
+# Conclusion
+
+Ultimately UB is dangerous to the extent that languages expose it to their users without their opting-in.
+The UB surface area exposed to C and C++ users is massive, and it's nearly impossible to avoid.
+I consider myself quite proficient in C++; I'm careful to use `std::unique_ptr`s when I need to convey ownership semantics with raw memory, and container types like `std::vector` convey similar aliasing information to Fortran's array types (but without all the array-polymorphism ☹️).
+I still find it extremely difficult to write correct and performant code in C++ without loads of tooling to support me.
+
+~~~admonish tip title="_We Can Do Better_"
+UB is *not* an inevitability of programming languages, and as programming language developers and compiler implementers, we are able to do better and we _should_ do better.
+In some cases, it can be useful to express UB to _optimizers_ for the purpose of optimizing code that is already more or less known to be correct.
+
+As a large part of the surface area of popular programming languages however, I think it's a disaster, and we who have a say in programming language design should aspire for more.
+~~~
 
 ---
 
-* [UB Canaries](https://blog.regehr.org/archives/1234)
-* [Aggressive UB Optimizations](https://blog.regehr.org/archives/761)
-* [Shafik Yaghmour, _What is the Strict Aliasing Rule and Why do we care?_](https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8)
+* John Regehr
+    * [_UB Canaries_](https://blog.regehr.org/archives/1234)
+    * [_Aggressive UB Optimizations_](https://blog.regehr.org/archives/761)

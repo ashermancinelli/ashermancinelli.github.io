@@ -24,9 +24,6 @@ additional-css = [
     "./mdbook-admonish.css",
     "theme/highlight.css",
 ]
-# additional-js = [
-#     "theme/highlight.min.js",
-# ]
 
 [output.html.print]
 enable = true
