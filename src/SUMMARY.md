@@ -49,6 +49,8 @@ https://tommilligan.github.io/mdbook-admonish/
 # 🚧 WIP 🚧
 
 - [2025]()
+    - [Compilers are like Fish](csblog/2025-7-24-Compilers-Are-Like-Fish.md)
+    - [Career Journey](csblog/2025-7-24-Career-Journey.md)
     - [Monadic Operations on MLIR's `FailureOr`](csblog/2025-7-23-Monadic-MLIR-Types.md)
     - [You can vectorize without a vector length?](csblog/2025-7-22-Vector-Length.md)
     - [Why is functional programming such a great fit for Compilers?](csblog/2025-7-22-Functional-Programming-Compilers.md)

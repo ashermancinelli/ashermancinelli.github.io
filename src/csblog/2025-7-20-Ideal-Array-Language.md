@@ -81,7 +81,10 @@ Most of the major ML frameworks have value semantics for arrays by default, and 
 Not only is manual memory management a huge pain and a source of bugs, if the ownership semantics are not sufficiently represented in the language or the language defaults are not ammenable to optimization, the compiler will have a much harder time generating performant code.
 
 My understanding of the Rust borrow checker is that its purpose is to handle the intersection of manual memory management and strict ownership.
-Value semantics allows the compiler to decide when to copy or borrow for the vast majority of cases, with the convenient knock-on effect that the user does not need to keep ownership semantics in their head (unless they opt in to it).
+Users choose between value and reference semantics, and the compiler helps you keep track of ownership.
+Summarized as _"aliasing xor mutability"_.
+
+[_Thanks Steve, for helping clarify the Rust bits!_](https://bsky.app/profile/steveklabnik.com/post/3lusthgcwcs2r)
 
 ## Fortran's Array Semantics
 
