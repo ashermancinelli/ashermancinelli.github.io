@@ -2,7 +2,7 @@
 
 I find compilers, programming languages and performance _really_ interesting.
 
-My personal notes and blog posts are enumerated on the left, or you can use the search bar at the top.
+My personal notes and blog posts are on the left, and you can use the search bar at the top.
 
 I work on [the NUMBA-CUDA compiler](https://nvidia.github.io/numba-cuda/),
 the [LLVM Flang Fortran compiler](https://flang.llvm.org/docs/), and
@@ -12,10 +12,14 @@ the [LLVM Flang Fortran compiler](https://flang.llvm.org/docs/), and
 
 These are some of my favorite posts:
 - [Some Thoughts on My Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
-- [BQN and Reflections on the Joy of Programming](csblog/2022-5-2-BQN-reflections.md)
+- [Values](csblog/values.md)
 - [Let's talk about `poison`.](csblog/2025-7-22-Poison.md)
-<!-- - [Representing `VOLATILE` in Flang's Intermediate Representation](csblog/2025-7-22-Volatile-Flang.md)
-- [What would an MLIR dialect for OCaml look like?](csblog/2025-7-22-MLIR-OCaml.md) -->
+- [BQN and Reflections on the Joy of Programming](csblog/2022-5-2-BQN-reflections.md)
+
+You can contact me here:
+- [Youtube](https://www.youtube.com/@AsherMancinelli)
+- [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)
+
 ~~~
 
 <font size="-1">
@@ -24,8 +28,3 @@ These are some of my favorite posts:
     These views are entirely my own.
   </em>
 </font>
-
----
-
-- [Youtube](https://www.youtube.com/@AsherMancinelli)
-- [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)

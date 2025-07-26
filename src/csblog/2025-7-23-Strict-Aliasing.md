@@ -178,7 +178,8 @@ Compilers have such rich information available to them by default.
 
 # Strict Aliasing in Rust
 
-I'm not a Rust expert, but from my understanding, Rust has far stricter strict-aliasing rules than C and C++, and the borrow checker goes a fairly long way to help enforce non-aliasing by default, even for memory of the same type.
+I'm not a Rust expert, but from my understanding, Rust has far stricter aliasing rules than C and C++, and the borrow checker goes a fairly long way to help enforce non-aliasing by default, even for memory of the same type.
+This is summarized as _"aliasing xor mutability"_.
 
 Just for comparison, the equivalent loop in Rust generated the same LLVM IR as the Fortran example did.
 ```

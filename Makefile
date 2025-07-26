@@ -1,5 +1,5 @@
 MDBOOK := $(shell type -p mdbook)
-CARGO := $(shell type -p CARGO)
+CARGO := $(shell type -p cargo)
 HOST := localhost
 PORT := 3000
 
@@ -21,8 +21,9 @@ serve:
 
 dep:
 	@$(INFO) "Installing dependencies"
-	$(CARGO) install mdbook
-	$(CARGO) install mdbook-admonish
+	$(CARGO) install mdbook --force
+	$(CARGO) install mdbook-admonish --force
+	$(CARGO) install mdbook-mermaid --force
 
 # https://github.com/rust-lang/mdBook/wiki/Automated-Deployment%3A-GitHub-Actions
 deploy: all

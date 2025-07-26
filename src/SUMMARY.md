@@ -49,6 +49,8 @@ https://tommilligan.github.io/mdbook-admonish/
 # 🚧 WIP 🚧
 
 - [2025]()
+    - [MLIR's Utility as a Substrate](csblog/2025-7-26-MLIR-Utility.md)
+    - [Pay Me Now or Pay Me Later](csblog/2025-7-26-Pay-Me-Now-Or-Later.md)
     - [Compilers are like Fish](csblog/2025-7-24-Compilers-Are-Like-Fish.md)
     - [Career Journey](csblog/2025-7-24-Career-Journey.md)
     - [Monadic Operations on MLIR's `FailureOr`](csblog/2025-7-23-Monadic-MLIR-Types.md)
