@@ -11,8 +11,8 @@ the [LLVM Flang Fortran compiler](https://flang.llvm.org/docs/), and
 ~~~admonish tip title="_Where to start?_"
 
 These are some of my favorite posts:
-- [Some Thoughts on My Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
-- [Values](csblog/values.md)
+- [Thoughts on My Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
+- [On Values](csblog/values.md)
 - [Let's talk about `poison`.](csblog/2025-7-22-Poison.md)
 - [BQN and Reflections on the Joy of Programming](csblog/2022-5-2-BQN-reflections.md)
 

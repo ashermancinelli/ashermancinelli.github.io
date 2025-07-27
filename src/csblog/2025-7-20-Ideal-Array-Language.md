@@ -1,9 +1,9 @@
-# Ideal Array Language
+# My Ideal Array Language
 _2025-07-20_
 
 What do I think the ideal array language should look like?
 
-- [Ideal Array Language](#ideal-array-language)
+- [My Ideal Array Language](#my-ideal-array-language)
 - [Why does this matter?](#why-does-this-matter)
 - [User-Extensible Rank Polymorphism](#user-extensible-rank-polymorphism)
   - [User Extensibility in Mojo](#user-extensibility-in-mojo)
@@ -21,6 +21,8 @@ What do I think the ideal array language should look like?
   - [Default Modes of Parallelism](#default-modes-of-parallelism)
 - [Array-Aware Type System](#array-aware-type-system)
 - [Syntax](#syntax)
+- [Conclusion](#conclusion)
+- [Bonus: _Comparing Parallel Functional Array Languages_](#bonus-comparing-parallel-functional-array-languages)
 
 # Why does this matter?
 
@@ -233,6 +235,10 @@ All major ML frameworks driven by Python make this tradeoff, for example.
 - Offline v online compilation. As long as you can drive your heavy units of compute, it doesnt matter which model you use, but you do get the downside of putting the compiler on the hotpath with online compilation. Can sorta get away with a lot in offline. Users will make and forget unless its egregious.
 ``` -->
 
+~~~admonish todo
+TODO: discuss [Marshall Lochbaum's _Dyalog '18: The Interpretive Advantage_ talk.](https://youtu.be/-6no6N3i9Tg?si=QTDIhNiLRbNhDcTS)
+~~~
+
 ## Compiler Transparency and Inspectability
 
 Compiler optimizations are notoriously unreliable.
@@ -363,3 +369,38 @@ Coming to the language, one might expect a uniform way to perform generic algori
 You end up needing to define your own `ufunc` and call it like `<ufunc>.reduce()`.
 Contrast this with a language like BQN, where a sum reduction is just `+´`.
 I recognize APL-like languages are not approachable or maintainable for everyone, but the flexibility and uniformity of APL-like languages ought to be considered.
+
+# Conclusion
+
+Hardware is getting more and more heterogeneous and strange, and programming languages need to be ready.
+I believe that modelling programs as functional, unbufferized array programs is the most effective and flexible way to map a large domain of programs to the hardware of today and tomorrow.
+As compiler engineers and folks generally working in the space of programming languages, the onus is on us to build programming languages and programming language facilities that are prepared for the hardware of the future.
+
+
+# Bonus: _Comparing Parallel Functional Array Languages_
+
+After writing this post, my friend and colleague sent me the paper [_Comparing Parallel Functional Array Languages: Programming and Performance_](https://arxiv.org/abs/2505.08906), which I found highly relevant.
+These are the thoughts I jotted down while reading it.
+
+I was unsure of this statement about APL:
+
+~~~admonish quote title="_2.5. The APL Language_"
+Almost all APL primitives have data parallel semantics making them a natural fit for SIMD architectures.
+There are, however, two challenges: APL does not guarantee the associativity and referential transparency required for the safe parallel execution of operations like scan (\ or ⍀);
+and, the high-level expression of parallel array operations may not necessarily map effectively to a specific SIMD architecture.
+~~~
+
+In my understanding, APL does not allow users to obtain reference to arrays directly, so every object has value semantics, and if the compiler elides buffers that are not needed, the user ought never notice.
+
+I loved section _3.2. Array Representation_, and tables 1, 2, and 3.
+The comparison of type systems in various array languages was extremely informative, and I left wanting to learn more about Futhark.
+
+Section _3.3. Parallel Computation Paradigms_ made note of the restrictions on higher-ordered functions in array programming languages, which I think is helpful to note for usual functional programmers who are perhaps used to higher-ordered functions all over the place.
+One must not use higher-ordered functions too liberally in array languages for performance reasons; although functional programming _can_ lend itself to highly performant parallel code, it is not due to thier support for higher-ordered functions.
+
+If I could write another paper with these authors, I would title it _The Unreasonable Optimizability of Functional, Unbufferized Array Languages_.
+I believe it captures the essence of what I care about when it comes to array languages.
+While the paper was endlessly fascinating, I am less interested in the syntax of the languages and more interested in the semantics and the optimizations made available to the compiler by virtue of those semantics.
+The lines-of-code comparisons were interesting and the ease with which the user interacts with the language is important, but the _optimizability_ of languages which are capable of representing their programs as functional, unbufferized and array-oriented is what I find most compelling.
+
+This is why I am still so interested in Fortran even though it is largely a procedural language - the Flang compiler is able to represent programs in an unbufferized array-oriented SSA intermediate representation, which lends itself so well to optimization.

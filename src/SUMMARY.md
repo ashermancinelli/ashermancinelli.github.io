@@ -48,16 +48,16 @@ https://tommilligan.github.io/mdbook-admonish/
 
 # 🚧 WIP 🚧
 
-- [2025]()
-    - [MLIR's Utility as a Substrate](csblog/2025-7-26-MLIR-Utility.md)
-    - [Pay Me Now or Pay Me Later](csblog/2025-7-26-Pay-Me-Now-Or-Later.md)
-    - [Compilers are like Fish](csblog/2025-7-24-Compilers-Are-Like-Fish.md)
-    - [Career Journey](csblog/2025-7-24-Career-Journey.md)
-    - [Monadic Operations on MLIR's `FailureOr`](csblog/2025-7-23-Monadic-MLIR-Types.md)
-    - [You can vectorize without a vector length?](csblog/2025-7-22-Vector-Length.md)
-    - [Why is functional programming such a great fit for Compilers?](csblog/2025-7-22-Functional-Programming-Compilers.md)
-    - [What Would It Take to Build an MLIR-Based OCaml Compiler?](csblog/2025-7-22-MLIR-OCaml.md)
-    - [The Simplest Hindley-Milner Type Checker](csblog/2025-7-22-Simple-Type-Checker.md)
+- [The Unreasonable Optimizability of Functional Array Languages](csblog/2025-7-26-Functional-Array-Languages.md)
+- [The Unreasonable Effectiveness of Progressive Lowering](csblog/2025-7-26-MLIR-Utility.md)
+- [Pay Me Now or Pay Me Later](csblog/2025-7-26-Pay-Me-Now-Or-Later.md)
+- [Compilers are like Fish](csblog/2025-7-24-Compilers-Are-Like-Fish.md)
+- [Career Journey](csblog/2025-7-24-Career-Journey.md)
+- [Monadic Operations on MLIR's `FailureOr`](csblog/2025-7-23-Monadic-MLIR-Types.md)
+- [You can vectorize without a vector length?](csblog/2025-7-22-Vector-Length.md)
+- [Why is functional programming such a great fit for Compilers?](csblog/2025-7-22-Functional-Programming-Compilers.md)
+- [What Would It Take to Build an MLIR-Based OCaml Compiler?](csblog/2025-7-22-MLIR-OCaml.md)
+- [The Simplest Hindley-Milner Type Checker](csblog/2025-7-22-Simple-Type-Checker.md)
 
 # ☕️ Coffee
 

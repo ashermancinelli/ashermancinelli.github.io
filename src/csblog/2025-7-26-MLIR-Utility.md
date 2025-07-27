@@ -1,23 +1,20 @@
-# MLIR's Utility as a Substrate
+# The Unreasonable Effectiveness of Progressive Lowering
 
-- [MLIR's Utility as a Substrate](#mlirs-utility-as-a-substrate)
-- [Standard/Upstream Dialects](#standardupstream-dialects)
-- [Micropass Architecture](#micropass-architecture)
+_7/26/2025_
+
+Thoughts on why progressive lowering is so effective in MLIR.
+
+- [The Unreasonable Effectiveness of Progressive Lowering](#the-unreasonable-effectiveness-of-progressive-lowering)
+  - [Micropass Architecture](#micropass-architecture)
+  - [_Dialects_ in MLIR](#dialects-in-mlir)
+  - [Flang's Progressive Lowering](#flangs-progressive-lowering)
+    - [The Life of a Matmul](#the-life-of-a-matmul)
 
 
-# Standard/Upstream Dialects
+## Micropass Architecture
 
-MLIR is one of the larger developments in compiler technology in the last decade, but some key components of MLIR are not used by some of the most popular MLIR-based projects.
+MLIR rhymes with other compiler technologies [like the nanopass architecture](https://docs.racket-lang.org/nanopass/index.html) in which the compiler is built up of many small passes and IRs that are composed together, but it is different in a few key ways.
 
-The MLIR dialects that exist in the upstream LLVM repository are considered the _upstream dialects_.
-There used to be a notion of _standard dialects_.
-This nomenclature has been dropped, you will still find mention of these _standard dialects_ online.
-
-[The Mojo language is a perfect example](https://www.modular.com/mojo) - Chris Lattner's startup is built the Mojo language, which uses an MLIR-based compiler, but does _not use any_ of the standard dialects.
-
-# Micropass Architecture
-
-MLIR rhymes with other compiler technologies [like the nanopass architecture](https://docs.racket-lang.org/nanopass/index.html), in which the compiler is built up of many small passes and IRs that are composed together.
 The notion of _progressive lowering_ is core to MLIR.
 
 ~~~admonish tip title="_Progressive Lowering_"
@@ -27,5 +24,175 @@ _Progressive lowering_ is the idea that the frontend generates a high-level IR, 
 
 ~~~
 
+In a nanopass architecture, [the compiler may translate the IR into a new, short-lived format, run a pass or two on it, and then translate it to another IR](https://docs.racket-lang.org/nanopass/index.html).
 
-https://youtu.be/5gPG7SXoBag?si=l1UxMrruUxTIQPVZ
+MLIR on the other hand, is capable of representing lots of different IRs _in the same module_.
+These different IRs are called _dialects_.
+
+## _Dialects_ in MLIR
+
+MLIR is one of the larger developments in compiler technology in the last decade, but some key components of MLIR are not used by some of the most popular MLIR-based projects.
+
+The MLIR dialects that exist in the upstream LLVM repository are considered the _upstream dialects_.
+There used to be a notion of _standard dialects_.
+This nomenclature has been dropped, you will still find mention of these _standard dialects_ online.
+
+[The Mojo language is a perfect example](https://www.modular.com/mojo) - Chris Lattner's startup is built the Mojo language, which uses an MLIR-based compiler, but does _not use any_ of the standard dialects.
+
+Part of the reason for this is, in my opinion, that the construction of dialects is so easy.
+There is essentially no cost to relying exclusively on your own dialects (as Chris Lattner's team does).
+There are other reasons as well - so many different teams depend on MLIR and have different constraints.
+Finding a common set of dialects that meet everyone's needs is difficult.
+
+## Flang's Progressive Lowering
+
+~~~admonish important title="_Keep the High Level Info in the IR!_"
+Most compilers make the tradeoff of having the high-level information about the user's program in the AST, but once lowered to the IR, much of it is lost.
+
+Flang is unique in that it compiles general-purpose programs (meaning _not AI kernels_) _and_ retains high-level information in the IR.
+Abstract features in the source language (like `where` clauses) are represented in the highest-level IR, and arrays are often not bufferized.
+The IR is optimized and lowered progressively.
+~~~
+
+This is a rough sketch of the dialects that Flang uses internally in the process of lowering Fortran code to LLVM IR.
+Apologies for the chaotic diagram - the actual lowering pipelines can become quite complex.
+[This is what the construction of the default optimization pipeline in Flang looks like.](https://github.com/llvm/llvm-project/blob/4775b96/flang/lib/Optimizer/Passes/Pipelines.cpp#L167)
+
+```dot process
+digraph G {
+  bgcolor="transparent";
+  node [fontcolor="#ebebeb", color="#ebebeb"];
+  edge [fontcolor="#ebebeb", color="#ebebeb"];
+
+  SRC [shape=box, label="Source Code"];
+
+  SRC -> Parser;
+  Parser [shape=box];
+
+  AST [shape=box, label="AST"];
+  Parser -> AST;
+
+  subgraph cluster_lowering {
+    label="MLIR Lowering";
+    labeljust=l;
+    bgcolor = "transparent";
+    fontcolor = "#ebebeb";
+    color = "#ebebeb";
+
+    AST -> Math;
+    AST -> LLVM;
+    AST -> Complex;
+    AST -> HLFIR;
+    AST -> FIR;
+    AST -> Arith;
+  }
+
+  subgraph cluster_earlyopt {
+    label="Early Optimization" labeljust=l;
+    fontcolor = "#ebebeb";
+    color = "#ebebeb";
+
+    Math -> Math2;
+    Math -> Arith2;
+    LLVM -> LLVM2;
+    Complex -> Complex2;
+    HLFIR -> HLFIR2;
+    HLFIR -> FIR2;
+    HLFIR -> Arith2;
+    HLFIR -> Math2;
+    FIR -> FIR2;
+    Arith -> Arith2;
+
+    LLVM2 [label="LLVM"];
+    Math2 [label="Math"];
+    Complex2 [label="Complex"];
+    HLFIR2 [label="HLFIR"];
+    FIR2 [label="FIR"];
+    Arith2 [label="Arith"];
+  }
+
+  subgraph cluster_codegen {
+    label="Code Generation" labeljust=l;
+    color = "#ebebeb";
+    fontcolor = "#ebebeb";
+
+    LLVM2 -> LLVM3;
+    Math2 -> LLVM3;
+    Complex2 -> LLVM3;
+    Complex2 -> Func;
+    HLFIR2 -> FIR3;
+    FIR2 -> FIR3;
+    Func -> LLVM3;
+    HLFIR2 -> FIRCG;
+    FIR2 -> FIRCG;
+    FIRCG -> Func;
+    FIR3 -> LLVM3;
+    FIR3 -> Func;
+    Arith2 -> LLVM3;
+
+    LLVM3 [label="LLVM"];
+    FIR3 [label="FIR"];
+
+  }
+
+  LLVM3 -> LLVMIR;
+  LLVMIR [label="LLVM IR", shape=box];
+}
+```
+
+### The Life of a Matmul
+
+Matrix multiplication is a great example of the flexibility of Flang's progressive lowering:
+
+```dot process
+digraph G {
+    node [fontcolor="#ebebeb", color="#ebebeb"];
+    edge [fontcolor="#ebebeb", color="#ebebeb"];
+    color = "#ebebeb";
+    fontcolor = "#ebebeb";
+    bgcolor="transparent";
+
+    SRC [label="Source Code"];
+    SRC;
+    subgraph cluster3{
+        label="Frontend";
+        AST;
+        subgraph cluster0{
+            label="Flang Compile-Time Evaluator";
+            CTR;
+            CTR [label="Compile-Time Result"];
+        }
+    }
+
+    subgraph cluster2{
+        label="MLIR Lowering";
+        HLFIR;
+    }
+    subgraph cluster4{
+        label="MLIR Optimization";
+        RT;
+        FIR;
+        LLVMD;
+    }
+    AST -> CTR;
+    SRC -> AST;
+    AST -> HLFIR;
+    HLFIR -> FIR;
+    HLFIR -> RT;
+    
+    RT[label="Call to Runtime Library"];
+    FIR[label="Expanded to Do-Loops in Fir"];
+    FIR->LLVMD;
+    LLVM;
+    LLVMD[label="LLVM Dialect"];
+    
+    subgraph cluster1{
+        label="LLVM Optimizer";
+        LLVM;
+        LLVM->OPT;
+        OPT[label="LLVM Loop Unroller, Vectorizer, etc"];
+        LLVM[label="LLVM IR"];
+    }
+    LLVMD->LLVM;
+}
+```

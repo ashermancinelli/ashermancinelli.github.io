@@ -11,6 +11,8 @@ CLR:=\e[0m
 CLRNL:=$(CLR)\n
 INFO:=printf "\t\t$(CYAN)%s$(CLRNL)"
 
+DEPS := mdbook mdbook-admonish mdbook-mermaid mdbook-graphviz
+
 all:
 	@$(INFO) "Building"
 	$(MDBOOK) build
@@ -21,9 +23,7 @@ serve:
 
 dep:
 	@$(INFO) "Installing dependencies"
-	$(CARGO) install mdbook --force
-	$(CARGO) install mdbook-admonish --force
-	$(CARGO) install mdbook-mermaid --force
+	$(CARGO) install $(DEPS) --force
 
 # https://github.com/rust-lang/mdBook/wiki/Automated-Deployment%3A-GitHub-Actions
 deploy: all

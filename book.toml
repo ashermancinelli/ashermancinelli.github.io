@@ -11,6 +11,13 @@ title = "Asher's Blog"
 command = "mdbook-admonish"
 assets_version = "3.0.2" # do not edit: managed by `mdbook-admonish install`
 
+[preprocessor.graphviz]
+command = "mdbook-graphviz"
+output-to-file = false # defaults to false, change to true to create SVG files instead of rendering them inline
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
 [output]
 
 [output.html]
@@ -24,6 +31,7 @@ additional-css = [
     "./mdbook-admonish.css",
     "theme/highlight.css",
 ]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
 
 [output.html.print]
 enable = true

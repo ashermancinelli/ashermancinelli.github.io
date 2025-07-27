@@ -2,14 +2,6 @@
 
 _7/24/2025_
 
-# NVIDIA
-
-- Atomic builtins, memory builtins, runtime math libraries
-- Downstream vector legalizer
-- Performance analysis
-
-# PNNL
-
 # Micron
 
 The summer after my freshman year of college, I interned at Micron in the DC metro area.
@@ -18,5 +10,13 @@ I started writing software for linear regression and small ML algorithms trained
 
 This eventually led me to join the software team for the latter half of the internship and started my trajectory into software.
 Seeing the utility of software in the real world piqued my curiosity in software for the first time.
+
+# PNNL
+
+# NVIDIA
+
+- Atomic builtins, memory builtins, runtime math libraries
+- Downstream vector legalizer
+- Performance analysis
 
 # University
