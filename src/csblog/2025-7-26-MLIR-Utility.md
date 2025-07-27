@@ -9,6 +9,8 @@ Thoughts on why progressive lowering is so effective in MLIR.
   - [_Dialects_ in MLIR](#dialects-in-mlir)
   - [Flang's Progressive Lowering](#flangs-progressive-lowering)
     - [The Life of a Matmul](#the-life-of-a-matmul)
+  - [Co-Existence of Dialects](#co-existence-of-dialects)
+  - [Clang as an Example](#clang-as-an-example)
 
 
 ## Micropass Architecture
@@ -196,3 +198,30 @@ digraph G {
     LLVMD->LLVM;
 }
 ```
+
+At each point in this process, many MLIR dialects might be co-existing in the same IR for one translation unit.
+
+This is even still a simplified view of the compilation process; at each stage, many other analyses passes are run which might transform the matrix multiply.
+Canonicalization patterns and folding happen very often, for example.
+
+## Co-Existence of Dialects
+
+Why is it that all of these dialects, some upstream in the MLIR project and some in Flang, can co-exist in one compiler?
+
+One key feature of MLIR as a format for analyzing and transforming IRs is that dialects can nearly always compose.
+You may create a new dialect to serve your purposes and integrate with upstream (and even other downstream) dialects.
+MLIR dialects can implement interfaces that the rest of the MLIR infrastructure uses.
+Upstream transformations can work relatively well on downstream dialects because MLIR as compiler infrastructure allows the downstream dialects to communicate the things upstream analyses need to know.
+For example, the MLIR project contains a CSE pass for removing redundant operations - so long as a downstream dialect sufficiently implements the memory effects interfaces on their operations, the CSE pass is able to reason about the IR without knowing anything more about the dialect.
+
+## Clang as an Example
+
+When we look at Clang, we see a much more discrete compilation process: the source code is parsed into an AST and some AST-level passes run, and then it is lowered to LLVM IR where the lower-level optimizations run.
+Of course, there are higher-level and lower-level semantics represented in LLVM IR, but not nearly to the not nearly to the extent that MLIR is capable of.
+
+This firm break between the higher-level AST and the lower-level LLVM IR means that some optimizations might not be possible to the same degree as in Flang.
+
+There are, of course, historical reasons for this and I am a huge fan of Clang.
+This may even be remedied at some point by [the CIR project](https://llvm.github.io/clangir/).
+If you look at [the operations defined in the CIR dialect](https://github.com/llvm/llvm-project/blob/main/clang/include/clang/CIR/Dialect/IR/CIROps.td), it is still relatively low-level compared to the rich information that Flang retains in its HLFIR dialect.
+It's a long road to be able to represent the complicated semantics of C and C++ in a high-level IR like HLFIR, but the CIR project is already a step in that direction, and I can't wait to see how it evolves.

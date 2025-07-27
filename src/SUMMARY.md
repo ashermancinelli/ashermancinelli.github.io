@@ -12,6 +12,7 @@ https://tommilligan.github.io/mdbook-admonish/
 # 💡 Blog
 
 - [2025]()
+    - [The Unreasonable Effectiveness of Progressive Lowering](csblog/2025-7-26-MLIR-Utility.md)
     - [Why UB is Good (When It Comes to Strict Aliasing)](csblog/2025-7-23-Strict-Aliasing.md)
     - [Let's talk about poison.](csblog/2025-7-22-Poison.md)
     - [Representing `VOLATILE` in Flang](csblog/2025-7-22-Volatile-Flang.md)
@@ -49,7 +50,6 @@ https://tommilligan.github.io/mdbook-admonish/
 # 🚧 WIP 🚧
 
 - [The Unreasonable Optimizability of Functional Array Languages](csblog/2025-7-26-Functional-Array-Languages.md)
-- [The Unreasonable Effectiveness of Progressive Lowering](csblog/2025-7-26-MLIR-Utility.md)
 - [Pay Me Now or Pay Me Later](csblog/2025-7-26-Pay-Me-Now-Or-Later.md)
 - [Compilers are like Fish](csblog/2025-7-24-Compilers-Are-Like-Fish.md)
 - [Career Journey](csblog/2025-7-24-Career-Journey.md)

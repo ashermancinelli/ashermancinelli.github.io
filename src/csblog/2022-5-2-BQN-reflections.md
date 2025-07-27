@@ -68,9 +68,9 @@ I stumbled upon this thread on twitter describing how Kurt Vonnegut responded to
 In short, his response was to do art and enjoy the process of becoming who you are.
 
 ~~~admonish quote title="_Kurt Vonnegut_"
-_Tear it up into teeny-weeny pieces, and discard them into widely separated trash receptacles. You will find that you have already been gloriously rewarded for your poem.
+_Tear it up into teeny-weeny pieces, and discard them into widely separated trash receptacles. You will find that you have already been gloriously rewarded for your poem._
 
-You have experienced becoming, learned a lot more about what’s inside you, and you have made your soul grow._
+_You have experienced becoming, learned a lot more about what’s inside you, and you have made your soul grow._
 ~~~
 
 Creating art seems to be central to the importance of life as far as I can tell.
