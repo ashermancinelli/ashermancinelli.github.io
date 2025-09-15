@@ -13,8 +13,8 @@ I work on [the NUMBA-CUDA compiler](https://nvidia.github.io/numba-cuda/),
 These are some of my favorite posts:
 - [Thoughts on My Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
 - [On Values](csblog/values.md)
-- [Let's talk about `poison`.](csblog/2025-7-22-Poison.md)
 - [BQN and Reflections on the Joy of Programming](csblog/2022-5-2-BQN-reflections.md)
+<!-- - [Let's talk about `poison`.](csblog/2025-7-22-Poison.md) -->
 
 You can also find me here:
 - [Youtube](https://www.youtube.com/@AsherMancinelli)

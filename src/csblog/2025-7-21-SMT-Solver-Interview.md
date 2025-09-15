@@ -1,7 +1,7 @@
-# Use an SMT solver for your next interview
+# Try an SMT solver
 _2025-07-21_
 
-Not really - but exploring the use of SMT solvers for solving problems is an entirely different way of thinking about programming.
+<!-- Not really - but exploring the use of SMT solvers for solving problems is an entirely different way of thinking about programming. -->
 
 ~~~admonish tip title="_Alan Perlis_"
 _A language that doesn't affect the way you think about programming, is not worth knowing._

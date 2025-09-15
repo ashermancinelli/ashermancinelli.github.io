@@ -2,13 +2,15 @@
 
 _7/23/2025_
 
-Follow up to [the blog on `poison`](2025-7-22-Poison.md), this time about when undefined behavior can be a good thing.
+<!-- Follow up to [the blog on `poison`](2025-7-22-Poison.md), this time about when undefined behavior can be a good thing. -->
 
 ~~~admonish tip title="_Undefined Behavior_"
 Undefined behavior (UB) is when a program has violated the expectations or preconditions of the language.
 This often means each implementation of the language has free-reign to do whatever it wants.
 
-Sometimes, this means [LLVM will turn your relative-error calculation into a pile of garbage](csblog/2025-7-22-Poison.md#only-on-some-architectures).
+<!-- Sometimes, this means [LLVM will turn your relative-error calculation into a pile of garbage](csblog/2025-7-22-Poison.md#only-on-some-architectures). -->
+
+Sometimes, this means [LLVM will turn your relative-error calculation into a pile of garbage](https://github.com/llvm/llvm-project/pull/149333).
 Some languages make it easier or harder to create a program with UB.
 It is nearly impossible to evoke UB in Python ([but still possible](https://github.com/python/cpython/issues/96678#issuecomment-1240508545)),
 and it is nearly unavoidable in C.
