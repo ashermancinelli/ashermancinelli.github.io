@@ -78,7 +78,7 @@ _APL is a mistake, carried through to perfection. It is the language of the futu
 ~~~
 
 APL was originally designed by Ken Iverson in 1957 as a mathematical notation to be used on blackboards[[ref](#ref_hist_apl_computer_history)].
-Kev Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
+Ken Iverson was hired by IBM in 1960 to further develop the notation, at that point still just a mathematical notation and not a programming language.
 Iverson's paper *A Programming Language* was published in 1962, and would be the basis for naming the language *APL*.
 Finally in 1966 the IBM released APL\360 written in a bit under 40,000 lines of Basic Assembly Language 360.
 
