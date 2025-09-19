@@ -1,12 +1,18 @@
 # Values
 
-```admonish tip title="_TL;DR_"
+When I interact with coworkers, friends, family, etc, I find it extremely helpful to understand their motivations and values.
+What principles drive their decisions and actions?
+
+Knowing the answer to this question removes sand from the gears of collaboration and communication.
+So, if you'd like to communicate with me or understand what principles govern *my* actions, here they are.
+
+<!-- ```admonish tip title="_TL;DR_"
 These values motivate and inform how I work.
 
 They are _values_, meaning I _aspire_ to live up to them and they are at times in tension with each other.
 
 They are: **curiosity, honesty, rigor, communication, empathy.**
-```
+``` -->
 
 ## Curiosity
 
@@ -25,14 +31,12 @@ They are: **curiosity, honesty, rigor, communication, empathy.**
 ## Rigor
 
 * Any artifact of my work should clearly demonstrate rigor and thoughtfulness.
-
 * When describing issues or summarizing an investigation, I should include the possible solutions that I see, and give a recommendation.
     If someone else must read my report, come up with possible solutions and give a recommendation, that report was unfinished.
     When assigning me a problem, my assigner should expect a rigorous investigation, a range of possible solutions, and a preferred recommendation.
-
 * Rigor implies good engineering. I write quality code.
 
-## Effective Communication
+## Intentional Communication
 
 * Effective written and spoken communication must be a core competency.
     Emails, comments, code review, personal messages and official documents convey the appropriate tone and level of detail.
@@ -49,10 +53,9 @@ They are: **curiosity, honesty, rigor, communication, empathy.**
     Share the value of your work with others and deduplicate where possible.
     Make other's lives better.
 
-##
 ---
 
-[^nvda_values]: [Link to NVIDIA's core values page](https://www.nvidia.com/en-in/about-nvidia/culture-at-nvidia/)
-[^bcantrill_yt]: [Principles of Technology Leadership | Bryan Cantrill | Monktoberfest 2017](https://www.youtube.com/watch?v=9QMGAtxUlAc)
-[^bcantrill_changelog]: [changelog ep with Bryan Cantrill](https://changelog.com/podcast/592)
-[^oxide_principles]: [https://oxide.computer/principles](https://oxide.computer/principles)
+* [Link to NVIDIA's core values page](https://www.nvidia.com/en-in/about-nvidia/culture-at-nvidia/)
+* [Principles of Technology Leadership | Bryan Cantrill | Monktoberfest 2017](https://www.youtube.com/watch?v=9QMGAtxUlAc)
+* [Changelog episode with Bryan Cantrill](https://changelog.com/podcast/592)
+* [Oxide's principles page](https://oxide.computer/principles)

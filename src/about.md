@@ -16,11 +16,12 @@ These are some of my favorite posts:
 - [BQN and Reflections on the Joy of Programming](csblog/2022-5-2-BQN-reflections.md)
 <!-- - [Let's talk about `poison`.](csblog/2025-7-22-Poison.md) -->
 
-You can also find me here:
-- [Youtube](https://www.youtube.com/@AsherMancinelli)
-- [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)
-
 ~~~
+
+You can also find me here:
+- [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)
+- [Goodreads](https://www.goodreads.com/user/show/120546466-asher-mancinelli)
+- [Youtube](https://www.youtube.com/@AsherMancinelli)
 
 <font size="-1">
   <em>
