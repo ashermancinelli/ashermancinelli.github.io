@@ -1,10 +1,10 @@
 # About
 
-I find compilers, programming languages and performance _really_ interesting.
+Hello! I'm deeply interested in compilers, programming languages, and performance.
 
-My personal blog posts are listed on the left, and you can use the search bar at the top.
+<!-- My personal blog posts are listed on the left, and there's a search bar at the top. -->
 
-I work on [the NUMBA-CUDA compiler](https://nvidia.github.io/numba-cuda/),
+I work on [the NUMBA-CUDA Python JIT compiler](https://nvidia.github.io/numba-cuda/),
 [the LLVM Flang Fortran compiler](https://flang.llvm.org/docs/), and
 [the NVHPC C, C++ and Fortran compilers](https://developer.nvidia.com/hpc-sdk) at NVIDIA.
 
@@ -17,6 +17,8 @@ These are some of my favorite posts:
 <!-- - [Let's talk about `poison`.](csblog/2025-7-22-Poison.md) -->
 
 ~~~
+
+Prior to working at NVIDIA, I optimized scientific applications at [Pacific Northwest National Laboratory](https://www.pnnl.gov/) by leveraging different kinds of parallelism on CPUs and GPUs. Prior to that, I was a Data Science intern at [Micron](https://www.micron.com/) in the D.C. metro area.
 
 You can also find me here:
 - [LinkedIn](https://www.linkedin.com/in/asher-mancinelli-bb4a56144/)

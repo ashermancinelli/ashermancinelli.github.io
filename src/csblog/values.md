@@ -16,6 +16,10 @@ They are: **curiosity, honesty, rigor, communication, empathy.**
 
 ## Curiosity
 
+~~~admonish tip title="Claude Shannon on Curiosity"
+*My feeling is that a good scientist has a great deal of what we can call curiosity. I won’t go any deeper into it than that. He wants to know the answers. He’s just curious how things tick and he wants to know the answers to questions.*
+~~~
+
 * My career goal is to maximize the time I spend exploring ideas and problems, driven by curiosity.
 * I _chose_ to take an orientation of curiosity towards any problem I work on.
     Replace feelings of frustration, anger and disappointment with curiosity when possible.
@@ -55,6 +59,7 @@ They are: **curiosity, honesty, rigor, communication, empathy.**
 
 ---
 
+* [Claude Shannon on Creative Thinking](https://fs.blog/great-talks/creative-thinking-claude-shannon/)
 * [Link to NVIDIA's core values page](https://www.nvidia.com/en-in/about-nvidia/culture-at-nvidia/)
 * [Principles of Technology Leadership | Bryan Cantrill | Monktoberfest 2017](https://www.youtube.com/watch?v=9QMGAtxUlAc)
 * [Changelog episode with Bryan Cantrill](https://changelog.com/podcast/592)

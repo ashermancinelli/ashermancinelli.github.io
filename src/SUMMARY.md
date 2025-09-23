@@ -12,12 +12,12 @@ https://tommilligan.github.io/mdbook-admonish/
 # 💡 Blog
 
 - [2025]()
+    - [Books Recs](csblog/2025-9-18-Book-Recs.md)
     - [Array Cast Episode](csblog/2025-7-29-Array-Cast.md)
     - [Why UB is Good](csblog/2025-7-23-Strict-Aliasing.md)
     - [Try an SMT solver](csblog/2025-7-21-SMT-Solver-Interview.md)
     - [My Ideal Array Language](csblog/2025-7-20-Ideal-Array-Language.md)
-    - [My Values](csblog/values.md)
-    <!-- - [Book Recs](csblog/2025-9-18-Book-Recs.md) -->
+    - [Values](csblog/values.md)
     <!-- - [Signals and Threads w Chris Lattner](csblog/2025-8-5-Signals-And-Threads.md) -->
     <!-- - [The Unreasonable Effectiveness of Progressive Lowering](csblog/2025-7-26-MLIR-Utility.md) -->
     <!-- - [Let's talk about poison.](csblog/2025-7-22-Poison.md) -->
