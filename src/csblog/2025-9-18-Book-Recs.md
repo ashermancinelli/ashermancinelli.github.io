@@ -1,5 +1,4 @@
-# Book Res
-
+# Book Recs
 *9/23/2025*
 
 A few books I felt like sharing in no particular order.
