@@ -1,7 +1,7 @@
 # Book Recs
 *9/23/2025*
 
-A few books I felt like sharing in no particular order.
+A few books I felt like sharing, in no particular order.
 [My goodreads account](https://www.goodreads.com/user/show/120546466-asher-mancinelli) is up to date with the books I'm currently reading or have read.
 
 ## [The Idea Factory: Bell Labs and the Great Age of American Innovation](https://www.goodreads.com/book/show/11797471-the-idea-factory?from_search=true&from_srp=true&qid=l59vPaGuIe&rank=1)

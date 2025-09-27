@@ -30,9 +30,13 @@ no-section-label = true
 additional-css = [
     "./mdbook-admonish.css",
     "theme/highlight.css",
+    # "theme/fonts/fonts.css",
 ]
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
 
 [output.html.print]
 enable = true
 page-break = false
+
+# [output.html.font]
+# enable = true
