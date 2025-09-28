@@ -2,8 +2,18 @@
 
 The very beginning is, in many ways, a good place to start because we are immediately confronted the philisophical question of *what is a compiler?*
 
+## What is a Compiler?
+
+~~~admonish tip title="_Brian Kernighan, UNIX: A History and a Memoir_"
+<br>
+<i>
+A compiler is a program that translates something written in one language into something semantically equivalent in another language.
+For example, compilers for high-level languages like C and Fortran might translate into assembly language for a particular kind of computer; some compilers translate from other languages such as Ratfor into Fortran.
+</i>
+~~~
+
 While the term *compiler* often encompasses a wide variety of tools that transform data from one representation to another, we will view compilers solely through the lens of programming languages.
-This excludes tools like the *Tex* compiler and focuses on tools for which the data being transformed is a *program*.
+<!--This excludes tools like the *Tex* compiler and focuses on tools for which the data being transformed is a *program*.-->
 
 In the 1950s, shortly after Bell Labs' invention (discovery?) of the transistor, programmers were already in need of tools to accomplish two tasks:
 
@@ -18,7 +28,7 @@ This deserves a heavy caveat: Hopper's notion of a *compiler* was much closer to
 Her notion of a compiler consisted of a tool that produced a program for some particular problem from a set of subroutines.
 Nonetheless, the software Hopper developed were the first to be called *compilers*.
 
-Herbert Bruderer summarizes the contest genesis of compilers in his article *Did Grace Hopper Create the First Compiler?*:
+Herbert Bruderer summarizes the contest genesis of compilers in his article _[Did Grace Hopper Create the First Compiler?](https://cacm.acm.org/blogcacm/did-grace-hopper-create-the-first-compiler/)_:
 
 ~~~admonish tip title="Herbert Bruderer on Grace Hopper and Early Compilers"
 *These elucidations can be summarized as follows: Heinz Rutishauser was the first to propose automatic programming (machine translation with the aid of the computer, 1951/52) and Grace Hopper developed the first utility programs for the management of subprograms (1952). Alick Glennie lays claim to the first true compiler that actually operated on a computer (1952).*
@@ -36,10 +46,32 @@ Laning and Zierler developed a compiler for the MIT Whirlwind computer in 1953-1
 This program produced machine code from equations in algebraic form, which was ahead of its time.
 Later on, in the paper *The Next 700 Programming Languages*, Peter Landin would plot the future of programming language design, and his prescription would go on to sound similar to the principles that Laning and Zierler applied in their compiler.
 
+## Locality
+
+One of the primary concerns of the early compilers was _locality_, meaning the the compiler could only concern itself with only a few lines of code at a time.
+
+This is even the reason why compilers originally adopted separable compilation, which allowed for compiling parts of the program independently;
+the entire program could not be fit into the memory of the computer at one time.
+
+Today, memory is so readily available, that many programming languages and compilers opt to process the entire program at once; for example, the Zig programming languages [drops the entire program into one module](https://kristoff.it/blog/zig-new-relationship-llvm/) (in the form of Zig's _intermediate representation_) before native code is generated.
+
+Consider the `eqn` program, which was an early preprocessor for `troff` typesetting commands:
+
+~~~admonish tip title="_Memory Constraints, UNIX: A History and a Memoir_"
+<br>
+<i>
+Eqn was implemented as a preprocessor for Troff...
+Eqn recognized mathematical constructs and translated those into Troff commands, while passing everything else through untouched.
+
+Lorinda and I had been forced into a good idea by the physical limitations of the PDP-11.
+There simply wasn't enough memory to include mathematical processing in Troff, which was already about as big as a program could be.
+</i>
+~~~
+
 ---
 
 * [*The Next 700 Programming Languages*](https://www.cs.cmu.edu/~crary/819-f09/Landin66.pdf)
 * [*A New History of Modern Computing*](https://www.goodreads.com/book/show/56354936-a-new-history-of-modern-computing?ref=nav_sb_ss_2_27)
 * [*History of Compilers* from U Wisconson-Madison](https://pages.cs.wisc.edu/~fischer/cs536.s05/lectures/Lecture02.pdf)
-* [Did Grace Hopper Create the First Compiler?](https://cacm.acm.org/blogcacm/did-grace-hopper-create-the-first-compiler/)
 * [*Notation as a Tool of Thought*](https://www.eecg.utoronto.ca/~jzhu/csc326/readings/iverson.pdf)
+<!--* [Did Grace Hopper Create the First Compiler?](https://cacm.acm.org/blogcacm/did-grace-hopper-create-the-first-compiler/)-->

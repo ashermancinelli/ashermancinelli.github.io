@@ -54,22 +54,20 @@ Everyone gave generously of their time; it was simply part of the culture that y
 
 ## Rigor
 
-* Any artifact of my work should clearly demonstrate rigor and thoughtfulness.
-* When describing issues or summarizing an investigation, I should include the possible solutions that I see, and give a recommendation.
-    If someone else must read my report, come up with possible solutions and give a recommendation, that report was unfinished.
-    When assigning me a problem, my assigner should expect a rigorous investigation, a range of possible solutions, and a preferred recommendation.
+* Any artifact of my work demonstrates rigor and thoughtfulness.
+* In summaries or descriptions, I outline options, weigh them, and recommend one. If it leaves loose ends for someone else, it's not done.
 * Rigor implies good engineering. I write quality code.
 
 ## Empathy
 
-* In any communication, I consider how it will be received, who is receiving it, and how they may feel about it.
+* In any exchange, I consider the receiver; how it'll land and how they might feel.
 * The code I write considers the user and the next developer to read or modify it.
     Have empathy on the developer that maintains your code, because it will most likely be you.
 * This includes writing tools for tasks that others also perform.
-    Share the value of your work with others and deduplicate where possible.
-    Make other's lives better.
 
----
+<br>
+<hr>
+<br>
 
 * [Link to NVIDIA's core values page](https://www.nvidia.com/en-in/about-nvidia/culture-at-nvidia/)
 * [Principles of Technology Leadership | Bryan Cantrill | Monktoberfest 2017](https://www.youtube.com/watch?v=9QMGAtxUlAc)
