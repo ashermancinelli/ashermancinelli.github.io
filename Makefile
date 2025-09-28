@@ -11,7 +11,7 @@ CLR:=\e[0m
 CLRNL:=$(CLR)\n
 INFO:=printf "\t\t$(CYAN)%s$(CLRNL)"
 
-DEPS := mdbook mdbook-admonish mdbook-mermaid mdbook-graphviz
+DEPS := mdbook mdbook-admonish mdbook-mermaid mdbook-graphviz mdbook-toc
 
 all:
 	@$(INFO) "Building"

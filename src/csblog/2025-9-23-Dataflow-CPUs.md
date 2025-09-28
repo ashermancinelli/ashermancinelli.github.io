@@ -1,43 +1,95 @@
 # Dataflow CPUs
 *9/27/2025*
 
-CPUs today innovate in a few ways:
+<i font="-3">
+An exploration of dataflow architectures, initially inspired by <a href="https://pages.cs.wisc.edu/~markhill/restricted/ieeecomputer94_dataflow.pdf">this paper</a>.
+</i>
 
-* More cores
-* Specialized cores
-* Wider vectors, different vector schemes (SVE/SME)
-* Power consumption
+~~~admonish note title="Table of Contents"
+<!-- toc -->
+~~~
 
-But there are more fundamental innovations possible. Dataflow architectures are one such innovation.
+These days, _most_ CPUs vendors differentiate themselves in a few ways:
+
+* More cores,
+* Specialized cores,
+* Wider vectors, different vector schemes (SVE/SME),
+* Lower power consumption
+
+(Arm's scalable vector extensions are probably my favorite from this list.)
+
+***But*** there are more fundamental innovations possible. Like dataflow architectures!
 
 ## Dataflow vs Von Neumann
 
-In von Neumann CPUs (read: all of them, basically), instructions are fetched from memory and executed sequentially (or in pipelines/threads (or prefetched and executed speculatively)) with a program counter dictating what comes next.
+In von Neumann CPUs (aka all modern CPUs, basically), instructions are fetched from memory and executed sequentially (or in pipelines/threads (or prefetched and executed speculatively)) with a program counter dictating what comes next.
 Dependencies between instructions and their operands are managed directly (registers and stack space are often allocated by the compiler, for example), which can lead to bottlenecks (the hardware might be idle when waiting for data).
 
 A dataflow architecture flips this dependency: instructions are *always ready*; execution fires when input data is available.
 There is no central program counter; instead, data _tokens_ carry dependencies and trigger computation.
 
+A pretty good mental model for this can be found in an old parallel programming workbook:
+
 ## The _Linda Model_
 
-One of my favorite references on parallel programming uses the _Linda model_ to explain parallel programming concepts.
-This model is very a good fit for understanding dataflow architectures.
+_How to Write Parallel Programs_, a charming little workbook on parallel programming, uses the _Linda model_ to explain parallel programming concepts.
+This model is very a good fit for understanding dataflow architectures, I think:
 
-~~~admonish tip title=""
-
+~~~admonish tip title="_How to Write Parallel Programs: A First Course_, Chapter 3, page 46"
 <br>
 <i>
-The Linda model is a <strong>memory</strong> model. Linda memory (called <strong>tuple space</strong>) consists of of a collection of logical tuples. There are two kidns of tuples. Process tuples are under active evaluation; data tuples are passive. The process tuples (which are all executing simultaneously) exchange data by generating, reading and consuming data tuples. A process tuples that is finished executing turns into a data tuple, indistinguishable from other data tuples.
-</i>
+The Linda model is a <strong>memory</strong> model.
+Linda memory (called <strong>tuple space</strong>) consists of a collection of logical tuples.
 
-From _How to Write Parallel Programs: A First Course_, Chapter 3, page 46.
+There are two kinds of tuples.
+Process tuples are under active evaluation; data tuples are passive.
+The process tuples (which are all executing simultaneously) exchange data by generating, reading and consuming data tuples.
+A process tuples that is finished executing turns into a data tuple, indistinguishable from other data tuples.
+
+</i>
 ~~~
 
 In the _Linda model_, programs are not strictly sequences of instructions, but rather a collection of instructions with data dependencies and data itself.
+Instructions trigger when their dependencies are ready.
 
+Parallelism is more naturally exposed; you might imagine _Linda_ as a giant bowl of soup with data and instructions floating around, and when an instruction's data are ready, it triggers the instruction to execute, which might then generate more data and trigger more instructions.
 
+## Challenges
+
+Why haven't dataflow processors eaten the market?
+There are some challenges. Namely:
+
+- Matching data with their instructions and the instruction lifecycle can be pretty expensive,
+- resource allocation is hard, and
+- handling data structures is also hard.
+
+A fully pure dataflow processor sorta assumes instruction purity and idempotency, which doesn't mesh well with immutability.
+
+~~~admonish quote title="[_Dataflow Architectures and Multithreading_, Lee and Hurson](https://pages.cs.wisc.edu/~markhill/restricted/ieeecomputer94_dataflow.pdf)"
+<br>
+<i>
+Another formidable problem is the management of data structures The dataflow functionality principle implies that all operations are side-effect free;
+that is, when a scalar operation is performed, new tokens are generated after the input tokens have been consumed.
+However, absence of side effects implies that if tokens are allowed to carry vectors, arrays, or other complex structures, an operation on a structure element must result in an entirely new structure.
+</i>
+~~~
+
+This poses a bit of a challenge, to put it lightly.
+The paper suggests hybrid approaches that seem far more plausible to me.
+
+This hybrid model involves grouping elements of programs into _grains_.
+Within a single grain, operations are performed as sequentially (to the extent that you consider modern CPUs to execute instructions sequentially), and each grain itself is scheduled in a dataflow manner.
+
+~~~admonish quote title="_Hybrid Model_"
+<br>
+<i>
+This convergence combines the power of the dataflow model for exposing parallelism with the execution efficiency of the control-flow model. Although the spectrum of dataflowlvon Neumann hybrid is very broad, two key features supporting this shift are sequential scheduling and use of registers to temporarily buffer the results between instructions.
+</i>
+~~~
 
 ---
+
+## Links
 
 - [Dataflow Architectures and Multithreading](https://pages.cs.wisc.edu/~markhill/restricted/ieeecomputer94_dataflow.pdf)
 - [HPC Gets A Reconfigurable Dataflow Engine To Take On CPUs And GPUs](https://www.nextplatform.com/2024/10/29/hpc-gets-a-reconfigurable-dataflow-engine-to-take-on-cpus-and-gpus/)

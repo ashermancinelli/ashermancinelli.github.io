@@ -18,6 +18,10 @@ output-to-file = false # defaults to false, change to true to create SVG files i
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+
 [output]
 
 [output.html]
