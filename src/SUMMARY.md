@@ -52,6 +52,7 @@ https://tommilligan.github.io/mdbook-admonish/
 
 # 🚧 WIP 🚧
 
+- [Dataflow CPUs](csblog/2025-9-23-Dataflow-CPUs.md)
 - [A Brief History of Compilers](csblog/2025-9-23-History-Of-Compilers.md)
     - [The Earliest Hours](csblog/2025-9-23-History-Of-Compilers-Early-Hours.md)
     - [Dotcom Era](csblog/2025-9-23-History-Of-Compilers-Dotcom-Era.md)
