@@ -53,7 +53,7 @@ One of the primary concerns of the early compilers was _locality_, meaning the t
 This is even the reason why compilers originally adopted separable compilation, which allowed for compiling parts of the program independently;
 the entire program could not be fit into the memory of the computer at one time.
 
-Today, memory is so readily available, that many programming languages and compilers opt to process the entire program at once; for example, the Zig programming languages [drops the entire program into one module](https://kristoff.it/blog/zig-new-relationship-llvm/) (in the form of Zig's _intermediate representation_) before native code is generated.
+Today, memory is so readily available that many programming languages and compilers opt to process the entire program at once; for example, the Zig programming languages [drops the entire program into one module](https://kristoff.it/blog/zig-new-relationship-llvm/) before native code is generated.
 
 Consider the `eqn` program, which was an early preprocessor for `troff` typesetting commands:
 
@@ -66,6 +66,13 @@ Eqn recognized mathematical constructs and translated those into Troff commands,
 Lorinda and I had been forced into a good idea by the physical limitations of the PDP-11.
 There simply wasn't enough memory to include mathematical processing in Troff, which was already about as big as a program could be.
 </i>
+~~~
+
+The typesetting program `troff` already reached the memory constraints of the PDP-11, so any additional features would have to be implemented outside of `troff`.
+Similarly, compilers could only really consider a small chunk of any given program at a time.
+
+~~~admonish todo
+* modern compilers with inlining and IPO and thinlto
 ~~~
 
 ---
