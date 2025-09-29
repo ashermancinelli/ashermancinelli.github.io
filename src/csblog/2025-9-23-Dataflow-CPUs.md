@@ -25,7 +25,7 @@ These days, _most_ CPUs vendors differentiate themselves in a few ways:
 In von Neumann CPUs (aka all modern CPUs, basically), instructions are fetched from memory and executed sequentially (or in pipelines/threads (or prefetched and executed speculatively)) with a program counter dictating what comes next.
 Dependencies between instructions and their operands are managed directly (registers and stack space are often allocated by the compiler, for example), which can lead to bottlenecks (the hardware might be idle when waiting for data).
 
-A dataflow architecture flips this dependency: instructions are *always ready*; execution fires when input data is available.
+A dataflow architecture flips this dependency: instructions are *always ready*; they fire when input data is available.
 There is no central program counter; instead, data _tokens_ carry dependencies and trigger computation.
 
 A pretty good mental model for this can be found in an old parallel programming workbook:
@@ -77,20 +77,29 @@ However, absence of side effects implies that if tokens are allowed to carry vec
 This poses a bit of a challenge, to put it lightly.
 The paper suggests hybrid approaches that seem far more plausible to me.
 
-This hybrid model involves grouping elements of programs into _grains_.
+This hybrid model involves grouping elements of programs into _grains_ (or _macroactors_).
 Within a single grain, operations are performed as sequentially (to the extent that you consider modern CPUs to execute instructions sequentially), and each grain itself is scheduled in a dataflow manner.
 
 ~~~admonish quote title="_Hybrid Model_"
 <br>
 <i>
 This convergence combines the power of the dataflow model for exposing parallelism with the execution efficiency of the control-flow model. Although the spectrum of dataflowlvon Neumann hybrid is very broad, two key features supporting this shift are sequential scheduling and use of registers to temporarily buffer the results between instructions.
+
+[H]ybrid dataflow architectures can be viewed as von Neumann machines extended to support fine-grained interleaving of multiple threads.
 </i>
 ~~~
+
+In either approach, you need lots of coprocessors to do things like match up data and instruction tags and move memory around, since there may not be registers outside the local scope of a grain or microactor.
+
+<!--Some of these concepts might feel familiar; co-routines, channels and generators are relatively common today, and they offer an API for describing units of computation similar to grains.
+Placing sequential functions in an execution context like a threadpool where each function reads from channels-->
+
 
 ---
 
 ## Links
 
+- [_The Dataflow Abstract Machine Simulator Framework_](https://fredrikbk.com/publications/dam.pdf)
 - [Dataflow Architectures and Multithreading](https://pages.cs.wisc.edu/~markhill/restricted/ieeecomputer94_dataflow.pdf)
 - [HPC Gets A Reconfigurable Dataflow Engine To Take On CPUs And GPUs](https://www.nextplatform.com/2024/10/29/hpc-gets-a-reconfigurable-dataflow-engine-to-take-on-cpus-and-gpus/)
 - [Startup Claims up to 100x Better Embedded Computing Efficiency](https://spectrum.ieee.org/efficient-computer-dataflow-architecture)
@@ -108,3 +117,5 @@ This convergence combines the power of the dataflow model for exposing paralleli
 - [SambaNova SN10 RDU: A 7nm Dataflow Architecture - IEEE](https://ieeexplore.ieee.org/document/9731612)
 - [Ultra-fast RNNs with SambaNova's RDA](https://sambanova.ai/blog/ultra-fast-recurrent-neural-networks-with-sambanovas-reconfigurable-dataflow-architecture)
 - [SambaNova SN40L: Scaling AI Memory Wall - ArXiv](https://arxiv.org/html/2405.07518v1)
+- [Design and Implementation of the TRIPS EDGE Architecture](https://www.cs.utexas.edu/~cart/trips/talks/trips_tutorial_6up.pdf)
+- [Simulator for heterogeneous dataflow architectures](https://ntrs.nasa.gov/citations/19940009324)
