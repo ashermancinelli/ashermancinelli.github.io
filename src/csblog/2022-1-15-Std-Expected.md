@@ -1,4 +1,4 @@
-# std::expected
+# std::expected's Monadic Interface
 
 _2022-01-15_
 
@@ -89,7 +89,7 @@ Let's look at another example using matrices, but this time using `expected` and
 I'll get some `using` statements out of the way:
 ```c++
 namespace stdex = std::experimental;
-using mat_t = stdex::mdspan<double, 
+using mat_t = stdex::mdspan<double,
     stdex::extents<
       stdex::dynamic_extent,
       stdex::dynamic_extent
@@ -112,11 +112,11 @@ int main() {
 
 /*
  * Program returned: 0
- * 1.0 0.0 0.0 0.0 0.0 
- * 0.0 1.0 0.0 0.0 0.0 
- * 0.0 0.0 1.0 0.0 0.0 
- * 0.0 0.0 0.0 1.0 0.0 
- * 0.0 0.0 0.0 0.0 1.0 
+ * 1.0 0.0 0.0 0.0 0.0
+ * 0.0 1.0 0.0 0.0 0.0
+ * 0.0 0.0 1.0 0.0 0.0
+ * 0.0 0.0 0.0 1.0 0.0
+ * 0.0 0.0 0.0 0.0 1.0
  */
 ```
 
@@ -132,7 +132,7 @@ auto set_diag(mat_t mat) {
     mat(i, i) = 1.0;
 
   return expect_mat(mat);
-} 
+}
 ```
 
 I also like using an immediatly invoked lambda for this, but I'm not sure how readable/maintainable this is long-term:
@@ -145,7 +145,7 @@ auto set_diag(mat_t mat) {
       return expect_mat(mat);
     }()
     : make_unexpected("expected square matrix!");
-} 
+}
 ```
 
 Either way, the error is handled as expected (no pun intended):
@@ -195,11 +195,11 @@ int main() {
 }
 /*
  * Program returned: 0
- * 1.0 0.0 0.0 0.0 0.0 
- * 3.5 3.5 3.5 3.5 3.5 
- * 0.0 0.0 1.0 0.0 0.0 
- * 0.0 0.0 0.0 1.0 0.0 
- * 0.0 0.0 0.0 0.0 1.0 
+ * 1.0 0.0 0.0 0.0 0.0
+ * 3.5 3.5 3.5 3.5 3.5
+ * 0.0 0.0 1.0 0.0 0.0
+ * 0.0 0.0 0.0 1.0 0.0
+ * 0.0 0.0 0.0 0.0 1.0
  */
 ```
 
@@ -224,11 +224,11 @@ int main() {
 }
 /*
  * Program returned: 0
- * 1.0 0.0 0.0 0.0 0.0 
- * 3.5 3.5 3.5 3.5 3.5 
- * 0.0 0.0 1.0 0.0 0.0 
- * 0.0 0.0 0.0 1.0 0.0 
- * 0.0 0.0 0.0 0.0 1.0 
+ * 1.0 0.0 0.0 0.0 0.0
+ * 3.5 3.5 3.5 3.5 3.5
+ * 0.0 0.0 1.0 0.0 0.0
+ * 0.0 0.0 0.0 1.0 0.0
+ * 0.0 0.0 0.0 0.0 1.0
  */
 ```
 
@@ -252,10 +252,10 @@ int main() {
 }
 /*
  * Program returned: 0
- * 1.0 0.0 0.0 0.0 0.0 
- * 0.0 1.0 0.0 0.0 0.0 
- * 0.0 0.0 1.0 0.0 0.0 
- * 2.0 2.0 2.0 2.0 2.0 
+ * 1.0 0.0 0.0 0.0 0.0
+ * 0.0 1.0 0.0 0.0 0.0
+ * 0.0 0.0 1.0 0.0 0.0
+ * 2.0 2.0 2.0 2.0 2.0
  * 0.0 0.0 0.0 0.0 1.0
  */
 ```
@@ -271,4 +271,3 @@ Godbolt links can be found for these examples in the links below:
 1. [Jeff Garland's 12/2022 `expected` paper](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2505r0.html)
 1. [Sy Brand's `tl::expected`](https://github.com/TartanLlama)
 1. [Kokkos `mdspan` impl](https://github.com/kokkos/mdspan)
-

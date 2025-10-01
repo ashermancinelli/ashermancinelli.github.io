@@ -2,7 +2,7 @@
 
 [About](about.md)
 
-<!-- 
+<!--
 
 For supported admonishments:
 https://tommilligan.github.io/mdbook-admonish/
@@ -35,7 +35,7 @@ https://tommilligan.github.io/mdbook-admonish/
     - [LLVM Development on NixOS](csblog/2022-2-2-LLVM-Development-On-NixOS.md)
     - [CUDA 101: Matrix-Vector Product](csblog/2022-2-10-CUDA-101-Matvec.md)
     - [Debugging Performance in Compilers](csblog/2022-12-12-Compiler-Perf-Debugging.md)
-    - [std::expected And Why It's Awesome](csblog/2022-1-15-Std-Expected.md)
+    - [std::expected's Monadic Interface](csblog/2022-1-15-Std-Expected.md)
 
 - [2021]()
     - [GTest Type and Value Parameterized Tests](csblog/2021-3-7-GTest-Type-Value-Params.md)

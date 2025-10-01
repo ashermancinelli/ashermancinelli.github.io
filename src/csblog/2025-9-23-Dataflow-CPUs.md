@@ -18,6 +18,9 @@ These days, _most_ CPUs vendors differentiate themselves in a few ways:
 
 (Arm's scalable vector extensions are probably my favorite from this list.)
 
+None of these differentiators really break free from the fundamental paradigm of programs being essentially a list of data and instructions that (at least conceptually) are executed sequentially.
+<!--This is not intrinsic to computers though; why couldn't instructions be intrinsically parallel?-->
+<!--As long as their data are ready, we shouldn't necessarily expect them to be executed sequentially.-->
 ***But*** there are more fundamental innovations possible. Like dataflow architectures!
 
 ## Dataflow vs Von Neumann
@@ -94,8 +97,25 @@ In either approach, you need lots of coprocessors to do things like match up dat
 <!--Some of these concepts might feel familiar; co-routines, channels and generators are relatively common today, and they offer an API for describing units of computation similar to grains.
 Placing sequential functions in an execution context like a threadpool where each function reads from channels-->
 
+## Emulator
 
----
+You can sort-of imagine instructions and grains in dataflow processors to work like coroutines which await on values corresponding to puts on the instruction/grain's input ports.
+You might think _this sounds like plain 'ol out-of-order execution on the CPU in my phone. What's so special?_ Great question!
+
+I think _register scheduling_ is probably the biggest difference.
+In your phone's A19 for example, Apple's compiler has already decided which registers will be used to render the animations for this website.
+In a dataflow processor however, the compiler can pretend it has infinite registers like an SSA IR and they'll all get mapped to the ports available on the processor and scheduled dynamically.
+
+Take this animation:
+
+<video width="800" height="600" controls preload="metadata">
+  <source src="videos/dataflow-animation.mp4" type="video/mp4">
+  Your browser does not support the HTML5 video tag. Download the video <a href="videos/dataflow-animation.mp4">here</a>.
+</video>
+
+The input data are ready when the program starts.
+Once each input datum for an instruction is ready, the hardware can pick up the instruction and fire, no matter the physical location of the instruction's data dependencies.
+
 
 ## Links
 
