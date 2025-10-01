@@ -93,6 +93,10 @@ This convergence combines the power of the dataflow model for exposing paralleli
 ~~~
 
 In either approach, you need lots of coprocessors to do things like match up data and instruction tags and move memory around, since there may not be registers outside the local scope of a grain or microactor.
+Consequently, this addresses another downside of the dataflow model; exceptions/interrupts are not well-ordered.
+If exceptions are well-ordered within the context that the user expects, then the parallel execution is transparent to the user.
+In a full dataflow model, exceptions may fire unreliably.
+This is also an issue with the control-flow model when the user opts-in to additional out-of-order execution, like vectorization.
 
 <!--Some of these concepts might feel familiar; co-routines, channels and generators are relatively common today, and they offer an API for describing units of computation similar to grains.
 Placing sequential functions in an execution context like a threadpool where each function reads from channels-->
@@ -105,6 +109,7 @@ You might think _this sounds like plain 'ol out-of-order execution on the CPU in
 I think _register scheduling_ is probably the biggest difference.
 In your phone's A19 for example, Apple's compiler has already decided which registers will be used to render the animations for this website.
 In a dataflow processor however, the compiler can pretend it has infinite registers like an SSA IR and they'll all get mapped to the ports available on the processor and scheduled dynamically.
+This is much closer to the _Linda_ model with an infinitely large tuple space.
 
 Take this animation:
 
@@ -115,6 +120,7 @@ Take this animation:
 
 The input data are ready when the program starts.
 Once each input datum for an instruction is ready, the hardware can pick up the instruction and fire, no matter the physical location of the instruction's data dependencies.
+The ports are really just data, not dictated by a static register file.
 
 
 ## Links

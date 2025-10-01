@@ -12,6 +12,7 @@ https://tommilligan.github.io/mdbook-admonish/
 # 💡 Blog
 
 - [2025]()
+    - [Dataflow CPUs](csblog/2025-9-23-Dataflow-CPUs.md)
     - [Books Recs](csblog/2025-9-18-Book-Recs.md)
     - [Array Cast Episode](csblog/2025-7-29-Array-Cast.md)
     - [Why UB is Good](csblog/2025-7-23-Strict-Aliasing.md)
@@ -50,9 +51,10 @@ https://tommilligan.github.io/mdbook-admonish/
 <!-- - [Shell and Scripting Notes](csblog/2024-8-30-Shell.md)
 - [Editors and Tools 8/30/2024](csblog/editors.md) -->
 
+- [Style Inspirations](csblog/2025-9-30-Style-Inspiration.md)
+
 # 🚧 WIP 🚧
 
-- [Dataflow CPUs](csblog/2025-9-23-Dataflow-CPUs.md)
 - [A Brief History of Compilers](csblog/2025-9-23-History-Of-Compilers.md)
     - [The Earliest Hours](csblog/2025-9-23-History-Of-Compilers-Early-Hours.md)
     - [Dotcom Era](csblog/2025-9-23-History-Of-Compilers-Dotcom-Era.md)
