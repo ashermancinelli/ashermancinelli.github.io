@@ -5,10 +5,9 @@ CARGO := `which cargo`
 HOST := "localhost"
 PORT := "3000"
 
-CYAN := "\033[36m"
-CLR := "\033[0m"
-
-DEPS := mdbook mdbook-admonish mdbook-mermaid mdbook-graphviz
+CYAN := ""
+CLR := ""
+DEPS := "mdbook mdbook-admonish mdbook-mermaid mdbook-graphviz"
 
 default: all
 
@@ -20,9 +19,9 @@ serve:
 	@printf "\t\t%sServing on %s:%s%s\n" "{{CYAN}}" "{{HOST}}" "{{PORT}}" "{{CLR}}"
 	{{MDBOOK}} serve -n {{HOST}} -p {{PORT}}
 
-dep:
-	@printf "\t\t%sInstalling dependencies%s\n" "{{CYAN}}" "{{CLR}}"
-	{{CARGO}} install {{DEPS}} --force
+deps:
+    echo 'Installing dependencies...'
+    cargo install {{DEPS}}
 
 deploy: all
 	test -d gh-pages || git worktree add gh-pages

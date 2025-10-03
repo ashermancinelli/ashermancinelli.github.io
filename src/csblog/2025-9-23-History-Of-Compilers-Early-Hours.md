@@ -77,6 +77,7 @@ Similarly, compilers could only really consider a small chunk of any given progr
 
 ---
 
+* _Compiling Routines_, Grace Hopper, 1953
 * [*The Next 700 Programming Languages*](https://www.cs.cmu.edu/~crary/819-f09/Landin66.pdf)
 * [*A New History of Modern Computing*](https://www.goodreads.com/book/show/56354936-a-new-history-of-modern-computing?ref=nav_sb_ss_2_27)
 * [*History of Compilers* from U Wisconson-Madison](https://pages.cs.wisc.edu/~fischer/cs536.s05/lectures/Lecture02.pdf)

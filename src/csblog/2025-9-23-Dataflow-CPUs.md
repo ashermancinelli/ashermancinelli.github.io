@@ -18,25 +18,36 @@ These days, _most_ CPUs vendors differentiate themselves in a few ways:
 
 (Arm's scalable vector extensions are probably my favorite from this list.)
 
-None of these differentiators really break free from the fundamental paradigm of programs being essentially a list of data and instructions that (at least conceptually) are executed sequentially.
+None of these, though, actually breaks the basic assumption behind the machines: a program is (conceptually) a sequence of instructions executed in some order.
+<!--None of these differentiators really break free from the fundamental paradigm of programs being essentially a list of data and instructions that (at least conceptually) are executed sequentially.-->
 <!--This is not intrinsic to computers though; why couldn't instructions be intrinsically parallel?-->
 <!--As long as their data are ready, we shouldn't necessarily expect them to be executed sequentially.-->
-***But*** there are more fundamental innovations possible. Like dataflow architectures!
+<!--***But*** there are more fundamental innovations possible. Like dataflow architectures!-->
+That assumption is convenient.
+It maps directly to how we think about writing code and how compilers and OSes are organized.
+But it’s not the only way to organize computation. Enter: dataflow architectures.
 
 ## Dataflow vs Von Neumann
 
-In von Neumann CPUs (aka all modern CPUs, basically), instructions are fetched from memory and executed sequentially (or in pipelines/threads (or prefetched and executed speculatively)) with a program counter dictating what comes next.
-Dependencies between instructions and their operands are managed directly (registers and stack space are often allocated by the compiler, for example), which can lead to bottlenecks (the hardware might be idle when waiting for data).
+In a von Neumann machine you have a program counter, you fetch instructions, and you execute them (with pipelines, speculation, out-of-order tricks, etc.).
+Dependencies are enforced by registers, memory and the compiler’s choices.
+The result: when the hardware waits for data, you get wasted cycles.
+<!--In von Neumann CPUs (aka all modern CPUs, basically), instructions are fetched from memory and executed sequentially (or in pipelines/threads (or prefetched and executed speculatively)) with a program counter dictating what comes next.
+Dependencies between instructions and their operands are managed directly (registers and stack space are often allocated by the compiler, for example), which can lead to bottlenecks (the hardware might be idle when waiting for data).-->
 
-A dataflow architecture flips this dependency: instructions are *always ready*; they fire when input data is available.
-There is no central program counter; instead, data _tokens_ carry dependencies and trigger computation.
+Dataflow flips the control model.
+Instructions don’t wait for a program counter — they fire when their inputs arrive.
+Computation is driven by data tokens; tokens carry the readiness that triggers work.
+You can think of it like a kitchen where dishes get cooked whenever their ingredients show up, not when some head chef calls the next order.
+<!--A dataflow architecture flips this dependency: instructions are *always ready*; they fire when input data is available.
+There is no central program counter; instead, data _tokens_ carry dependencies and trigger computation.-->
 
 A pretty good mental model for this can be found in an old parallel programming workbook:
 
 ## The _Linda Model_
 
 _How to Write Parallel Programs_, a charming little workbook on parallel programming, uses the _Linda model_ to explain parallel programming concepts.
-This model is very a good fit for understanding dataflow architectures, I think:
+This model is a very good fit for understanding dataflow architectures, I think:
 
 ~~~admonish tip title="_How to Write Parallel Programs: A First Course_, Chapter 3, page 46"
 <br>
@@ -52,10 +63,12 @@ A process tuples that is finished executing turns into a data tuple, indistingui
 </i>
 ~~~
 
-In the _Linda model_, programs are not strictly sequences of instructions, but rather a collection of instructions with data dependencies and data itself.
-Instructions trigger when their dependencies are ready.
+_Linda_ exposes a shared tuple space: data tuples sit in the space, and process tuples (the active things) consume and produce them.
+<!--In the _Linda model_, programs are not strictly sequences of instructions, but rather a collection of instructions with data dependencies and data itself.-->
+<!--Instructions trigger when their dependencies are ready.-->
 
 Parallelism is more naturally exposed; you might imagine _Linda_ as a giant bowl of soup with data and instructions floating around, and when an instruction's data are ready, it triggers the instruction to execute, which might then generate more data and trigger more instructions.
+That maps very naturally onto dataflow: tokens in, tokens out; no central program counter; execution happens opportunistically.
 
 ## Challenges
 
@@ -101,7 +114,7 @@ This is also an issue with the control-flow model when the user opts-in to addit
 <!--Some of these concepts might feel familiar; co-routines, channels and generators are relatively common today, and they offer an API for describing units of computation similar to grains.
 Placing sequential functions in an execution context like a threadpool where each function reads from channels-->
 
-## Emulator
+## Visualization
 
 You can sort-of imagine instructions and grains in dataflow processors to work like coroutines which await on values corresponding to puts on the instruction/grain's input ports.
 You might think _this sounds like plain 'ol out-of-order execution on the CPU in my phone. What's so special?_ Great question!
@@ -122,6 +135,7 @@ The input data are ready when the program starts.
 Once each input datum for an instruction is ready, the hardware can pick up the instruction and fire, no matter the physical location of the instruction's data dependencies.
 The ports are really just data, not dictated by a static register file.
 
+In a von Neumann architecture, the compiler may well reorder some of your instructions depending on the flags you used, but those decisions are statically determined; nearly everything is out-of-order and potentially parallel in a dataflow architecture.
 
 ## Links
 
