@@ -12,6 +12,7 @@ https://tommilligan.github.io/mdbook-admonish/
 # 💡 Blog
 
 - [2025]()
+    - [History of Compilers](csblog/2025-10-23-History-of-Compilers.md)
     - [Dataflow CPUs](csblog/2025-9-23-Dataflow-CPUs.md)
     - [Books Recs](csblog/2025-9-18-Book-Recs.md)
     - [Array Cast Episode](csblog/2025-7-29-Array-Cast.md)
@@ -57,7 +58,7 @@ https://tommilligan.github.io/mdbook-admonish/
 
 - [A Brief History of Compilers](csblog/2025-9-23-History-Of-Compilers.md)
     - [The Earliest Hours](csblog/2025-9-23-History-Of-Compilers-Early-Hours.md)
-    - [Dotcom Era](csblog/2025-9-23-History-Of-Compilers-Dotcom-Era.md)
+    - [Unix](csblog/2025-9-23-History-Of-Compilers-Unix.md)
     - [Open Source Era](csblog/2025-9-23-History-Of-Compilers-Open-Source-Era.md)
 - [The Unreasonable Optimizability of Functional Array Languages](csblog/2025-7-26-Functional-Array-Languages.md)
 - [Pay Me Now or Pay Me Later](csblog/2025-7-26-Pay-Me-Now-Or-Later.md)

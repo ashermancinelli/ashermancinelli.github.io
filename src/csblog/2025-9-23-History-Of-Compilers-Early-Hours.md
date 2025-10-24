@@ -46,6 +46,15 @@ Laning and Zierler developed a compiler for the MIT Whirlwind computer in 1953-1
 This program produced machine code from equations in algebraic form, which was ahead of its time.
 Later on, in the paper *The Next 700 Programming Languages*, Peter Landin would plot the future of programming language design, and his prescription would go on to sound similar to the principles that Laning and Zierler applied in their compiler.
 
+Addressing point 2, compiling the same programs for different architectures was still a challenge due to the lack of standardization around programming languages.
+This changed in 1960 due to a government mandate that procured systems must support COBOL:
+
+~~~admonish quote title=""
+The next year, the US government announced that it would not purchase or lease computer equipment, unless it could handle COBOL.
+As a result, COBOL became one of the first languages to be sufficiently standardized that the program could be compiled on computers from different vendors and run to produce the same results.
+That occurred in December 1960, when almost identical programs ran on a Univac II and an RCA 501.
+~~~
+
 ## Locality
 
 One of the primary concerns of the early compilers was _locality_, meaning the the compiler could only concern itself with only a few lines of code at a time.
@@ -71,9 +80,11 @@ There simply wasn't enough memory to include mathematical processing in Troff, w
 The typesetting program `troff` already reached the memory constraints of the PDP-11, so any additional features would have to be implemented outside of `troff`.
 Similarly, compilers could only really consider a small chunk of any given program at a time.
 
-~~~admonish todo
-* modern compilers with inlining and IPO and thinlto
-~~~
+
+## TODO
+
+* 1962 Honeywell _A Few Quick Facts on Software_, _"Generally there are three basic categories of software: 1) Assembly Systems, 2) Compiler Systems, and 3) Operating Systems."_
+* 1968 NATO _Conference on Software Engineering_
 
 ---
 
