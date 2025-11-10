@@ -9,7 +9,7 @@ This PDF is a collection of my personal research on the book that I wish existed
 on the history of compilers _in particular_.
 
 <center>
-    <a href="https://github.com/ashermancinelli/hoc/blob/main/publish/History%20of%20Compilers.pdf">
+    <a href="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/ashermancinelli/hoc/refs/heads/main/publish/History%20of%20Compilers.pdf">
         <h2>
         Link to the PDF
         </h2>
