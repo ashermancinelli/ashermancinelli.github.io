@@ -69,30 +69,26 @@ Translation is difficult; tools useful in one medium may be useless, strange, or
 
 ## Orality and Code
 
-Just as oral artists use cognitive technologies to give their ideas legs, so too
-do programmers use design patterns to make their programs more interpretable to other
-people.
-The literate mind has a tendancy to look down on the oral arts.
-They might ask: _"why is this poem so repetitive and full of myths and cliches?"_
-and conclude that authors of that time period must have been less sophisticated.
-What will future generations think of the code we write today?
-Will they consider object oriented programming to be a complicated and unnecessary
-mythology?
+Programmers use cognitive technologies similar to oral formulas.
+Design patterns, comments, and naming conventions are shared devices that
+make programs interpretable and transmissible across culture and time.
+Perhaps a super-literate mind from two centuries in the future will
+look down on those patterns and ask, “Why all the repetition? Why the mythology?"
+But metaphors and repetitive structures are tools that help people reason and coordinate.
 
-OOP is a metaphor and a cognitive technology we use to reason about programs.
-"Objects" do not really exist; they do not have "behaviors" that act on other
-objects, nor do they have attributes or conform to protocols.
-We use these metaphors to understand and build upon large systems and communicate
-with other people, but we are unable to examine to a transistor at a point in time and
-conclude that it is an object.
-This is not to say that OOP is the _best_ cognitive technology in use by programmers
-(or even a _good_ one!), but only that it is _a_ cognitive technology in use.
+Consider object-oriented programming.
+OOP is a metaphor we use to reason about programs:
+we talk about objects having attributes and behaviors, but those are conceptual tools,
+not facts about the machine or its behavior.
+We use the metaphor because it helps us model complexity and communicate with others.
+This says nothing about how useful OOP is relative to the other tools at our
+disposal as programmers, only that we observe its use.
 
-In his famed paper _Can programming be liberated from the von Neumann style?_ (Backus78),
+In his famous paper _Can programming be liberated from the von Neumann style?_ (Backus78),
 John Backus questions the popular contemporary cognitive technologies used for
 describing programs, which he ironically had a hand in forming.
-His thesis is that the models underpinning most programming languages
-are insufficient, and that a more functional model would be more effective:
+Backus argues that the prevailing mental models are intellectually limiting
+and a more functional model would be more effective:
 
 ~~~admonish quote title="Backus78"
 Conventional programming languages are growing ever more enormous, but not stronger.
@@ -104,10 +100,10 @@ their inability to effectively use powerful combining forms for building new pro
 from existing ones, and their lack of useful mathematical properties for reasoning about programs.
 ~~~
 
-In particular, programming languages that restrict themselves to concepts of _storing_ data
-to particular _locations_ and distinguish between _statements_
+Particularly limiting are the concepts of _storing_ data
+to particular _locations_ and sharp distinctions between _statements_
 which have effects and do not have results,
-and _expressions_ that have conceptual results but typically not effects.
+and _expressions_ which have conceptual results but typically not effects.
 These are not directly related to the physical components of a computer,
 but the noetic structures that sit in between us and the machine.
 
@@ -124,6 +120,15 @@ Note that the technology Backus refers to is not _really_ about programming
 languages as they are transcribed, but the noetic structures they presume.
 Backus does not mention syntax, but is focused on how the semantics
 permit the programmer to model the possible operations in their mind.
+Just as oral cultures are constrained by the cognitive tools at their disposal,
+so too are programmers limited by the cognitive tools available to them
+in their programming environment.
+Just as an oral culture couldn't easily organize knowledge hierarchically without writing,
+programmers constrained by imperative, statement-based thinking cannot easily
+express certain computational ideas.
+Backus essentially argues that different cognitive technologies
+(like functional programming and expression-oriented semantics) should be made
+available to programmers.
 
 ## Literacy and Code
 
@@ -133,17 +138,19 @@ Programming languages are unique because they do leave a trace on the world
 is only part of the program, unlike literature.
 Programs are inherently _actions_, like the oral arts, and yet they are
 cast in literature.
-They are like spells; they are described in words and characters, but they are
-impotent and incomplete without being cast (or ran).
-
+Literature simply describes or prescribes; code both describes and performs,
+closer to a magic spell than static text.
+They are impotent and incomplete without being executed.
 An exception to this is comments; they are pure literature embedded in programs,
 typically leaving no trace on the resultant program.
+<!-- They are like spells; they are described in words and characters, but they are -->
+<!-- impotent and incomplete without being cast (or ran). -->
 
-Some aspects of programming language design are purely literate concepts such
+Some aspects of programming language design are purely literate concepts, such
 as syntax.
 Iverson's _Notation as a Tool of Thought_ (Iverson79) considers the cognitive effects
 of the syntax of programs.
-His paper with philosophical foundations rather than technical, evoking the words
+His paper begins with philosophical foundations rather than technical, evoking the words
 of Charles Babbage and Alfred North Whitehead, rather than jumping straight to the
 technical reasons for choosing one syntax over another (Whitehead11, Iverson79):
 
@@ -185,6 +192,56 @@ rather than an aid, yet the language's terse syntax does provide an interesting
 study of the capability of a language's syntax to affect the thought process
 of its users.
 
+APL's dictionary is comprised of glyphs instead of English words.
+These glyphs often give the programmer some visual clue as to what operation
+it represents.
+The glyphs for rounding floating-point numbers are perhaps the most straightforward
+examples:
+
+```
+      ⌈0.5
+1
+      ⌊0.5
+0
+```
+
+The glyph `⌊` seems to take its operand from the midpoint down to the floor, reminding the
+programmer of its function ("round down").
+When given two operands (or "invoked dyadically"), the exact same glyphs
+take the minimum or maximum of the two operands, and the glyphs serve similar visual functions:
+
+```
+      1⌊2
+1
+      1⌈2
+2
+```
+
+The following constructs a three-by-three matrix and demonstrates use of the
+`⍉` glyph, which transposes its operand.
+One imagines themselves holding both ends of the diagonal line and spinning
+the circular part of the glyph around it, swapping the rows and columns:
+
+```
+      M ← 3 3 ⍴ ⍳9
+      M
+1 2 3
+4 5 6
+7 8 9
+      ⍉M
+1 4 7
+2 5 8
+3 6 9
+```
+
+In this way, APL provides a dictionary of flexible hieroglyphics that give
+the programmer visual hints as to their function.
+Such a concept could only be constructed by the literate mind, because such glyphs
+would be useless to an oral person.
+In this respect, literacy and programming appear to overlap perfectly in notation,
+except that code implies execution; glyphs do not just convey ideas, they convey
+behavior.
+
 ### Comments
 
 Comments exist in an interesting overlap of literacy, orality, and code.
@@ -192,12 +249,10 @@ They are (usually) strictly literary devices embedded in code, with no effect
 on the resultant program. In this case, code completely subsumes the category
 of literature, since any work of literature can theoretically exist inside
 a program.
-
 Yet, they are not typically meaningful outside the technical context they
 physically reside in.
-
 Donald Knuth studied the boundary between code and literature in
-(Knuth84):
+_Literate Programming_:
 
 ~~~admonish quote title="Knuth84"
 I believe that the time is ripe
@@ -218,6 +273,27 @@ technical context required to run the program must be communicated to other peop
 If the program is to be extended for any purpose other than the original one,
 the logic the program follows must be interpretable to someone else.
 All but the simplest programs require communication between people to be useful.
+
+## Conclusion
+
+Programming languages exhibit characteristics of both orality and literacy.
+The are artifacts (like literature) and actions (like speech).
+They could only have been designed by a literate mind, yet are not fully
+subsumed by literature.
+People who write code employ cognitive technologies that do not belong to literacy
+in addition to those literacy provides.
+Reading Ong alongside Backus, Knuth and Iverson provides anthropological, social, technical,
+historical and philosophical context for how programming languages came to be,
+and how we might design new ones.
+
+Debates about programming languages and paradigms are not solely technical disagreements,
+but reflections of genuinely different ways of organizing thought and extending cognition,
+analogous to the shift from orality to literacy itself.
+Programming language design is about communication and human cognition.
+When we design a new language or choose between paradigms, we are not arbitrarily choosing
+how to tell computers what to do; we are building a cognitive toolbox that shapes
+how programmers think and how communities coordinate.
+
 
 ## Links
 
