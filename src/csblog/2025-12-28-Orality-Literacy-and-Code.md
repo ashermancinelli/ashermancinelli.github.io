@@ -1,6 +1,6 @@
 # Orality, Literacy, and Code
 
-_12/28/2025_
+_1/1/2026_
 
 ~~~admonish tip title="Table of Contents"
 <!-- toc -->
