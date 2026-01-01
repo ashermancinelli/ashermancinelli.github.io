@@ -1,12 +1,15 @@
 # About
 
-Hello! I'm deeply interested in compilers, programming languages, and performance.
+Hello! I'm interested in compilers, programming languages, and performance.
 
 <!-- My personal blog posts are listed on the left, and there's a search bar at the top. -->
 
-I work on [the NUMBA-CUDA Python JIT compiler](https://nvidia.github.io/numba-cuda/),
-[the LLVM Flang Fortran compiler](https://flang.llvm.org/docs/), and
-[the NVHPC C, C++ and Fortran compilers](https://developer.nvidia.com/hpc-sdk) at NVIDIA.
+I work on 
+[the NVHPC C, C++ and Fortran compilers](https://developer.nvidia.com/hpc-sdk),
+[the LLVM Flang Fortran compiler](https://flang.llvm.org/docs/),
+and
+[the Python JIT compilers](https://nvidia.github.io/numba-cuda/)
+at NVIDIA.
 
 ~~~admonish tip title="_Where to start?_"
 
