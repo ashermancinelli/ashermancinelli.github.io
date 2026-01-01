@@ -11,8 +11,9 @@ https://tommilligan.github.io/mdbook-admonish/
 
 # 💡 Blog
 
-- [2025]()
+- [2026]()
     - [Orality, Literacy, and Code](csblog/2025-12-28-Orality-Literacy-and-Code.md)
+- [2025]()
     - [David MacQueen on the History of Compilers](csblog/2025-11-4-David-MacQueen-on-the-History-of-Compilers.md)
     - [History of Compilers](csblog/2025-10-23-History-of-Compilers.md)
     - [Dataflow CPUs](csblog/2025-9-23-Dataflow-CPUs.md)

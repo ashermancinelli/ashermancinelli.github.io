@@ -22,6 +22,11 @@ command = "mdbook-mermaid"
 command = "mdbook-toc"
 renderer = ["html"]
 
+[preprocessor.tabify]
+command = "tool/tabify.py"
+# [preprocessor.bib]
+# bibliography = "refs.bib"
+
 [output]
 
 [output.html]
