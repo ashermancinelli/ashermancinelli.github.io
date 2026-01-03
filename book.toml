@@ -18,12 +18,14 @@ output-to-file = false # defaults to false, change to true to create SVG files i
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 
+[preprocessor.tabify]
+command = "tool/addtoc.py"
+before = ["toc", "admonish"]
+
 [preprocessor.toc]
 command = "mdbook-toc"
 renderer = ["html"]
 
-[preprocessor.tabify]
-command = "tool/tabify.py"
 # [preprocessor.bib]
 # bibliography = "refs.bib"
 

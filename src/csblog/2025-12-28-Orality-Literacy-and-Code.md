@@ -2,30 +2,44 @@
 
 _1/1/2026_
 
-~~~admonish tip title="Table of Contents"
-<!-- toc -->
-~~~
+{{ TOC }}
+
+## Intro
 
 Walter Ong, in _Orality and Literacy_ (Ong82),
 argues that the medium of thought profoundly shapes how we think.
 Ong focuses on the transition from oral cultures to literate ones.
 While he later considered digital media, computer programs were not central to _Orality and Literacy_;
-programming languages barely register in that book.
-At first I thought programming languages either sit outside Ong’s oral/literate spectrum
-or are simply another form of literature.
-After reflection, I believe they _do_ belong on the same spectrum, but _are not_ wholly subsumed
-by literature.
-<!-- _Orality and Literacy_ has much to offer the programming language community. -->
-I begin by contrasting orality and literacy, then
-attempt to extend Ong's analysis to programming languages.
+programming languages are not considered at all:
 
-~~~admonish note
-We will call people that primarily speak and do not know how to read or write _primarily oral_ (or just _oral_) people,
+~~~admonish quote title="Ong82"
+Although the full relationship of the electronically procesed word
+to the orality-literacy polarity with which this book concerns itself is too vast
+a subject to be considered in its totality here, some few points need to be made...
+~~~
+
+Programming languages are of course a small subset of the electronically processed
+word, but this was the first place my mind went to.
+When we consider the impact of literature on human history and how comparatively brief
+of a time computers have been around, I have to imagine the full scope of the impact
+of programming languages on human cognition has yet to be imagined.
+At first, I thought programming languages either sit outside Ong's oral/literate spectrum
+or are simply another form of literature entirely.
+I now believe that they _do_ belong on the same spectrum, but _are not_ wholly subsumed
+by literature.
+I begin by examining some notable contrasts between orality and literacy before
+attempting to extend Ong's analysis to programming languages.
+
+~~~admonish note title="Note on Terminology"
+We will call people that primarily speak and do not know how to read or write
+_primarily oral_ (or just _oral_) people,
 and those raised with literacy _literate_ people.
 This is not a value judgment.
 ~~~
 
-## Action and Artifact
+## Orality and Literacy
+
+### Action and Artifact
 
 Consider an oral person with a novel idea, who wants to spread this idea to as many people as possible.
 What are their options? They could either:
@@ -146,6 +160,8 @@ typically leaving no trace on the resultant program.
 <!-- They are like spells; they are described in words and characters, but they are -->
 <!-- impotent and incomplete without being cast (or ran). -->
 
+### Syntax
+
 Some aspects of programming language design are purely literate concepts, such
 as syntax.
 Iverson's _Notation as a Tool of Thought_ (Iverson79) considers the cognitive effects
@@ -236,11 +252,43 @@ the circular part of the glyph around it, swapping the rows and columns:
 
 In this way, APL provides a dictionary of flexible hieroglyphics that give
 the programmer visual hints as to their function.
-Such a concept could only be constructed by the literate mind, because such glyphs
-would be useless to an oral person.
-In this respect, literacy and programming appear to overlap perfectly in notation,
-except that code implies execution; glyphs do not just convey ideas, they convey
-behavior.
+Oral persons may make heavy use of gesture and other physical manifestations of
+their message if a physical or visual aid is needed, but the precision,
+permanence, and recognizability of glyph is unique to literacy.
+Glyphs like `⍉` might be closer to ideographs like "1" and "2"--
+readers of different languages might have very different words for "1" and "2",
+but the concepts are largely the same and their meanings are in some small way
+communicated by their visual renditions.
+The oral rendition of the concept is incomprehensible to listeners of other languages,
+but they can all understand the glyph.
+
+Proponents of APL (myself included) can only hope for adoption to branch out
+as presently popular forms of writing have:
+
+~~~admonish quote title="Ong82"
+When a fully formed script of any sort, aphabetic or other, first makes its way
+from outside into a particular society, it does so necessarily at first in restricted
+sectors and with varying effects and implications.
+Writing is often regarded at first as an instrument of secret and magic power.
+~~~
+
+If the declining popularity of Chinese pictographic scripts is any indicator,
+a simple alphabet is an aid to adoption and modern offshoots of APL are not
+well-positioned to achieve widespread adoption.
+Perhaps APL will remain a form of "craft literacy":
+
+~~~admonish quote title="Ong82"
+... shortly after the introduction of writing a 'craft literacy' develops.
+At this stage writing is a trade practiced by craftsmen, whom others hire to write
+a letter or document as they might hire a stone-mason to build a house, or a
+shipwright to build a boat.
+~~~
+
+<!-- Such a concept could only be constructed by the literate mind, because such glyphs -->
+<!-- would be useless to an oral person. -->
+<!-- In this respect, literacy and programming appear to overlap perfectly in notation, -->
+<!-- except that code implies execution; glyphs do not just convey ideas, they convey -->
+<!-- behavior. -->
 
 ### Comments
 
@@ -274,6 +322,12 @@ If the program is to be extended for any purpose other than the original one,
 the logic the program follows must be interpretable to someone else.
 All but the simplest programs require communication between people to be useful.
 
+### Literate Programming
+
+~~~admonish todo
+- Literate programming: mention Knuth's Typesetting books, Jupyter notebooks, doctest, and Org mode
+~~~
+
 ## Conclusion
 
 Programming languages exhibit characteristics of both orality and literacy.
@@ -300,44 +354,17 @@ how programmers think and how communities coordinate.
 - Backus78: [Can Programming Be Liberated from the von Neumann Style?](https://dl.acm.org/doi/10.1145/359576.359579)
 - Boole54: [Laws of Thought](https://www.gutenberg.org/files/15114/15114-pdf.pdf)
 - Ong82: [Orality and Literacy](https://www.taylorfrancis.com/books/mono/10.4324/9780203103258/orality-literacy-walter-ong-john-hartley-john-hartley)
+  - [pdf](https://monoskop.org/images/d/db/Ong_Walter_J_Orality_and_Literacy_2nd_ed.pdf)
+- Fettes23: [Book Review: Orality and Literacy: The Technologizing of the Word](https://forum.effectivealtruism.org/posts/ZtpPSnnZuheEXxPwa/book-review-orality-and-literacy-the-technologizing-of-the)
 - Iverson79: [Notation as a Tool of Thought](https://dl.acm.org/doi/pdf/10.1145/1283920.1283935)
 - Knuth84: [Literate Programming](https://academic.oup.com/comjnl/article-abstract/27/2/97/343244)
   - [pdf](https://www.cs.tufts.edu/~nr/cs257/archive/literate-programming/01-knuth-lp.pdf)
+- Sturgill12: [Review: Orality and Literacy by Walter J. Ong](https://circeinstitute.org/blog/2012-12-review-orality-and-literacy-by-walter-j-ong/)
 - Tao08: [Use good notation](https://terrytao.wordpress.com/advice-on-writing-papers/use-good-notation/#:~:text=By%20relieving%20the%20brain%20of%20all%20unnecessary%20work%2C%20a%20good%20notation%20sets%20it%20free&text=(Alfred%20North%20Whitehead%2C%20%22An%20Introduction%20to%20Mathematics%22)%20Good%20notation)
 - Whitehead11: [An Introduction to Mathematics](https://archive.org/details/introductiontoma00whituoft)
 
 ---
 
-## Personal Notes
-
-### mnemonics and formulas
-
-- Does code remind me more or orality or literacy? Simply reading the technical text does not contain the full context required to interpret it, more similar to orality. The organizational and technical context are immediate and often required for interpretation.
-- Orality is inherently active, non visual, and contextualized. It only ever exists as an event in a moment in a context, while literature is an artifact of thought, independent of a context. Code is a hybrid of both: an artifact of thought, but inherently describing an action, almost like a spell, and always embedded in a _technical context_ in which the code functions.
-  - Sound only exists as it is going out of existence. There is no stopping or having sound. It is inherently perishing. Thoughts are conceived of in primarily oral cultures as such.
-  - However complex and rigorous, primarily oral thoughts cannot be independent and purely logical, because as soon as the thought is had, it ceases to exist, absent some mechanism for committing the thought to memory and transferring it to others.
-- Code is different from plain 'ol literature describing or prescribing action; it _is_ action, (via a translator). It is not a call-to-action, it _is_ action in some fundamental way.
-
-### Characteristics of Orally Based Thought
-
-- Additive rather than subordinative
-- Orality favors the cliche because it's a memory aid and ensures the message will travel further.
-  - there's lots of thematic repetition, and they must stay intact. Their persistence is evidence of the effectiveness
-      of the cliche in allowing the moral to travel through time and space. It's not low-minded to use them, it's part of the medium.
-      Analysis/deconstruction is risky-possible destroying the message forever if the analysis propagates through too many minds
-      such that the message ceases to travel organically. The same can be said for "redundant" or "copious" continuity.
-  - it's like the page numbers or paragraphs. it's not redundant to leave that extra space there, because it's really useful in
-    helping the reader keep track of what's going on. Future iterations of humanity might look back at paragraph line breaks
-    and other literary tools of thought and organization and consider them to be "silly" or "primitive" because they are no longer
-    useful in whatever medium comes after writing.
-  - sparse linearity is actually unnatural and recent, only able to persist in human communication in the presence of longstanding
-    artifacts of thought.
-  - repetition is particularly useful in live communication because of the nature of sound. It's easy to miss a word here and there,
-    so repeating the message often helps the audience keep track and refine their understanding. It's not primitive at all.
-    - also gives the speaker a chance to mindlessly repeat their message while they consider what to say next.
-- characterized by conservatism/traditionalism
-  - bc what is not actively conserved is immediately lost.
-  - writing can also be conservative (laws were frozen in time as soon as they were written down)
 
 <!--
 https://monoskop.org/images/d/db/Ong_Walter_J_Orality_and_Literacy_2nd_ed.pdf
