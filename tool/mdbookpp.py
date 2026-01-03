@@ -9,25 +9,28 @@ from abc import ABC, abstractmethod
 class MdBookPreprocessor(ABC):
     """Base class for mdBook preprocessors that handle the JSON recursion."""
 
-    def process_content(self, content: str) -> str:
+    def __init__(self):
+        self.context: dict | None = None
+
+    def process_content(self, book, chapter, content: str) -> str:
         return content
 
-    def process_chapter(self, chapter: Dict[str, Any]) -> None:
+    def process_chapter(self, book, chapter: Dict[str, Any]) -> None:
         # Process the content if it exists
         if "Chapter" in chapter:
             chapter_data = chapter["Chapter"]
             if "content" in chapter_data:
-                chapter_data["content"] = self.process_content(chapter_data["content"])
+                chapter_data["content"] = self.process_content(book, chapter_data, chapter_data["content"])
 
             # Recursively process sub-items
             if "sub_items" in chapter_data:
                 for sub_item in chapter_data["sub_items"]:
-                    self.process_chapter(sub_item)
+                    self.process_chapter(book, sub_item)
 
     def process_book(self, book: Dict[str, Any]) -> Dict[str, Any]:
         if "sections" in book:
             for section in book["sections"]:
-                self.process_chapter(section)
+                self.process_chapter(book, section)
         return book
 
     def run(self) -> int:
@@ -43,6 +46,7 @@ class MdBookPreprocessor(ABC):
                 return 0
 
         context, book = json.load(sys.stdin)
+        self.context = context
         processed_book = self.process_book(book)
         json.dump(processed_book, sys.stdout)
         return 0

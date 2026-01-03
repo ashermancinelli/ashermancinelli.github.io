@@ -22,6 +22,10 @@ command = "mdbook-mermaid"
 command = "tool/addtoc.py"
 before = ["toc", "admonish"]
 
+[preprocessor.jinja]
+command = ".venv/bin/python3 tool/jinja.py"
+before = ["toc", "admonish", "tabify"]
+
 [preprocessor.toc]
 command = "mdbook-toc"
 renderer = ["html"]

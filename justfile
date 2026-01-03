@@ -1,5 +1,6 @@
 set positional-arguments
 
+UV := `which uv`
 MDBOOK := `which mdbook`
 CARGO := `which cargo`
 HOST := "localhost"
@@ -8,6 +9,7 @@ PORT := "3000"
 CYAN := ""
 CLR := ""
 DEPS := "mdbook mdbook-admonish mdbook-mermaid mdbook-graphviz"
+PYDEPS := "Jinja2"
 
 default: all
 
@@ -19,9 +21,17 @@ serve:
 	@printf "\t\t%sServing on %s:%s%s\n" "{{CYAN}}" "{{HOST}}" "{{PORT}}" "{{CLR}}"
 	{{MDBOOK}} serve -n {{HOST}} -p {{PORT}}
 
+deps-rs:
+    cargo install {{DEPS}}
+
+deps-py:
+    uv venv .venv --python 3.13 --seed --clear
+    uv pip install {{PYDEPS}}
+
 deps:
     echo 'Installing dependencies...'
-    cargo install {{DEPS}}
+    just deps-rs
+    just deps-py
 
 deploy: all
 	test -d gh-pages || git worktree add gh-pages

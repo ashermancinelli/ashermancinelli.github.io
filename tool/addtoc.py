@@ -8,7 +8,7 @@ TOC = '''
 '''
 
 class DoNothingPP(MdBookPreprocessor):
-    def process_content(self, content: str) -> str:
+    def process_content(self, book, chapter, content: str) -> str:
         return content.replace('{{ TOC }}', TOC)
 
 if __name__ == "__main__":
