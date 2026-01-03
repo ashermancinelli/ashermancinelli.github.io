@@ -1,30 +1,31 @@
+<!-- %jinja% -->
 # Literacy and Code
 
 {{ TOC }}
+
+Orality and code have a surprising number of characteristics in common.
+However, the more natural comparison is, of course, literature.
 
 Literature leaves a physical trace in the world, while orality does not.
 Programming languages are unique because they do leave a trace on the world
 (the source code of the program is stored _somewhere_), but the physical record
 is only part of the program, unlike literature.
-Programs are inherently _actions_, like the oral arts, and yet they are
-cast in literature.
+Programs are inherently _actions_, like the oral arts, yet they are
+cast in text.
 Literature simply describes or prescribes; code both describes and performs,
-closer to a magic spell than static text.
-They are impotent and incomplete without being executed.
-An exception to this is comments; they are pure literature embedded in programs,
-typically leaving no trace on the resultant program.
+closer to a magic spell than a textbook.
+Code is impotent and incomplete without being executed.
+
+<!-- An exception to this is comments; they are pure literature embedded in programs, -->
+<!-- typically leaving no trace on the resultant program. -->
 <!-- They are like spells; they are described in words and characters, but they are -->
 <!-- impotent and incomplete without being cast (or ran). -->
 
 ## Syntax and Cognition
 
-Some aspects of programming language design are purely literate concepts, such
-as syntax.
-Iverson's _Notation as a Tool of Thought_ (Iverson79) considers the cognitive effects
-of the syntax of programs.
-His paper begins with philosophical foundations rather than technical, evoking the words
-of Charles Babbage and Alfred North Whitehead, rather than jumping straight to the
-technical reasons for choosing one syntax over another (Whitehead11, Iverson79):
+Some aspects of programming language design are purely literate concepts, such as syntax.
+In _Notation as a Tool of Thought_ (Iverson79), Iverson considers how syntax shapes cognition.
+He begins with his philosophical foundations:
 
 ~~~admonish quote title="Whitehead11"
 By relieving the brain of all unnecessary work,
@@ -37,6 +38,9 @@ the mental power of the race.
 That Language is an instrument of human reason, and not merely a medium
 for the expression of thought, is a truth generally admitted.
 ~~~
+
+He points out some of the advantages programming languages have over
+regular literature:
 
 ~~~admonish quote title="Iverson79"
 Nevertheless, mathematical notation has serious deficiencies.
@@ -57,6 +61,11 @@ used as tools of thought in ways that would be
 considered significant by, say, an applied mathematician.
 ~~~
 
+Programming languages are executable, deterministic, and unambiguous.
+These characteristics offer cognitive tools that literature does not.
+
+### APL, Glyphs, Ideographs
+
 Iverson's thesis is that the most useful concepts of mathematical notation and
 programming languages come together in his programming language APL.
 Those unfamiliar with APL's syntax may consider it a cognitive inhibitor
@@ -64,11 +73,8 @@ rather than an aid, yet the language's terse syntax does provide an interesting
 study of the capability of a language's syntax to affect the thought process
 of its users.
 
-APL's dictionary is comprised of glyphs instead of English words.
-These glyphs often give the programmer some visual clue as to what operation
-it represents.
-The glyphs for rounding floating-point numbers are perhaps the most straightforward
-examples:
+APL's dictionary is comprised of glyphs glyphs that provide visual hints to
+their function instead of English words.
 
 ```
       ⌈0.5
@@ -77,10 +83,10 @@ examples:
 0
 ```
 
-The glyph `⌊` seems to take its operand from the midpoint down to the floor, reminding the
-programmer of its function ("round down").
-When given two operands (or "invoked dyadically"), the exact same glyphs
-take the minimum or maximum of the two operands, and the glyphs serve similar visual functions:
+The glyph ⌊ visually suggests taking its operand from midpoint down to the floor,
+reminding the programmer of its function ("round down").
+With two operands, these glyphs compute minimum and maximum,
+evoking similar imagery:
 
 ```
       1⌊2
@@ -89,8 +95,7 @@ take the minimum or maximum of the two operands, and the glyphs serve similar vi
 2
 ```
 
-The following constructs a three-by-three matrix and demonstrates use of the
-`⍉` glyph, which transposes its operand.
+The transpose operator ⍉ suggests spinning the matrix around its diagonal.
 One imagines themselves holding both ends of the diagonal line and spinning
 the circular part of the glyph around it, swapping the rows and columns:
 
@@ -106,17 +111,25 @@ the circular part of the glyph around it, swapping the rows and columns:
 3 6 9
 ```
 
-In this way, APL provides a dictionary of flexible hieroglyphics that give
+In this way, APL provides a dictionary of flexible hieroglyphs that give
 the programmer visual hints as to their function.
-Oral persons may make heavy use of gesture and other physical manifestations of
-their message if a physical or visual aid is needed, but the precision,
-permanence, and recognizability of glyph is unique to literacy.
-Glyphs like `⍉` might be closer to ideographs like "1" and "2"--
-readers of different languages might have very different words for "1" and "2",
-but the concepts are largely the same and their meanings are in some small way
-communicated by their visual renditions.
-The oral rendition of the concept is incomprehensible to listeners of other languages,
-but they can all understand the glyph.
+APL's glyphs function like ideographs like "1" and "2":
+a Chinese speaker and an English speaker will not understand each other's
+explanations of transposition, but both visually understand the meaning of "⍉".
+The characters communicate meaning independent of spoken language.
+Gesture serves a similar function in oral peoples;
+neighboring communities may not be mutually comprehensible, but they
+can point and motion with their hands to communicate.
+
+<!-- Oral persons may make heavy use of gesture and other physical manifestations of -->
+<!-- their message if a physical or visual aid is needed, but the precision, -->
+<!-- permanence, and recognizability of glyph is unique to literacy. -->
+<!-- Glyphs like `⍉` might be closer to ideographs like "1" and "2"-- -->
+<!-- readers of different languages might have very different words for "1" and "2", -->
+<!-- but the concepts are largely the same and their meanings are in some small way -->
+<!-- communicated by their visual renditions. -->
+<!-- The oral rendition of the concept is incomprehensible to listeners of other languages, -->
+<!-- but they can all understand the glyph. -->
 
 Proponents of APL (myself included) can only hope for adoption to branch out
 as presently popular forms of writing have:
@@ -132,36 +145,65 @@ If the declining popularity of Chinese pictographic scripts is any indicator,
 a simple alphabet is an aid to adoption and modern offshoots of APL are not
 well-positioned to achieve widespread adoption.
 
-<!-- Perhaps APL will remain a form of "craft literacy": -->
+## Semantic Editing
 
-<!-- ~~~admonish quote title="Ong82" -->
-<!-- ... shortly after the introduction of writing a 'craft literacy' develops. -->
-<!-- At this stage writing is a trade practiced by craftsmen, whom others hire to write -->
-<!-- a letter or document as they might hire a stone-mason to build a house, or a -->
-<!-- shipwright to build a boat. -->
-<!-- ~~~ -->
+Modern programming environments offer editing tools with no comparison
+in a typical written setting, thanks in particular to the _determinability_
+of code.
+Formally defined grammars allow procedural analysis of code that is not possible
+in prose.
+The earliest examples of this are seen in the Lisp community, where the
+editing environment was an early focus.
 
-<!-- Such a concept could only be constructed by the literate mind, because such glyphs -->
-<!-- would be useless to an oral person. -->
-<!-- In this respect, literacy and programming appear to overlap perfectly in notation, -->
-<!-- except that code implies execution; glyphs do not just convey ideas, they convey -->
-<!-- behavior. -->
+~~~admonish quote title="Ong82"
+As the experience of working with text as text
+matures, the maker of the text, now properly an ‘author’, acquires
+a feeling for expression and organization notably different from
+that of the oral performer before a live audience...
+The writer finds his written words
+accessible for reconsideration, revision, and other manipulation
+until they are finally released to do their work. Under the author’s
+eyes the text lays out the beginning, the middle and the end, so
+that the writer is encouraged to think of his work as a selfcontained,
+discrete unit, defined by closure.
+~~~
 
-## Text that _Does_
+Just as the transition from orality to literacy offered new tools for construction
+of thought, so too do modern editors.
+In particular, _language servers_ make the entire semantic context of a program
+available to the programmer directly, freely searchable and modifiable.
+In prose, the best we have is tools to look up the definitions of words, but there
+is nothing like an English language server that would allow an author to navigate
+text as a semantic tree.
+Authors can construct the semantic information _themselves_ by organizing their
+work into chapters or files, but the burden is on the author to maintain the
+structure.
+Editors understand the full technical context and update continuously.
 
-Code is different from plain 'ol literature describing or prescribing action;
-it _is_ action, (via a translator).
-It is not a call-to-action, it fundamentally _is_ action.
+~~~admonish quote
+Print, as has been seen, mechanically as well as psychologically
+locked words into space and thereby established a firmer sense of
+closure than writing could.
+~~~
 
-## Comments
+As print "locked words into space," editors bring programs to life.
 
-Comments exist in an interesting overlap of literacy, orality, and code.
+
+## Literature in Programming
+
+Two subsets of programming are unique in their relation to literacy.
+***Comments*** and ***literate programming*** are both inherently works of
+literature embedded in or combined with code.
+
+Comments exist in an interesting overlap of literacy and code.
 They are (usually) strictly literary devices embedded in code, with no effect
-on the resultant program. In this case, code completely subsumes the category
+on the resultant program.
+In this case, code completely subsumes the category
 of literature, since any work of literature can theoretically exist inside
 a program.
 Yet, they are not typically meaningful outside the technical context they
 physically reside in.
+
 Donald Knuth studied the boundary between code and literature in
 _Literate Programming_:
 
@@ -178,20 +220,19 @@ concentrate rather on explaining to human beings what
 we want a computer to do.
 ~~~
 
+For a more literature-forward analysis of programs, _Literate Programming_
+is a must-read.
+Knuth dealt with the specifics of typesetting documents in great detail
+across several volumes, such as his 1999 work, _Digital Typography_.
+Digital typography was even the titular motivation for Dennis Ritchie to
+begin work on the Unix operating system at Bell Labs;
+although he probably just wanted an excuse to work on his own OS after the
+failure of the Minix operating system, developing a proper digital typesetting
+program for the Lab was at least the rationale for funding his effort.
+
 Programs are inherently social and embedded in a social _and technical_ context.
 If the program is to be of use to anyone other than the author, some portion of the
 technical context required to run the program must be communicated to other people.
 If the program is to be extended for any purpose other than the original one,
 the logic the program follows must be interpretable to someone else.
 All but the simplest programs require communication between people to be useful.
-
-## Literate Programming
-
-~~~admonish todo
-- Literate programming: mention Knuth's Typesetting books, Jupyter notebooks, doctest, and Org mode
-~~~
-
-## Editors
-
-## Memory and Narrative in Code
-
