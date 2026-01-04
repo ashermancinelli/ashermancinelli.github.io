@@ -121,16 +121,6 @@ Gesture serves a similar function in oral peoples;
 neighboring communities may not be mutually comprehensible, but they
 can point and motion with their hands to communicate.
 
-<!-- Oral persons may make heavy use of gesture and other physical manifestations of -->
-<!-- their message if a physical or visual aid is needed, but the precision, -->
-<!-- permanence, and recognizability of glyph is unique to literacy. -->
-<!-- Glyphs like `⍉` might be closer to ideographs like "1" and "2"-- -->
-<!-- readers of different languages might have very different words for "1" and "2", -->
-<!-- but the concepts are largely the same and their meanings are in some small way -->
-<!-- communicated by their visual renditions. -->
-<!-- The oral rendition of the concept is incomprehensible to listeners of other languages, -->
-<!-- but they can all understand the glyph. -->
-
 Proponents of APL (myself included) can only hope for adoption to branch out
 as presently popular forms of writing have:
 
@@ -224,15 +214,62 @@ For a more literature-forward analysis of programs, _Literate Programming_
 is a must-read.
 Knuth dealt with the specifics of typesetting documents in great detail
 across several volumes, such as his 1999 work, _Digital Typography_.
+
+~~~admonish note title="Sidenote on Unix"
 Digital typography was even the titular motivation for Dennis Ritchie to
 begin work on the Unix operating system at Bell Labs;
 although he probably just wanted an excuse to work on his own OS after the
 failure of the Minix operating system, developing a proper digital typesetting
 program for the Lab was at least the rationale for funding his effort.
+~~~
 
-Programs are inherently social and embedded in a social _and technical_ context.
+Programs are inherently social and embedded in a _social and technical context_.
 If the program is to be of use to anyone other than the author, some portion of the
 technical context required to run the program must be communicated to other people.
 If the program is to be extended for any purpose other than the original one,
 the logic the program follows must be interpretable to someone else.
 All but the simplest programs require communication between people to be useful.
+
+## Effects on Cognition
+
+Ong avoids moralizing the distinction between oral and literate
+people, avoiding even implicitly moral terms like "illiterate".
+Nonetheless, he does not shy away from the benefits of literacy:
+
+~~~admonish quote title="Ong82"
+Writing, as has been seen, is essentially a consciousness-raising activity.
+~~~
+
+And elsewhere:
+
+~~~admonish quote title="Ong82"
+Orality is not an ideal, and never was. To approach it positively
+is not to advocate it as a permanent state for any culture. Literacy
+opens possibilities to the word and to human existence
+unimaginable without writing. Oral cultures today value their oral
+traditions and agonize over the loss of these traditions, but I have
+never encountered or heard of an oral culture that does not want
+to achieve literacy as soon as possible.
+Yet orality is not despicable. It can produce creations beyond thereach
+of literates, for example, the Odyssey. Nor is orality ever
+completely eradicable: reading a text oralizes it. Both orality and
+the growth of literacy out of orality are necessary for the evolution
+of consciousness.
+~~~
+
+If literacy changed cognition by enabling abstract thought,
+hierarchical organization, and precise specification, what might code do?
+
+Rather than manipulating text alone, the programmer
+works on semantic structure with immediate feedback.
+Thought experiments are executable directly and provide instant feedback.
+Programmers learn to build on top of abstractions and communicate with other
+people in new ways.
+
+Compare the history of programming languages to the history of literacy.
+Literacy is at the very least several thousand years old while
+programming languages are about one hundred years old, at most.
+The difference between the Automatic Programming of John Backus and Grace Hopper
+and modern programming languages is astounding.
+What differences might we see in the next thousand years?
+What effects might those differences have on our cognition?
