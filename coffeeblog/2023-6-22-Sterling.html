@@ -1,0 +1,292 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Sterling - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+        <link rel="stylesheet" href="../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+where: Portland, OR
+layout: post
+title: Sterling - 10/10
+permalink: /sterling
+cat: coffee
+...
+
+This place is something special. *Please* don't leave Portland without trying their espresso.
+
+-->
+<p><em>6/21/23 update:</em></p>
+<p>In my second visit, I had another Etheopian roast, the <em>Sidama Setamo</em>, an Etheopian washed-process SO Heirloom roast with bergamot and wild cherries as flavor comps.
+The barista compared the roast to Fruit Loops, which felt far closer to my experience than the listed comps; I also got notes of green apple.</p>
+<p>I’m determined to try every roast this place puts on espresso;
+if I ever move out of Portland I’m going to kick myself for not having as much of this espresso as I can.
+This may be consistently the best espresso I’ll ever have.</p>
+<p>I got to sit with Eric (the owner) for a minute today and ask a few questions about Sterling.
+He started the operation in 2005 (under a different name I believe) and now has a team working at the roaster while he spends most of his time at the cafe interacting with customers and tasting roasts.</p>
+<p>He spoke really highly of Keeper cafe (which I had never heard of) as well as Barista (which I tried later that day) as well as Courier, which is currently somewhere in my top 5 cafes &amp; roasters in Portland.
+He also referred to Vivace in Seattle as the Mecca of the 90s and 2000s coffee culture, but lamented the lack of innovation he’s seen in Seattle’s coffee scene in the years since; he used to take new employees up to thier roaster to learn the trade.
+Same with Slate roasters, who have since closed their doors.</p>
+<p>I hope to set up a more formal interview with Eric sometime to tell Sterling’s story.</p>
+<p>–&gt;
+<em>6/14/23 (original review):</em></p>
+<p>Prior to trying Sterling’s espresso, the #1 on my list was from Courier Coffee.
+When I told the barista at Courier how much I enjoyed their espresso, he made sure to recommend Sterling for my next stop.</p>
+<blockquote>
+<p>Oh, you like espresso? Yeah, you should definitely check out Sterling</p>
+</blockquote>
+<p>He backed that comment up with a few more remarks about how special their espresso is, and it went to the top of my list of places to try next.
+It did not dissapoint.</p>
+<p>–&gt;</p>
+<p>The barista was excited to welcome me in and tell me all about the roast they had ready for espresso, which happened to be the <em>Nigusse Lemma</em>, a natural-process small-batch Ethiopian roast with Etheopian Heriloom varietals.
+I got the same feelings I get trying a new whiskey at the Scotch Lounge on the East side of town - she talked through the roasting process at their East-side roastery and the origins of the beans.</p>
+<p>After pulling the shot, she put together a board with a small glass of sparkling water as a pallate clenser (as is usual in espresso-focused cafes).</p>
+<p>Adding to the Scotch Lounge feelings, the espresso was served in a glencairn-style whiskey serving glass along with a third glass with a drip brew so as to try the roast from another perspective.</p>
+<p>Both coffees were smooth and creamy - I jotted down <em>notes of strawberries and cream</em> before I even saw <em>“Raspberry &amp; Vanilla Cream”</em> listed as flavor comps on the bag of coffee they used for my espresso.</p>
+<p>–&gt;</p>
+<p>This espresso struck me as <em><strong>perfectly balanced</strong></em> - without hesitation, I wanted to share it with every one of my friends still not won over by espresso.
+In my experience, when people try espresso and decide they hate it, 95% of the time it’s due to the intensity of the flavors, especially with sour and bitter notes.
+When I try an intense espresso, something that punches you in the mouth with sourness or fruit or bitterness or chocolate or nuttiness, I can enjoy the intensity (if it’s done well!) - but that seems to be the attribute of espresso that puts people off of it.</p>
+<p>This espresso was not intense in the usual way, but not too mild either.
+It was full of flavor with delicious notes of citrus, cream, a balance of bitterness to round out the flavor profile, yet not too intense to be someone’s first espresso.</p>
+<p>This espresso, along with their drip brew, the knowledgable baristas, and a cozy cafe seating area nestled into NW Portland with indoor trees and fast wifi brings this to the top of my list.
+The barista who served me happened to recommend <em>Barista</em> for one of my next espresso destinations which I haven’t had the opportunity to try yet - I look forward to posting a review given that the current champion of my list thinks I should give it a try.</p>
+<p>As I work out an espresso tour of Portland, I <em>have</em> to pencil Sterling in as the final destination.
+I would want any espresso afficionados visiting the city to finish their time here with a Sterling espresso.</p>
+<p>–&gt;</p>
+<h3>
+    <center>
+    <a href="https://www.sterling.coffee/" target="blank">
+    Sterling Coffee homepage
+    </a>
+    </center>
+</h3>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../coffeeblog/2023-6-14-Deadstock.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../coffeeblog/2023-6-11-Best-Espresso-In-Portland.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../coffeeblog/2023-6-14-Deadstock.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

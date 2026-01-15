@@ -1,0 +1,473 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Try an SMT solver - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+        <link rel="stylesheet" href="../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="try-an-smt-solver"><a class="header" href="#try-an-smt-solver">Try an SMT solver</a></h1>
+<p><em>2025-07-21</em></p>
+<!-- Not really - but exploring the use of SMT solvers for solving problems is an entirely different way of thinking about programming. -->
+<div id="admonition-_alan-perlis_" class="admonition admonish-tip" role="note" aria-labelledby="admonition-_alan-perlis_-title">
+<div class="admonition-title">
+<div id="admonition-_alan-perlis_-title">
+<p><em>Alan Perlis</em></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_alan-perlis_"></a>
+</div>
+<div>
+<p><em>A language that doesn’t affect the way you think about programming, is not worth knowing.</em></p>
+</div>
+</div>
+<p><a href="https://leetcode.com/problems/minimum-number-of-flips-to-make-binary-grid-palindromic-ii/description/">Let’s explore this leetcode problem as an example:</a></p>
+<div id="admonition-3240-minimum-number-of-flips-to-make-binary-grid-palindromic-ii" class="admonition admonish-quote" role="note" aria-labelledby="admonition-3240-minimum-number-of-flips-to-make-binary-grid-palindromic-ii-title">
+<div class="admonition-title">
+<div id="admonition-3240-minimum-number-of-flips-to-make-binary-grid-palindromic-ii-title">
+<ol start="3240">
+<li>Minimum Number of Flips to Make Binary Grid Palindromic II</li>
+</ol>
+</div>
+<a class="admonition-anchor-link" href="#admonition-3240-minimum-number-of-flips-to-make-binary-grid-palindromic-ii"></a>
+</div>
+<div>
+<ul>
+<li>You are given an <code>m x n</code> binary matrix grid.</li>
+<li>A row or column is considered palindromic if its values read the same forward and backward.</li>
+<li>You can flip any number of cells in grid from 0 to 1, or from 1 to 0.</li>
+<li>Return the minimum number of cells that need to be flipped to make all rows and columns palindromic, and the total number of 1’s in grid divisible by 4.</li>
+</ul>
+</div>
+</div>
+<p>I’ll be using the Python bindings to the Z3 SMT solver.</p>
+<p>When using an SMT or SAT solver, you don’t conceptualize <em>how to solve</em> the problem, you just describe the problem in a way that the solver can understand, and then ask it if your description is satisfiable.
+If it is, you can extract a <em>model</em> from the solver that can evaluate inputs in the context of your solution.</p>
+<pre><code class="language-python">def solve(grid: List[List[int]]) -&gt; int | None:
+    ...
+
+def test():
+    assert solve([[1,0,0],[0,1,0],[0,0,1]]) == 3
+    assert solve([[0,1],[0,1],[0,0]]) == 2
+    assert solve([[1],[1]]) == 2
+</code></pre>
+<p>The first thing we need to do is represent the grid in the solver.
+We will create an optimizer and a grid of z3 length-1 bit vectors with unspecified values.</p>
+<pre><code class="language-python">s = z3.Optimize()
+n = len(grid)
+m = len(grid[0])
+zgrid = [[z3.BitVec(f'grid_{i}_{j}', 1) for j in range(m)] for i in range(n)]
+</code></pre>
+<p>Then we create constraints on this grid and ask Z3 to find us an optimal solution, and then we can evaluate the properties of the model that we are interested in.</p>
+<pre><code class="language-python"># Add a constraint that each cell matches its mirror image
+for i in range(n):
+    for j in range(m):
+        s.add(zgrid[i][j] == zgrid[n-i-1][m-j-1])
+</code></pre>
+<p>Notice that we are using <code>==</code> between actual numeric values and symbolic values that we defined as z3 objects.
+The z3 bindings do not so much as perform operations themselves, but they provide a DSL for describing constraints that are then consumed by the actual solver.</p>
+<pre><code class="language-python"># Create z3 objects for the sum of all bits in the grid
+# and the sum of the differences between the grid z3
+# will solve for and the original grid
+sum = z3.IntVal(0)
+diff = z3.IntVal(0)
+for i in range(n):
+    for j in range(m):
+        sum += z3.If(zgrid[i][j] == 1, 1, 0)
+        diff += zgrid[i][j] != grid[i][j]
+
+# Constrain the sum of the grid to be divisible by 4
+s.add(sum % 4 == 0)
+
+# Minimize the number of differences between the grid z3
+# will solve for and the original grid
+objective = s.minimize(diff)
+</code></pre>
+<p>At this point, we have provided enough information to the solver to find the optimal solution:</p>
+<pre><code class="language-python"># If the solver is able to find a solution, we can
+# extract the model and evaluate the objective function.
+if s.check() == z3.sat:
+    return int(objective.value())
+</code></pre>
+<p>The <code>s.check()</code> call will return <code>z3.sat</code> if the provided constraints are satisfiable, and <code>z3.unsat</code> if they are not.</p>
+<p>Once we’re done, we can also look at the representation used by the underlying solver, which uses s-expressions to represent the constraints.
+These are the sexprs for the last solution we looked at:</p>
+<pre><code class="language-python">print(s.sexpr())
+</code></pre>
+<pre><code class="language-lisp">(declare-fun grid_0_0 () (_ BitVec 1))
+(declare-fun grid_1_0 () (_ BitVec 1))
+(assert (and (= grid_0_0 grid_1_0) (= grid_1_0 grid_0_0)))
+(assert (let ((a!1 (mod (+ 0 (ite (= grid_0_0 #b1) 1 0) (ite (= grid_1_0 #b1) 1 0)) 4)))
+  (= a!1 0)))
+(minimize (+ 0 (ite (distinct grid_0_0 #b1) 1 0) (ite (distinct grid_1_0 #b1) 1 0)))
+(check-sat)
+
+(declare-fun grid_0_0 () (_ BitVec 1))
+(declare-fun grid_1_0 () (_ BitVec 1))
+(assert (and (= grid_0_0 grid_1_0) (= grid_1_0 grid_0_0)))
+(assert (let ((a!1 (mod (+ 0 (ite (= grid_0_0 #b1) 1 0) (ite (= grid_1_0 #b1) 1 0)) 4)))
+  (= a!1 0)))
+(minimize (+ 0 (ite (distinct grid_0_0 #b1) 1 0) (ite (distinct grid_1_0 #b1) 1 0)))
+(check-sat)
+</code></pre>
+<h1 id="quarters-on-a-chessboard"><a class="header" href="#quarters-on-a-chessboard">Quarters on a Chessboard</a></h1>
+<p>This was a far more complex puzzle I had fun exploring with z3.</p>
+<div id="admonition-chessboard-problem" class="admonition admonish-tip" role="note" aria-labelledby="admonition-chessboard-problem-title">
+<div class="admonition-title">
+<div id="admonition-chessboard-problem-title">
+<p>Chessboard Problem</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-chessboard-problem"></a>
+</div>
+<div>
+<p>You have a chessboard, and on each square sits a quarter, showing either heads or tails at random. A prize is hidden under one random square.</p>
+<ul>
+<li><strong>Player 1</strong> enters the room, inspects the board, and is allowed to flip <strong>exactly one</strong> coin of their choosing. Then Player 1 leaves.</li>
+<li><strong>Player 2</strong> enters the room (without knowing which coin was flipped) and must select the square they believe hides the prize.</li>
+</ul>
+<p>How can Player 1 and Player 2 agree on a strategy so that Player 2 always finds the prize, no matter where it is hidden or how the coins are initially arranged?</p>
+</div>
+</div>
+<p>Since fall of 2024, I’ve been thinking about this puzzle on and off since a friend explained it to me.
+I’ve come up with a few solutions, but I was finally able to settle on a solution that I’m happy with, with the aid of the Z3 theorem prover.</p>
+<h2 id="step-1-prove-exhaustively-for-2x2-boards"><a class="header" href="#step-1-prove-exhaustively-for-2x2-boards">Step 1: Prove Exhaustively for 2x2 Boards</a></h2>
+<p>My goal was to formulate a proof of a much smaller problem using the Python bindings to the <a href="https://github.com/Z3Prover/z3">Z3 theorem prover</a> that looked like this:</p>
+<p>There exists functions F and G such that for all possible chessboards <code>board</code> and prize locations <code>prize</code>:</p>
+<ul>
+<li><code>F(board, prize) = i'</code></li>
+<li><code>board' = board ⊕ i'</code></li>
+<li><code>G(board') = prize</code></li>
+</ul>
+<p>Assuming whatever properties of an 8x8 board that make this problem tractable also hold for a 2x2 board, I could analyze the proof of the smaller board and extrapolate the solution to the 8x8 board.</p>
+<p>I communicated this to the Z3 theorem prover through the python bindings, and it returned exhaustive lookup table solutions for F and G.</p>
+<p>This is a snippet of how I described the problem to Z3 (full code linked at the bottom):</p>
+<pre><code class="language-python">board_size = 2
+power = board_size.bit_length()
+cell_sort = BitVecSort(power)
+board_sort = BitVecSort(board_size)
+a_board = BitVec('a_board', board_sort)
+a_cell = BitVec('a_cell', cell_sort)
+
+flip = Function('flip', board_sort, cell_sort, board_sort)
+
+# assert that only a single bit has been flipped by the flip function.
+# The input board xor-ed with the output board must yield a power of two.
+s.add(
+    ForAll(
+        [a_board, a_cell],
+        Or(
+            [
+                (flip(a_board, a_cell) ^ a_board) == BitVecVal(2**i, board_size)
+                for i in range(board_size)
+            ]
+        ),
+    )
+)
+
+# Guess function always returns a number corresopnding to the chess square
+# that the flipper intended to communicate.
+guesser = Function('guesser', board_sort, cell_sort)
+s.add(
+    ForAll(
+        [a_board, a_cell],
+        guesser(flip(a_board, a_cell)) == a_cell,
+    )
+)
+</code></pre>
+<p>I then fed in every possible 2x2 board and verified that the generated solutions were correct.</p>
+<pre><code class="language-python">board_size = 2
+all_boards = list(itertools.product([0, 1], repeat=board_size*board_size))
+for flat_board in all_boards:
+    board = np.array(flat_board, dtype=np.uint).reshape((board_size, board_size))
+    for money in range(board_size*board_size):
+        zboard = board_to_bitvec(board)
+        ztarget = BitVecVal(money, cell_sort)
+        s.add(guesser(flip(zboard, ztarget)) == ztarget)
+
+        # Ensure we found a solution
+        assert s.check() == sat
+        m = s.model()
+
+        # Verify the model gives the correct solution
+        flipped = m.evaluate(flip(zboard, ztarget))
+        guess = m.evaluate(guesser(flipped))
+        print(pbv(zboard), pbv(flipped), guess, ztarget)
+        assert guess.as_long() == ztarget.as_long(), 'Guess does not match target'
+</code></pre>
+<p>I then had a table of solutions for the 2x2 board to analyze:</p>
+<div class="table-wrapper"><table><thead><tr><th>board</th><th>flipped</th><th>target</th><th>guess</th></tr></thead><tbody>
+<tr><td>0000</td><td>1000</td><td>0</td><td>0</td></tr>
+<tr><td>0000</td><td>0100</td><td>1</td><td>1</td></tr>
+<tr><td>0000</td><td>0001</td><td>2</td><td>2</td></tr>
+<tr><td>0000</td><td>0010</td><td>3</td><td>3</td></tr>
+</tbody></table>
+</div>
+<p>It started to look eerily similar to a solution I came up with in November 2024.
+This is what I texted my friend:</p>
+<div id="admonition-solution" class="admonition admonish-quote" role="note" aria-labelledby="admonition-solution-title">
+<div class="admonition-title">
+<div id="admonition-solution-title">
+<p>Solution</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-solution"></a>
+</div>
+<div>
+<p>person1: pos = xor all the positions together and then flips the coin at position pos ^ prize index. person2 xors all the indices of heads together and the result is the prize location</p>
+</div>
+</div>
+<p>I was too busy to check at the time, but this looked exactly like the solution z3 arrived at.</p>
+<h2 id="step-2-prove-by-counterexample-for-8x8-boards"><a class="header" href="#step-2-prove-by-counterexample-for-8x8-boards">Step 2: Prove by Counterexample for 8x8 Boards</a></h2>
+<p>I then tried to give the solution to z3 and see if it could find a counterexample.
+With some AI help I was able to express the solution in z3 constraints:</p>
+<pre><code class="language-python">board_size = 8
+bits = board_size.bit_length()
+s = Solver()
+
+board, prize_index = BitVec('board', board_size), BitVec('prize_index', bits)
+original_parity = xor_sum_z3(board, board_size)
+flip_index = original_parity ^ prize_index
+s.add(
+    ULT(prize_index, BitVecVal(board_size, bits))
+)
+s.add(
+    ULT(flip_index, BitVecVal(board_size, bits))
+)
+flip_mask = BitVecVal(1, board_size) &lt;&lt; ZeroExt(board_size - bits, flip_index)
+board_prime = board ^ flip_mask
+guess = xor_sum_z3(board_prime, board_size)
+
+counterexample = Not(guess == prize_index)
+s.add(counterexample)
+</code></pre>
+<p>And upon checking the solver, I got <code>unsat</code>, meaning that the solution was correct (so long as I correctly expressed the solution to z3).</p>
+<hr />
+<ul>
+<li><a href="https://www.cs.yale.edu/homes/perlis-alan/quotes.html">Alan Perlis, <em>EPIGRAMS IN PROGRAMMING</em></a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2025-7-23-Strict-Aliasing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2025-7-20-Ideal-Array-Language.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2025-7-23-Strict-Aliasing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2025-7-20-Ideal-Array-Language.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

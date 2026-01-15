@@ -1,0 +1,444 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Variable Length Arrays - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+        <link rel="stylesheet" href="../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+layout: post
+title: Understanding VLA
+permalink: /vla-c
+cat: cs
+tags: c++
+-->
+<h1 id="variable-length-arrays"><a class="header" href="#variable-length-arrays">Variable Length Arrays</a></h1>
+<p>Scattered notes from learning about the implementation of VLAs in C.</p>
+<h2 id="what-is-vla"><a class="header" href="#what-is-vla">What is VLA?</a></h2>
+<p>Variable-length arrays are dynamic, stack-allocated arrays.
+The compiler needs to increase the stack size in the current stack frame to allocate enough space for the array.
+Assuming negative stack-growth like on x86, the compiler will decrease the stack pointer sufficiently to store the array.</p>
+<p>This is almost identical to <code>alloca</code>.
+Both <code>alloca</code> and VLAs are essentially primitives to modify the stack pointer.</p>
+<p>Eg:</p>
+<pre><code class="language-c">  // Subtracts N from current stack pointer returns sp 
+  int *curr_sp = alloca(N * sizeof(int));
+
+  // equivilant to
+  int curr_sp[N];
+</code></pre>
+<p><a href="https://stackoverflow.com/questions/3488821/is-alloca-completely-replaceable">One key difference between the two:</a></p>
+<div id="admonition-quote" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-title">
+<div class="admonition-title">
+<div id="admonition-quote-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote"></a>
+</div>
+<div>
+<ul>
+<li><em>The memory alloca() returns is valid as long as the current function persists.</em></li>
+<li><em>The lifetime of the memory occupied by a VLA is valid as long as the VLA’s identifier remains in scope.</em></li>
+<li><em>You can <code>alloca</code> memory in a loop for example and use the memory outside the loop, a VLA would be gone because the identifier goes out of scope when the loop terminates.</em></li>
+</ul>
+</div>
+</div>
+<h2 id="memory-layout"><a class="header" href="#memory-layout">Memory Layout</a></h2>
+<p>Because the stack grows down on most platforms, the stack pointer after an <code>alloca</code> or VLA allocation but arrays are addressed sequentially upwards, the address of the first element of a VLA array (or the pointer returned by <code>alloca</code>) will be the value of the stack pointer <em>after</em> it’s modified.</p>
+<p><img src="images/vla/vla-stack-pointer-viz.drawio.png" alt="VLA Stack Pointer Visualization" /></p>
+<p>Element 0 of the array or <code>alloca</code>-allocated memory is therefore immediately above the stack pointer after allocation, and is addressed by increasing sequentially until the end of the array.
+Accessing past the array will then run into previously declared stack variables.</p>
+<p>When the function returns, the stack space will be available for subsequent function calls to use automatically, so there is no need to explicitly free memory allocated by VLA/<code>alloca</code>.</p>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<div id="admonition-gcc-documentation" class="admonition admonish-quote" role="note" aria-labelledby="admonition-gcc-documentation-title">
+<div class="admonition-title">
+<div id="admonition-gcc-documentation-title">
+<p>GCC Documentation</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-gcc-documentation"></a>
+</div>
+<div>
+<p>These arrays are declared like any other automatic arrays, but with a length that is not a constant expression. The storage is allocated at the point of declaration and deallocated when the block scope containing the declaration exits.</p>
+</div>
+</div>
+<pre><code class="language-c">// ./vla &lt;size&gt;
+int main(int argc, char** argv) {
+  int len = atoi(argv[1]);
+  int array[len];
+  for (int i=0; i&lt;len; i++)
+    array[i] = i;
+}
+</code></pre>
+<p>Declaring the array decrements the stack pointer enough to provide memory for the array:</p>
+<!--
+gcc _includes/vla/inspect-stack.c && LEN=10 IDX=4 ./a.out
+-->
+<pre><code class="language-c">&lt;!-- {% include vla/inspect-stack.c %} --&gt;
+</code></pre>
+<pre><code class="language-shell">$ uname -a
+Linux carbon 5.15.0-71-generic #78-Ubuntu SMP Tue Apr 18 09:00:29 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+$ gcc inspect-stack-vla.c &amp;&amp; LEN=10 IDX=4 ./a.out
+&amp;vla[0]: 140737151458112
+before: 140737151458160
+after: 140737151458112
+diff: 48
+</code></pre>
+<p>Notice that the address stored in the stack pointer after declaring the VLA array is the same as the address of the first element of the VLA array as depicted in the diagram above.</p>
+<h2 id="alloca"><a class="header" href="#alloca"><code>alloca</code></a></h2>
+<p>Instead of declaring a VLA array, we can create a pointer to memory allocated by <code>alloca</code> to produce the same effect:</p>
+<!--
+gcc _includes/vla/inspect-stack-alloca.c && LEN=10 IDX=4 ./a.out
+-->
+<pre><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;alloca.h&gt;
+
+#define SAVESTACK(X) asm( "mov %%rsp, %0" : "=rm" ( X ));
+
+int main(int argc, char** argv) {
+  int len = atoi(getenv("LEN"));
+  int idx = atoi(getenv("IDX"));
+  register uint64_t sp0, sp1;
+
+  SAVESTACK(sp0);
+
+  // int vla[len];
+  int* vla = alloca(len * sizeof(int));
+
+  SAVESTACK(sp1);
+
+  for (int i=0; i &lt; len; i++)
+    vla[i] = i;
+
+  printf("&amp;vla[0]: %ld\nbefore: %ld\nafter: %ld\ndiff: %ld\n", (uint64_t)&amp;vla[0], sp0, sp1, sp0-sp1);
+  return vla[idx];
+}
+</code></pre>
+<pre><code class="language-shell">$ gcc inspect-stack-alloca.c &amp;&amp; LEN=10 IDX=4 ./a.out
+&amp;vla[0]: 140728646054592
+before: 140728646054640
+after: 140728646054592
+diff: 48
+</code></pre>
+<p>Compare the GCC docs for <code>alloca</code> with that of variable length arrays and notice the similarities:</p>
+<div id="admonition-gcc-documentation-1" class="admonition admonish-quote" role="note" aria-labelledby="admonition-gcc-documentation-1-title">
+<div class="admonition-title">
+<div id="admonition-gcc-documentation-1-title">
+<p>GCC Documentation</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-gcc-documentation-1"></a>
+</div>
+<div>
+<p>The function alloca supports a kind of half-dynamic allocation in which blocks are allocated dynamically but freed automatically.</p>
+<p>Allocating a block with alloca is an explicit action; you can allocate as many blocks as you wish, and compute the size at run time. But all the blocks are freed when you exit the function that alloca was called from, just as if they were automatic variables declared in that function. There is no way to free the space explicitly.</p>
+</div>
+</div>
+<h2 id="why-might-this-be-a-bad-idea"><a class="header" href="#why-might-this-be-a-bad-idea">Why Might This Be a Bad Idea?</a></h2>
+<p>The dynamic nature of VLAs means the offset of stack variables declared after the VLA into the stack frame of the function is <strong>also dynamic</strong> - which means the function will need extra instructions to calculate the address of these variables whenever they are referenced in the body of the function.</p>
+<p>This <em>may</em> be a worthwhile tradeoff, but know that use of VLAs means your code may need a few extra instructions every time you use stack variables.</p>
+<h2 id="llvm-ir"><a class="header" href="#llvm-ir">LLVM IR</a></h2>
+<p>Docs explanation of alloca:</p>
+<div id="admonition-_llvm-docs_" class="admonition admonish-quote" role="note" aria-labelledby="admonition-_llvm-docs_-title">
+<div class="admonition-title">
+<div id="admonition-_llvm-docs_-title">
+<p><em>LLVM Docs</em></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_llvm-docs_"></a>
+</div>
+<div>
+<p><em>The ‘alloca’ instruction allocates memory on the stack frame of the currently executing function, to be automatically released when this function returns to its caller.</em></p>
+</div>
+</div>
+<pre><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+/* Contrived example that uses VLA */
+int main(int argc, char** argv) {
+  int len = atoi(getenv("LEN"));
+  int idx = atoi(getenv("IDX"));
+  int vla[len];
+  return vla[idx];
+}
+</code></pre>
+<pre><code class="language-llvm">@.str = private unnamed_addr constant [4 x i8] c"LEN\00", align 1
+@.str.1 = private unnamed_addr constant [4 x i8] c"IDX\00", align 1
+
+define dso_local i32 @main(i32 noundef %0, i8** noundef %1) #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  %5 = alloca i8**, align 8
+  %6 = alloca i32, align 4
+  %7 = alloca i32, align 4
+  %8 = alloca i8*, align 8
+  %9 = alloca i64, align 8
+  store i32 0, i32* %3, align 4
+  store i32 %0, i32* %4, align 4
+  store i8** %1, i8*** %5, align 8
+  %10 = call i8* @getenv(i8* noundef getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i64 0, i64 0)) #4
+  %11 = call i32 @atoi(i8* noundef %10) #5
+  store i32 %11, i32* %6, align 4
+  %12 = call i8* @getenv(i8* noundef getelementptr inbounds ([4 x i8], [4 x i8]* @.str.1, i64 0, i64 0)) #4
+  %13 = call i32 @atoi(i8* noundef %12) #5
+  store i32 %13, i32* %7, align 4
+  %14 = load i32, i32* %6, align 4
+  %15 = zext i32 %14 to i64
+
+  %16 = call i8* @llvm.stacksave()
+
+  store i8* %16, i8** %8, align 8
+  %17 = alloca i32, i64 %15, align 16
+        ^^^^^^^^^^ Dynamically allocate more memory on the stack by decrementing
+                   the stack pointer, giving sufficient space for the array
+
+  store i64 %15, i64* %9, align 8
+  %18 = load i32, i32* %7, align 4
+  %19 = sext i32 %18 to i64
+  %20 = getelementptr inbounds i32, i32* %17, i64 %19
+  %21 = load i32, i32* %20, align 4
+  store i32 %21, i32* %3, align 4
+  %22 = load i8*, i8** %8, align 8
+  call void @llvm.stackrestore(i8* %22)
+  %23 = load i32, i32* %3, align 4
+  ret i32 %23
+}
+</code></pre>
+<p>–&gt;</p>
+<h2 id="conclusion--links"><a class="header" href="#conclusion--links">Conclusion &amp; Links</a></h2>
+<ol>
+<li><a href="https://gcc.gnu.org/onlinedocs/gcc/Variable-Length.html">GCC VLA docs</a></li>
+<li><a href="https://www.gnu.org/software/libc/manual/html_node/Alloca-Example.html">GCC <code>alloca</code> docs</a></li>
+<li><a href="https://llvm.org/docs/LangRef.html#alloca-instruction">LLVM IR docs for <code>alloca</code> instruction</a></li>
+<li><a href="https://llvm.org/doxygen/Instructions_8cpp_source.html">LLVM source for <code>alloca</code> instruction</a></li>
+<li><a href="https://en.cppreference.com/w/c/language/array">cppreference docs on VLA</a></li>
+<li><a href="https://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html">Buffer overflow and stack frame visualization</a></li>
+</ol>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2024-8-31-Linux-Perf-Notes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2022-5-2-BQN-reflections.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2024-8-31-Linux-Perf-Notes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2022-5-2-BQN-reflections.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

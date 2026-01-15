@@ -1,0 +1,420 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Why UB is Good - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+        <link rel="stylesheet" href="../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="why-ub-is-good-when-it-comes-to-strict-aliasing"><a class="header" href="#why-ub-is-good-when-it-comes-to-strict-aliasing">Why UB is Good (When It Comes to Strict Aliasing)</a></h1>
+<p><em>7/23/2025</em></p>
+<!-- Follow up to [the blog on `poison`](2025-7-22-Poison.md), this time about when undefined behavior can be a good thing. -->
+<div id="admonition-_undefined-behavior_" class="admonition admonish-tip" role="note" aria-labelledby="admonition-_undefined-behavior_-title">
+<div class="admonition-title">
+<div id="admonition-_undefined-behavior_-title">
+<p><em>Undefined Behavior</em></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_undefined-behavior_"></a>
+</div>
+<div>
+<p>Undefined behavior (UB) is when a program has violated the expectations or preconditions of the language.
+This often means each implementation of the language has free-reign to do whatever it wants.</p>
+<!-- Sometimes, this means [LLVM will turn your relative-error calculation into a pile of garbage](csblog/2025-7-22-Poison.md#only-on-some-architectures). -->
+<p>Sometimes, this means <a href="https://github.com/llvm/llvm-project/pull/149333">LLVM will turn your relative-error calculation into a pile of garbage</a>.
+Some languages make it easier or harder to create a program with UB.
+It is nearly impossible to evoke UB in Python (<a href="https://github.com/python/cpython/issues/96678#issuecomment-1240508545">but still possible</a>),
+and it is nearly unavoidable in C.</p>
+</div>
+</div>
+<p>UB is <em>useful</em> because it means that implementations of a language are not overly burdened by the rules of the language.
+For example, accessing the same memory at the same time from multiple threads in UB in C.
+It would be nearly impossible for a C compiler to adhere to the rules of the language if this weren’t the case - the compiler would need to guard every access to memory with a global lock, <a href="https://wiki.python.org/moin/GlobalInterpreterLock">not unlike Python’s GIL</a>.
+Instead, the compiler is allowed by the language specification to assume that if a user is accessing the same memory at the same time, they either know what they are getting into or they deserve the consequences.
+Many languages (C and C++) are specified in terms of an <em>abstract machine</em>, a machine that does not exist in the real world, but is close enough to the actual hardware that the ISO standard can be adequately specific without being too bound to today’s hardware.
+Volatile variables are a great example of this.</p>
+<p>Other languages make UB much more difficult to encounter.
+Rust is a key example of an offline-compiled language with no garbage collector that prevents many cases of UB, but lots of other languages are far more safe for different reasons.
+Python is a great example - unless you run into UB in a particular implementation of the language, you are unlikely to encounter it.</p>
+<p>There are some cases where UB is not just unavoidable due to the language specification, but it is also useful for optimization purposes.</p>
+<h1 id="strict-aliasing"><a class="header" href="#strict-aliasing">Strict Aliasing</a></h1>
+<p>When a function is called from somewhere outside the current translation unit, most compilers are unable to make very many assumptions about the function’s arguments.
+For example, in C, the compiler has to assume that the arguments may be pointing to the same memory:</p>
+<pre><code class="language-c">void foo(int *x, int *y, int n) {
+    for (int i = 0; i &lt; n; i++) {
+        x[i] = y[i];
+    }
+}
+</code></pre>
+<p>If these two pointers point to the same chunk of memory, than performing any iterations of this loop out of order would potentially result in incorrect answers.
+<a href="https://godbolt.org/z/zoMs5M8x8">LLVM <em>versions</em> this loop</a>, meaning it performs an overlap check on the pointers before jumping into a vectorized loop if they don’t alias within the loop’s tripcount, and it falls back on a sequential loop if they do.
+If the compiler can assume that <code>x</code> and <code>y</code> do not alias, it can vectorize that loop or replace it with a memcpy.</p>
+<p>One way to inform your C compiler that your pointers do not alias is to use the <code>restrict</code> keyword.</p>
+<pre><code class="language-c">void foo(int *restrict x, int *restrict y, int n) {
+    for (int i = 0; i &lt; n; i++) {
+        x[i] = y[i];
+    }
+}
+</code></pre>
+<p><a href="https://godbolt.org/z/dMEvhvzjx">Clang will indeed turn this loop into a memcpy</a> without versioning.</p>
+<h1 id="strict-aliasing-in-c-and-c"><a class="header" href="#strict-aliasing-in-c-and-c">Strict Aliasing in C and C++</a></h1>
+<p>There are some additional rules where strict-aliasing applies, in particular <em>type-based aliasing</em>.
+<a href="https://en.cppreference.com/w/c/language/object.html">See the <em>Strict Aliasing</em> section of C++ reference</a>.
+Essentially, this means that pointers to different types of objects are not allowed to alias in most situations, and if a user breaks this rule, the program contains undefined behavior.
+Why is this useful?</p>
+<p>As we saw before, in order to communicate to the compiler that two pointers do not alias, we need to use the <code>restrict</code> keyword explicitly; it is opt-in, and many users to not know to do this, even if they know a priori that the pointers do not alias.</p>
+<p>It is not so with strict-aliasing.</p>
+<p>Let’s revisit the original example, but this time we’ll pass an int-pointer and a float-pointer instead of two pointers to values of the same type.</p>
+<pre><code class="language-c">void foo(int *x, float *y, int n) {
+    for (int i = 0; i &lt; n; i++) {
+        x[i] = y[i];
+    }
+}
+</code></pre>
+<p>In this case, the compiler <em>does not need to version</em> the loop for aliasing.
+The loop is still versioned in a less expensive way to check that the tripcount is large enough for vectorization, but the checks are now much less onerous because the compiler can now assume that the pointers will not run into each other.</p>
+<p>If a user broke this rule on purpose, the result would be undefined behavior:</p>
+<pre><code class="language-c">int x[10];
+foo(x, (float*)x, 10);
+</code></pre>
+<p>The compiler will not be able to catch this case unless the user opts-out of the strict-aliasing rules with a flag like <code>-fno-strict-aliasing</code>.
+The situation is much improved over the <code>restrict</code> keyword, at the very least because it is opt-out!
+Users will get performant code by default, so long as they aren’t breaking the language rules.
+The fact that the compiler can make this assumption is beneficial for performance, and if the user breaking the strict-aliasing rules were <em>not</em> UB, the compiler would have to guard against the possibility of overlapping memory all the time.</p>
+<p>There are lots of gotchas with strict aliasing rules in C and C++.
+For example, the two arguments passed here <em>are allowed to alias</em>:</p>
+<pre><code class="language-c">struct { int x[10]; } s;
+int x[10];
+foo(s.x, x, 10);
+</code></pre>
+<p>Members of structs are usually <em>not</em> allowed to alias however.
+To make matters worse, C and C++ differ in some of their strict aliasing rules.
+<a href="https://gist.github.com/shafik/848ae25ee209f698763cffee272a58f8">Shafik Yaghmour wrote a great blog post: <em>What is the Strict Aliasing Rule and Why do we care?</em></a>
+It’s specific to C and C++, but it gives you an idea of when and why strict aliasing rules may kick in.</p>
+<h1 id="strict-aliasing-in-fortran"><a class="header" href="#strict-aliasing-in-fortran">Strict Aliasing in Fortran</a></h1>
+<p>Fortran has additional rules for strict aliasing which help Fortran compilers generate <em>much</em> better code.
+As I’ve discussed before, arrays in Fortran are not simply handles to memory like they are in C.
+They do not decay to pointers.
+They contain shape information unlike arrays-of-arrays in C.</p>
+<p>Here’s our original example in Fortran:</p>
+<pre><code class="language-fortran">subroutine foo(x,y,n)
+  integer::n
+  integer,dimension(n)::x,y
+  x=y
+end subroutine
+</code></pre>
+<p><a href="https://godbolt.org/z/7xqdz5xzG">The LLVM Flang compiler will give us the same code as when we used <code>restrict</code> in C</a>.
+This is because the two arrays are treated <em>as if they are of different types</em>.</p>
+<p>LLVM expresses the concept of strict-aliasing in its IR via <em>type-based aliasing metadata</em>.
+This metadata attaches information about the types of values in memory being loaded from or stored to, and then analyses passes in LLVM are able to determine if the values are allowed to alias or not.
+<a href="https://godbolt.org/z/W39sx8aEs">In this link, I’ve dumped the LLVM IR for this Fortran example with metadata enabled</a>.</p>
+<p>This is the body of the vectorized loop with the metadata enabled:</p>
+<pre><code class="language-llvm">define void @foo_(
+    ptr writeonly captures(none) %0,
+    ptr readonly captures(none) %1,
+    ptr readonly captures(none) %2
+) {
+  ; ...
+vector.body:                                      ; preds = %vector.body, %vector.ph
+  %index = phi i64 [ 0, %vector.ph ], [ %index.next, %vector.body ]
+  %8 = getelementptr i32, ptr %1, i64 %index
+  %9 = getelementptr i8, ptr %8, i64 16
+  %wide.load = load &lt;4 x i32&gt;, ptr %8, align 4, !tbaa !10
+  %wide.load2 = load &lt;4 x i32&gt;, ptr %9, align 4, !tbaa !10
+  %10 = getelementptr i32, ptr %0, i64 %index
+  %11 = getelementptr i8, ptr %10, i64 16
+  store &lt;4 x i32&gt; %wide.load, ptr %10, align 4, !tbaa !12
+  store &lt;4 x i32&gt; %wide.load2, ptr %11, align 4, !tbaa !12
+  %index.next = add nuw i64 %index, 8
+  %12 = icmp eq i64 %index.next, %n.vec
+  br i1 %12, label %middle.block, label %vector.body, !llvm.loop !14
+  ; ...
+}
+!0 = !{!"flang version 22.0.0 (https://github.com/llvm/llvm-project.git 7dc9b433673e28f671894bd22c65f406ba9bea6f)"}
+!4 = !{!5, !5, i64 0}
+!5 = !{!"dummy arg data/_QFfooEn", !6, i64 0}
+!6 = !{!"dummy arg data", !7, i64 0}
+!7 = !{!"any data access", !8, i64 0}
+!8 = !{!"any access", !9, i64 0}
+!9 = !{!"Flang function root _QPfoo"}
+!10 = !{!11, !11, i64 0}
+!11 = !{!"dummy arg data/_QFfooEy", !6, i64 0}
+!12 = !{!13, !13, i64 0}
+!13 = !{!"dummy arg data/_QFfooEx", !6, i64 0}
+</code></pre>
+<p>Notice the metadata present on the loads and stores:</p>
+<pre><code class="language-llvm">  %wide.load = load &lt;4 x i32&gt;, ptr %8, align 4, !tbaa !10
+  store &lt;4 x i32&gt; %wide.load, ptr %10, align 4, !tbaa !12
+; ...
+!10 = !{!11, !11, i64 0}
+!11 = !{!"dummy arg data/_QFfooEy", !6, i64 0}
+!12 = !{!13, !13, i64 0}
+!13 = !{!"dummy arg data/_QFfooEx", !6, i64 0}
+</code></pre>
+<p>The metadata here is indicating via type-based aliasing metadata that the LLVM optimizer may treat the two chunks of memory accessed by those loads and stores as belonging to entirely different types!
+This is, <a href="csblog/2025-7-20-Ideal-Array-Language.html#fortrans-array-semantics">along with other reasons I discussed in my blog on my ideal array language</a>, why I think Fortran is so amenable to performance and optimizations.
+Compilers have such rich information available to them by default.</p>
+<h1 id="strict-aliasing-in-rust"><a class="header" href="#strict-aliasing-in-rust">Strict Aliasing in Rust</a></h1>
+<p>I’m not a Rust expert, but from my understanding, Rust has far stricter aliasing rules than C and C++, and the borrow checker goes a fairly long way to help enforce non-aliasing by default, even for memory of the same type.
+This is summarized as <em>“aliasing xor mutability”</em>.</p>
+<p>Just for comparison, the equivalent loop in Rust generated the same LLVM IR as the Fortran example did.</p>
+<pre><code>fn foo(x: &amp;mut [i32], y: &amp;[i32], n: usize) {
+    for i in 0..n {
+        x[i] = y[i];
+    }
+}
+</code></pre>
+<h1 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h1>
+<p>Ultimately UB is dangerous to the extent that languages expose it to their users without their opting-in.
+The UB surface area exposed to C and C++ users is massive, and it’s nearly impossible to avoid.
+I consider myself quite proficient in C++; I’m careful to use <code>std::unique_ptr</code>s when I need to convey ownership semantics with raw memory, and container types like <code>std::vector</code> convey similar aliasing information to Fortran’s array types (but without all the array-polymorphism ☹️).
+I still find it extremely difficult to write correct and performant code in C++ without loads of tooling to support me.</p>
+<div id="admonition-_we-can-do-better_" class="admonition admonish-tip" role="note" aria-labelledby="admonition-_we-can-do-better_-title">
+<div class="admonition-title">
+<div id="admonition-_we-can-do-better_-title">
+<p><em>We Can Do Better</em></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_we-can-do-better_"></a>
+</div>
+<div>
+<p>UB is <em>not</em> an inevitability of programming languages, and as programming language developers and compiler implementers, we are able to do better and we <em>should</em> do better.
+In some cases, it can be useful to express UB to <em>optimizers</em> for the purpose of optimizing code that is already more or less known to be correct.</p>
+<p>As a large part of the surface area of popular programming languages however, I think it’s a disaster, and we who have a say in programming language design should aspire for more.</p>
+</div>
+</div>
+<hr />
+<ul>
+<li>John Regehr
+<ul>
+<li><a href="https://blog.regehr.org/archives/1234"><em>UB Canaries</em></a></li>
+<li><a href="https://blog.regehr.org/archives/761"><em>Aggressive UB Optimizations</em></a></li>
+</ul>
+</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2025-7-29-Array-Cast.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2025-7-21-SMT-Solver-Interview.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2025-7-29-Array-Cast.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2025-7-21-SMT-Solver-Interview.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

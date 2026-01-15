@@ -1,0 +1,412 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Orality and Code - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../.././mdbook-admonish.css">
+        <link rel="stylesheet" href="../../../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- %Jinnah% -->
+<h1 id="orality-and-code"><a class="header" href="#orality-and-code">Orality and Code</a></h1>
+<p>How do programming languages relate to orality?
+At first glance, code might seem to belong entirely to literature,
+having little in common with orality.
+It’s written, stored, and used as text, so it must be literature.
+While I mostly agree that code is an extension of and companion to literature,
+I was surprised by the connections with orality.
+Code is more difficult to separate from its context than literature,
+it’s inherently active, and it relies on formulaic patterns
+for communication between communities.</p>
+<div id="admonition-the-oral-arts" class="admonition admonish-tip" role="note" aria-labelledby="admonition-the-oral-arts-title">
+<div class="admonition-title">
+<div id="admonition-the-oral-arts-title">
+<p>The ‘Oral Arts’</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-the-oral-arts"></a>
+</div>
+<div>
+<p>There is no word to describe for orality what “literature” describes for
+literacy.
+To stand in for such a word, we will use the “oral arts,”
+meaning works of communication that are native to primally oral people.
+This includes public rhetoric, recitations of songs, oral histories,
+and the like.</p>
+</div>
+</div>
+<h2 id="cognitive-tech-in-orality-and-code"><a class="header" href="#cognitive-tech-in-orality-and-code">Cognitive Tech in Orality and Code</a></h2>
+<p>Programmers use cognitive technologies similar to oral formulas.
+Design patterns, comments, and naming conventions are shared devices that
+make programs interpretable.
+A future generation with different tools and more advanced programming
+literacy might look at our tools and ask:
+“Why all the repetition? Why the mythology?
+Just tell the computer what you want it to do.”
+But these metaphors and repetitive structures can and do help us manage
+complexity and communicate our intent.</p>
+<p>Consider object-oriented programming.
+OOP is a metaphor we use to reason about programs:
+we talk about objects having attributes and behaviors, but those are conceptual tools,
+not facts about the machine or its behavior.
+We use the metaphor because it helps us model complexity and communicate with others.
+This says nothing about how useful OOP is relative to the other tools at our
+disposal as programmers, only that it is <em>a</em> tool of cognition in use today.
+This mirrors the patterns used in the oral arts that allow
+the artists to memorize and communicate for more nuanced and voluminous
+information to their audience.</p>
+<p>In his famous paper <em>Can programming be liberated from the von Neumann style?</em> (Backus78),
+John Backus questions the popular contemporary cognitive technologies used for
+describing programs, which he ironically had a hand in forming.
+Backus argues that the prevailing mental models are intellectually limiting
+and that a more functional model would be more effective:</p>
+<div id="admonition-backus78" class="admonition admonish-quote" role="note" aria-labelledby="admonition-backus78-title">
+<div class="admonition-title">
+<div id="admonition-backus78-title">
+<p>Backus78</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-backus78"></a>
+</div>
+<div>
+<p>Conventional programming languages are growing ever more enormous, but not stronger.
+Inherent defects at the most basic level cause them to be both fat and weak:
+their primitive word-at-a-time style of programming inherited from their common ancestor –
+the von Neumann computer, …
+their division of programming into a world of expressions and a world of statements,
+their inability to effectively use powerful combining forms for building new programs
+from existing ones, and their lack of useful mathematical properties for reasoning about programs.</p>
+</div>
+</div>
+<p>He describes two concepts as particularly limiting:</p>
+<ul>
+<li><em>Storing</em> data to particular <em>locations</em>, and</li>
+<li>sharp distinctions between <em>statements</em> (which have effects and do not have results),
+and <em>expressions</em> (which have conceptual results but typically not effects).</li>
+</ul>
+<p>He argues that these noetic structures hold us back from effective construction
+of programs.
+They are related to the behavior of machines, but are not inherent to programming
+languages, so as people working on programming languages, we should not
+be bound by them.</p>
+<div id="admonition-backus78-emphasis-mine" class="admonition admonish-quote" role="note" aria-labelledby="admonition-backus78-emphasis-mine-title">
+<div class="admonition-title">
+<div id="admonition-backus78-emphasis-mine-title">
+<p>Backus78 (emphasis mine)</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-backus78-emphasis-mine"></a>
+</div>
+<div>
+<p>Surely there must be a less primitive way of making big changes in the store than by
+pushing vast numbers of words back and forth through the von Neumann bottleneck.
+Not only is the tube a literal bottleneck for the data traffic of a problem, but,
+more importantly, it is an <em><strong>intellectual bottleneck</strong></em> that has kept us tied
+to word-at-a-time thinking instead of encouraging us to
+<em><strong>think in terms of the larger conceptual units</strong></em> of the task at hand.</p>
+</div>
+</div>
+<p>Note that the technology Backus refers to is not <em>really</em> about programming
+languages as they are transcribed, but the noetic structures they presume.
+Just as oral people cannot effectively and hierarchically organize
+knowledge without writing, neither can programmers constrained by a
+von Neumann model of programming effectively organize programs.
+Backus essentially argues that different cognitive technologies
+(like functional programming and expression-oriented semantics) should be made
+available to programmers, and these technologies should shape our cognition.</p>
+<div id="admonition-alan-perlis" class="admonition admonish-quote" role="note" aria-labelledby="admonition-alan-perlis-title">
+<div class="admonition-title">
+<div id="admonition-alan-perlis-title">
+<p>Alan Perlis</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-alan-perlis"></a>
+</div>
+<div>
+<p>A language that doesn’t affect the way you think about programming, is not worth knowing.</p>
+</div>
+</div>
+<h2 id="the-social-nature-of-code"><a class="header" href="#the-social-nature-of-code">The Social Nature of Code</a></h2>
+<div id="admonition-ong82" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-title">
+<div class="admonition-title">
+<div id="admonition-ong82-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82"></a>
+</div>
+<div>
+<p>To speak, you have to address another or others.
+People in their right minds do not stray through the woods just talking at random
+to nobody. Even to talk to yourself you have to pretend that you are two people…
+I avoid sending quite the same message to and adult and to a small child.
+To speak, I have to be somehow already in communication with the mind I am to address
+before I start speaking…
+I have to sense something in the other’s midn to which my own utterance can relate.
+Human communication is never one-way.</p>
+</div>
+</div>
+<p>Although it’s tempting to consider programming at least as individual an activity
+as reading and writing, I argue it is far more social.
+Some programs are written and used in isolation, but the vast majority of useful
+programs are written by one person or group and used by many others.
+For programs and libraries to be successful, they need people to use them
+and technical contexts to facilitate them.</p>
+<p>Most programs exist in a social and technical context.
+People must be able to communicate with each other about them.
+Physical infrastructure must be provided to facilitate their use.
+In this sense, programs resemble the town-square.
+I’m reminded of <em>The Cathedral and the Bazaar: Musings on Linux and Open Source</em> (Raymond99).
+In contrast, literature can be constructed entirely in isolation (and consumed
+in a similar manner), as was the case with 19th century philosophers like Kierkegaard.</p>
+<p>Because speech is inherently temporary and active,
+it is also inherently context-bound.
+Prior to technologies like radio and TV, speech could only be delivered
+and consumed in-person, in a specific context, with other people.
+This inherently contextualizes speech, far more than literature or programs,
+though I argue here that programs are more context-bound than literature.</p>
+<h2 id="a-hybrid-of-artifact-and-action"><a class="header" href="#a-hybrid-of-artifact-and-action">A Hybrid of Artifact and Action</a></h2>
+<p>Code has remnants of both oral art and literacy:
+it is an artifact of thought with a physical representation,
+but it inherently describes an action,
+almost like a spell,
+and always embedded in a technical context in which the code functions.</p>
+<p><em><strong>Like orality</strong></em>, it requires context and (usually) community to be meaningful.
+It exists as performance/action, not just description.
+Programmers use mythology and metaphor to structure their thoughts.</p>
+<p><em><strong>Like literacy</strong></em>, it is written, stored, and transmitted as text.
+It can be organized hierarchically and precisely, and it <em>can</em> lend itself
+to isolation.
+These points are discussed in the following post.</p>
+<p>I believe this has something to do with the difficulties some people
+have with learning to program.
+New engineers must build mental models <em>ex nihilo</em>–
+there are not always metaphors that map the machine’s behavior
+to the physical world.
+Appropriate mental models must be built up through time and exposure.
+This hybrid nature suggests programming is a genuinely new form human cognition.</p>
+<hr />
+<p>The next post explores the literary characteristics of programs and how they
+extend beyond traditional reading and writing.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Orality-Literacy.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Literacy-and-Code.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Orality-Literacy.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Literacy-and-Code.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../mermaid.min.js"></script>
+        <script src="../../../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

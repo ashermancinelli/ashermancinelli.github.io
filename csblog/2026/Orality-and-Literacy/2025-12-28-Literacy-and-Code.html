@@ -1,0 +1,560 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Literacy and Code - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../.././mdbook-admonish.css">
+        <link rel="stylesheet" href="../../../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- %jinja% -->
+<h1 id="literacy-and-code"><a class="header" href="#literacy-and-code">Literacy and Code</a></h1>
+<div id="admonition-table-of-contents" class="admonition admonish-tip" role="note" aria-labelledby="admonition-table-of-contents-title">
+<div class="admonition-title">
+<div id="admonition-table-of-contents-title">
+<p>Table of Contents</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-table-of-contents"></a>
+</div>
+<div>
+<ul>
+<li><a href="#syntax-and-cognition">Syntax and Cognition</a>
+<ul>
+<li><a href="#apl-glyphs-ideographs">APL, Glyphs, Ideographs</a></li>
+</ul>
+</li>
+<li><a href="#semantic-editing">Semantic Editing</a></li>
+<li><a href="#literature-in-programming">Literature in Programming</a></li>
+<li><a href="#effects-on-cognition">Effects on Cognition</a></li>
+</ul>
+</div>
+</div>
+<p>Orality and code have a surprising number of characteristics in common.
+However, the more natural comparison is, of course, literature.</p>
+<p>Literature leaves a physical trace in the world, while orality does not.
+Programming languages are unique because they do leave a trace on the world
+(the source code of the program is stored <em>somewhere</em>), but the physical record
+is only part of the program, unlike literature.
+Programs are inherently <em>actions</em>, like the oral arts, yet they are
+cast in text.
+Literature simply describes or prescribes; code both describes and performs,
+closer to a magic spell than a textbook.
+Code is impotent and incomplete without being executed.</p>
+<!-- An exception to this is comments; they are pure literature embedded in programs, -->
+<!-- typically leaving no trace on the resultant program. -->
+<!-- They are like spells; they are described in words and characters, but they are -->
+<!-- impotent and incomplete without being cast (or ran). -->
+<h2 id="syntax-and-cognition"><a class="header" href="#syntax-and-cognition">Syntax and Cognition</a></h2>
+<p>Some aspects of programming language design are purely literate concepts, such as syntax.
+In <em>Notation as a Tool of Thought</em> (Iverson79), Iverson considers how syntax shapes cognition.
+He begins with his philosophical foundations:</p>
+<div id="admonition-whitehead11" class="admonition admonish-quote" role="note" aria-labelledby="admonition-whitehead11-title">
+<div class="admonition-title">
+<div id="admonition-whitehead11-title">
+<p>Whitehead11</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-whitehead11"></a>
+</div>
+<div>
+<p>By relieving the brain of all unnecessary work,
+a good notation sets it free to concentrate on
+more advanced problems, and in effect increases
+the mental power of the race.</p>
+</div>
+</div>
+<div id="admonition-boole54" class="admonition admonish-quote" role="note" aria-labelledby="admonition-boole54-title">
+<div class="admonition-title">
+<div id="admonition-boole54-title">
+<p>Boole54</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-boole54"></a>
+</div>
+<div>
+<p>That Language is an instrument of human reason, and not merely a medium
+for the expression of thought, is a truth generally admitted.</p>
+</div>
+</div>
+<p>He points out some of the advantages programming languages have over
+regular literature:</p>
+<div id="admonition-iverson79" class="admonition admonish-quote" role="note" aria-labelledby="admonition-iverson79-title">
+<div class="admonition-title">
+<div id="admonition-iverson79-title">
+<p>Iverson79</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-iverson79"></a>
+</div>
+<div>
+<p>Nevertheless, mathematical notation has serious deficiencies.
+In particular, it lacks universality, and must be interpreted differently according
+to the topic, according to the author, and even
+according to the immediate context. Programming
+languages, because they were designed for the purpose of directing computers, offer
+important advantages as tools of thought. Not only are they
+universal (general-purpose), but they are also executable and unambiguous.
+Executability makes it
+possible to use computers to perform extensive
+experiments on ideas expressed in a programming
+language, and the lack of ambiguity makes possible
+precise thought experiments. In other respects,
+however, most programming languages are decidedly inferior to
+mathematical notation and are little
+used as tools of thought in ways that would be
+considered significant by, say, an applied mathematician.</p>
+</div>
+</div>
+<p>Programming languages are executable, deterministic, and unambiguous.
+These characteristics offer cognitive tools that literature does not.</p>
+<h3 id="apl-glyphs-ideographs"><a class="header" href="#apl-glyphs-ideographs">APL, Glyphs, Ideographs</a></h3>
+<p>Iverson’s thesis is that the most useful concepts of mathematical notation and
+programming languages come together in his programming language APL.
+Those unfamiliar with APL’s syntax may consider it a cognitive inhibitor
+rather than an aid, yet the language’s terse syntax does provide an interesting
+study of the capability of a language’s syntax to affect the thought process
+of its users.</p>
+<p>APL’s dictionary is comprised of glyphs glyphs that provide visual hints to
+their function instead of English words.</p>
+<pre><code>      ⌈0.5
+1
+      ⌊0.5
+0
+</code></pre>
+<p>The glyph ⌊ visually suggests taking its operand from midpoint down to the floor,
+reminding the programmer of its function (“round down”).
+With two operands, these glyphs compute minimum and maximum,
+evoking similar imagery:</p>
+<pre><code>      1⌊2
+1
+      1⌈2
+2
+</code></pre>
+<p>The transpose operator ⍉ suggests spinning the matrix around its diagonal.
+One imagines themselves holding both ends of the diagonal line and spinning
+the circular part of the glyph around it, swapping the rows and columns:</p>
+<pre><code>      M ← 3 3 ⍴ ⍳9
+      M
+1 2 3
+4 5 6
+7 8 9
+      ⍉M
+1 4 7
+2 5 8
+3 6 9
+</code></pre>
+<p>In this way, APL provides a dictionary of flexible hieroglyphs that give
+the programmer visual hints as to their function.
+APL’s glyphs function like ideographs like “1” and “2”:
+a Chinese speaker and an English speaker will not understand each other’s
+explanations of transposition, but both visually understand the meaning of “⍉”.
+The characters communicate meaning independent of spoken language.
+Gesture serves a similar function in oral peoples;
+neighboring communities may not be mutually comprehensible, but they
+can point and motion with their hands to communicate.</p>
+<p>Proponents of APL (myself included) can only hope for adoption to branch out
+as presently popular forms of writing have:</p>
+<div id="admonition-ong82" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-title">
+<div class="admonition-title">
+<div id="admonition-ong82-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82"></a>
+</div>
+<div>
+<p>When a fully formed script of any sort, aphabetic or other, first makes its way
+from outside into a particular society, it does so necessarily at first in restricted
+sectors and with varying effects and implications.
+Writing is often regarded at first as an instrument of secret and magic power.</p>
+</div>
+</div>
+<p>If the declining popularity of Chinese pictographic scripts is any indicator,
+a simple alphabet is an aid to adoption and modern offshoots of APL are not
+well-positioned to achieve widespread adoption.</p>
+<h2 id="semantic-editing"><a class="header" href="#semantic-editing">Semantic Editing</a></h2>
+<p>Modern programming environments offer editing tools with no comparison
+in a typical written setting, thanks in particular to the <em>determinability</em>
+of code.
+Formally defined grammars allow procedural analysis of code that is not possible
+in prose.
+The earliest examples of this are seen in the Lisp community, where the
+editing environment was an early focus.</p>
+<div id="admonition-ong82-1" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-1-title">
+<div class="admonition-title">
+<div id="admonition-ong82-1-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82-1"></a>
+</div>
+<div>
+<p>As the experience of working with text as text
+matures, the maker of the text, now properly an ‘author’, acquires
+a feeling for expression and organization notably different from
+that of the oral performer before a live audience…
+The writer finds his written words
+accessible for reconsideration, revision, and other manipulation
+until they are finally released to do their work. Under the author’s
+eyes the text lays out the beginning, the middle and the end, so
+that the writer is encouraged to think of his work as a selfcontained,
+discrete unit, defined by closure.</p>
+</div>
+</div>
+<p>Just as the transition from orality to literacy offered new tools for construction
+of thought, so too do modern editors.
+In particular, <em>language servers</em> make the entire semantic context of a program
+available to the programmer directly, freely searchable and modifiable.
+In prose, the best we have is tools to look up the definitions of words, but there
+is nothing like an English language server that would allow an author to navigate
+text as a semantic tree.
+Authors can construct the semantic information <em>themselves</em> by organizing their
+work into chapters or files, but the burden is on the author to maintain the
+structure.
+Editors understand the full technical context and update continuously.</p>
+<div id="admonition-quote" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-title">
+<div class="admonition-title">
+<div id="admonition-quote-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote"></a>
+</div>
+<div>
+<p>Print, as has been seen, mechanically as well as psychologically
+locked words into space and thereby established a firmer sense of
+closure than writing could.</p>
+</div>
+</div>
+<p>As print “locked words into space,” editors bring programs to life.</p>
+<h2 id="literature-in-programming"><a class="header" href="#literature-in-programming">Literature in Programming</a></h2>
+<p>Two subsets of programming are unique in their relation to literacy.
+<em><strong>Comments</strong></em> and <em><strong>literate programming</strong></em> are both inherently works of
+literature embedded in or combined with code.</p>
+<p>Comments exist in an interesting overlap of literacy and code.
+They are (usually) strictly literary devices embedded in code, with no effect
+on the resultant program.
+In this case, code completely subsumes the category
+of literature, since any work of literature can theoretically exist inside
+a program.
+Yet, they are not typically meaningful outside the technical context they
+physically reside in.</p>
+<p>Donald Knuth studied the boundary between code and literature in
+<em>Literate Programming</em>:</p>
+<div id="admonition-knuth84" class="admonition admonish-quote" role="note" aria-labelledby="admonition-knuth84-title">
+<div class="admonition-title">
+<div id="admonition-knuth84-title">
+<p>Knuth84</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-knuth84"></a>
+</div>
+<div>
+<p>I believe that the time is ripe
+for significantly better documentation of programs, and
+that we can best achieve this by considering programs
+to be <em>works of literature</em>.</p>
+<p>Let us change our traditional attitude to the construction of programs:
+Instead of imagining that our
+main task is to instruct a computer what to do, let us
+concentrate rather on explaining to human beings what
+we want a computer to do.</p>
+</div>
+</div>
+<p>For a more literature-forward analysis of programs, <em>Literate Programming</em>
+is a must-read.
+Knuth dealt with the specifics of typesetting documents in great detail
+across several volumes, such as his 1999 work, <em>Digital Typography</em>.</p>
+<div id="admonition-sidenote-on-unix" class="admonition admonish-note" role="note" aria-labelledby="admonition-sidenote-on-unix-title">
+<div class="admonition-title">
+<div id="admonition-sidenote-on-unix-title">
+<p>Sidenote on Unix</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-sidenote-on-unix"></a>
+</div>
+<div>
+<p>Digital typography was even the titular motivation for Dennis Ritchie to
+begin work on the Unix operating system at Bell Labs;
+although he probably just wanted an excuse to work on his own OS after the
+failure of the Minix operating system, developing a proper digital typesetting
+program for the Lab was at least the rationale for funding his effort.</p>
+</div>
+</div>
+<p>Programs are inherently social and embedded in a <em>social and technical context</em>.
+If the program is to be of use to anyone other than the author, some portion of the
+technical context required to run the program must be communicated to other people.
+If the program is to be extended for any purpose other than the original one,
+the logic the program follows must be interpretable to someone else.
+All but the simplest programs require communication between people to be useful.</p>
+<h2 id="effects-on-cognition"><a class="header" href="#effects-on-cognition">Effects on Cognition</a></h2>
+<p>Ong avoids moralizing the distinction between oral and literate
+people, avoiding even implicitly moral terms like “illiterate”.
+Nonetheless, he does not shy away from the benefits of literacy:</p>
+<div id="admonition-ong82-2" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-2-title">
+<div class="admonition-title">
+<div id="admonition-ong82-2-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82-2"></a>
+</div>
+<div>
+<p>Writing, as has been seen, is essentially a consciousness-raising activity.</p>
+</div>
+</div>
+<p>And elsewhere:</p>
+<div id="admonition-ong82-3" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-3-title">
+<div class="admonition-title">
+<div id="admonition-ong82-3-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82-3"></a>
+</div>
+<div>
+<p>Orality is not an ideal, and never was. To approach it positively
+is not to advocate it as a permanent state for any culture. Literacy
+opens possibilities to the word and to human existence
+unimaginable without writing. Oral cultures today value their oral
+traditions and agonize over the loss of these traditions, but I have
+never encountered or heard of an oral culture that does not want
+to achieve literacy as soon as possible.
+Yet orality is not despicable. It can produce creations beyond thereach
+of literates, for example, the Odyssey. Nor is orality ever
+completely eradicable: reading a text oralizes it. Both orality and
+the growth of literacy out of orality are necessary for the evolution
+of consciousness.</p>
+</div>
+</div>
+<p>If literacy changed cognition by enabling abstract thought,
+hierarchical organization, and precise specification, what might code do?</p>
+<p>Rather than manipulating text alone, the programmer
+works on semantic structure with immediate feedback.
+Thought experiments are executable directly and provide instant feedback.
+Programmers learn to build on top of abstractions and communicate with other
+people in new ways.</p>
+<p>Compare the history of programming languages to the history of literacy.
+Literacy is at the very least several thousand years old while
+programming languages are about one hundred years old, at most.
+The difference between the Automatic Programming of John Backus and Grace Hopper
+and modern programming languages is astounding.
+What differences might we see in the next thousand years?
+What effects might those differences have on our cognition?</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Orality-and-Code.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Conclusion.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Orality-and-Code.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Conclusion.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../mermaid.min.js"></script>
+        <script src="../../../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

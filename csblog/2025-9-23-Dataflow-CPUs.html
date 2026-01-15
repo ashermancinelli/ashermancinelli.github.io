@@ -1,0 +1,404 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Dataflow CPUs - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+        <link rel="stylesheet" href="../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="dataflow-cpus"><a class="header" href="#dataflow-cpus">Dataflow CPUs</a></h1>
+<p><em>9/27/2025</em></p>
+<i font="-3">
+An exploration of dataflow architectures, initially inspired by <a href="https://pages.cs.wisc.edu/~markhill/restricted/ieeecomputer94_dataflow.pdf">this paper</a>.
+</i>
+<div id="admonition-table-of-contents" class="admonition admonish-note" role="note" aria-labelledby="admonition-table-of-contents-title">
+<div class="admonition-title">
+<div id="admonition-table-of-contents-title">
+<p>Table of Contents</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-table-of-contents"></a>
+</div>
+<div>
+<ul>
+<li><a href="#dataflow-vs-von-neumann">Dataflow vs Von Neumann</a></li>
+<li><a href="#the-linda-model">The Linda Model</a></li>
+<li><a href="#challenges">Challenges</a></li>
+<li><a href="#visualization">Visualization</a></li>
+<li><a href="#links">Links</a></li>
+</ul>
+</div>
+</div>
+<p>These days, <em>most</em> CPUs vendors differentiate themselves in a few ways:</p>
+<ul>
+<li>More cores,</li>
+<li>Specialized cores,</li>
+<li>Wider vectors, different vector schemes (SVE/SME),</li>
+<li>Lower power consumption</li>
+</ul>
+<p>(Arm’s scalable vector extensions are probably my favorite from this list.)</p>
+<p>None of these, though, actually breaks the basic assumption behind the machines: a program is (conceptually) a sequence of instructions executed in some order.</p>
+<!--None of these differentiators really break free from the fundamental paradigm of programs being essentially a list of data and instructions that (at least conceptually) are executed sequentially.-->
+<!--This is not intrinsic to computers though; why couldn't instructions be intrinsically parallel?-->
+<!--As long as their data are ready, we shouldn't necessarily expect them to be executed sequentially.-->
+<!--***But*** there are more fundamental innovations possible. Like dataflow architectures!-->
+<p>That assumption is convenient.
+It maps directly to how we think about writing code and how compilers and OSes are organized.
+But it’s not the only way to organize computation. Enter: dataflow architectures.</p>
+<h2 id="dataflow-vs-von-neumann"><a class="header" href="#dataflow-vs-von-neumann">Dataflow vs Von Neumann</a></h2>
+<p>In a von Neumann machine you have a program counter, you fetch instructions, and you execute them (with pipelines, speculation, out-of-order tricks, etc.).
+Dependencies are enforced by registers, memory and the compiler’s choices.
+The result: when the hardware waits for data, you get wasted cycles.</p>
+<!--In von Neumann CPUs (aka all modern CPUs, basically), instructions are fetched from memory and executed sequentially (or in pipelines/threads (or prefetched and executed speculatively)) with a program counter dictating what comes next.
+Dependencies between instructions and their operands are managed directly (registers and stack space are often allocated by the compiler, for example), which can lead to bottlenecks (the hardware might be idle when waiting for data).-->
+<p>Dataflow flips the control model.
+Instructions don’t wait for a program counter — they fire when their inputs arrive.
+Computation is driven by data tokens; tokens carry the readiness that triggers work.
+You can think of it like a kitchen where dishes get cooked whenever their ingredients show up, not when some head chef calls the next order.</p>
+<!--A dataflow architecture flips this dependency: instructions are *always ready*; they fire when input data is available.
+There is no central program counter; instead, data _tokens_ carry dependencies and trigger computation.-->
+<p>A pretty good mental model for this can be found in an old parallel programming workbook:</p>
+<h2 id="the-linda-model"><a class="header" href="#the-linda-model">The <em>Linda Model</em></a></h2>
+<p><em>How to Write Parallel Programs</em>, a charming little workbook on parallel programming, uses the <em>Linda model</em> to explain parallel programming concepts.
+This model is a very good fit for understanding dataflow architectures, I think:</p>
+<div id="admonition-_how-to-write-parallel-programs-a-first-course_-chapter-3-page-46" class="admonition admonish-tip" role="note" aria-labelledby="admonition-_how-to-write-parallel-programs-a-first-course_-chapter-3-page-46-title">
+<div class="admonition-title">
+<div id="admonition-_how-to-write-parallel-programs-a-first-course_-chapter-3-page-46-title">
+<p><em>How to Write Parallel Programs: A First Course</em>, Chapter 3, page 46</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_how-to-write-parallel-programs-a-first-course_-chapter-3-page-46"></a>
+</div>
+<div>
+<br>
+<i>
+The Linda model is a <strong>memory</strong> model.
+Linda memory (called <strong>tuple space</strong>) consists of a collection of logical tuples.
+<p>There are two kinds of tuples.
+Process tuples are under active evaluation; data tuples are passive.
+The process tuples (which are all executing simultaneously) exchange data by generating, reading and consuming data tuples.
+A process tuples that is finished executing turns into a data tuple, indistinguishable from other data tuples.</p>
+</i>
+</div>
+</div>
+<p><em>Linda</em> exposes a shared tuple space: data tuples sit in the space, and process tuples (the active things) consume and produce them.</p>
+<!--In the _Linda model_, programs are not strictly sequences of instructions, but rather a collection of instructions with data dependencies and data itself.-->
+<!--Instructions trigger when their dependencies are ready.-->
+<p>Parallelism is more naturally exposed; you might imagine <em>Linda</em> as a giant bowl of soup with data and instructions floating around, and when an instruction’s data are ready, it triggers the instruction to execute, which might then generate more data and trigger more instructions.
+That maps very naturally onto dataflow: tokens in, tokens out; no central program counter; execution happens opportunistically.</p>
+<h2 id="challenges"><a class="header" href="#challenges">Challenges</a></h2>
+<p>Why haven’t dataflow processors eaten the market?
+There are some challenges. Namely:</p>
+<ul>
+<li>Matching data with their instructions and the instruction lifecycle can be pretty expensive,</li>
+<li>resource allocation is hard, and</li>
+<li>handling data structures is also hard.</li>
+</ul>
+<p>A fully pure dataflow processor sorta assumes instruction purity and idempotency, which doesn’t mesh well with immutability.</p>
+<div id="admonition-_dataflow-architectures-and-multithreading_-lee-and-hursonhttpspagescswiscedumarkhillrestrictedieeecomputer94_dataflowpdf" class="admonition admonish-quote" role="note" aria-labelledby="admonition-_dataflow-architectures-and-multithreading_-lee-and-hursonhttpspagescswiscedumarkhillrestrictedieeecomputer94_dataflowpdf-title">
+<div class="admonition-title">
+<div id="admonition-_dataflow-architectures-and-multithreading_-lee-and-hursonhttpspagescswiscedumarkhillrestrictedieeecomputer94_dataflowpdf-title">
+<p><a href="https://pages.cs.wisc.edu/~markhill/restricted/ieeecomputer94_dataflow.pdf"><em>Dataflow Architectures and Multithreading</em>, Lee and Hurson</a></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_dataflow-architectures-and-multithreading_-lee-and-hursonhttpspagescswiscedumarkhillrestrictedieeecomputer94_dataflowpdf"></a>
+</div>
+<div>
+<br>
+<i>
+Another formidable problem is the management of data structures The dataflow functionality principle implies that all operations are side-effect free;
+that is, when a scalar operation is performed, new tokens are generated after the input tokens have been consumed.
+However, absence of side effects implies that if tokens are allowed to carry vectors, arrays, or other complex structures, an operation on a structure element must result in an entirely new structure.
+</i>
+</div>
+</div>
+<p>This poses a bit of a challenge, to put it lightly.
+The paper suggests hybrid approaches that seem far more plausible to me.</p>
+<p>This hybrid model involves grouping elements of programs into <em>grains</em> (or <em>macroactors</em>).
+Within a single grain, operations are performed as sequentially (to the extent that you consider modern CPUs to execute instructions sequentially), and each grain itself is scheduled in a dataflow manner.</p>
+<div id="admonition-_hybrid-model_" class="admonition admonish-quote" role="note" aria-labelledby="admonition-_hybrid-model_-title">
+<div class="admonition-title">
+<div id="admonition-_hybrid-model_-title">
+<p><em>Hybrid Model</em></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_hybrid-model_"></a>
+</div>
+<div>
+<br>
+<i>
+This convergence combines the power of the dataflow model for exposing parallelism with the execution efficiency of the control-flow model. Although the spectrum of dataflowlvon Neumann hybrid is very broad, two key features supporting this shift are sequential scheduling and use of registers to temporarily buffer the results between instructions.
+<p>[H]ybrid dataflow architectures can be viewed as von Neumann machines extended to support fine-grained interleaving of multiple threads.
+</i></p>
+</div>
+</div>
+<p>In either approach, you need lots of coprocessors to do things like match up data and instruction tags and move memory around, since there may not be registers outside the local scope of a grain or microactor.
+Consequently, this addresses another downside of the dataflow model; exceptions/interrupts are not well-ordered.
+If exceptions are well-ordered within the context that the user expects, then the parallel execution is transparent to the user.
+In a full dataflow model, exceptions may fire unreliably.
+This is also an issue with the control-flow model when the user opts-in to additional out-of-order execution, like vectorization.</p>
+<!--Some of these concepts might feel familiar; co-routines, channels and generators are relatively common today, and they offer an API for describing units of computation similar to grains.
+Placing sequential functions in an execution context like a threadpool where each function reads from channels-->
+<h2 id="visualization"><a class="header" href="#visualization">Visualization</a></h2>
+<p>You can sort-of imagine instructions and grains in dataflow processors to work like coroutines which await on values corresponding to puts on the instruction/grain’s input ports.
+You might think <em>this sounds like plain ’ol out-of-order execution on the CPU in my phone. What’s so special?</em> Great question!</p>
+<p>I think <em>register scheduling</em> is probably the biggest difference.
+In your phone’s A19 for example, Apple’s compiler has already decided which registers will be used to render the animations for this website.
+In a dataflow processor however, the compiler can pretend it has infinite registers like an SSA IR and they’ll all get mapped to the ports available on the processor and scheduled dynamically.
+This is much closer to the <em>Linda</em> model with an infinitely large tuple space.</p>
+<p>Take this animation:</p>
+<video width="800" height="600" controls preload="metadata">
+  <source src="videos/dataflow-animation.mp4" type="video/mp4">
+  Your browser does not support the HTML5 video tag. Download the video <a href="videos/dataflow-animation.mp4">here</a>.
+</video>
+<p>The input data are ready when the program starts.
+Once each input datum for an instruction is ready, the hardware can pick up the instruction and fire, no matter the physical location of the instruction’s data dependencies.
+The ports are really just data, not dictated by a static register file.</p>
+<p>In a von Neumann architecture, the compiler may well reorder some of your instructions depending on the flags you used, but those decisions are statically determined; nearly everything is out-of-order and potentially parallel in a dataflow architecture.</p>
+<h2 id="links"><a class="header" href="#links">Links</a></h2>
+<ul>
+<li><a href="https://fredrikbk.com/publications/dam.pdf"><em>The Dataflow Abstract Machine Simulator Framework</em></a></li>
+<li><a href="https://pages.cs.wisc.edu/~markhill/restricted/ieeecomputer94_dataflow.pdf">Dataflow Architectures and Multithreading</a></li>
+<li><a href="https://www.nextplatform.com/2024/10/29/hpc-gets-a-reconfigurable-dataflow-engine-to-take-on-cpus-and-gpus/">HPC Gets A Reconfigurable Dataflow Engine To Take On CPUs And GPUs</a></li>
+<li><a href="https://spectrum.ieee.org/efficient-computer-dataflow-architecture">Startup Claims up to 100x Better Embedded Computing Efficiency</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Dataflow_architecture">Wikipedia: Dataflow architecture</a></li>
+<li><a href="https://www.goodreads.com/book/show/1142709.How_to_Write_Parallel_Programs">How to Write Parallel Programs: A First Course</a></li>
+<li><a href="https://link.springer.com/chapter/10.1007/3-540-17945-3_1">MIT Tagged-Token Dataflow Architecture - SpringerLink</a></li>
+<li><a href="https://ieeexplore.ieee.org/document/48862">Executing a Program on the MIT Tagged-Token Dataflow Architecture - IEEE</a></li>
+<li><a href="https://csg.csail.mit.edu/pubs/memos/Memo-271/Memo-271.pdf">MIT CSG Dataflow Research Papers</a></li>
+<li><a href="https://csg.csail.mit.edu/Users/arvind/ISCAfinal.pdf">Dataflow: Passing the Token - Arvind’s Research</a></li>
+<li><a href="https://dspace.mit.edu/handle/1721.1/149603">Resource Management for Tagged Token Dataflow Architecture - MIT</a></li>
+<li><a href="https://sambanova.ai/hubfs/23945802/SambaNova_Accelerated-Computing-with-a-Reconfigurable-Dataflow-Architecture_Whitepaper_English-1.pdf">SambaNova Reconfigurable Dataflow Architecture Whitepaper</a></li>
+<li><a href="https://docs.sambanova.ai/developer/latest/sambaflow-intro.html">SambaNova Architecture Documentation</a></li>
+<li><a href="https://sambanova.ai/blog/accelerating-scientific-applications-with-sambanova-reconfigurable-dataflow-architecture">Accelerating Scientific Applications with SambaNova RDA</a></li>
+<li><a href="https://sambanova.ai/blog/the-purpose-built-architecture">SambaNova vs Nvidia Architecture Comparison</a></li>
+<li><a href="https://ieeexplore.ieee.org/document/9731612">SambaNova SN10 RDU: A 7nm Dataflow Architecture - IEEE</a></li>
+<li><a href="https://sambanova.ai/blog/ultra-fast-recurrent-neural-networks-with-sambanovas-reconfigurable-dataflow-architecture">Ultra-fast RNNs with SambaNova’s RDA</a></li>
+<li><a href="https://arxiv.org/html/2405.07518v1">SambaNova SN40L: Scaling AI Memory Wall - ArXiv</a></li>
+<li><a href="https://www.cs.utexas.edu/~cart/trips/talks/trips_tutorial_6up.pdf">Design and Implementation of the TRIPS EDGE Architecture</a></li>
+<li><a href="https://ntrs.nasa.gov/citations/19940009324">Simulator for heterogeneous dataflow architectures</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2025-11-4-David-MacQueen-on-the-History-of-Compilers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2025-9-18-Book-Recs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2025-11-4-David-MacQueen-on-the-History-of-Compilers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2025-9-18-Book-Recs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

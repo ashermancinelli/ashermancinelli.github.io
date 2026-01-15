@@ -1,0 +1,675 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Notes on Orality and Literacy - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../.././mdbook-admonish.css">
+        <link rel="stylesheet" href="../../../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="notes-on-orality-and-literacy"><a class="header" href="#notes-on-orality-and-literacy">Notes on Orality and Literacy</a></h1>
+<p>Loose collection of personal notes from reading Ong’s <em>Orality and Literacy</em>.
+See the prior post for my collected thoughts.</p>
+<div id="admonition-table-of-contents" class="admonition admonish-tip" role="note" aria-labelledby="admonition-table-of-contents-title">
+<div class="admonition-title">
+<div id="admonition-table-of-contents-title">
+<p>Table of Contents</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-table-of-contents"></a>
+</div>
+<div>
+<ul>
+<li><a href="#mnemonics-and-formulas">mnemonics and formulas</a></li>
+<li><a href="#characteristics-of-orally-based-thought">Characteristics of Orally Based Thought</a></li>
+<li><a href="#4-writing-restructures-consciousness">4: Writing Restructures Consciousness</a></li>
+<li><a href="#6-oral-memory-story-line">6: Oral Memory, story line</a></li>
+<li><a href="#7-some-theorems">7: Some Theorems</a></li>
+</ul>
+</div>
+</div>
+<h2 id="mnemonics-and-formulas"><a class="header" href="#mnemonics-and-formulas">mnemonics and formulas</a></h2>
+<ul>
+<li>Does code remind me more or orality or literacy? Simply reading the technical text does not contain the full context required to interpret it, more similar to orality. The organizational and technical context are immediate and often required for interpretation.</li>
+<li>Orality is inherently active, non visual, and contextualized. It only ever exists as an event in a moment in a context, while literature is an artifact of thought, independent of a context. Code is a hybrid of both: an artifact of thought, but inherently describing an action, almost like a spell, and always embedded in a <em>technical context</em> in which the code functions.
+<ul>
+<li>Sound only exists as it is going out of existence. There is no stopping or having sound. It is inherently perishing. Thoughts are conceived of in primarily oral cultures as such.</li>
+<li>However complex and rigorous, primarily oral thoughts cannot be independent and purely logical, because as soon as the thought is had, it ceases to exist, absent some mechanism for committing the thought to memory and transferring it to others.</li>
+</ul>
+</li>
+<li>Code is different from plain ’ol literature describing or prescribing action; it <em>is</em> action, (via a translator). It is not a call-to-action, it <em>is</em> action in some fundamental way.</li>
+</ul>
+<h2 id="characteristics-of-orally-based-thought"><a class="header" href="#characteristics-of-orally-based-thought">Characteristics of Orally Based Thought</a></h2>
+<ul>
+<li>Additive rather than subordinative</li>
+<li>Orality favors the cliche because it’s a memory aid and ensures the message will travel further.
+<ul>
+<li>there’s lots of thematic repetition, and they must stay intact. Their persistence is evidence of the effectiveness
+of the cliche in allowing the moral to travel through time and space. It’s not low-minded to use them, it’s part of the medium.
+Analysis/deconstruction is risky-possible destroying the message forever if the analysis propagates through too many minds
+such that the message ceases to travel organically. The same can be said for “redundant” or “copious” continuity.</li>
+<li>it’s like the page numbers or paragraphs. it’s not redundant to leave that extra space there, because it’s really useful in
+helping the reader keep track of what’s going on. Future iterations of humanity might look back at paragraph line breaks
+and other literary tools of thought and organization and consider them to be “silly” or “primitive” because they are no longer
+useful in whatever medium comes after writing.</li>
+<li>sparse linearity is actually unnatural and recent, only able to persist in human communication in the presence of longstanding
+artifacts of thought.</li>
+<li>repetition is particularly useful in live communication because of the nature of sound. It’s easy to miss a word here and there,
+so repeating the message often helps the audience keep track and refine their understanding. It’s not primitive at all.
+<ul>
+<li>also gives the speaker a chance to mindlessly repeat their message while they consider what to say next.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>characterized by conservatism/traditionalism
+<ul>
+<li>bc what is not actively conserved is immediately lost.</li>
+<li>writing can also be conservative (laws were frozen in time as soon as they were written down)</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-writing-restructures-consciousness"><a class="header" href="#4-writing-restructures-consciousness">4: Writing Restructures Consciousness</a></h2>
+<ul>
+<li>writing establishes “context free” language, which is an oxymoron</li>
+<li>no way to properly refute text. it always says the same thing as before.</li>
+<li>Most persons are surprised, and many distressed, to learn that essentially the same objections
+commonly urged today against computers were urged by Plato in the <em>Phaedrus</em> and in the <em>Seventh Letter</em>
+against writing.
+Writing, Plato has Socrates say in the <em>Phaedrus</em>, is inhuman, pretending to establish outside
+the mind what in reality can be only in the mind.
+It is a thing, a manufactured product…
+Secondly, Plato’s Socrates urges, writing destroys memory. Those who use writing will become
+forgetful, relying on an external resource for what they lack in internal resources.
+Writing weakens the mind. Today, parents and others fear that pocket calculators provide an external
+resource for what ought to be the internal resource of memorized multiplication tables…
+Thirdly, a written text is basically unresponsive…
+Fourthly, in keeping with the agonistic mentality of oral cultures, Plato’s Socrates also holds it
+against writing that the written word cannot defend itself as the natural spoken word can:
+real speech and thought always exist essentially in a context of give-and-take between real persons.</li>
+<li>Those who are disturbed by Plato’s misgivings about writing will be even more disturbed to find
+that print created similar misgivings when it was first introduced.</li>
+<li>One weakness in Plato’s position was that, to make his objections effective, he put them into writin, just as one weakness in anti-print positions is that their proponents, to make their objections more effective, put the positions into print. The same weakness in anti-computer positions is that, to make them effective, their proponents articulate them in articles or books printed from tapes composed on computer terminals.
+Writing and print and the computer are all ways of technologizing the word.
+Once the word is technologized, there is no effective way to criticize what technology has done with it
+without the aid of the highest technology available.</li>
+</ul>
+<div id="admonition-ong82" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-title">
+<div class="admonition-title">
+<div id="admonition-ong82-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82"></a>
+</div>
+<div>
+<p>Plato was thinking of writing as an external, alien technology, as many people
+today think of the computer. Because we have by today so deeply interiorized writing,
+made it so much a part of ourselves, as Plato’s age had not yet made it fully a part of itself,
+we find it difficult to consider writing to be a technology as we commonly assume printing and the
+computer to be.</p>
+</div>
+</div>
+<ul>
+<li>Writing is fundamentally unnatural, while oral speech is emergent.</li>
+</ul>
+<div id="admonition-ong82-1" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-1-title">
+<div class="admonition-title">
+<div id="admonition-ong82-1-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82-1"></a>
+</div>
+<div>
+<p>Like other artificial creations and indeed more than any other, it is utterly invaluable
+and indeed essential for the realization of fuller, interior, human potentials.
+Technologies are not mere exterior aids but also interior transformations of
+consciousness, and never more than when they affect the word.</p>
+</div>
+</div>
+<ul>
+<li>Technologies like the orchestra are transformative and unnatural and take us to new heights.</li>
+<li>writing is inherently individual. take a teacher and a classroom and put them in conversation
+and the whole group participates. Have them all read and they descend into their own universes,
+entirely alone.</li>
+<li>We are so, so early in the history of programming. Consider how primitive the literature
+was in the advent of the written word and the alphabet.
+Consider how difficult it would be for Plato to consider the applications of literature we have
+today, and how deeply literacy permeates our collective cognition.
+So too are we in the very beginning of what may mature into a new offshoot of literature.</li>
+</ul>
+<div id="admonition-ong82-2" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-2-title">
+<div class="admonition-title">
+<div id="admonition-ong82-2-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82-2"></a>
+</div>
+<div>
+<p>To make yourself clear without gesture, without facial expression, without intonation,
+without a real hearer, you have to foresee circumspectly all possible meanings a statement
+may have for any possible reader in any possible situation, and you ahve to make your
+language work so as to come clear all by itself, with no existential context.
+The need for this exquisite circumspection makes writing the agonizing work it commonly is.</p>
+</div>
+</div>
+<ul>
+<li>
+<p>Learned Latin reminds me of Algol. It’s divorced from reality, with hardly ever a full compiler
+or programming environment. It was purely learned. It was pronounced differently all over,
+but always written the same. For over a thousand years, educated peoples did all of their
+scientific and mathematical and abstract thinking in Latin, but hardly spoke it, if ever.
+Perhaps due to Algol’s academic origins and planned nature. It did not grow out of a technical setting,
+but was designed by committee.</p>
+</li>
+<li>
+<p>Literate programming: mention Knuth’s Typesetting books, Jupyter notebooks, doctest, and Org mode</p>
+</li>
+</ul>
+<div id="admonition-ong82-3" class="admonition admonish-quote" role="note" aria-labelledby="admonition-ong82-3-title">
+<div class="admonition-title">
+<div id="admonition-ong82-3-title">
+<p>Ong82</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-ong82-3"></a>
+</div>
+<div>
+<p>Mmoreover, as earlier noted, composition on computer terminals is replacing older
+forms of typographic composition, so that soon virtually all printing will be done in one
+way or another with the aid of electronic equipment.
+And of course information of all sorts electronically gathered and/or processed makes
+its way into print to swell the typographic output.</p>
+<p>At the same time, with telephone, radio, television and various
+kinds of sound tape, electronic technology has brought us into the
+age of ‘secondary orality’. This new orality has striking
+resemblances to the old in its participatory mystique, its fostering
+of a communal sense, its concentration on the present moment,
+and even its use of formulas (Ong 1971, pp. 284–303; 1977, pp.
+16–49, 305–41). But it is essentially a more deliberate and selfconscious orality,
+based permanently on the use of writing and
+print, which are essential for the manufacture and operation of the
+equipment and for its use as well.</p>
+</div>
+</div>
+<ul>
+<li>Notion that the “center of mass” of communication is what determines cognition;
+someone may be somewhat shaped by literacy but is primarily oral.</li>
+<li>Today’s orality is distinctly less agonistic than earlier orality. Comparisons
+between today’s presidential debates and 19th c debates that were in public
+with not amplification equipment. Trend sorta broken by trump.</li>
+</ul>
+<h2 id="6-oral-memory-story-line"><a class="header" href="#6-oral-memory-story-line">6: Oral Memory, story line</a></h2>
+<p>Similar to what we need to do <em>in literature, in code</em> in order
+to make sense of large systems. One might ask the same of us:
+why use this mythology of objects and such, when we can express our
+ideas in more straightforward (atoms of meaning)?</p>
+<div id="admonition-quote" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-title">
+<div class="admonition-title">
+<div id="admonition-quote-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote"></a>
+</div>
+<div>
+<p>Although it is found in all cultures, narrative is in certain ways
+more widely functional in primary oral cultures than in others.
+First, in a primary oral culture, as Havelock pointed out (1978a;
+cf. 1963), knowledge cannot be managed in elaborate, more or less
+scientifically abstract categories. Oral cultures cannot generate
+such categories, and so they use stories of human action to store,
+organize, and communicate much of what they know.</p>
+</div>
+</div>
+<div id="admonition-quote-1" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-1-title">
+<div class="admonition-title">
+<div id="admonition-quote-1-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-1"></a>
+</div>
+<div>
+<p>Second, narrative is particularly important in primary oral
+cultures because it can bond a great deal of lore in relatively
+substantial, lengthy forms that are reasonably durable—which in
+an oral culture means forms subject to repetition. Maxims, riddles,
+proverbs, and the like are of course also durable, but they are
+usually brief. Ritual formulas, which may be lengthy, have most
+often specialized content.</p>
+<p>Thus an oration might be as substantial and
+lengthy as a major narrative, or a part of a narrative that would be
+delivered at one sitting, but an oration is not durable: it is not
+normally repeated. It addresses itself to a particular situation and,
+in the total absence of writing, disappears from the human scene
+for good with the situation itself.</p>
+<p>In a writing or print culture, the text physically bonds whatever
+it contains and makes it possible to retrieve any kind of
+organization of thought as a whole. In primary oral cultures,
+where there is no text, the narrative serves to bond thought more
+massively and permanently than other genres.</p>
+</div>
+</div>
+<p>And yet, with the most sophisticated mechanisms of organizing
+information, we still rely on metaphor and picture.</p>
+<p>In another sense, we are so far beyond attempting to come up with
+narratives and metaphors, that it is nearly impossible for new CS
+grads to figure out what’s going on. All of us in industry have built
+up mental concepts ex nihilo and rely on them day to day.
+Other engineers understand us but it’s so difficult to build up from nothing
+without massive amount of exposure since there are not natural-world or
+oral/narrative corollaries to build upon.
+Maybe this is what will continue to expand in the future of literacy
+as we further co-develop with computers and programming languages.</p>
+<hr />
+<p>Is it so difficult to keep large systems present in our heads that
+we too must construct narratives?</p>
+<div id="admonition-quote-2" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-2-title">
+<div class="admonition-title">
+<div id="admonition-quote-2-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-2"></a>
+</div>
+<div>
+<p>What made a good epic
+poet was, among other things of course, first, tacit acceptance of
+the fact that episodic structure was the only way and the totally
+natural way of imagining and handling lengthy narrative, and,
+second, possession of supreme skill in managing flashbacks and
+other episodic techniques…
+If we take the climactic linear plot as the paradigm of
+plot, the epic has no plot. Strict plot for lengthy narrative
+comes with writing.</p>
+</div>
+</div>
+<div id="admonition-quote-3" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-3-title">
+<div class="admonition-title">
+<div id="admonition-quote-3-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-3"></a>
+</div>
+<div>
+<p>As the experience of working with text as text
+matures, the maker of the text, now properly an ‘author’, acquires
+a feeling for expression and organization notably different from
+that of the oral performer before a live audience. The ‘author’ can
+read the stories of others in solitude, can work from notes, can
+even outline a story in advance of writing it. Though inspiration
+continues to derive from unconscious sources, the writer can
+subject the unconscious inspiration to far greater conscious control
+than the oral narrator. The writer finds his written words
+accessible for reconsideration, revision, and other manipulation
+until they are finally released to do their work. Under the author’s
+eyes the text lays out the beginning, the middle and the end, so
+that the writer is encouraged to think of his work as a selfcontained,
+discrete unit, defined by closure.</p>
+</div>
+</div>
+<p>This is extended even further in code. Consider the applications of
+editor integrations. In a properly configured text editor,
+a variety of unique tools are available to developers.
+Words and sections of text appear in different colors; some may be
+typeset as italic or bold.
+Should the developer change the text such that the semantic meaning
+of the aforementioned text changes, the typesetting may too change,
+reflecting the new role the text plays in the context of the program.
+Developers are able to jump directly from a set of characters to their definitions,
+or simply hover their mouse over some text to learn more about it or see
+any potential errors resulting from the text.
+Consider how remarkable of an extension
+to literacy this is; can a reader “jump” from some point in a
+narrative text to the definition of its concept? We can look up definitions
+of <em>words</em>, or search the internet, but in many editors, the full semantic
+context of a set of characters is available to the author.
+There is no tool to analyze and navigate the regular text as a semantic tree of
+information.
+The language-server (for example, <code>clangd</code> for C or C++)
+makes the semantic structure and full context
+of my program available to the developer in an instant,
+updating as soon as changes are made.
+I can think of no corollary in regular literature, because the
+semantics are not similarly determinable.</p>
+<div id="admonition-quote-4" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-4-title">
+<div class="admonition-title">
+<div id="admonition-quote-4-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-4"></a>
+</div>
+<div>
+<p>Print, as has been seen, mechanically as well as psychologically
+locked words into space and thereby established a firmer sense of
+closure than writing could.</p>
+</div>
+</div>
+<p>Just as print froze words in time space, code brings them to life.
+They are inherently actions.</p>
+<ul>
+<li>Detective novels (and the like) could only have come into play with literacy
+bc they require too much precision for orality.</li>
+</ul>
+<div id="admonition-quote-5" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-5-title">
+<div class="admonition-title">
+<div id="admonition-quote-5-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-5"></a>
+</div>
+<div>
+<p>Writing, as has been seen, is essentially a consciousness-raising activity.</p>
+</div>
+</div>
+<div id="admonition-quote-6" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-6-title">
+<div class="admonition-title">
+<div id="admonition-quote-6-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-6"></a>
+</div>
+<div>
+<p>Insofar as modern
+psychology and the ‘round’ character of fiction represent to
+present-day consciousness what human existence is like, the feeling
+for human existence has been processed through writing and print.
+This is by no means to fault the present-day feeling for human
+existence. Quite the contrary. The present-day phenomenological
+sense of existence is richer in its conscious and articulate reflection
+than anything that preceded it. But it is salutary to recognize that
+this sense depends on the technologies of writing and print, deeply
+interiorized, made a part of our own psychic resources. The
+tremendous store of historical, psychological and other knowledge
+which can go into sophisticated narrative and characterization
+today could be accumulated only through the use of writing and
+print (and now electronics). But these technologies of the word do
+not merely store what we know. They style what we know in ways
+which made it quite inaccessible and indeed unthinkable in an oral
+culture.</p>
+</div>
+</div>
+<h2 id="7-some-theorems"><a class="header" href="#7-some-theorems">7: Some Theorems</a></h2>
+<ul>
+<li>Ong is so forthright about all the subtopics of this book that should be
+investigated for further study.</li>
+</ul>
+<div id="admonition-quote-7" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-7-title">
+<div class="admonition-title">
+<div id="admonition-quote-7-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-7"></a>
+</div>
+<div>
+<p>Over the centuries, the shift from orality through writing and
+print to electronic processing of the word has profoundly affected
+and, indeed, basically determined the evolution of verbal art
+genres, and of course simultaneously the successive modes of
+characterization and of plot</p>
+</div>
+</div>
+<p>Man, how much more will the LSP and other editor integrations change the way we think?
+What about AI editor integration’s effects on cognition? Not only do we have
+recluse, individualistic reading and writing, but we have access to another mind,
+reading and writing alongside us, seeing everything we see.</p>
+<pre><code>Marshall McLuhan "The medium is the message."
+</code></pre>
+<div id="admonition-quote-8" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-8-title">
+<div class="admonition-title">
+<div id="admonition-quote-8-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-8"></a>
+</div>
+<div>
+<p>Paradoxically, Plato could formulate his phonocentrism,
+his preference for orality over writing, clearly and effectively only
+because he could write.</p>
+</div>
+</div>
+<div id="admonition-quote-9" class="admonition admonish-quote" role="note" aria-labelledby="admonition-quote-9-title">
+<div class="admonition-title">
+<div id="admonition-quote-9-title">
+<p>Quote</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-quote-9"></a>
+</div>
+<div>
+<p>To speak, you have to address another or others.
+People in their right minds do not stray through the woods just talking at random
+to nobody. Even to talk to yourself you have to pretend that you are two people…
+I avoid sending quite the same message to and adult and to a small child.
+To speak, I have to be somehow already in communication with the mind I am to address
+before I start speaking…
+I have to sense something in the other’s midn to which my own utterance can relate.
+Human communication is never one-way.</p>
+</div>
+</div>
+<ul>
+<li>Some notes on why the “media model” is not the right way to think about communication.
+we aren’t sending nuggets of information down a tube to be decoded by the other person.
+We can do something to someone else and we are shaped by the media as well.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Links.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../csblog/2025-10-23-History-of-Compilers.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../csblog/2026/Orality-and-Literacy/2025-12-28-Links.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../csblog/2025-10-23-History-of-Compilers.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../mermaid.min.js"></script>
+        <script src="../../../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>The Earliest Hours - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+        <link rel="stylesheet" href="../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="the-earliest-hours"><a class="header" href="#the-earliest-hours">The Earliest Hours</a></h1>
+<p>The very beginning is, in many ways, a good place to start because we are immediately confronted the philisophical question of <em>what is a compiler?</em></p>
+<h2 id="what-is-a-compiler"><a class="header" href="#what-is-a-compiler">What is a Compiler?</a></h2>
+<div id="admonition-_brian-kernighan-unix-a-history-and-a-memoir_" class="admonition admonish-tip" role="note" aria-labelledby="admonition-_brian-kernighan-unix-a-history-and-a-memoir_-title">
+<div class="admonition-title">
+<div id="admonition-_brian-kernighan-unix-a-history-and-a-memoir_-title">
+<p><em>Brian Kernighan, UNIX: A History and a Memoir</em></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_brian-kernighan-unix-a-history-and-a-memoir_"></a>
+</div>
+<div>
+<br>
+<i>
+A compiler is a program that translates something written in one language into something semantically equivalent in another language.
+For example, compilers for high-level languages like C and Fortran might translate into assembly language for a particular kind of computer; some compilers translate from other languages such as Ratfor into Fortran.
+</i>
+</div>
+</div>
+<p>While the term <em>compiler</em> often encompasses a wide variety of tools that transform data from one representation to another, we will view compilers solely through the lens of programming languages.</p>
+<!--This excludes tools like the *Tex* compiler and focuses on tools for which the data being transformed is a *program*.-->
+<p>In the 1950s, shortly after Bell Labs’ invention (discovery?) of the transistor, programmers were already in need of tools to accomplish two tasks:</p>
+<ol>
+<li>transform a more human-readable representation of computation into a format that could be executed by a machine, and</li>
+<li>make programs written for one platform usable on another.</li>
+</ol>
+<p>Fundamentally, a compiler stands between a human-readable representation of a program and a machine-executable representation of that program.
+Were someone to convert a Fortran program into x86 assembly by hand, they would be performing the task of a compiler.</p>
+<p>Grace Hopper, commonly credited with creating the first compiler, worked for Univac in the early 1950s.
+This deserves a heavy caveat: Hopper’s notion of a <em>compiler</em> was much closer to our modern notion of a linker.
+Her notion of a compiler consisted of a tool that produced a program for some particular problem from a set of subroutines.
+Nonetheless, the software Hopper developed were the first to be called <em>compilers</em>.</p>
+<p>Herbert Bruderer summarizes the contest genesis of compilers in his article <em><a href="https://cacm.acm.org/blogcacm/did-grace-hopper-create-the-first-compiler/">Did Grace Hopper Create the First Compiler?</a></em>:</p>
+<div id="admonition-herbert-bruderer-on-grace-hopper-and-early-compilers" class="admonition admonish-tip" role="note" aria-labelledby="admonition-herbert-bruderer-on-grace-hopper-and-early-compilers-title">
+<div class="admonition-title">
+<div id="admonition-herbert-bruderer-on-grace-hopper-and-early-compilers-title">
+<p>Herbert Bruderer on Grace Hopper and Early Compilers</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-herbert-bruderer-on-grace-hopper-and-early-compilers"></a>
+</div>
+<div>
+<p><em>These elucidations can be summarized as follows: Heinz Rutishauser was the first to propose automatic programming (machine translation with the aid of the computer, 1951/52) and Grace Hopper developed the first utility programs for the management of subprograms (1952). Alick Glennie lays claim to the first true compiler that actually operated on a computer (1952).</em></p>
+</div>
+</div>
+<p><em>Automatic Programming</em> was Hopper’s term for the development cycle involving a compiler.</p>
+<div id="admonition-default" class="admonition admonish-quote" role="note">
+<div>
+<p><em>Scientific users drove the development and adoption for ambitious program tools, called compilers. Whereas as assemblers made writing machine instructions faster and more convenient, compilers could translate mathematical equations… into code that the computer could execute.</em></p>
+<p><em>A New History of Modern Computing</em>, Chapter 2, <em>The Computer Becomes a Scientific Supertool</em></p>
+</div>
+</div>
+<p>Laning and Zierler developed a compiler for the MIT Whirlwind computer in 1953-1954.
+This program produced machine code from equations in algebraic form, which was ahead of its time.
+Later on, in the paper <em>The Next 700 Programming Languages</em>, Peter Landin would plot the future of programming language design, and his prescription would go on to sound similar to the principles that Laning and Zierler applied in their compiler.</p>
+<p>Addressing point 2, compiling the same programs for different architectures was still a challenge due to the lack of standardization around programming languages.
+This changed in 1960 due to a government mandate that procured systems must support COBOL:</p>
+<div id="admonition-default-1" class="admonition admonish-quote" role="note">
+<div>
+<p>The next year, the US government announced that it would not purchase or lease computer equipment, unless it could handle COBOL.
+As a result, COBOL became one of the first languages to be sufficiently standardized that the program could be compiled on computers from different vendors and run to produce the same results.
+That occurred in December 1960, when almost identical programs ran on a Univac II and an RCA 501.</p>
+</div>
+</div>
+<h2 id="locality"><a class="header" href="#locality">Locality</a></h2>
+<p>One of the primary concerns of the early compilers was <em>locality</em>, meaning the the compiler could only concern itself with only a few lines of code at a time.</p>
+<p>This is even the reason why compilers originally adopted separable compilation, which allowed for compiling parts of the program independently;
+the entire program could not be fit into the memory of the computer at one time.</p>
+<p>Today, memory is so readily available that many programming languages and compilers opt to process the entire program at once; for example, the Zig programming languages <a href="https://kristoff.it/blog/zig-new-relationship-llvm/">drops the entire program into one module</a> before native code is generated.</p>
+<p>Consider the <code>eqn</code> program, which was an early preprocessor for <code>troff</code> typesetting commands:</p>
+<div id="admonition-_memory-constraints-unix-a-history-and-a-memoir_" class="admonition admonish-tip" role="note" aria-labelledby="admonition-_memory-constraints-unix-a-history-and-a-memoir_-title">
+<div class="admonition-title">
+<div id="admonition-_memory-constraints-unix-a-history-and-a-memoir_-title">
+<p><em>Memory Constraints, UNIX: A History and a Memoir</em></p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-_memory-constraints-unix-a-history-and-a-memoir_"></a>
+</div>
+<div>
+<br>
+<i>
+Eqn was implemented as a preprocessor for Troff...
+Eqn recognized mathematical constructs and translated those into Troff commands, while passing everything else through untouched.
+<p>Lorinda and I had been forced into a good idea by the physical limitations of the PDP-11.
+There simply wasn’t enough memory to include mathematical processing in Troff, which was already about as big as a program could be.
+</i></p>
+</div>
+</div>
+<p>The typesetting program <code>troff</code> already reached the memory constraints of the PDP-11, so any additional features would have to be implemented outside of <code>troff</code>.
+Similarly, compilers could only really consider a small chunk of any given program at a time.</p>
+<h2 id="todo"><a class="header" href="#todo">TODO</a></h2>
+<ul>
+<li>1962 Honeywell <em>A Few Quick Facts on Software</em>, <em>“Generally there are three basic categories of software: 1) Assembly Systems, 2) Compiler Systems, and 3) Operating Systems.”</em></li>
+<li>1968 NATO <em>Conference on Software Engineering</em></li>
+</ul>
+<hr />
+<ul>
+<li><em>Compiling Routines</em>, Grace Hopper, 1953</li>
+<li><a href="https://www.cs.cmu.edu/~crary/819-f09/Landin66.pdf"><em>The Next 700 Programming Languages</em></a></li>
+<li><a href="https://www.goodreads.com/book/show/56354936-a-new-history-of-modern-computing?ref=nav_sb_ss_2_27"><em>A New History of Modern Computing</em></a></li>
+<li><a href="https://pages.cs.wisc.edu/~fischer/cs536.s05/lectures/Lecture02.pdf"><em>History of Compilers</em> from U Wisconson-Madison</a></li>
+<li><a href="https://www.eecg.utoronto.ca/~jzhu/csc326/readings/iverson.pdf"><em>Notation as a Tool of Thought</em></a></li>
+</ul>
+<!--* [Did Grace Hopper Create the First Compiler?](https://cacm.acm.org/blogcacm/did-grace-hopper-create-the-first-compiler/)-->
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2025-9-23-History-Of-Compilers.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2025-9-23-History-Of-Compilers-Unix.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2025-9-23-History-Of-Compilers.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2025-9-23-History-Of-Compilers-Unix.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

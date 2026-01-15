@@ -1,0 +1,463 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>BQN and CUDA C++ LeetCode Solutions - Asher&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
+        <link rel="stylesheet" href="../theme/highlight.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "ayu";
+            const default_dark_theme = "coal";
+            window.path_to_searchindex_js = "../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Asher&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p><em>2021-10-11</em></p>
+<p>Solving a hard leetcode problem in the BQN APL dialect and CUDA C++!</p>
+<p><em>NOTE: This post is a transcript of <a href="https://youtu.be/3D7sfXzBBXE">the youtube video linked here</a>.</em></p>
+<h2 id="problem"><a class="header" href="#problem">Problem</a></h2>
+<p>Hello everyone, today I’d like to go through two solutions to a LeetCode problem.
+We’ll first look at the solution with the BQN array language, and then we’ll look at a GPU-capable solution in CUDA that uses the Thrust template library.</p>
+<p><a href="https://leetcode.com/problems/longest-valid-parentheses/">Link here</a>.</p>
+<p>Given a string containing just the characters ‘(’ and ‘)’, find the length of the longest valid parentheses substring.</p>
+<p>For example, for the string <code>")()())"</code> the expected answer is 4, and for this string the expected answer is two: <code>"())"</code>. Of course, for an empty string the answer is 0.</p>
+<p>We’ll be looking at the solution in BQN first.</p>
+<h2 id="bqnapl-solution"><a class="header" href="#bqnapl-solution">BQN/APL Solution</a></h2>
+<p>Here is the full solution:</p>
+<pre><code>   F ← {0⌈1+⌈´⌈´¨∾¨1↓¨⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩}
+   F ")()())"
+4
+   F "(()"
+2
+   F ""
+0
+</code></pre>
+<p>I take the index into the string <code>")("</code> to convert to integers and I take all the prefixes of that array.</p>
+<pre><code>   {↓")("⊸⊐ 𝕩} "(()"
+⟨ ⟨ 1 1 0 ⟩ ⟨ 1 0 ⟩ ⟨ 0 ⟩ ⟨⟩ ⟩
+</code></pre>
+<p>I then multiply by two and subtract one so each index represents the change in the level of nesting at that index.</p>
+<pre><code>   {1-˜¨2×¨↓")("⊸⊐ 𝕩} "(()"
+⟨ ⟨ 1 1 ¯1 ⟩ ⟨ 1 ¯1 ⟩ ⟨ ¯1 ⟩ ⟨⟩ ⟩
+</code></pre>
+<p>I then plus-scan to find the cumulative level of nesting up to that index for each prefix of the array:</p>
+<pre><code>   {+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩} "(()"
+⟨ ⟨ 1 2 1 ⟩ ⟨ 1 0 ⟩ ⟨ ¯1 ⟩ ⟨⟩ ⟩
+</code></pre>
+<p>Find the zeros in each prefix, since these are the locations where the substring is balanced:</p>
+<pre><code>   {0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩} "(()"
+⟨ ⟨ 0 0 0 ⟩ ⟨ 0 1 ⟩ ⟨ 0 ⟩ ⟨⟩ ⟩
+</code></pre>
+<p>We can then group the results to find the indices which are nonbalanced and balanced for each prefix:</p>
+<pre><code>   {⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩} "(()"
+┌─                                            
+· ⟨ ⟨ 0 1 2 ⟩ ⟩ ⟨ ⟨ 0 ⟩ ⟨ 1 ⟩ ⟩ ⟨ ⟨ 0 ⟩ ⟩ ⟨⟩  
+                                             ┘
+   {⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩} ")()())" # Longer problem
+┌─                                                                                                              
+· ⟨ ⟨ 0 2 4 5 ⟩ ⟨ 1 3 ⟩ ⟩ ⟨ ⟨ 0 2 4 ⟩ ⟨ 1 3 ⟩ ⟩ ⟨ ⟨ 0 2 3 ⟩ ⟨ 1 ⟩ ⟩ ⟨ ⟨ 0 2 ⟩ ⟨ 1 ⟩ ⟩ ⟨ ⟨ 0 1 ⟩ ⟩ ⟨ ⟨ 0 ⟩ ⟩ ⟨⟩  
+                                                                                                               ┘  
+</code></pre>
+<p>We can then of course drop the first list in each prefix so we only have the balanced indices. I’ll switch to the longer problem here so it’s a little easier to see what’s happening:</p>
+<pre><code>   {1↓¨⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩} ")()())"
+┌─                                                      
+· ⟨ ⟨ 1 3 ⟩ ⟩ ⟨ ⟨ 1 3 ⟩ ⟩ ⟨ ⟨ 1 ⟩ ⟩ ⟨ ⟨ 1 ⟩ ⟩ ⟨⟩ ⟨⟩ ⟨⟩  
+                                                       ┘
+</code></pre>
+<p>We can then flatten the sublists together and find the largest element, which represents the index in a given prefix with the longest valid substring:</p>
+<pre><code>   {⌈´⌈´¨∾¨1↓¨⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩} ")()())"
+3
+</code></pre>
+<p>Because we are using 0-based indices as God intended, we’ll have to add one to the result.
+We’ll also take the maximum of our result and 0 in case no balanced substrings were found, which would otherwise give us <code>¯∞</code>:</p>
+<pre><code>   {0⌈1+⌈´⌈´¨∾¨1↓¨⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩} ")()())"
+4
+</code></pre>
+<p>Finally, let’s look at all the test cases:</p>
+<pre><code>   F ← {0⌈1+⌈´⌈´¨∾¨1↓¨⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩}
+   F ")()())"
+4
+   F "(()"
+2
+   F ""
+0
+</code></pre>
+<p>Now that we’ve gone through the BQN solution, let’s take a look at the CUDA and Thrust solution</p>
+<h2 id="cudathrust-solution"><a class="header" href="#cudathrust-solution">CUDA/Thrust Solution</a></h2>
+<p>Here is the full solution, minus some includes and using statements:</p>
+<pre><code class="language-cpp">auto solve(const string&amp; problem) -&gt; int {
+  const int N = problem.size();
+  if (0 == N)
+    return 0;
+
+  host_vector&lt;int&gt; mapping;
+  mapping.reserve(N);
+  std::transform(problem.begin(), problem.end(), std::back_inserter(mapping),
+                 [=](const char &amp;c) { return c == '(' ? 1 : -1; });
+  device_vector&lt;int&gt; d_mapping = mapping;
+
+  vector&lt;int&gt; starts(N - 1);
+  std::iota(starts.begin(), starts.end(), 0);
+
+  int max_len = std::accumulate(
+      starts.begin(), starts.end(), 0,
+      [&amp;d_mapping, N](int max_so_far, int i) {
+        device_vector&lt;int&gt; prefix(N-i);
+        thrust::inclusive_scan(d_mapping.begin()+i, d_mapping.end(), prefix.begin());
+
+        device_vector&lt;int&gt; indices(N - i);
+        thrust::sequence(indices.begin(), indices.end(), 0);
+
+        auto zip_start = thrust::make_zip_iterator(
+            thrust::make_tuple(prefix.begin(), indices.begin()));
+        auto zip_end = thrust::make_zip_iterator(
+            thrust::make_tuple(prefix.end(), indices.end()));
+
+        int max_for_prefix = thrust::transform_reduce(
+            zip_start, zip_end,
+            [=] __device__(const auto &amp;tup) -&gt; int {
+              return thrust::get&lt;0&gt;(tup) == 0 ? 1 + thrust::get&lt;1&gt;(tup) : 0;
+            },
+            0, thrust::maximum&lt;int&gt;());
+
+        return std::max(max_so_far, max_for_prefix);
+      });
+
+  return max_len;
+}
+
+int main() {
+  for (const string &amp;problem : { ")()())", "(()", "" })
+    std::cout &lt;&lt; solve(problem) &lt;&lt; "\n";
+  return 0;
+}
+</code></pre>
+<p>This is quite a lot to take in, so let’s break it down.</p>
+<p>First I grab the problem size so I don’t have to keep repeating myself, and I check to make sure our problem size is greater than zero.
+I then transform the string into integers and copy the data to the GPU device.
+This step is just like the bqn solution up until this point.</p>
+<pre><code class="language-cpp">  const int N = problem.size();
+  if (0 == N)
+    return 0;
+
+  host_vector&lt;int&gt; mapping;
+  mapping.reserve(N);
+  std::transform(problem.begin(), problem.end(), std::back_inserter(mapping),
+                 [=](const char &amp;c) { return c == '(' ? 1 : -1; });
+  device_vector&lt;int&gt; d_mapping = mapping;
+</code></pre>
+<p>In BQN:</p>
+<pre><code>{1-˜¨2×¨↓")("⊸⊐ 𝕩}
+</code></pre>
+<p>I then create an STL vector to hold the starting positions for each prefix.
+I’m using the STL here instead of Thrust because I’ll otherwise have to nest my CUDA calls, and not all of the Thrust API is callable on the GPU device.
+Ideally, we fit as much of our algorithm onto the GPU device to minimize any data transfer between memory spaces, but I still ended up using a mixture of the STL and Thrust.</p>
+<pre><code class="language-cpp">  vector&lt;int&gt; starts(N - 1);
+  std::iota(starts.begin(), starts.end(), 0);
+</code></pre>
+<p>Because of how the stl algorithms are used, we have to now go to the end of our
+BQN solution. This call to accumulate corresponds to our outter reduction in our BQN solution here:</p>
+<pre><code class="language-cpp">  // BQN) F ← {0⌈1+⌈´⌈´¨∾¨1↓¨⊔¨0=+`¨1-˜¨2×¨↓")("⊸⊐ 𝕩}
+  //               ^
+  //              here
+
+  int max_len = std::accumulate(
+      starts.begin(), starts.end(), 0,
+      [&amp;d_mapping, N](int max_so_far, int i) {
+        // ...
+      });
+</code></pre>
+<p>We’re reducing over the maximum balanced substring for each prefix of the input string.</p>
+<p>Next I create a device vector for the given prefix, and take the prefix sum of the current prefix.</p>
+<pre><code class="language-cpp">  // BQN) +`
+  int max_len = std::accumulate(...
+        device_vector&lt;int&gt; prefix(N-i);
+        thrust::inclusive_scan(d_mapping.begin()+i, d_mapping.end(), prefix.begin());
+</code></pre>
+<p>I then create an <em>iota</em> to zip with our prefix-summed substring (or a <em>range</em> in BQN parlance, or a <em>sequence</em> in Thrust parlance (can’t we all just agree on a term here…)):</p>
+<pre><code class="language-cpp">        device_vector&lt;int&gt; indices(N - i);
+        thrust::sequence(indices.begin(), indices.end(), 0);
+
+        auto zip_start = thrust::make_zip_iterator(
+            thrust::make_tuple(prefix.begin(), indices.begin()));
+        auto zip_end = thrust::make_zip_iterator(
+            thrust::make_tuple(prefix.end(), indices.end()));        
+</code></pre>
+<p>This corresponds to the <em>couple</em> dyad in BQN or the <em>zip</em> function in Python and lots of functional languages.</p>
+<p>I then perform two algorithms in this one step. If the given position in the prefix-summed substring is zero, that means it’s balanced and I want to keep the index.
+Otherwise, I can just throw it out.
+After performing this transform or map algorithm, I take the max reduction of the substring to find the greatest index at which the substring is balanced.
+If there are multiple points in the substring where the parens are balanced, this will find the greatest one.</p>
+<pre><code class="language-cpp">        int max_for_prefix = thrust::transform_reduce(
+            zip_start, zip_end,
+            [=] __device__(const auto &amp;tup) -&gt; int {
+              return thrust::get&lt;0&gt;(tup) == 0 ? 1 + thrust::get&lt;1&gt;(tup) : 0;
+            },
+            0, thrust::maximum&lt;int&gt;());
+</code></pre>
+<p>I then return the maximum balanced substring for the current prefix, which is then folded in the outter <code>std::accumulate</code> to find the greatest balanced substring for all prefixes in the original string.</p>
+<pre><code class="language-cpp">  int max_len = std::accumulate(...
+        [...](int max_so_far, int i) {
+            int max_for_prefix = ...
+            return std::max(max_so_far, max_for_prefix);
+        });
+</code></pre>
+<p>I then return the maximum length I found, and we have our answer!</p>
+<pre><code class="language-cpp">auto solve(const string&amp; problem) -&gt; int {
+  ...
+  int max_len = std::accumulate(...);
+  return max_len;
+}
+</code></pre>
+<p>I ran this with the same test cases like so:</p>
+<pre><code class="language-cpp">int main() {
+  for (const string &amp;problem : { ")()())", "(()", "" })
+    std::cout &lt;&lt; solve(problem) &lt;&lt; "\n";
+  return 0;
+}
+</code></pre>
+<p>And running gave me:</p>
+<pre><code class="language-console">$ ./src/thrust/lc-longest-valid-parens
+4
+2
+0
+</code></pre>
+<p>Just like we expected!</p>
+<h2 id="youtube-video-description"><a class="header" href="#youtube-video-description">YouTube Video Description</a></h2>
+<p>We solve a hard leetcode problem in both BQN and CUDA C++ with the Thrust library.</p>
+<h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
+<p>Thanks for tuning in and I hope you enjoyed this example program.
+You can find all the GPU examples I used in the links below.
+Connor Hoekstra, if you’re reading or watching this, I hope to see you out-do my BQN and CUDA solutions in another video :).</p>
+<!-- {% include footer.html %} -->
+<h2 id="links"><a class="header" href="#links">Links</a></h2>
+<ul>
+<li><a href="https://github.com/ashermancinelli/portable-alg-testbed">Repo for GPU Examples</a></li>
+<li><a href="https://github.com/ashermancinelli/apl-snippets">Repo for BQN/APL Examples</a></li>
+<li><a href="https://www.youtube.com/channel/UCZ5sL4E662VP1ZwC4h85ttQ">YouTube Channel</a></li>
+<li><a href="http://www.ashermancinelli.com/">Blog</a></li>
+<li><a href="https://www.linkedin.com/in/asher-mancinelli-bb4a56144/">LinkedIn</a></li>
+<li><a href="https://leetcode.com/problems/longest-valid-parentheses/">LeetCode Problem</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../csblog/2025-9-30-Style-Inspiration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../csblog/2021-10-19-Leetcode-And-Distributed-Computing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../csblog/2025-9-30-Style-Inspiration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

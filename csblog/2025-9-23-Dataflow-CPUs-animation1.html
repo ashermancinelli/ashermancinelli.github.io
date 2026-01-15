@@ -1,0 +1,722 @@
+<div id="dataflow-animation-container">
+    <style>
+        .dataflow-animation {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid #4a5568;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animation-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .animation-title {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: #68d391;
+        }
+
+        .animation-subtitle {
+            font-size: 0.9rem;
+            color: #a0aec0;
+        }
+
+        .animation-content {
+            display: flex;
+            height: 450px; /* Increased height */
+            width: 38%;
+        }
+
+        .animation-visualization {
+            flex: 3;
+            background: rgba(45, 55, 72, 0.7);
+            border-radius: 8px;
+            border: 1px solid #4a5568;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animation-info {
+            flex: 1;
+            padding-left: 15px;
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .status-panel {
+            background: rgba(45, 55, 72, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #4a5568;
+            margin-bottom: 15px;
+        }
+
+        .status-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #f6e05e;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            min-height: 40px;
+        }
+
+        .data-panel {
+            background: rgba(45, 55, 72, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #4a5568;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .data-token {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ed8936;
+            margin: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 0 8px rgba(237, 137, 54, 0.5);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .ready-color {
+            background: #68d391;
+        }
+
+        .executing-color {
+            background: #f6e05e;
+        }
+
+        .completed-color {
+            background: #4299e1;
+        }
+
+        .token-color {
+            background: #ed8936;
+        }
+
+        /* D3.js styles */
+        .node {
+            stroke: #4a5568;
+            stroke-width: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .node.ready {
+            stroke: #68d391;
+            stroke-width: 3px;
+            filter: drop-shadow(0 0 5px rgba(104, 211, 145, 0.5));
+        }
+
+        .node.executing {
+            stroke: #f6e05e;
+            stroke-width: 3px;
+            filter: drop-shadow(0 0 8px rgba(246, 224, 94, 0.7));
+        }
+
+        .node.completed {
+            stroke: #4299e1;
+            stroke-width: 3px;
+            filter: drop-shadow(0 0 5px rgba(66, 153, 225, 0.5));
+        }
+
+        .link {
+            stroke: #4a5568;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .link.active {
+            stroke: #68d391;
+            stroke-width: 3;
+            filter: drop-shadow(0 0 3px rgba(104, 211, 145, 0.5));
+        }
+
+        .token {
+            fill: #ed8936;
+            r: 6;
+            filter: drop-shadow(0 0 3px rgba(237, 137, 54, 0.7));
+        }
+
+        .node-text {
+            fill: #e2e8f0;
+            font-size: 12px;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .op-text {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .cycle-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(26, 32, 44, 0.8);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #f6e05e;
+        }
+    </style>
+
+    <div class="dataflow-animation">
+        <div class="animation-header">
+            <h2 class="animation-title">Dataflow CPU Animation</h2>
+            <p class="animation-subtitle">
+                Instructions execute when input data is available • Running
+                automatically
+            </p>
+        </div>
+
+        <div class="animation-content">
+            <div class="animation-visualization" id="animation-graph">
+                <div class="cycle-counter" id="cycle-counter">Cycle: 0</div>
+            </div>
+
+            <div class="animation-info">
+                <div class="status-panel">
+                    <div class="status-title">Execution Status</div>
+                    <div class="status-text" id="status-text">
+                        Initializing...
+                    </div>
+                </div>
+
+                <div class="data-panel">
+                    <div class="status-title">Active Data Tokens</div>
+                    <div id="data-tokens-container">
+                        <!-- Data tokens will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color ready-color"></div>
+                <span>Ready</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color executing-color"></div>
+                <span>Executing</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color completed-color"></div>
+                <span>Completed</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color token-color"></div>
+                <span>Data Token</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Dataflow program definition with better layout
+            const program = {
+                instructions: [
+                    {
+                        id: "load1",
+                        op: "LOAD",
+                        inputs: [],
+                        outputs: ["a"],
+                        value: 5,
+                        x: 80,
+                        y: 80,
+                        state: "ready",
+                    },
+                    {
+                        id: "load2",
+                        op: "LOAD",
+                        inputs: [],
+                        outputs: ["b"],
+                        value: 3,
+                        x: 80,
+                        y: 180,
+                        state: "ready",
+                    },
+                    {
+                        id: "load3",
+                        op: "LOAD",
+                        inputs: [],
+                        outputs: ["c"],
+                        value: 7,
+                        x: 80,
+                        y: 280,
+                        state: "ready",
+                    },
+                    {
+                        id: "load4",
+                        op: "LOAD",
+                        inputs: [],
+                        outputs: ["d"],
+                        value: 2,
+                        x: 80,
+                        y: 380,
+                        state: "ready",
+                    },
+                    {
+                        id: "add",
+                        op: "ADD",
+                        inputs: ["a", "b"],
+                        outputs: ["t1"],
+                        x: 250,
+                        y: 130,
+                        state: "waiting",
+                    },
+                    {
+                        id: "sub",
+                        op: "SUB",
+                        inputs: ["c", "d"],
+                        outputs: ["t2"],
+                        x: 250,
+                        y: 330,
+                        state: "waiting",
+                    },
+                    {
+                        id: "mul",
+                        op: "MUL",
+                        inputs: ["t1", "t2"],
+                        outputs: ["result"],
+                        x: 420,
+                        y: 230,
+                        state: "waiting",
+                    },
+                ],
+                // Define data dependencies
+                dependencies: [
+                    { source: "load1", target: "add", token: "a" },
+                    { source: "load2", target: "add", token: "b" },
+                    { source: "load3", target: "sub", token: "c" },
+                    { source: "load4", target: "sub", token: "d" },
+                    { source: "add", target: "mul", token: "t1" },
+                    { source: "sub", target: "mul", token: "t2" },
+                ],
+            };
+
+            // Initialize the animation
+            const animation = new DataflowAnimation(program);
+        });
+
+        class DataflowAnimation {
+            constructor(program) {
+                this.program = program;
+                this.instructions = new Map();
+                this.dataTokens = new Map();
+                this.readyQueue = [];
+                this.executing = new Set();
+                this.completed = new Set();
+                this.cycleCount = 0;
+                this.animationStep = 0;
+
+                this.initInstructions();
+                this.initD3();
+                this.startAnimation();
+            }
+
+            initD3() {
+                const container = document.getElementById("animation-graph");
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+
+                // Create SVG with padding
+                this.svg = d3
+                    .select("#animation-graph")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+
+                // Create defs for filters
+                const defs = this.svg.append("defs");
+
+                // Create glow filter
+                const glowFilter = defs
+                    .append("filter")
+                    .attr("id", "glow")
+                    .attr("x", "-50%")
+                    .attr("y", "-50%")
+                    .attr("width", "200%")
+                    .attr("height", "200%");
+
+                glowFilter
+                    .append("feGaussianBlur")
+                    .attr("stdDeviation", "3.5")
+                    .attr("result", "coloredBlur");
+
+                const feMerge = glowFilter.append("feMerge");
+                feMerge.append("feMergeNode").attr("in", "coloredBlur");
+                feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
+                // Draw dependency links
+                this.link = this.svg
+                    .selectAll(".link")
+                    .data(this.program.dependencies)
+                    .enter()
+                    .append("line")
+                    .attr("class", "link")
+                    .attr("id", (d) => `link-${d.source}-${d.target}`)
+                    .attr("x1", (d) => this.getNodePosition(d.source).x)
+                    .attr("y1", (d) => this.getNodePosition(d.source).y)
+                    .attr("x2", (d) => this.getNodePosition(d.target).x)
+                    .attr("y2", (d) => this.getNodePosition(d.target).y);
+
+                // Draw instruction nodes
+                this.node = this.svg
+                    .selectAll(".node")
+                    .data(this.program.instructions)
+                    .enter()
+                    .append("circle")
+                    .attr("class", (d) => `node ${d.state}`)
+                    .attr("id", (d) => `node-${d.id}`)
+                    .attr("cx", (d) => d.x)
+                    .attr("cy", (d) => d.y)
+                    .attr("r", 30) // Slightly smaller nodes
+                    .attr("fill", "#2d3748");
+
+                // Add node labels
+                this.nodeLabel = this.svg
+                    .selectAll(".node-label")
+                    .data(this.program.instructions)
+                    .enter()
+                    .append("text")
+                    .attr("class", "node-text op-text")
+                    .attr("x", (d) => d.x)
+                    .attr("y", (d) => d.y - 5)
+                    .text((d) => d.op);
+
+                // Add node IDs
+                this.nodeId = this.svg
+                    .selectAll(".node-id")
+                    .data(this.program.instructions)
+                    .enter()
+                    .append("text")
+                    .attr("class", "node-text")
+                    .attr("x", (d) => d.x)
+                    .attr("y", (d) => d.y + 12)
+                    .text((d) => d.id);
+
+                // Add output labels
+                this.nodeIO = this.svg
+                    .selectAll(".node-io")
+                    .data(this.program.instructions)
+                    .enter()
+                    .append("text")
+                    .attr("class", "node-text")
+                    .attr("x", (d) => d.x)
+                    .attr("y", (d) => d.y + 25)
+                    .text((d) => `→ ${d.outputs[0]}`);
+            }
+
+            getNodePosition(nodeId) {
+                const node = this.program.instructions.find(
+                    (n) => n.id === nodeId,
+                );
+                return { x: node.x, y: node.y };
+            }
+
+            initInstructions() {
+                this.program.instructions.forEach((instr) => {
+                    this.instructions.set(instr.id, {
+                        ...instr,
+                        receivedInputs: new Map(),
+                        outputValue: null,
+                    });
+
+                    if (instr.op === "LOAD") {
+                        this.readyQueue.push(instr.id);
+                    }
+                });
+            }
+
+            startAnimation() {
+                // Start the animation loop
+                this.animationInterval = setInterval(() => {
+                    this.runAnimationStep();
+                }, 2000); // Run a step every 2 seconds
+            }
+
+            runAnimationStep() {
+                this.animationStep++;
+
+                // Reset if we've completed a full execution
+                if (
+                    this.readyQueue.length === 0 &&
+                    this.executing.size === 0 &&
+                    this.completed.size === this.instructions.size
+                ) {
+                    setTimeout(() => {
+                        this.resetAnimation();
+                    }, 1000);
+                    return;
+                }
+
+                this.cycleCount++;
+                document.getElementById("cycle-counter").textContent =
+                    `Cycle: ${this.cycleCount}`;
+
+                // Execute ready instructions
+                if (this.readyQueue.length > 0) {
+                    this.executeReadyInstructions();
+                } else if (this.executing.size > 0) {
+                    this.updateStatus("Instructions executing...");
+                } else {
+                    this.updateStatus("Waiting for data...");
+                }
+            }
+
+            executeReadyInstructions() {
+                const toExecute = [...this.readyQueue];
+                this.readyQueue.length = 0;
+
+                toExecute.forEach((instrId) => {
+                    const instr = this.instructions.get(instrId);
+
+                    if (!instr || this.executing.has(instrId)) return;
+
+                    // Mark as executing
+                    d3.select(`#node-${instrId}`)
+                        .classed("ready", false)
+                        .classed("waiting", false)
+                        .classed("executing", true);
+
+                    instr.state = "executing";
+                    this.executing.add(instrId);
+
+                    this.updateStatus(`Executing: ${instrId} (${instr.op})`);
+
+                    // Simulate execution
+                    setTimeout(() => {
+                        // Calculate result
+                        let result;
+                        let resultName;
+
+                        switch (instr.op) {
+                            case "LOAD":
+                                result = instr.value;
+                                resultName = instr.outputs[0];
+                                break;
+                            case "ADD":
+                                result =
+                                    instr.receivedInputs.get(instr.inputs[0]) +
+                                    instr.receivedInputs.get(instr.inputs[1]);
+                                resultName = instr.outputs[0];
+                                break;
+                            case "SUB":
+                                result =
+                                    instr.receivedInputs.get(instr.inputs[0]) -
+                                    instr.receivedInputs.get(instr.inputs[1]);
+                                resultName = instr.outputs[0];
+                                break;
+                            case "MUL":
+                                result =
+                                    instr.receivedInputs.get(instr.inputs[0]) *
+                                    instr.receivedInputs.get(instr.inputs[1]);
+                                resultName = instr.outputs[0];
+                                break;
+                            default:
+                                result = 0;
+                                resultName = "unknown";
+                        }
+
+                        instr.outputValue = result;
+
+                        // Mark as completed
+                        d3.select(`#node-${instrId}`)
+                            .classed("executing", false)
+                            .classed("completed", true);
+
+                        instr.state = "completed";
+                        this.executing.delete(instrId);
+                        this.completed.add(instrId);
+
+                        // Send result to consumers
+                        this.sendResultToConsumers(instrId, resultName, result);
+                    }, 1000);
+                });
+            }
+
+            sendResultToConsumers(sourceId, tokenName, value) {
+                // Add to data tokens
+                this.dataTokens.set(tokenName, value);
+                this.updateDataTokensDisplay();
+
+                // Find all instructions that need this token
+                this.program.dependencies
+                    .filter((dep) => dep.source === sourceId)
+                    .forEach((dep) => {
+                        const targetInstr = this.instructions.get(dep.target);
+
+                        if (
+                            targetInstr &&
+                            !this.completed.has(dep.target) &&
+                            !this.executing.has(dep.target)
+                        ) {
+                            this.sendTokenAnimation(
+                                sourceId,
+                                dep.target,
+                                tokenName,
+                                value,
+                            );
+                        }
+                    });
+            }
+
+            sendTokenAnimation(sourceId, targetId, tokenName, value) {
+                const sourcePos = this.getNodePosition(sourceId);
+                const targetPos = this.getNodePosition(targetId);
+
+                // Highlight the link
+                d3.select(`#link-${sourceId}-${targetId}`).classed(
+                    "active",
+                    true,
+                );
+
+                // Create animated token
+                const token = this.svg
+                    .append("circle")
+                    .attr("class", "token")
+                    .attr("cx", sourcePos.x)
+                    .attr("cy", sourcePos.y)
+                    .attr("r", 6);
+
+                // Animate token along the link
+                token
+                    .transition()
+                    .duration(1000)
+                    .attr("cx", targetPos.x)
+                    .attr("cy", targetPos.y)
+                    .on("end", () => {
+                        token.remove();
+                        d3.select(`#link-${sourceId}-${targetId}`).classed(
+                            "active",
+                            false,
+                        );
+
+                        this.deliverToken(targetId, tokenName, value);
+                    });
+            }
+
+            deliverToken(targetId, tokenName, value) {
+                const instr = this.instructions.get(targetId);
+                if (!instr) return;
+
+                instr.receivedInputs.set(tokenName, value);
+
+                // Check if instruction now has all inputs
+                if (
+                    instr.inputs.every((input) =>
+                        instr.receivedInputs.has(input),
+                    )
+                ) {
+                    instr.state = "ready";
+                    d3.select(`#node-${targetId}`)
+                        .classed("waiting", false)
+                        .classed("ready", true);
+
+                    this.readyQueue.push(targetId);
+                }
+            }
+
+            updateDataTokensDisplay() {
+                const container = document.getElementById(
+                    "data-tokens-container",
+                );
+                container.innerHTML = "";
+
+                this.dataTokens.forEach((value, name) => {
+                    const token = document.createElement("div");
+                    token.className = "data-token";
+                    token.textContent = `${name}=${value}`;
+                    container.appendChild(token);
+                });
+            }
+
+            updateStatus(message) {
+                document.getElementById("status-text").textContent = message;
+            }
+
+            resetAnimation() {
+                // Clear state
+                this.readyQueue = [];
+                this.executing.clear();
+                this.completed.clear();
+                this.dataTokens.clear();
+                this.cycleCount = 0;
+                this.animationStep = 0;
+
+                // Reset instructions
+                this.instructions.forEach((instr) => {
+                    instr.receivedInputs.clear();
+                    instr.outputValue = null;
+                    instr.state = instr.op === "LOAD" ? "ready" : "waiting";
+                });
+
+                // Reset visualization
+                d3.selectAll(".node")
+                    .classed("ready", (d) => d.op === "LOAD")
+                    .classed("waiting", (d) => d.op !== "LOAD")
+                    .classed("executing", false)
+                    .classed("completed", false);
+
+                // Reinitialize ready queue
+                this.program.instructions
+                    .filter((instr) => instr.op === "LOAD")
+                    .forEach((instr) => {
+                        this.readyQueue.push(instr.id);
+                    });
+
+                // Clear data tokens display
+                this.updateDataTokensDisplay();
+
+                // Update UI
+                document.getElementById("cycle-counter").textContent =
+                    `Cycle: ${this.cycleCount}`;
+                this.updateStatus("Animation reset - starting over...");
+            }
+        }
+    </script>
+</div>
